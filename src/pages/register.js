@@ -1,6 +1,6 @@
 import React from "react";
 import { CountryList } from "./CountryList.jsx";
-const config = { hostUrl: "http://localhost:3000/creator" };
+const config = { hostUrl: "http://pharaoh-api.herokuapp.com/creator" };
 function Registration() {
   let ResIsOk = {}; 
   const handleSubmit = s => {

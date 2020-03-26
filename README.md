@@ -18,3 +18,7 @@
 ### Build
 
 `npm run build`
+
+### Valid Credentials
+email = shivam.sasalol@yahoo.com
+password = password

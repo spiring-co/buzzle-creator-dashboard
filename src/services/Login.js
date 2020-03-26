@@ -1,5 +1,5 @@
 import React from "react";
-const config = { hostUrl: "http://localhost:3000/auth/login" }; //https://pharaoh-api.herokuapp.com/auth/login
+const config = { hostUrl: "https://pharaoh-api.herokuapp.com/auth/login" }; //https://pharaoh-api.herokuapp.com/auth/login
 function Login() {
   let ResIsOk = {}; //stores response to check if response is 200
   const handleSubmit = s => {
