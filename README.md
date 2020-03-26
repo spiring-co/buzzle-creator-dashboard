@@ -12,7 +12,7 @@
 
 ### Run
 
-1.  `yarn`
+1.  `yarn install`
 2.  `npm start`
 
 ### Build
