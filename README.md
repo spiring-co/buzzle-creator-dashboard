@@ -9,3 +9,12 @@
 5. Follow [git feature branch workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/feature-branch-workflow).
 6. Don't push on master.
 7. Feature/Issue management using project [board](https://github.com/HarshBhatia/pharaoh/projects/1).
+
+### Run
+
+1.  `yarn`
+2.  `npm start`
+
+### Build
+
+`npm run build`
