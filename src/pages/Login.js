@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { login } from "services/auth";
-
+import { useHistory } from "react-router-dom";
 export default () => {
+  let history = useHistory();
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -11,8 +12,8 @@ export default () => {
 
     try {
       setLoading(true);
-      await login(elements["email"].value, elements["password"].value);
-      window.location = "/home";
+      login(elements["email"].value, elements["password"].value);
+      history.push("/home");
     } catch (e) {
       setError(e);
     } finally {
