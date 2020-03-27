@@ -12,8 +12,9 @@
 
 ### Run
 
-1.  `yarn`
-2.  `npm start`
+1. `git clone https://github.com/HarshBhatia/pharaoh.git && cd pharaoh`
+2.  `yarn`
+3.  `npm start`
 
 ### Build
 
