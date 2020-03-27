@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 const config = { hostUrl: "https://pharaoh-api.herokuapp.com/auth/login" }; //https://pharaoh-api.herokuapp.com/auth/login
 function Login() {
   let ResIsOk = {}; //stores response to check if response is 200
+  const [err, setErr] = useState([]);
   const handleSubmit = s => {
     s.preventDefault();
 
@@ -36,15 +37,32 @@ function Login() {
       .then(data => {
         console.log("Success:", data);
         localStorage.setItem("JWT", data);
-        if (ResIsOk == 200) return window.location.assign("/home");
+        if (ResIsOk == 200) {
+          return window.location.assign("/home");
+        } else {
+          setErr(ResIsOk);
+          console.log(ResIsOk);
+          console.log(err);
+        }
       })
       .catch(error => {
         console.error("Error:", error);
       });
   };
 
+  const errorDisplay = () => {
+    if (err != 200) {
+      return (
+        <div>
+          <strong>Danger!</strong> error{err}
+        </div>
+      );
+    }
+  };
+
   return (
     <div>
+      <errorDisplay />
       <h1> Creator Dashboard</h1>
       <form onSubmit={handleSubmit}>
         <div>

@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./services/Login";
 import Registration from "./pages/register";
-import React, { useState } from "react";
+import React from "react";
 import FilePickerScreen from "./pages/FilePickerScreen";
 import FormBuilderScreen from "./pages/FormBuilderScreen";
 // FilePickerScreen and FormSchemaBuilder

@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { CountryList } from "./CountryList.jsx";
 const config = { hostUrl: "http://pharaoh-api.herokuapp.com/creator" };
 function Registration() {
-  let ResIsOk = {}; 
+  const [err, setErr] = useState({});
+  let ResIsOk = {};
   const handleSubmit = s => {
     s.preventDefault();
 
@@ -51,7 +52,11 @@ function Registration() {
       })
       .then(data => {
         console.log("Success:", data);
-        if (ResIsOk == 200) return window.location.assign("/login");
+        if (ResIsOk == 200) {
+          return window.location.assign("/login");
+        } else {
+          setErr(ResIsOk);
+        }
       })
       .catch(error => {
         console.error("Error:", error);
@@ -61,6 +66,7 @@ function Registration() {
   return (
     <div>
       <h1> register please</h1>
+      {/* <h1> {err}</h1> */}
       <form onSubmit={handleSubmit}>
         <input type="text" placeholder="Enter your name" name="creatorName" />
         <input type="text" placeholder="Enter your email" name="email" />
