@@ -7,6 +7,7 @@ import FormBuilderScreen from "./pages/FormBuilderScreen";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Registration from "./pages/Register";
+import Profile from "pages/Profile";
 
 // FilePickerScreen and FormSchemaBuilder
 //Just to Show working, will be removed when work with the flow
@@ -26,6 +27,7 @@ function App() {
           <NavBar />
           <Switch>
             <Route path="/" exact component={Login} />
+            <Route path="/profile" exact component={Profile} />
             <Route path="/home" exact component={Home} />
             <Route path="/registration" exact component={Registration} />
             <Route path="/filepicker" exact component={FilePickerScreen} />
