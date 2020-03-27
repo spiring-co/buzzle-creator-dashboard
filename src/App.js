@@ -1,10 +1,13 @@
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import Home from "./pages/Home";
-import Login from "./services/Login";
-import Registration from "./pages/register";
-import React, { useState } from "react";
+import React from "react";
+import { Link, Route, BrowserRouter as Router, Switch } from "react-router-dom";
+import useApi from "services/api";
+
 import FilePickerScreen from "./pages/FilePickerScreen";
 import FormBuilderScreen from "./pages/FormBuilderScreen";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Registration from "./pages/Register";
+
 // FilePickerScreen and FormSchemaBuilder
 //Just to Show working, will be removed when work with the flow
 const NavBar = () => (

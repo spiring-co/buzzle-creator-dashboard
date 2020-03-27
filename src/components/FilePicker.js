@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
-export default function FilePicker() {
+import React, { useState } from "react";
+export default () => {
   const [file, setFile] = useState(null);
+
   const pickFile = e => {
     try {
       const file = e.target.files[0];
@@ -58,4 +59,4 @@ export default function FilePicker() {
       />
     </label>
   );
-}
+};
