@@ -1,6 +1,5 @@
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import Home from "./pages/Home";
-import Login from "./services/Login";
 import Registration from "./pages/register";
 import React from "react";
 import FilePickerScreen from "./pages/FilePickerScreen";
@@ -23,7 +22,7 @@ function App() {
         <div className="App">
           <NavBar />
           <Switch>
-            <Route path="/" exact component={Login} />
+            {/* <Route path="/" exact component={Login} /> */}
             <Route path="/home" exact component={Home} />
             <Route path="/registration" exact component={Registration} />
             <Route path="/filepicker" exact component={FilePickerScreen} />

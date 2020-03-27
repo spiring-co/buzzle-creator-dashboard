@@ -1,10 +1,9 @@
 import React from "react";
 
-function Home() {
+export default () => {
   return (
     <div>
       <h1> Hello creator! 👨🏻‍🎨</h1>
     </div>
   );
 }
-export default Home;
