@@ -42,27 +42,22 @@ function Login() {
         } else {
           setErr(ResIsOk);
           console.log(ResIsOk);
-          console.log(err);
         }
       })
       .catch(error => {
         console.error("Error:", error);
       });
   };
-
-  const errorDisplay = () => {
-    if (err != 200) {
-      return (
-        <div>
-          <strong>Danger!</strong> error{err}
-        </div>
-      );
-    }
-  };
+  if (err != 200 && err != 0) {
+    return(
+      <div>
+        <strong>Danger!</strong> error : {err}
+      </div>
+    )
+  }
 
   return (
     <div>
-      <errorDisplay />
       <h1> Creator Dashboard</h1>
       <form onSubmit={handleSubmit}>
         <div>

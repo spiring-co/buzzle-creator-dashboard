@@ -5,6 +5,7 @@ import Registration from "./pages/register";
 import React from "react";
 import FilePickerScreen from "./pages/FilePickerScreen";
 import FormBuilderScreen from "./pages/FormBuilderScreen";
+
 // FilePickerScreen and FormSchemaBuilder
 //Just to Show working, will be removed when work with the flow
 const NavBar = () => (
