@@ -27,7 +27,14 @@ function App() {
           </button>
         )}
         <Link to="/home">
-          <h1>Pharaoh 🐈</h1>
+          <h1>
+            <img
+              src={require("./assets/logo.png")}
+              style={{ height: "2rem", margin: "0px 10px 10px 0px" }}
+              alt="Pharaoh Logo"
+            />
+            Pharaoh
+          </h1>
         </Link>
         <div className="App">
           <Switch>

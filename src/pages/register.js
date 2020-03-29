@@ -55,8 +55,8 @@ export default () => {
   return (
     <div>
       <p>
-        Welcome to pharaoh please login to continue, if you don't have an
-        account <Link to="/login">click here to login.</Link>
+        Welcome to <mark>pharaoh</mark> please login to continue, if you don't
+        have an account <Link to="/login">click here to login.</Link>
       </p>
       <form onSubmit={handleSubmit}>
         <label>Name </label>
