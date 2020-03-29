@@ -21,16 +21,13 @@ function App() {
   return (
     <div style={{ margin: "auto", width: "65%", marginBottom: "100px" }}>
       <Router>
+        {isAuthenticated && (
+          <button style={{ float: "right", display: "block" }} onClick={logout}>
+            Logout
+          </button>
+        )}
         <Link to="/home">
           <h1>Pharaoh 🐈</h1>
-          {isAuthenticated && (
-            <button
-              style={{ float: "right", display: "block" }}
-              onClick={logout}
-            >
-              Logout
-            </button>
-          )}
         </Link>
         <div className="App">
           <Switch>
@@ -39,7 +36,7 @@ function App() {
             <Route path="/register" exact component={Register} />
 
             <PrivateRoute isAuthenticated={isAuthenticated}>
-              <Route path="/home" exact component={Home} />
+              <Route path="/home" component={Home} />
             </PrivateRoute>
           </Switch>
         </div>

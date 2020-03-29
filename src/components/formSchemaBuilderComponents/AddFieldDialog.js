@@ -279,7 +279,7 @@ export default function AddFieldDialog(props) {
   };
 
   return (
-    <dialog open>
+    <dialog open style={{ margin: "auto", zIndex: 999 }}>
       <p>Add Field to {props.name} </p>
       <label for="type">Input Type : </label>
       <select

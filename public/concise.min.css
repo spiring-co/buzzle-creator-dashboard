@@ -1,12 +1,3 @@
-@charset "UTF-8";
-/**
- * ConciseCSS v4.1.2
- * https://github.com/ConciseCSS/concise.css
- *
- * Copyright 2016 James Kolce, Keenan Payne and ConciseCSS Contributors
- * Released under the MIT license
- * http://opensource.org/licenses/MIT
- */
 article,
 aside,
 details,
@@ -379,6 +370,9 @@ input[type="submit"]:focus {
   background-color: #da5a3b;
   text-decoration: none;
   outline: none;
+}
+.active {
+  text-decoration: underline;
 }
 button:active,
 input[type="submit"]:active {
