@@ -1,25 +1,36 @@
+import { useFormik } from "formik";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { login } from "services/auth";
+import useAuth from "services/auth";
+import * as Yup from "yup";
 
 export default () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-
-  const handleSubmit = async s => {
-    s.preventDefault();
-    const { target: { elements } = {} } = s;
-
-    try {
-      setLoading(true);
-      await login(elements["email"].value, elements["password"].value);
-      window.location = "/home";
-    } catch (e) {
-      setError(e);
-    } finally {
-      setLoading(false);
+  const { login } = useAuth();
+  const { handleChange, handleSubmit, values, errors, touched } = useFormik({
+    initialValues: {
+      email: "shivam.sasalol@yahoo.com",
+      password: "password"
+    },
+    validationSchema: Yup.object({
+      email: Yup.string()
+        .email("Invalid email address")
+        .required("Email is Required"),
+      password: Yup.string().required("Password is Required")
+    }),
+    onSubmit: async ({ email, password }) => {
+      try {
+        setLoading(true);
+        await login(email, password);
+        window.location = "/home";
+      } catch (e) {
+        setError(e);
+      } finally {
+        setLoading(false);
+      }
     }
-  };
+  });
 
   return (
     <div>
@@ -29,13 +40,31 @@ export default () => {
           an account <Link to="/register">click here to register.</Link>
         </p>
         {loading && <p>Logging you in...</p>}
-        <p style={{ color: "red" }}>{error?.message}</p>
+        {error && <p style={{ color: "red" }}>Error: {error?.message}</p>}
         <div>
           <label>Email </label>
-          <input type="text" placeholder="Enter email" name="email" />
+          <input
+            type="text"
+            placeholder="Enter email"
+            name="email"
+            value={values.email}
+            onChange={handleChange}
+          />
+          {touched.email && errors.email ? (
+            <p style={{ color: "red" }}>{errors.email}</p>
+          ) : null}
           <br />
           <label>Password </label>
-          <input type="password" placeholder="Enter password" name="password" />
+          <input
+            type="password"
+            placeholder="Enter password"
+            name="password"
+            value={values.password}
+            onChange={handleChange}
+          />
+          {touched.password && errors.password ? (
+            <p style={{ color: "red" }}>{errors.password}</p>
+          ) : null}
         </div>
         <br />
         <button type="submit">Login</button>
