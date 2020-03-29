@@ -56,7 +56,7 @@ export default () => {
     <div>
       <p>
         Welcome to pharaoh please login to continue, if you don't have an
-        account <Link to="/">click here to login.</Link>
+        account <Link to="/login">click here to login.</Link>
       </p>
       <form onSubmit={handleSubmit}>
         <label>Name </label>
