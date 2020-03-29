@@ -13,7 +13,6 @@ export default () => {
   }
   return (
     <div>
-      <h3>Your profile & settings.</h3>
       <p>
         <b>Name </b>
         {data?.name}

@@ -5,8 +5,6 @@ import { Link } from "react-router-dom";
 const config = { hostUrl: "http://pharaoh-api.herokuapp.com/creator" };
 
 export default () => {
-  let ResIsOk = {};
-
   const handleSubmit = s => {
     s.preventDefault();
 
@@ -55,8 +53,8 @@ export default () => {
   return (
     <div>
       <p>
-        Welcome to <mark>pharaoh</mark> please login to continue, if you don't
-        have an account <Link to="/login">click here to login.</Link>
+        Welcome to pharaoh please login to continue, if you don't have an
+        account <Link to="/login">click here to login.</Link>
       </p>
       <form onSubmit={handleSubmit}>
         <label>Name </label>

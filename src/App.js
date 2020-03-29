@@ -2,7 +2,7 @@ import Home from "pages/Home";
 import Landing from "pages/Landing";
 import Login from "pages/Login";
 import Register from "pages/Register";
-import React, { useEffect } from "react";
+import React from "react";
 import {
   Link,
   Redirect,
@@ -19,34 +19,30 @@ function App() {
   const { logout, isAuthenticated } = useAuth();
 
   return (
-    <div style={{ margin: "auto", width: "65%", marginBottom: "100px" }}>
+    <div style={{ margin: "auto", width: "65%" }}>
       <Router>
         {isAuthenticated && (
           <button style={{ float: "right", display: "block" }} onClick={logout}>
             Logout
           </button>
         )}
-        <Link to="/home">
-          <h1>
-            <img
-              src={require("./assets/logo.png")}
-              style={{ height: "2rem", margin: "0px 10px 10px 0px" }}
-              alt="Pharaoh Logo"
-            />
-            Pharaoh
-          </h1>
-        </Link>
-        <div className="App">
-          <Switch>
-            <Route exact path="/" component={Landing} />
-            <Route path="/login" exact component={Login} />
-            <Route path="/register" exact component={Register} />
+        <h1>
+          <img
+            src={require("./assets/logo.png")}
+            style={{ height: "2rem", margin: "0px 10px 10px 0px" }}
+            alt="Pharaoh Logo"
+          />
+          <Link to="/home">Pharaoh</Link>
+        </h1>
+        <Switch>
+          <Route exact path="/" component={Landing} />
+          <Route path="/login" exact component={Login} />
+          <Route path="/register" exact component={Register} />
 
-            <PrivateRoute isAuthenticated={isAuthenticated}>
-              <Route path="/home" component={Home} />
-            </PrivateRoute>
-          </Switch>
-        </div>
+          <PrivateRoute isAuthenticated={isAuthenticated}>
+            <Route path="/home" component={Home} />
+          </PrivateRoute>
+        </Switch>
       </Router>
     </div>
   );

@@ -214,6 +214,7 @@ svg:not(:root) {
 }
 
 a {
+  margin-right: 10px;
   background-color: transparent;
   -webkit-text-decoration-skip: objects;
   color: #d34a28;
@@ -348,7 +349,9 @@ input[type="range"]::range-thumb {
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
 }
-
+#root {
+  min-height: 70vh;
+}
 button,
 input[type="submit"] {
   background-color: #d34a28;
@@ -372,7 +375,7 @@ input[type="submit"]:focus {
   outline: none;
 }
 .active {
-  text-decoration: underline;
+  background-color: antiquewhite;
 }
 button:active,
 input[type="submit"]:active {
@@ -965,6 +968,7 @@ table caption {
     width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
+    min-height: 100vh;
   }
   h1,
   h2,
