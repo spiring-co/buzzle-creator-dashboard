@@ -235,7 +235,7 @@ export default function AddFieldDialog(props) {
     switch (type) {
       case "custom_text_input":
         return textLayers.map((item, index) => {
-          if (!props.usedFields.includes(item)) {
+          if (props.usedFields.includes(item)) {
             return false;
           }
           return (
@@ -284,12 +284,17 @@ export default function AddFieldDialog(props) {
           setType(e.target.value);
         }}
       >
-        <option value="" disabled selected>
+        <option value="" disabled selected={type === null ? true : false}>
           Select Input Type
         </option>
         {inputTypes.map((item, index) => {
           return (
-            <option key={index} value={item.value}>
+            <option
+              key={index}
+              disabled={type === item ? true : false}
+              selected={type === item ? true : false}
+              value={item.value}
+            >
               {item.label}
             </option>
           );
@@ -305,7 +310,7 @@ export default function AddFieldDialog(props) {
           }}
         >
           <option value="" disabled selected>
-            Select Field
+            {name === null ? "Select Field" : name}
           </option>
           {fieldsSelector()}
         </select>

@@ -1,13 +1,16 @@
 import Segment from "components/formSchemaBuilderComponents/Segment.js";
 import { useActions } from "contextStore/actions";
 import { StateProvider, store } from "contextStore/store";
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 
-function FormSchemaBuilder() {
+function FormSchemaBuilder(props) {
   const { state } = useContext(store);
-  const { addSection } = useActions();
+  const { addSection, resetSegment } = useActions();
   const [activeIndex, setActiveIndex] = useState(0);
   const [usedFields, setUsedFields] = useState([]);
+  useEffect(() => {
+    resetSegment();
+  }, []);
   const addSegment = () => {
     setActiveIndex(activeIndex + 1);
     addSection();
@@ -20,6 +23,9 @@ function FormSchemaBuilder() {
     setActiveIndex(activeIndex + 1);
   };
 
+  const handleSubmitForm = async () => {
+    props.submitForm(state);
+  };
   return (
     <div style={{ textAlign: "center" }}>
       <div>
@@ -45,18 +51,17 @@ function FormSchemaBuilder() {
       <div>
         <button onClick={addSegment}>Add Section</button>
         <span> </span>
-        <button onClick={() => console.log(state[activeIndex])}>
-          show state
-        </button>
+        <br />
+        <button onClick={handleSubmitForm}>Submit Form</button>
       </div>
     </div>
   );
 }
 
-export default function FormBuilderScreen() {
+export default function FormBuilderScreen(props) {
   return (
     <StateProvider>
-      <FormSchemaBuilder />
+      <FormSchemaBuilder {...props} />
     </StateProvider>
   );
 }
