@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { CountryList } from "./CountryList.jsx";
+import { CountryList } from "components/CountryList";
+import React, {useState} from "react";
+import { Link } from "react-router-dom";
 
 const config = { hostUrl: "http://pharaoh-api.herokuapp.com/creator" };
 function Registration() {
@@ -40,15 +41,8 @@ function Registration() {
       body: JSON.stringify(data)
     })
       .then(response => {
-        response.text();
-        ResIsOk = response.status;
-      })
-      .then(data => {
-        console.log("Success:", data);
-        if (ResIsOk == 200) {
-          return window.location.assign("/login");
-        } else {
-          setErr(ResIsOk);
+        if (response.ok) {
+          return window.location.assign("/");
         }
       })
       .catch(error => {
@@ -58,36 +52,55 @@ function Registration() {
 
   return (
     <div>
-      <h1> register please</h1>
-      {/* <h1> {err}</h1> */}
+      <p>
+        Welcome to pharaoh please login to continue, if you don't have an
+        account <Link to="/login">click here to login.</Link>
+      </p>
       <form onSubmit={handleSubmit}>
+        <label>Name </label>
         <input type="text" placeholder="Enter your name" name="creatorName" />
+        <br />
+        <label>Email </label>
         <input type="text" placeholder="Enter your email" name="email" />
+        <br />
+        <label>Password </label>
         <input type="password" placeholder="Enter password" name="password" />
+        <br />
+        <label>Country Code </label>
         <input
           type="number"
           placeholder="Enter your country code number"
           name="countryCode"
         />
+        <br />
+        <label>Phone Number </label>
         <input
           type="number"
           placeholder="Enter your phone number"
           name="phoneNumber"
         />
+        <br />
+        <label>Birth Date </label>
         <input
           type="date"
           placeholder="Enter your birth date"
           name="birthDate"
         />
         {/* <input type="text" placeholder="Enter your Country" name="country" /> */}
+        <br />
         <CountryList name="country" />
-        <label for="gender">Choose your gender:</label>
+        <br />
+        <label>Gender </label>
         <select id="gender" name="gender">
           <option value="Male">male</option>
           <option value="Female">female</option>
           <option value="Other">other</option>
         </select>
-        <button type="submit">register</button>
+        <br />
+
+        <button className="-bordered" type="submit">
+          Register
+        </button>
       </form>
     </div>
   );
