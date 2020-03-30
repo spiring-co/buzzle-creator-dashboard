@@ -1,4 +1,4 @@
-import FormBuilder from "components/FormBuilder";
+import FormBuilder from "components/formSchemaBuilderComponents/FormBuilder";
 import React from "react";
 import { useHistory } from "react-router-dom";
 import useApi from "services/api";

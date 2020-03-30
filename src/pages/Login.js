@@ -1,11 +1,10 @@
 import { useFormik } from "formik";
 import React, { useState } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 import useAuth from "services/auth";
 import * as Yup from "yup";
 
 export default () => {
-  let history = useHistory();
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -25,7 +24,7 @@ export default () => {
       try {
         setLoading(true);
         await login(email, password);
-        history.push("/home");
+        window.location = "/home";
       } catch (e) {
         setError(e);
       } finally {
