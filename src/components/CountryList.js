@@ -3,7 +3,7 @@ import React from "react";
 export const CountryList = () => {
   return (
     <div>
-      <label for="country">Country</label>
+      <label for="country">Country </label>
       <select id="country" name="country" class="form-control">
         <option value="Afghanistan">Afghanistan</option>
         <option value="Åland Islands">Åland Islands</option>
@@ -295,4 +295,3 @@ export const CountryList = () => {
     </div>
   );
 };
-

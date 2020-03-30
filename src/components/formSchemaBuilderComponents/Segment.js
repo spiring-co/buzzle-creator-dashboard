@@ -1,7 +1,8 @@
-import React, { useState, useContext, useEffect } from "react";
-import AddFields from "./AddFieldDialog";
+import React, { useContext, useEffect, useState } from "react";
+
 import { useActions } from "../../contextStore/actions";
 import { store } from "../../contextStore/store";
+import AddFields from "./AddFieldDialog";
 
 function Segment({ activeIndex, prevSegment, usedFields, setUsedFields }) {
   const { state } = useContext(store);
@@ -228,13 +229,11 @@ function Segment({ activeIndex, prevSegment, usedFields, setUsedFields }) {
 const styles = {
   input: { padding: 5, margin: 5 },
   container: {
-    display: "flex",
     border: "1px solid black",
-    margin: 15,
     width: "50%",
     height: "100%",
-    padding: 15,
-    flexDirection: "column"
+    margin: "auto",
+    padding: 15
   },
   field: { border: "3px solid black", padding: 15, margin: 15 }
 };

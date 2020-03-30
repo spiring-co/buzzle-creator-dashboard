@@ -4,7 +4,8 @@ import {
   REMOVE_SEGMENT,
   REMOVE_FIELD,
   EDIT_SEGMENT_KEYS,
-  SWAP_SEGMENT_FIELDS
+  SWAP_SEGMENT_FIELDS,
+  RESET_STATE
 } from "./Reducer";
 import { store } from "./store";
 
@@ -13,6 +14,10 @@ export function useActions() {
 
   function addSection() {
     dispatch({ type: ADD_SEGMENT, payload: state });
+  }
+
+  function resetSegment() {
+    dispatch({ type: RESET_STATE });
   }
 
   function setSegmentKeys(activeIndex, value) {
@@ -68,6 +73,7 @@ export function useActions() {
     addSegmentField,
     editSegmentField,
     removeSegment,
-    removeField
+    removeField,
+    resetSegment
   };
 }

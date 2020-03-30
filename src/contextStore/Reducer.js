@@ -5,6 +5,7 @@ export const EDIT_SEGMENT_KEYS = "EDIT_SEGMENT_KEYS";
 export const SET_ACTIVE_INDEX = "SET_ACTIVE_INDEX";
 export const REMOVE_FIELD = "REMOVE_FIELD";
 export const SWAP_SEGMENT_FIELDS = "SWAP_SEGMENT_FIELDS";
+export const RESET_STATE = "RESET_STATE";
 export function segmentReducer(state, action) {
   switch (action.type) {
     case ADD_SEGMENT:
@@ -45,6 +46,15 @@ export function segmentReducer(state, action) {
         state[activeIndex].fields[swapIndex]
       ];
       return state;
+    case RESET_STATE:
+      return [
+        {
+          title: "",
+          subtitle: "",
+          illustration: "",
+          fields: []
+        }
+      ];
     default:
       throw new Error();
   }
