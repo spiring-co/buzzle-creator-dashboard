@@ -25,6 +25,7 @@ const CreatorVideoTemplates = () => {
     "/creator/sjjsjjjkaaaa/videoTemplates"
   );
   console.log(data);
+
   if (loading) return <p>Loading your templates...</p>;
   if (error) return <p>Error: {error.message}</p>;
   return (
@@ -39,20 +40,24 @@ const CreatorVideoTemplates = () => {
           <th>Title</th>
           <th>Description</th>
         </tr>
-        {data.map(t => (
-          <tr>
-            <Link
-              to={{
-                pathname: `${url}/${t._id}`,
-                state: { videoTemplateId: t.videoTemplateId }
-              }}
-            >
-              <td>{t._id}</td>
-            </Link>
-            <td>{t.title}</td>
-            <td>{t.description}</td>
-          </tr>
-        ))}
+        {data.map((t, index) => {
+          if (!t.isDeleted) {
+            return (
+              <tr>
+                <Link
+                  to={{
+                    pathname: `${url}/${t._id}`,
+                    state: { video: t }
+                  }}
+                >
+                  <td>{t._id}</td>
+                </Link>
+                <td>{t.title}</td>
+                <td>{t.description}</td>
+              </tr>
+            );
+          }
+        })}
       </table>
     </div>
   );
