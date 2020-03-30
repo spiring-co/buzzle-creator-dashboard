@@ -1,7 +1,6 @@
 import { useFormik } from "formik";
 import React, { useState } from "react";
-
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import useAuth from "services/auth";
 import * as Yup from "yup";
 
@@ -26,13 +25,12 @@ export default () => {
       try {
         setLoading(true);
         await login(email, password);
-        window.location = "/home";
+        history.push("/home");
       } catch (e) {
         setError(e);
       } finally {
         setLoading(false);
       }
-
     }
   });
 

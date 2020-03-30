@@ -3,12 +3,12 @@ import Orders from "pages/Orders";
 import Profile from "pages/Profile";
 import VideoTemplates from "pages/VideoTemplates";
 import React from "react";
-
 import { NavLink, Route, Switch, useRouteMatch } from "react-router-dom";
+
 function Home() {
   let { path, url } = useRouteMatch();
   return (
-
+    <div>
       <div>
         <NavLink to={`${url}/profile`}>
           <h3 style={{ display: "inline" }}>Your Profile and Settings</h3>
@@ -20,7 +20,6 @@ function Home() {
           <h3 style={{ display: "inline" }}>Your Orders</h3>
         </NavLink>
       </div>
-      <br />
       <Switch>
         <Route path={`${path}/`} exact component={Dashboard} />
         <Route path={`${path}/profile`} component={Profile} />
