@@ -1,10 +1,12 @@
 import { useFormik } from "formik";
 import React, { useState } from "react";
+
 import { Link } from "react-router-dom";
 import useAuth from "services/auth";
 import * as Yup from "yup";
 
 export default () => {
+  let history = useHistory();
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -30,6 +32,7 @@ export default () => {
       } finally {
         setLoading(false);
       }
+
     }
   });
 
