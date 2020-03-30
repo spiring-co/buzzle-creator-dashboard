@@ -20,8 +20,8 @@ export default () => {
     if (!response.ok) {
       throw new Error((await response.json()).message);
     }
-    const jwtoken = await response.text();
-    localStorage.setItem("jwtoken", jwtoken);
+    const jwtoken = await response.json();
+    localStorage.setItem("jwtoken", jwtoken[0]);
     setIsAuthenticated(true);
 
     return jwtoken;

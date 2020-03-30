@@ -39,8 +39,6 @@ export default () => {
       );
       setLoading(false);
       if (response.ok) {
-        console.log(response);
-
         history.push("/home/videoTemplates");
       }
     } catch (err) {
