@@ -12,6 +12,7 @@ export default () => {
       <Switch>
         <Route path={`${path}/`} exact component={CreatorVideoTemplates} />
         <Route path={`${path}/add`} component={AddVideoTemplate} />
+        <Route path={`${path}/:uid/edit`} component={AddVideoTemplate} />
         <Route path={`${path}/:uid`} component={VideoTemplate} />
       </Switch>
     </div>
@@ -30,7 +31,15 @@ const CreatorVideoTemplates = () => {
   if (error) return <p>Error: {error.message}</p>;
   return (
     <div>
-      <Link to={`${url}/add`}>
+      <Link
+        to={{
+          pathname: `${url}/add`,
+          state: {
+            edit: false,
+            video: null
+          }
+        }}
+      >
         <button>+ Add Template</button>
       </Link>
       <br />

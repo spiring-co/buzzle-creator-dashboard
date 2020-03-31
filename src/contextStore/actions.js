@@ -6,7 +6,8 @@ import {
   REMOVE_FIELD,
   REMOVE_SEGMENT,
   RESET_STATE,
-  SWAP_SEGMENT_FIELDS
+  SWAP_SEGMENT_FIELDS,
+  LOAD_STATE
 } from "./Reducer";
 import { SegmentsContext } from "./store";
 
@@ -61,6 +62,9 @@ export default function useActions() {
           }
         }
       });
+    },
+    loadSegment: function(segments) {
+      dispatch({ type: LOAD_STATE, payload: segments });
     },
     swapFields: function(activeIndex, swapIndex, targetSwapIndex) {
       dispatch({

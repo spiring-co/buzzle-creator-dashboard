@@ -6,7 +6,7 @@ export const SET_ACTIVE_INDEX = "SET_ACTIVE_INDEX";
 export const REMOVE_FIELD = "REMOVE_FIELD";
 export const SWAP_SEGMENT_FIELDS = "SWAP_SEGMENT_FIELDS";
 export const RESET_STATE = "RESET_STATE";
-
+export const LOAD_STATE = "LOAD_STATE";
 const BLANK_SEGMENT = {
   title: "",
   fields: []
@@ -56,7 +56,11 @@ export default (state, action) => {
         state[activeIndex].fields[swapIndex]
       ];
       return state;
-    //payload: null
+    // load segments to edit , payload = segments
+    case LOAD_STATE:
+      console.log("load state", action.payload);
+      return action.payload;
+    //payload: nul
     case RESET_STATE:
       return [BLANK_SEGMENT];
     default:

@@ -5,19 +5,16 @@ import React, { useContext, useEffect, useState } from "react";
 
 const MAX_SEGMENT_COUNT = 5;
 
-function FormBuilder({ submitForm }) {
+function FormBuilder({ submitForm, edit, video }) {
   const [segments] = useContext(SegmentsContext);
-  const { addSegment, resetSegment, removeSegment } = useActions();
+  console.log(segments);
+  const { addSegment, resetSegment, loadSegment, removeSegment } = useActions();
   const [activeIndex, setActiveIndex] = useState(0);
   const [usedFields, setUsedFields] = useState([]);
 
   useEffect(() => {
-    resetSegment();
-  }, []);
-
-  useEffect(() => {
-    console.log("rerendering");
-  }, [segments.length]);
+    edit ? loadSegment(video) : resetSegment();
+  }, [segments]);
 
   const _addSegment = () => {
     addSegment();
