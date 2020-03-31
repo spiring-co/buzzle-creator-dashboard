@@ -1,20 +1,17 @@
 import React, { createContext, useReducer } from "react";
-import { segmentReducer } from "./Reducer";
-const initialState = [
-  {
-    title: "",
-    subtitle: "",
-    illustration: "",
-    fields: []
-  }
-];
-const store = createContext(initialState);
-const { Provider } = store;
+
+import segmentReducer from "./reducer";
+
+const SegmentsContext = createContext();
 
 const StateProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(segmentReducer, initialState);
+  const [state, dispatch] = useReducer(segmentReducer, [
+    { title: "", fields: [] }
+  ]);
 
-  return <Provider value={{ state, dispatch }}>{children}</Provider>;
+  return (
+    <SegmentsContext.Provider value={[state, dispatch]} children={children} />
+  );
 };
 
-export { store, StateProvider };
+export { SegmentsContext, StateProvider };

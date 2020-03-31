@@ -1,9 +1,34 @@
+import Dashboard from "pages/Dashboard";
+import Orders from "pages/Orders";
+import Profile from "pages/Profile";
+import VideoTemplates from "pages/VideoTemplates";
 import React from "react";
+import { NavLink, Route, Switch, useRouteMatch } from "react-router-dom";
+
 
 export default () => {
+
+  let { path, url } = useRouteMatch();
+
   return (
     <div>
-      <h1> Hello creator! 👨🏻‍🎨</h1>
+      <div>
+        <NavLink to={`${url}/profile`}>
+          <h3 style={{ display: "inline" }}>Your Profile and Settings</h3>
+        </NavLink>
+        <NavLink to={`${url}/videoTemplates`}>
+          <h3 style={{ display: "inline" }}>Your Video Templates</h3>
+        </NavLink>
+        <NavLink to={`${url}/orders`}>
+          <h3 style={{ display: "inline" }}>Your Orders</h3>
+        </NavLink>
+      </div>
+      <Switch>
+        <Route path={`${path}/`} exact component={Dashboard} />
+        <Route path={`${path}/profile`} component={Profile} />
+        <Route path={`${path}/videoTemplates`} component={VideoTemplates} />
+        <Route path={`${path}/orders`} component={Orders} />
+      </Switch>
     </div>
   );
 }

@@ -1,73 +1,72 @@
 import React from "react";
+
 import {
   ADD_SEGMENT,
-  REMOVE_SEGMENT,
-  REMOVE_FIELD,
   EDIT_SEGMENT_KEYS,
+  REMOVE_FIELD,
+  REMOVE_SEGMENT,
+  RESET_STATE,
   SWAP_SEGMENT_FIELDS
-} from "./Reducer";
-import { store } from "./store";
+} from "./reducer";
+import { SegmentsContext } from "./store";
 
-export function useActions() {
-  const { dispatch, state } = React.useContext(store);
+export default function useActions() {
+  const [state, dispatch] = React.useContext(SegmentsContext);
 
-  function addSection() {
-    dispatch({ type: ADD_SEGMENT, payload: state });
-  }
-
-  function setSegmentKeys(activeIndex, value) {
-    dispatch({
-      type: EDIT_SEGMENT_KEYS,
-      payload: { activeIndex, value }
-    });
-  }
-
-  function addSegmentField(activeIndex, value) {
-    dispatch({
-      type: EDIT_SEGMENT_KEYS,
-      payload: {
-        activeIndex,
-        value: { fields: [...state[activeIndex].fields, value] }
-      }
-    });
-  }
-  function removeSegment(activeIndex) {
-    dispatch({ type: REMOVE_SEGMENT, payload: activeIndex });
-  }
-  function removeField(activeIndex, fieldIndex) {
-    dispatch({
-      type: REMOVE_FIELD,
-      payload: {
-        activeIndex,
-        fieldIndex
-      }
-    });
-  }
-  function editSegmentField(activeIndex, value, editIndex) {
-    const fields = (state[activeIndex].fields[editIndex] = value);
-    dispatch({
-      type: EDIT_SEGMENT_KEYS,
-      payload: {
-        activeIndex,
-        value: {
-          ...fields
-        }
-      }
-    });
-  }
-  function swapFields(activeIndex, swapIndex, targetSwapIndex) {
-    dispatch({
-      type: SWAP_SEGMENT_FIELDS,
-      payload: { activeIndex, swapIndex, targetSwapIndex }
-    });
-  }
   return {
-    swapFields,
-    addSection,
-    setSegmentKeys,
-    addSegmentField,
-    editSegmentField,
-    removeSegment,
-    removeField
+    addSegment: function() {
+      dispatch({ type: ADD_SEGMENT });
+    },
+
+    resetSegment: function() {
+      dispatch({ type: RESET_STATE });
+    },
+
+    setSegmentKeys: function(activeIndex, value) {
+      dispatch({
+        type: EDIT_SEGMENT_KEYS,
+        payload: { activeIndex, value }
+      });
+    },
+
+    addSegmentField: function(activeIndex, value) {
+      dispatch({
+        type: EDIT_SEGMENT_KEYS,
+        payload: {
+          activeIndex,
+          value: { fields: [...state[activeIndex].fields, value] }
+        }
+      });
+    },
+    removeSegment: function(activeIndex) {
+      dispatch({ type: REMOVE_SEGMENT, payload: activeIndex });
+    },
+    removeField: function(activeIndex, fieldIndex) {
+      dispatch({
+        type: REMOVE_FIELD,
+        payload: {
+          activeIndex,
+          fieldIndex
+        }
+      });
+    },
+    editSegmentField: function(activeIndex, value, editIndex) {
+      const fields = (state[activeIndex].fields[editIndex] = value);
+      dispatch({
+        type: EDIT_SEGMENT_KEYS,
+        payload: {
+          activeIndex,
+          value: {
+            ...fields
+          }
+        }
+      });
+    },
+    swapFields: function(activeIndex, swapIndex, targetSwapIndex) {
+      dispatch({
+        type: SWAP_SEGMENT_FIELDS,
+        payload: { activeIndex, swapIndex, targetSwapIndex }
+      });
+    }
   };
 }

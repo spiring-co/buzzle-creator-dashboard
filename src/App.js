@@ -1,37 +1,73 @@
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import Home from "./pages/Home";
-import Registration from "./pages/register";
-import React from "react";
-import FilePickerScreen from "./pages/FilePickerScreen";
-import FormBuilderScreen from "./pages/FormBuilderScreen";
 
-// FilePickerScreen and FormSchemaBuilder
-//Just to Show working, will be removed when work with the flow
-const NavBar = () => (
-  <div>
-    <Link to="/home">Home</Link>
-    <Link to="/registration">Register</Link>
-    <Link to="/">Login</Link>
-  </div>
-);
+import Home from "pages/Home";
+import Landing from "pages/Landing";
+import Login from "pages/Login";
+import Register from "pages/Register";
+import React from "react";
+
+import {
+  Link,
+  Redirect,
+  Route,
+  BrowserRouter as Router,
+  Switch
+} from "react-router-dom";
+import useAuth from "services/auth";
+
 function App() {
+  const { logout, isAuthenticated } = useAuth();
+
   return (
-    <div>
-      <h1>Pharaoh 🐈</h1>
+    <div style={{ margin: "auto", width: "65%" }}>
       <Router>
-        <div className="App">
-          <NavBar />
-          <Switch>
-            {/* <Route path="/" exact component={Login} /> */}
-            <Route path="/home" exact component={Home} />
-            <Route path="/registration" exact component={Registration} />
-            <Route path="/filepicker" exact component={FilePickerScreen} />
-            <Route path="/formbuilder" exact component={FormBuilderScreen} />
-          </Switch>
-        </div>
+
+
+        {isAuthenticated && (
+          <button style={{ float: "right", display: "block" }} onClick={logout}>
+            Logout
+          </button>
+        )}
+        <h1>
+          <img
+            src={require("./assets/logo.png")}
+            style={{ height: "2rem", margin: "0px 10px 10px 0px" }}
+            alt="Pharaoh Logo"
+          />
+          <Link to="/home">Pharaoh</Link>
+        </h1>
+        <Switch>
+          <Route exact path="/" component={Landing} />
+          <Route path="/login" exact component={Login} />
+          <Route path="/register" exact component={Register} />
+
+          <PrivateRoute isAuthenticated={isAuthenticated}>
+            <Route path="/home" component={Home} />
+          </PrivateRoute>
+        </Switch>
+
+
       </Router>
     </div>
   );
 }
 
+function PrivateRoute({ isAuthenticated, children, ...rest }) {
+  return (
+    <Route
+      {...rest}
+      render={({ location }) =>
+        isAuthenticated ? (
+          children
+        ) : (
+          <Redirect
+            to={{
+              pathname: "/login",
+              state: { from: location }
+            }}
+          />
+        )
+      }
+    />
+  );
+}
 export default App;
