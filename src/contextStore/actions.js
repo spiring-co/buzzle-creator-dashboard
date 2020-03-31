@@ -7,7 +7,7 @@ import {
   REMOVE_SEGMENT,
   RESET_STATE,
   SWAP_SEGMENT_FIELDS
-} from "./reducer";
+} from "./Reducer";
 import { SegmentsContext } from "./store";
 
 export default function useActions() {
