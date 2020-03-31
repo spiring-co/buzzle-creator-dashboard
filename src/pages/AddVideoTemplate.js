@@ -39,8 +39,7 @@ export default () => {
       );
       setLoading(false);
       if (response.ok) {
-        console.log(response);
-
+        console.log("helloo new added", response);
         history.push("/home/videoTemplates");
       }
     } catch (err) {
