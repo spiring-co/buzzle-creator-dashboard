@@ -101,8 +101,8 @@ export default ({ activeIndex, usedFields, setUsedFields }) => {
 };
 const styles = {
   container: {
-    boxShadow: "1px 1px 10px 0.5px lightgrey",
-    borderRadius: "10px",
+    borderRadius: 10,
+    border: "1px solid black",
     margin: "auto",
     padding: 15
   },
