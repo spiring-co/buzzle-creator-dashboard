@@ -5,8 +5,11 @@ import VideoTemplates from "pages/VideoTemplates";
 import React from "react";
 import { NavLink, Route, Switch, useRouteMatch } from "react-router-dom";
 
-function Home() {
+
+export default () => {
+
   let { path, url } = useRouteMatch();
+
   return (
     <div>
       <div>
@@ -29,4 +32,3 @@ function Home() {
     </div>
   );
 }
-export default Home;
