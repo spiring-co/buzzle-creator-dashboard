@@ -1,3 +1,4 @@
+
 import Home from "pages/Home";
 import Landing from "pages/Landing";
 import Login from "pages/Login";
@@ -19,6 +20,7 @@ function App() {
   return (
     <div style={{ margin: "auto", width: "65%" }}>
       <Router>
+
 
         {isAuthenticated && (
           <button style={{ float: "right", display: "block" }} onClick={logout}>
@@ -42,6 +44,7 @@ function App() {
             <Route path="/home" component={Home} />
           </PrivateRoute>
         </Switch>
+
 
       </Router>
     </div>
