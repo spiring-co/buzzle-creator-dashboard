@@ -12,7 +12,7 @@ import {
   LOAD_STATE,
   RESET_STATE,
   SWAP_SEGMENT_FIELDS
-} from "./Reducer";
+} from "./reducer";
 import { SegmentsContext } from "./store";
 
 export default function useActions() {

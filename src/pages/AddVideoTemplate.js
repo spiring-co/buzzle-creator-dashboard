@@ -3,6 +3,7 @@ import React from "react";
 import { Prompt, useHistory } from "react-router-dom";
 import useApi from "services/api";
 export default props => {
+  let [isBlocking, setIsBlocking] = React.useState(true);
   const { edit, video } = props?.location?.state ?? null;
   const videoTemplateId = video?.videoTemplateId ?? null;
   const history = useHistory();
@@ -37,6 +38,7 @@ export default props => {
           // to be handled in backend return the edited video object in response
           // const editedVideo = await response.json();
           // refresh the page with updated props
+          setIsBlocking(false);
           history.push({
             pathname: `/home/videoTemplates/${data.videoTemplateId}`,
             state: { video: data }
@@ -64,6 +66,7 @@ export default props => {
       );
       setLoading(false);
       if (response.ok) {
+        setIsBlocking(false);
         history.push("/home/videoTemplates");
       }
     } catch (err) {
@@ -76,7 +79,7 @@ export default props => {
   if (error) return <p>Error: {error.message}</p>;
   return (
     <div>
-      <Prompt when={true} message={`You will lose all your data.`} />
+      <Prompt when={isBlocking} message={`You will lose all your data.`} />
       <h4>{edit ? "Edit your Video Template" : "Add Video Template"}</h4>
       <hr />
       <FormBuilder
