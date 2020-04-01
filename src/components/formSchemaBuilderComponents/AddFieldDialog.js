@@ -22,22 +22,18 @@ export default function AddFieldDialog(props) {
   const [height, setHeight] = React.useState(props?.field?.height ?? 0);
   const [textLayers, setTextLayers] = React.useState([]);
   const [imageLayers, setImageLayers] = React.useState([]);
-  const [dateLayers, setDateLayers] = React.useState([]);
-  const [musicLayers, setMusicLayers] = React.useState([]);
   const [pickerLayers, setPickerLayer] = React.useState([]);
-  const [inputTypes, setInputTypes] = React.useState([
+  const inputTypes = [
     { label: "Text", value: "custom_text_input" },
     { label: "Picker", value: "custom_picker" },
     { label: "Image", value: "custom_image_picker" }
-  ]);
+  ];
 
   React.useEffect(() => {
     // here all layers are fetched and sets
 
     setTextLayers(["bride_name", "groom_name"]);
     setImageLayers(["asset:couple.png"]);
-    setDateLayers(["wedding_date"]);
-    setMusicLayers(["asset:music.mp3”"]);
     setPickerLayer(["primary_event_title"]);
     return function() {
       console.log("unmounting");
@@ -239,8 +235,8 @@ export default function AddFieldDialog(props) {
     switch (type) {
       case "custom_text_input":
         return textLayers.map((item, index) => {
-          if (props.usedFields.includes(item)) {
-            return;
+          if (!props.usedFields.includes(item)) {
+            return false;
           }
           return (
             <option key={index} value={item}>
@@ -252,7 +248,7 @@ export default function AddFieldDialog(props) {
       case "custom_image_picker":
         return imageLayers.map((item, index) => {
           if (props.usedFields.includes(item)) {
-            return;
+            return false;
           }
           return (
             <option key={index} value={item}>
@@ -264,7 +260,7 @@ export default function AddFieldDialog(props) {
       case "custom_picker":
         return pickerLayers.map((item, index) => {
           if (props.usedFields.includes(item)) {
-            return;
+            return false;
           }
           return (
             <option key={index} value={item}>

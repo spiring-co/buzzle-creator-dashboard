@@ -9,16 +9,18 @@ function Home() {
   let { path, url } = useRouteMatch();
   return (
     <div>
-      <p> Hi, name here</p>
       <div>
-        <br />
-        <NavLink to={`${url}/profile`}>Your Profile and Settings</NavLink>
-        <br />
-        <NavLink to={`${url}/videoTemplates`}>Your Video Templates</NavLink>
-        <br />
-        <NavLink to={`${url}/orders`}>Your Orders</NavLink>
+        <NavLink to={`${url}/profile`}>
+          <h3 style={{ display: "inline" }}>Your Profile and Settings</h3>
+        </NavLink>
+        <NavLink to={`${url}/videoTemplates`}>
+          <h3 style={{ display: "inline" }}>Your Video Templates</h3>
+        </NavLink>
+        <NavLink to={`${url}/orders`}>
+          <h3 style={{ display: "inline" }}>Your Orders</h3>
+        </NavLink>
       </div>
-
+      <br />
       <Switch>
         <Route path={`${path}/`} exact component={Dashboard} />
         <Route path={`${path}/profile`} component={Profile} />

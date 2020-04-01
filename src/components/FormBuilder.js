@@ -4,7 +4,7 @@ import { StateProvider, store } from "contextStore/store";
 import React, { useContext, useState } from "react";
 
 function FormSchemaBuilder() {
-  const { state, dispatch } = useContext(store);
+  const { state } = useContext(store);
   const { addSection } = useActions();
   const [activeIndex, setActiveIndex] = useState(0);
   const [usedFields, setUsedFields] = useState([]);
@@ -22,9 +22,6 @@ function FormSchemaBuilder() {
 
   return (
     <div style={{ textAlign: "center" }}>
-      <p>
-        On section {activeIndex + 1} of {state.length}
-      </p>
       <div>
         <button onClick={prevSegment} disabled={activeIndex === 0}>
           Go To previous
@@ -42,6 +39,9 @@ function FormSchemaBuilder() {
         prevSegment={prevSegment}
         activeIndex={activeIndex}
       />
+      <p>
+        On section {activeIndex + 1} of {state.length}
+      </p>
       <div>
         <button onClick={addSegment}>Add Section</button>
         <span> </span>
