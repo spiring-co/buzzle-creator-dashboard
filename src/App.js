@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+
+>>>>>>> 756bf3d6dbcc3f00ceb98541db480bf128359567
 import Home from "pages/Home";
 import Landing from "pages/Landing";
 import Login from "pages/Login";
 import Register from "pages/Register";
 import React from "react";
+
 import {
   Link,
   Redirect,
@@ -11,9 +16,12 @@ import {
   Switch
 } from "react-router-dom";
 import useAuth from "services/auth";
+<<<<<<< HEAD
 
 // FilePickerScreen and FormSchemaBuilder
 //Just to Show working, will be removed when work with the flow
+=======
+>>>>>>> 756bf3d6dbcc3f00ceb98541db480bf128359567
 
 function App() {
   const { logout, isAuthenticated } = useAuth();
@@ -21,6 +29,8 @@ function App() {
   return (
     <div style={{ margin: "auto", width: "65%" }}>
       <Router>
+
+
         {isAuthenticated && (
           <button style={{ float: "right", display: "block" }} onClick={logout}>
             Logout
@@ -43,6 +53,8 @@ function App() {
             <Route path="/home" component={Home} />
           </PrivateRoute>
         </Switch>
+
+
       </Router>
     </div>
   );

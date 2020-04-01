@@ -172,46 +172,4 @@ export default () => {
   );
 };
 
-// const handleSubmit = s => {
-//   s.preventDefault();
 
-//   // if (!s.target.value) {
-//   //   console.log("empty input");
-//   //   return false;
-//   // }
-
-//   const { target: { elements } = {} } = s;
-
-//   console.log(elements);
-
-//   const d = {
-//     name: elements["creatorName"].value,
-//     email: elements["email"].value,
-//     password: elements["password"].value,
-//     countryCode: elements["countryCode"].value,
-//     phoneNumber: elements["phoneNumber"].value,
-//     birthDate: elements["birthDate"].value,
-//     country: elements["country"].value,
-//     gender: elements["gender"].value
-//   };
-//   sendDetails(d);
-// };
-
-// const sendDetails = async data => {
-//   fetch(config.hostUrl, {
-//     method: "POST",
-//     headers: {
-//       Accept: "application/json",
-//       "Content-Type": "application/json"
-//     },
-//     body: JSON.stringify(data)
-//   })
-//     .then(response => {
-//       if (response.ok) {
-//         return window.location.assign("/");
-//       }
-//     })
-//     .catch(error => {
-//       console.error("Error:", error);
-//     });
-// };
