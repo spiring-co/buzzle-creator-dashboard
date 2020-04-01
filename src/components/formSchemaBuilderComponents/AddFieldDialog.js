@@ -233,7 +233,7 @@ export default function AddFieldDialog(props) {
   };
   const fieldsSelector = () => {
     switch (type) {
-      case "custom_text_input":
+      case "custom_text_input" || "custom_picker":
         return textLayers.map((item, index) => {
           if (props.usedFields.includes(item)) {
             return false;
@@ -257,18 +257,6 @@ export default function AddFieldDialog(props) {
           );
         });
 
-      case "custom_picker":
-        return pickerLayers.map((item, index) => {
-          if (props.usedFields.includes(item)) {
-            return false;
-          }
-          return (
-            <option key={index} value={item}>
-              {item}
-            </option>
-          );
-        });
-
       default:
         return null;
     }
@@ -277,59 +265,41 @@ export default function AddFieldDialog(props) {
   return (
     <dialog open style={{ margin: "auto", zIndex: 999 }}>
       <p>Add Field to {props.name} </p>
-      <label for="type">Input Type : </label>
-      <select
-        id="type"
-        onChange={e => {
-          setType(e.target.value);
-        }}
-      >
-        <option value="" disabled selected={type === null ? true : false}>
-          Select Input Type
-        </option>
-        {inputTypes.map((item, index) => {
-          return (
-            <option
-              key={index}
-              disabled={type === item ? true : false}
-              selected={type === item ? true : false}
-              value={item.value}
-            >
-              {item.label}
-            </option>
-          );
-        })}
+      <label>Input Type : </label>
+      <select onChange={({ target: { value } }) => setType(value)}>
+        <option
+          value=""
+          disabled
+          selected={!!type}
+          children={"Select Input Type"}
+        />
+        {inputTypes.map((item, index) => (
+          <option
+            key={index}
+            disabled={type === item}
+            selected={type === item}
+            value={item.value}
+            children={item.label}
+          />
+        ))}
       </select>
-
+      <label>Select Layer : </label>
+      <select onChange={({ target: { value } }) => setName(value)}>
+        <option
+          value=""
+          disabled
+          selected
+          children={!name ? "Select Field" : name}
+        />
+        {fieldsSelector()}
+      </select>
+      {renderInputForm(type)}
       <div>
-        <label for="fields">Select Field : </label>
-        <select
-          id="fields"
-          onChange={e => {
-            setName(e.target.value);
-          }}
-        >
-          <option value="" disabled selected>
-            {name === null ? "Select Field" : name}
-          </option>
-          {fieldsSelector()}
-        </select>
-      </div>
-      {renderInputForm()}
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          margin: 5,
-          padding: 10
-        }}
-      >
-        <button style={{ margin: 8 }} onClick={handleFieldSubmit}>
-          {props.editField ? "Edit" : "Add Field"}
-        </button>
-        <button style={{ margin: 8 }} onClick={() => toggleDialog(false)}>
-          Close
-        </button>
+        <button
+          onClick={handleFieldSubmit}
+          children={props.editField ? "Edit" : "Add Field"}
+        />
+        <button onClick={() => toggleDialog(false)} children={"Close"} />
       </div>
     </dialog>
   );

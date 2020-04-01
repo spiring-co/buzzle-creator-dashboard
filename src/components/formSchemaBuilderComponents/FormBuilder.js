@@ -16,7 +16,7 @@ function FormBuilder({ submitForm }) {
   }, []);
 
   useEffect(() => {
-    console.log("rerendering");
+    console.log("rendering");
   }, [segments.length]);
 
   const _addSegment = () => {

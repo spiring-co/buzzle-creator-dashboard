@@ -1,7 +1,7 @@
+import useActions from "contextStore/actions";
+import { SegmentsContext } from "contextStore/store";
 import React, { useContext, useEffect, useState } from "react";
 
-import useActions from "../../contextStore/actions";
-import { SegmentsContext } from "../../contextStore/store";
 import AddFields from "./AddFieldDialog";
 
 export default ({ activeIndex, usedFields, setUsedFields }) => {
@@ -20,19 +20,15 @@ export default ({ activeIndex, usedFields, setUsedFields }) => {
   // TODO deepCompare
   useEffect(() => {}, [activeIndex, segments, value]);
 
-  const openEditDialog = index => {
-    // TODO async dialog
-    // const values = await showEditPrompt(initialValues);
-    setEditIndex(index);
-    setIsDialogVisible(true);
-  };
-
   const addField = value => {
     setUsedFields([...usedFields, value.name]);
     addSegmentField(activeIndex, value);
   };
 
-  const _editField = () => {};
+  const _editField = index => {
+    setEditIndex(index);
+    setIsDialogVisible(true);
+  };
 
   const _deleteField = () => {};
 
@@ -95,14 +91,6 @@ export default ({ activeIndex, usedFields, setUsedFields }) => {
     </div>
   );
 };
-const styles = {
-  container: {
-    border: "1px solid black",
-    margin: "auto",
-    padding: 15
-  },
-  fieldPreview: { border: " black solid 1px", padding: 20, margin: 10 }
-};
 
 const FieldPreviewContainer = ({
   _editField,
@@ -126,4 +114,13 @@ const FieldPreviewContainer = ({
       <button onClick={_deleteField}>Delete</button>
     </div>
   );
+};
+
+const styles = {
+  container: {
+    border: "1px solid black",
+    margin: "auto",
+    padding: 15
+  },
+  fieldPreview: { border: " black solid 1px", padding: 20, margin: 10 }
 };
