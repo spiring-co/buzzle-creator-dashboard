@@ -20,21 +20,25 @@ export default ({ activeIndex, usedFields, setUsedFields }) => {
   // TODO deepCompare
   useEffect(() => {}, [activeIndex, segments, value]);
 
-  const openEditDialog = index => {
-    // TODO async dialog
-    // const values = await showEditPrompt(initialValues);
-    setEditIndex(index);
-    setIsDialogVisible(true);
-  };
-
   const addField = value => {
     setUsedFields([...usedFields, value.name]);
     addSegmentField(activeIndex, value);
   };
 
-  const _editField = () => {};
+  const _editField = index => {
+    setEditIndex(index);
+    setIsDialogVisible(true);
+  };
 
-  const _deleteField = () => {};
+  const _deleteField = (item, index) => {
+    setUsedFields(usedFields.filter(i => i !== item.name));
+    removeField(activeIndex, index);
+  };
+
+  const _onDrop = (e, index) => {
+    swapFields(activeIndex, e.dataTransfer.getData("text/plain"), index);
+    setValue(Math.random());
+  };
 
   const editFieldValue = value => {
     //if user changed field name
@@ -58,9 +62,9 @@ export default ({ activeIndex, usedFields, setUsedFields }) => {
   const renderFieldPreview = (item, index) => {
     return (
       <FieldPreviewContainer
-        _editField={_editField}
-        _deleteField={_deleteField}
-        _onDrop={null}
+        _editField={() => _editField(index)}
+        _deleteField={() => _deleteField(item, index)}
+        _onDrop={e => _onDrop(e, index)}
         index={index}
         children={<p>{JSON.stringify(item)}</p>}
       />
@@ -97,6 +101,7 @@ export default ({ activeIndex, usedFields, setUsedFields }) => {
 };
 const styles = {
   container: {
+    borderRadius: 10,
     border: "1px solid black",
     margin: "auto",
     padding: 15

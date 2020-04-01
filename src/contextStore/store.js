@@ -1,6 +1,6 @@
 import React, { createContext, useReducer } from "react";
 
-import segmentReducer from "./reducer";
+import segmentReducer from "./Reducer";
 
 const SegmentsContext = createContext();
 
