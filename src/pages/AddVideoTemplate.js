@@ -1,4 +1,4 @@
-import FormBuilder from "components/FormBuilder";
+import FormBuilder from "components/formSchemaBuilderComponents/FormBuilder";
 import React from "react";
 import { useHistory } from "react-router-dom";
 import useApi from "services/api";
@@ -39,8 +39,7 @@ export default () => {
       );
       setLoading(false);
       if (response.ok) {
-        console.log(response);
-
+        console.log("helloo new added", response);
         history.push("/home/videoTemplates");
       }
     } catch (err) {

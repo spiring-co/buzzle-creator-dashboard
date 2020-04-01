@@ -1,13 +1,14 @@
-import React from "react";
 import { render } from "@testing-library/react";
+import React from "react";
+
 import {
   ADD_SEGMENT,
-  REMOVE_SEGMENT,
-  REMOVE_FIELD,
   EDIT_SEGMENT_KEYS,
+  REMOVE_FIELD,
+  REMOVE_SEGMENT,
   SWAP_SEGMENT_FIELDS,
   segmentReducer
-} from "../contextStore/Reducer";
+} from "../contextStore/reducer";
 
 const initalState = [
   {

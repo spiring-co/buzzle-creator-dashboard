@@ -13,6 +13,19 @@ summary {
   display: block;
 }
 
+dialog {
+  position: fixed;
+  margin: auto;
+  z-index: 999;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+dialog::backdrop {
+  background-color: black;
+}
 audio,
 canvas,
 progress,
@@ -358,13 +371,20 @@ input[type="submit"] {
   border: none;
   cursor: pointer;
   color: white;
-  border-radius: 3px;
-  font-size: 0.88889rem;
-  line-height: 2.25rem;
-  padding: 0 1.5em;
+  border-radius: 0.3rem;
+  font-size: 0.71rem;
+  line-height: 1.95rem;
+  padding: 0 0.9em;
   -webkit-transition: background-color 150ms;
   transition: background-color 150ms;
   white-space: nowrap;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin: 0.5rem;
+}
+
+.rounded {
+  border-radius: 1rem;
 }
 button:hover,
 input[type="submit"]:hover,
@@ -1533,6 +1553,7 @@ table caption {
 }
 
 ._bg-state-warning {
+  color: black;
   background-color: #ffb800;
 }
 

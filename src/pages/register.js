@@ -40,10 +40,14 @@ export default () => {
       body: JSON.stringify(data)
     })
       .then(response => {
+        try{
         if (response.ok) {
           return window.location.assign("/");
         }
-        throw new Error({ message: response.text() });
+      }
+      catch(error){
+        console.log(error)
+      }
       })
       .catch(error => {
         console.error("Error:", error);
