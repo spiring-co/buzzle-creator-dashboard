@@ -5,7 +5,6 @@ export default props => {
   let { url } = useRouteMatch();
 
   const videoTemplateId = props.location.state.video.videoTemplateId;
-  const segments = props.location.state.video.versions[0].form.segments;
 
   //fetch creator id from localstorage
   const creatorId = "sjjsjjjkaaaa";

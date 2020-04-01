@@ -174,6 +174,7 @@ function FormBuilder({ submitForm, edit, video }) {
     return (
       <div style={{ textAlign: "center" }}>
         <p>{edit ? "View Versions" : "Create Versions"}</p>
+
         {videoObj?.versions.map((item, index) => {
           return (
             <div style={{ border: "1px solid black", padding: 10, margin: 10 }}>
@@ -216,6 +217,12 @@ function FormBuilder({ submitForm, edit, video }) {
           disabled={!segmentDisplay && !versionDisplay}
         >
           Back
+        </button>
+        <button
+          disabled={videoObj.versions.length === 0}
+          onClick={handleSubmitForm}
+        >
+          {edit ? "Save Edits" : "Submit Form"}
         </button>
       </div>
     );
