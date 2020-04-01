@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-export default () => {
+import React, { useState, useEffect } from "react";
+const FilePicker = () => {
   const [file, setFile] = useState(null);
 
   const pickFile = e => {
@@ -33,7 +33,7 @@ export default () => {
         paddingBottom: 100,
         display: "flex",
         flexDirection: "column",
-        height: 200,
+        height: 350,
         boxShadow: "1px 1px 2px 2px lightgrey",
         textAlign: "center",
         justifyContent: "center",
@@ -43,11 +43,14 @@ export default () => {
     >
       <div>
         {file !== null && <p>Uploaded - {file}</p>}
-        <img src={require("../assets/blackUpload.svg")} />
-        <p style={{ fontSize: 30, fontWeight: "bold" }}>
+        <img
+          style={{ width: "40%", height: "40%" }}
+          src={require("../assets/blackUpload.svg")}
+        />
+        <p style={{ fontSize: 20, fontWeight: "bold", marginTop: 0 }}>
           Drag & Drop APEX File Here
         </p>
-        <p>Or</p>
+        <p style={{ fontSize: 15, fontWeight: "bold", marginTop: 0 }}>Or</p>
         <p class="choose_button">Choose File</p>
       </div>
       <input
@@ -60,3 +63,9 @@ export default () => {
     </label>
   );
 };
+export default function FilePickerScreen({ setCompositions }) {
+  useEffect(() => {
+    setCompositions(["single_event", "double_event"]);
+  }, []);
+  return <FilePicker />;
+}
