@@ -4,25 +4,53 @@ import React, { useContext, useEffect, useState } from "react";
 
 import AddFields from "./AddFieldDialog";
 
-export default ({ activeIndex, usedFields, setUsedFields }) => {
-  const [segments] = useContext(SegmentsContext);
+export default ({
+  activeIndex,
+  usedFields,
+  edit,
+  activeVersionIndex,
+  setUsedFields
+}) => {
+  const [videoObj] = useContext(SegmentsContext);
+
   const {
     editSegmentField,
     addSegmentField,
     removeField,
     swapFields,
+    restoreFieldsFromPreviousVersion,
     setSegmentKeys
   } = useActions();
 
   const [editIndex, setEditIndex] = useState(null);
   const [isDialogVisible, setIsDialogVisible] = useState(false);
   const [value, setValue] = useState(null);
+  const [restoreStatus, setRestoreStatus] = useState(false);
   // TODO deepCompare
-  useEffect(() => {}, [activeIndex, segments, value]);
+
+  useEffect(() => {
+    if (
+      !restoreStatus &&
+      !edit &&
+      videoObj.versions[0].title !== "" &&
+      activeVersionIndex !== 0 &&
+      videoObj.versions[activeVersionIndex].form.segments[activeIndex].fields
+        .length === 0
+    ) {
+      if (
+        window.confirm("Do you want to restore fields from previous version")
+      ) {
+        restoreFieldsFromPreviousVersion(activeVersionIndex);
+        // TODO proper rerender after restore
+        setRestoreStatus(true);
+        setValue(Math.random());
+      }
+    }
+  }, [activeIndex, videoObj, value]);
 
   const addField = value => {
     setUsedFields([...usedFields, value.name]);
-    addSegmentField(activeIndex, value);
+    addSegmentField(activeVersionIndex, activeIndex, value);
   };
 
   const _editField = index => {
@@ -32,30 +60,46 @@ export default ({ activeIndex, usedFields, setUsedFields }) => {
 
   const _deleteField = (item, index) => {
     setUsedFields(usedFields.filter(i => i !== item.name));
-    removeField(activeIndex, index);
+    removeField(activeVersionIndex, activeIndex, index);
   };
 
   const _onDrop = (e, index) => {
-    swapFields(activeIndex, e.dataTransfer.getData("text/plain"), index);
+    swapFields(
+      activeVersionIndex,
+      activeIndex,
+      e.dataTransfer.getData("text/plain"),
+      index
+    );
     setValue(Math.random());
   };
 
   const editFieldValue = value => {
     //if user changed field name
-    if (segments[activeIndex].fields[editIndex].name !== value.name) {
+    if (
+      videoObj.versions[activeVersionIndex].form.segments[activeIndex].fields[
+        editIndex
+      ].name !== value.name
+    ) {
       setUsedFields(
         usedFields.map(item => {
-          if (item === segments[activeIndex].fields[editIndex].name) {
+          if (
+            item ===
+            videoObj.versions[activeVersionIndex].form.segments[activeIndex]
+              .fields[editIndex].name
+          ) {
             return value.name;
           } else return item;
         })
       );
     }
-    editSegmentField(activeIndex, value, editIndex);
+    editSegmentField(activeVersionIndex, activeIndex, editIndex, value);
     setEditIndex(null);
   };
 
-  if (activeIndex < 0 || segments[activeIndex] == null) {
+  if (
+    activeIndex < 0 ||
+    videoObj.versions[activeVersionIndex].form.segments[activeIndex] == null
+  ) {
     return "Add a segment to continue";
   }
 
@@ -75,25 +119,37 @@ export default ({ activeIndex, usedFields, setUsedFields }) => {
     <div style={styles.container}>
       <input
         style={styles.input}
-        value={segments[activeIndex].title}
+        value={
+          videoObj.versions[activeVersionIndex].form.segments[activeIndex].title
+        }
         type="text"
         placeholder="Enter Section Title"
         onChange={e => {
           setValue(Math.random());
-          setSegmentKeys(activeIndex, { title: e.target.value });
+          setSegmentKeys(activeVersionIndex, activeIndex, {
+            title: e.target.value
+          });
         }}
       />
-      {segments[activeIndex].fields.map(renderFieldPreview)}
+      {videoObj.versions[activeVersionIndex].form.segments[
+        activeIndex
+      ].fields.map(renderFieldPreview)}
       <button onClick={() => setIsDialogVisible(true)} children="Add Field" />
       {isDialogVisible && (
         <AddFields
           usedFields={usedFields}
-          field={segments[activeIndex].fields[editIndex]}
+          field={
+            videoObj.versions[activeVersionIndex].form.segments[activeIndex]
+              .fields[editIndex]
+          }
           editField={editIndex !== null}
           toggleDialog={setIsDialogVisible}
           editFieldValue={editFieldValue}
           addField={addField}
-          name={segments[activeIndex].title}
+          name={
+            videoObj.versions[activeVersionIndex].form.segments[activeIndex]
+              .title
+          }
         />
       )}
     </div>
