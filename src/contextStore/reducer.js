@@ -11,23 +11,15 @@ export const ADD_VERSION = "ADD_VERSION";
 export const REMOVE_VERSION = "REMOVE_VERSION";
 export const EDIT_VIDEO_KEYS = "EDIT_VIDEO_KEYS";
 export const EDIT_VERSION_KEYS = "EDIT_VERSION_KEYS";
-const BLANK_SEGMENT = {
-  title: "",
-  fields: []
-};
-
-const BLANK_VIDEO = {
-  //fetch from localStorage
-  creatorId: "sjjsjjjkaaaa",
-  tags: [],
-  versions: [],
-  isDeleted: false,
-  title: "",
-  description: ""
-};
+export const RESTORE_FIELDS = "RESTORE_FIELDS";
 
 export default (state, action) => {
   switch (action.type) {
+    //payload : activeVersionIndex
+    case RESTORE_FIELDS:
+      state.versions[action.payload.activeVersionIndex].form.segments =
+        state.versions[0].form.segments;
+      return state;
     //payload: action.payload.value={key:action.payload.value}
     case EDIT_VIDEO_KEYS:
       return { ...state, ...action.payload.value };
@@ -71,9 +63,10 @@ export default (state, action) => {
 
     //payload has action.payload.activeVersionIndex
     case ADD_SEGMENT:
-      state.versions[action.payload.activeVersionIndex].form.segments.push(
-        BLANK_SEGMENT
-      );
+      state.versions[action.payload.activeVersionIndex].form.segments.push({
+        title: "",
+        fields: []
+      });
       return state;
 
     //payload:{action.payload.segmentIndex} of segment to be removed and {action.payload.activeVersionIndex}
@@ -157,7 +150,15 @@ export default (state, action) => {
       return action.payload;
     //payload: nul
     case RESET_STATE:
-      return BLANK_VIDEO;
+      return {
+        //fetch from localStorage
+        creatorId: "sjjsjjjkaaaa",
+        tags: [],
+        versions: [],
+        isDeleted: false,
+        title: "",
+        description: ""
+      };
     default:
       throw new Error("Action not recognized");
   }

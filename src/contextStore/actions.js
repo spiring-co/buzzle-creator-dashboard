@@ -11,7 +11,8 @@ import {
   REMOVE_VERSION,
   LOAD_STATE,
   RESET_STATE,
-  SWAP_SEGMENT_FIELDS
+  SWAP_SEGMENT_FIELDS,
+  RESTORE_FIELDS
 } from "./reducer";
 import { SegmentsContext } from "./store";
 
@@ -19,6 +20,9 @@ export default function useActions() {
   const [state, dispatch] = React.useContext(SegmentsContext);
 
   return {
+    restoreFieldsFromPreviousVersion: function(activeVersionIndex) {
+      dispatch({ type: RESTORE_FIELDS, payload: { activeVersionIndex } });
+    },
     editVideoKeys: function(value) {
       // value = : { title: "Video Title" }
       dispatch({

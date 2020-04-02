@@ -7,6 +7,7 @@ import AddFields from "./AddFieldDialog";
 export default ({
   activeIndex,
   usedFields,
+  edit,
   activeVersionIndex,
   setUsedFields
 }) => {
@@ -17,14 +18,35 @@ export default ({
     addSegmentField,
     removeField,
     swapFields,
+    restoreFieldsFromPreviousVersion,
     setSegmentKeys
   } = useActions();
 
   const [editIndex, setEditIndex] = useState(null);
   const [isDialogVisible, setIsDialogVisible] = useState(false);
   const [value, setValue] = useState(null);
+  const [restoreStatus, setRestoreStatus] = useState(false);
   // TODO deepCompare
-  useEffect(() => {}, [activeIndex, videoObj, value]);
+
+  useEffect(() => {
+    if (
+      !restoreStatus &&
+      !edit &&
+      videoObj.versions[0].title !== "" &&
+      activeVersionIndex !== 0 &&
+      videoObj.versions[activeVersionIndex].form.segments[activeIndex].fields
+        .length === 0
+    ) {
+      if (
+        window.confirm("Do you want to restore fields from previous version")
+      ) {
+        restoreFieldsFromPreviousVersion(activeVersionIndex);
+        // TODO proper rerender after restore
+        setRestoreStatus(true);
+        setValue(Math.random());
+      }
+    }
+  }, [activeIndex, videoObj, value]);
 
   const addField = value => {
     setUsedFields([...usedFields, value.name]);

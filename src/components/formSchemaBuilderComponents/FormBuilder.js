@@ -18,7 +18,8 @@ function FormBuilder({ submitForm, edit, video }) {
     loadVideo,
     removeSegment
   } = useActions();
-
+  const [editVersion, setEditVersion] = useState(false);
+  const [editIndex, setEditIndex] = useState(0);
   const [activeVersionIndex, setActiveVersionIndex] = useState(0);
   const [activeIndex, setActiveIndex] = useState(0);
   const [usedFields, setUsedFields] = useState([]);
@@ -36,6 +37,8 @@ function FormBuilder({ submitForm, edit, video }) {
     setActiveIndex(activeIndex + 1);
   };
   const openVersionDisplay = () => {
+    setEditVersion(false);
+    setEditIndex(0);
     setActiveIndex(0);
     setComp_name("");
     setUsedFields([]);
@@ -44,12 +47,13 @@ function FormBuilder({ submitForm, edit, video }) {
   };
   const openSegmentsBuilder = (index, fromEdit = false) => {
     if (fromEdit) {
-      setActiveVersionIndex(index);
+      setEditIndex(index);
+      setEditVersion(true);
+
+      console.log(editVersion, editIndex);
     } else {
-      setActiveVersionIndex(compositions.indexOf(comp_name));
       addVersion({ comp_name });
     }
-
     setVersionDisplay(false);
     setSegmentDisplay(true);
   };
@@ -88,34 +92,47 @@ function FormBuilder({ submitForm, edit, video }) {
         <input
           onChange={e => {
             setValue(Math.random());
-            editversionKeys(activeVersionIndex, { title: e.target.value });
+            editversionKeys(editVersion ? editIndex : activeVersionIndex, {
+              title: e.target.value
+            });
           }}
           style={styles.input}
           placeholder="Enter Version Title"
           type="text"
-          value={videoObj.versions[activeVersionIndex].title}
+          value={
+            videoObj.versions[editVersion ? editIndex : activeVersionIndex]
+              .title
+          }
         />
         <input
           onChange={e => {
             setValue(Math.random());
-            editversionKeys(activeVersionIndex, {
+            editversionKeys(editVersion ? editIndex : activeVersionIndex, {
               description: e.target.value
             });
           }}
           style={styles.input}
           placeholder="Enter Version Description"
           type="text"
-          value={videoObj.versions[activeVersionIndex].description}
+          value={
+            videoObj.versions[editVersion ? editIndex : activeVersionIndex]
+              .description
+          }
         />
         <input
           onChange={e => {
             setValue(Math.random());
-            editversionKeys(activeVersionIndex, { price: e.target.value });
+            editversionKeys(editVersion ? editIndex : activeVersionIndex, {
+              price: e.target.value
+            });
           }}
           style={styles.input}
           placeholder="Enter Version Price"
           type="number"
-          value={videoObj.versions[activeVersionIndex].price}
+          value={
+            videoObj.versions[editVersion ? editIndex : activeVersionIndex]
+              .price
+          }
         />
         <p>
           <strong>{edit ? "Edit Segments" : "Add Segments"}</strong>
@@ -123,8 +140,8 @@ function FormBuilder({ submitForm, edit, video }) {
         <button
           onClick={_addSegment}
           disabled={
-            videoObj.versions[activeVersionIndex].form.segments.length >
-            MAX_SEGMENT_COUNT
+            videoObj.versions[editVersion ? editIndex : activeVersionIndex].form
+              .segments.length > MAX_SEGMENT_COUNT
           }
           children="+ Add Segment"
         />
@@ -132,7 +149,8 @@ function FormBuilder({ submitForm, edit, video }) {
         <button
           onClick={deleteSegment}
           disabled={
-            videoObj.versions[activeVersionIndex].form.segments.length <= 1
+            videoObj.versions[editVersion ? editIndex : activeVersionIndex].form
+              .segments.length <= 1
           }
           children="- Delete Segment"
         />
@@ -148,23 +166,32 @@ function FormBuilder({ submitForm, edit, video }) {
           className="rounded _bg-state-warning"
           disabled={
             activeIndex >=
-            videoObj.versions[activeVersionIndex].form.segments.length - 1
+            videoObj.versions[editVersion ? editIndex : activeVersionIndex].form
+              .segments.length -
+              1
           }
           children="Go Next Segment >"
         />
         <FormBuilderSegment
+          edit={edit}
           usedFields={usedFields}
           setUsedFields={setUsedFields}
-          activeVersionIndex={activeVersionIndex}
+          activeVersionIndex={editVersion ? editIndex : activeVersionIndex}
           activeIndex={activeIndex}
         />
         <p
           children={`On section ${activeIndex + 1} of ${
-            videoObj.versions[activeVersionIndex].form.segments.length
+            videoObj.versions[editVersion ? editIndex : activeVersionIndex].form
+              .segments.length
           }`}
         />
         <button
-          onClick={openVersionDisplay}
+          onClick={() => {
+            if (!editVersion) {
+              setActiveVersionIndex(activeVersionIndex + 1);
+            }
+            openVersionDisplay();
+          }}
           children={edit ? "Back To Versions" : "Create Version"}
         />
       </div>
