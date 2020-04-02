@@ -1,70 +1,26 @@
 import React from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useRouteMatch } from "react-router-dom";
 import useApi from "services/api";
 export default props => {
-  console.log(props.location.state.video);
+  let { url } = useRouteMatch();
+
   const videoTemplateId = props.location.state.video.videoTemplateId;
-  const segments = props.location.state.video.versions[0].form.segments;
-  console.log(segments);
+
   //fetch creator id from localstorage
   const creatorId = "sjjsjjjkaaaa";
   const [isDeleting, setIsDeleting] = React.useState(false);
-  const [isEditing, setIsEditing] = React.useState(false);
+
   const history = useHistory();
   const { data, loading, error } = useApi(`/video/${videoTemplateId}`);
 
   const handleEdit = async () => {
-    // here comes edited obj from form
-    var editedObj = {
-      creatorId: "sjjsjjjkaaaa",
-      tags: ["test", "react"],
-      versions: [
-        {
-          comp_name: "main",
-          title: "testing Form",
-          description: "a testing Form description",
-          price: 10,
-          sample:
-            "http://d1hzn67dcj6z9o.cloudfront.net/sample-videos/cute_animated.mp4",
-          form: { segments }
-        }
-      ],
-      title: "edited test title",
-      description: "edited test form description"
-    };
-    var action = window.confirm("Are you sure, you want to save changes");
-    if (action) {
-      try {
-        setIsEditing(true);
-        const response = await fetch(
-          process.env.REACT_APP_API_URL +
-            `/video/creator/${creatorId}/${videoTemplateId}`,
-          {
-            method: "PUT",
-            body: JSON.stringify(editedObj),
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-              Authorization: `bearer ${localStorage.getItem("jwtoken")}`
-            }
-          }
-        );
-        setIsEditing(false);
-        if (response.ok) {
-          //TOOD
-          // to be handled in backend return the edited video object in response
-          // const editedVideo = await response.json();
-          // refresh the page with updated props
-          // history.push({
-          //   pathname:document.location.pathname,
-          //   state:{video:editedVideo}
-          // })
-        }
-      } catch (err) {
-        setIsEditing(false);
-        alert(err);
+    history.push({
+      pathname: `${url}/edit`,
+      state: {
+        edit: true,
+        video: props.location.state.video
       }
-    }
+    });
   };
 
   const handleDelete = async () => {
@@ -96,13 +52,8 @@ export default props => {
       }
     }
   };
-  if (loading | isDeleting | isEditing)
-    return (
-      <p>
-        {isDeleting ? "Deleting" : isEditing ? "Editing" : "Loading"} your
-        template...
-      </p>
-    );
+  if (loading | isDeleting)
+    return <p>{isDeleting ? "Deleting" : "Loading"} your template...</p>;
   if (error) return <p>Error: {error.message}</p>;
   return (
     <div>

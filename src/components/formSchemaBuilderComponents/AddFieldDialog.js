@@ -270,7 +270,7 @@ export default function AddFieldDialog(props) {
         <option
           value=""
           disabled
-          selected={!!type}
+          selected={!type}
           children={"Select Input Type"}
         />
         {inputTypes.map((item, index) => (
