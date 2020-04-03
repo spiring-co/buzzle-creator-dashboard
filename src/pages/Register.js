@@ -38,26 +38,31 @@ export default () => {
       gender: Yup.string().required("Gender field is required")
     }),
     onSubmit: async s => {
-      fetch(config.hostUrl, {
-        method: "POST",
-        // mode: 'no-cors',
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(s)
-      })
-        .then(response => {
-          if (response.ok) {
-            return window.location.assign("/");
-          } else {
-            response.json().then(e => setError(e));
-          }
-        })
-        .catch(err => {
-          setError(err);
-          console.error("Error:", err);
+      try {
+        const response = await fetch(config.hostUrl, {
+          method: "POST",
+          // mode: 'no-cors',
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(s)
         });
+        console.log(response);
+        if (response.ok) {
+          return window.location.assign("/");
+        } else {
+          const res = await response.json();
+          let resSplice = res.message.slice(0, 6);
+          if (resSplice == "E11000") {
+           return setError("the email is already used for registration");
+          }
+          return setError(res.message)
+        }
+      } catch (err) {
+        setError(err);
+        console.error("Error:", err);
+      }
     }
   });
 
@@ -67,7 +72,7 @@ export default () => {
         Welcome to pharaoh please login to continue, if you don't have an
         account <Link to="/login">click here to login.</Link>
       </p>
-      {error && <p style={{ color: "red" }}>Error: {error?.message}</p>}
+      {error && <p style={{ color: "red" }}>Error: {error}</p>}
       <form onSubmit={handleSubmit}>
         <label>Name </label>
         <input
