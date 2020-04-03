@@ -10,7 +10,7 @@ const phoneRegExp = /^\d{10}$/;
 
 export default () => {
   const [error, setError] = useState(null);
-  const {handleChange, handleSubmit, values, errors, touched } = useFormik({
+  const { handleChange, handleSubmit, values, errors, touched } = useFormik({
     initialValues: {
       name: "sheeevam",
       email: "shivam.sasalol@yahoo.com",
@@ -51,7 +51,7 @@ export default () => {
           if (response.ok) {
             return window.location.assign("/");
           } else {
-            console.log("didnt ok");
+            response.json().then(e => setError(e));
           }
         })
         .catch(err => {
@@ -77,7 +77,7 @@ export default () => {
           onChange={handleChange}
           value={values.name}
         />
-         {touched.name && errors.name ? (
+        {touched.name && errors.name ? (
           <p style={{ color: "red" }}>{errors.email}</p>
         ) : null}
         <br />
@@ -89,7 +89,7 @@ export default () => {
           onChange={handleChange}
           value={values.email}
         />
-         {touched.email && errors.email ? (
+        {touched.email && errors.email ? (
           <p style={{ color: "red" }}>{errors.email}</p>
         ) : null}
         <br />
@@ -101,7 +101,7 @@ export default () => {
           onChange={handleChange}
           value={values.password}
         />
-         {touched.password && errors.password ? (
+        {touched.password && errors.password ? (
           <p style={{ color: "red" }}>{errors.password}</p>
         ) : null}
         <br />
@@ -113,7 +113,7 @@ export default () => {
           onChange={handleChange}
           value={values.countryCode}
         />
-         {touched.countryCode && errors.countryCode ? (
+        {touched.countryCode && errors.countryCode ? (
           <p style={{ color: "red" }}>{errors.countryCode}</p>
         ) : null}
         <br />
@@ -171,5 +171,3 @@ export default () => {
     </div>
   );
 };
-
-

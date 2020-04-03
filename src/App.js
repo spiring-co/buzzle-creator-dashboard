@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-
->>>>>>> 756bf3d6dbcc3f00ceb98541db480bf128359567
 import Home from "pages/Home";
 import Landing from "pages/Landing";
 import Login from "pages/Login";
@@ -16,12 +12,6 @@ import {
   Switch
 } from "react-router-dom";
 import useAuth from "services/auth";
-<<<<<<< HEAD
-
-// FilePickerScreen and FormSchemaBuilder
-//Just to Show working, will be removed when work with the flow
-=======
->>>>>>> 756bf3d6dbcc3f00ceb98541db480bf128359567
 
 function App() {
   const { logout, isAuthenticated } = useAuth();
