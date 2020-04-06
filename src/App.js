@@ -12,7 +12,7 @@ import {
   Switch,
 } from "react-router-dom";
 import useAuth from "services/auth";
-import Form from "pages/Form";
+import createOrder from "pages/createOrder";
 
 function App() {
   const { logout, isAuthenticated } = useAuth();
@@ -37,7 +37,11 @@ function App() {
           <Route exact path="/" component={Landing} />
           <Route path="/login" exact component={Login} />
           <Route path="/register" exact component={Register} />
-          <Route path={`/createOrder/Form/:videoTemplateId`} component={Form} />
+          <Route
+            path={`/createOrder/:videoTemplateId`}
+            component={createOrder}
+          />
+
           <PrivateRoute isAuthenticated={isAuthenticated}>
             <Route path="/home" component={Home} />
           </PrivateRoute>
