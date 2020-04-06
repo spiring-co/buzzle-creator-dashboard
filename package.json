@@ -8,9 +8,14 @@
     "@testing-library/user-event": "^7.1.2",
     "formik": "^2.1.4",
     "react": "^16.13.1",
+    "react-content-loader": "^5.0.3",
+    "react-datepicker": "^2.14.1",
     "react-dom": "^16.13.1",
+    "react-image-crop": "^8.6.1",
+    "react-responsive": "^8.0.3",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.1",
+    "styled-components": "^5.0.1",
     "yup": "^0.28.3"
   },
   "scripts": {
