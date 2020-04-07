@@ -9,9 +9,10 @@ import {
   Redirect,
   Route,
   BrowserRouter as Router,
-  Switch
+  Switch,
 } from "react-router-dom";
 import useAuth from "services/auth";
+import createOrder from "pages/createOrder";
 
 function App() {
   const { logout, isAuthenticated } = useAuth();
@@ -19,8 +20,6 @@ function App() {
   return (
     <div style={{ margin: "auto", width: "65%" }}>
       <Router>
-
-
         {isAuthenticated && (
           <button style={{ float: "right", display: "block" }} onClick={logout}>
             Logout
@@ -38,13 +37,15 @@ function App() {
           <Route exact path="/" component={Landing} />
           <Route path="/login" exact component={Login} />
           <Route path="/register" exact component={Register} />
+          <Route
+            path={`/createOrder/:videoTemplateId`}
+            component={createOrder}
+          />
 
           <PrivateRoute isAuthenticated={isAuthenticated}>
             <Route path="/home" component={Home} />
           </PrivateRoute>
         </Switch>
-
-
       </Router>
     </div>
   );
@@ -61,7 +62,7 @@ function PrivateRoute({ isAuthenticated, children, ...rest }) {
           <Redirect
             to={{
               pathname: "/login",
-              state: { from: location }
+              state: { from: location },
             }}
           />
         )
