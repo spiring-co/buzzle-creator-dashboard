@@ -9,18 +9,63 @@ import {
   useHistory,
 } from "react-router-dom";
 import useApi from "services/api";
+import { AnimatedSwitch, AnimatedRoute } from "react-router-transition";
+import { bounceTransition, mapStyles } from "../services/switchConfig";
 export default () => {
   let { path } = useRouteMatch();
 
   return (
     <div>
       <br />
-      <Switch>
-        <Route path={`${path}/`} exact component={CreatorVideoTemplates} />
-        <Route path={`${path}/add`} component={AddVideoTemplate} />
-        <Route path={`${path}/:uid/edit`} component={AddVideoTemplate} />
-        <Route path={`${path}/:uid`} component={VideoTemplate} />
-      </Switch>
+      <AnimatedSwitch
+        atEnter={bounceTransition.atEnter}
+        atLeave={bounceTransition.atLeave}
+        atActive={bounceTransition.atActive}
+        mapStyles={mapStyles}
+        className="route-wrapper"
+      >
+        <AnimatedRoute
+          atEnter={{ offset: -100 }}
+          atLeave={{ offset: -100 }}
+          atActive={{ offset: 0 }}
+          mapStyles={(styles) => ({
+            transform: `translateX(${styles.offset}%)`,
+          })}
+          path={`${path}/`}
+          exact
+          component={CreatorVideoTemplates}
+        />
+        <AnimatedRoute
+          atEnter={{ offset: -100 }}
+          atLeave={{ offset: -100 }}
+          atActive={{ offset: 0 }}
+          mapStyles={(styles) => ({
+            transform: `translateX(${styles.offset}%)`,
+          })}
+          path={`${path}/add`}
+          component={AddVideoTemplate}
+        />
+        <AnimatedRoute
+          atEnter={{ offset: -100 }}
+          atLeave={{ offset: -100 }}
+          atActive={{ offset: 0 }}
+          mapStyles={(styles) => ({
+            transform: `translateX(${styles.offset}%)`,
+          })}
+          path={`${path}/:uid/edit`}
+          component={AddVideoTemplate}
+        />
+        <AnimatedRoute
+          atEnter={{ offset: -100 }}
+          atLeave={{ offset: -100 }}
+          atActive={{ offset: 0 }}
+          mapStyles={(styles) => ({
+            transform: `translateX(${styles.offset}%)`,
+          })}
+          path={`${path}/:uid`}
+          component={VideoTemplate}
+        />
+      </AnimatedSwitch>
     </div>
   );
 };

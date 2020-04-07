@@ -3,11 +3,11 @@ import Landing from "pages/Landing";
 import Login from "pages/Login";
 import Register from "pages/Register";
 import React from "react";
-
+import { AnimatedSwitch, AnimatedRoute } from "react-router-transition";
+import { bounceTransition, mapStyles } from "../src/services/switchConfig";
 import {
   Link,
   Redirect,
-  Route,
   BrowserRouter as Router,
   Switch,
 } from "react-router-dom";
@@ -33,19 +33,70 @@ function App() {
           />
           <Link to="/home">Pharaoh</Link>
         </h1>
-        <Switch>
-          <Route exact path="/" component={Landing} />
-          <Route path="/login" exact component={Login} />
-          <Route path="/register" exact component={Register} />
-          <Route
+        <AnimatedSwitch
+          atEnter={bounceTransition.atEnter}
+          atLeave={bounceTransition.atLeave}
+          atActive={bounceTransition.atActive}
+          mapStyles={mapStyles}
+          className="route-wrapper"
+        >
+          <AnimatedRoute
+            atEnter={{ offset: -100 }}
+            atLeave={{ offset: -100 }}
+            atActive={{ offset: 0 }}
+            mapStyles={(styles) => ({
+              transform: `translateX(${styles.offset}%)`,
+            })}
+            exact
+            path="/"
+            component={Landing}
+          />
+          <AnimatedRoute
+            atEnter={{ offset: -100 }}
+            atLeave={{ offset: -100 }}
+            atActive={{ offset: 0 }}
+            mapStyles={(styles) => ({
+              transform: `translateX(${styles.offset}%)`,
+            })}
+            path="/login"
+            exact
+            component={Login}
+          />
+          <AnimatedRoute
+            atEnter={{ offset: -100 }}
+            atLeave={{ offset: -100 }}
+            atActive={{ offset: 0 }}
+            mapStyles={(styles) => ({
+              transform: `translateX(${styles.offset}%)`,
+            })}
+            path="/register"
+            exact
+            component={Register}
+          />
+          <AnimatedRoute
+            atEnter={{ offset: -100 }}
+            atLeave={{ offset: -100 }}
+            atActive={{ offset: 0 }}
+            mapStyles={(styles) => ({
+              transform: `translateX(${styles.offset}%)`,
+            })}
             path={`/createOrder/:videoTemplateId`}
             component={createOrder}
           />
 
           <PrivateRoute isAuthenticated={isAuthenticated}>
-            <Route path="/home" component={Home} />
+            <AnimatedRoute
+              atEnter={{ offset: -100 }}
+              atLeave={{ offset: -100 }}
+              atActive={{ offset: 0 }}
+              mapStyles={(styles) => ({
+                transform: `translateX(${styles.offset}%)`,
+              })}
+              path="/home"
+              component={Home}
+            />
           </PrivateRoute>
-        </Switch>
+        </AnimatedSwitch>
       </Router>
     </div>
   );
@@ -53,7 +104,7 @@ function App() {
 
 function PrivateRoute({ isAuthenticated, children, ...rest }) {
   return (
-    <Route
+    <AnimatedRoute
       {...rest}
       render={({ location }) =>
         isAuthenticated ? (
