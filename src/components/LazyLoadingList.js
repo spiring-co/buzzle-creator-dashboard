@@ -56,6 +56,16 @@ export default ({
                         </Link>
                       );
                     }
+                    if (index == 2) {
+                      return (
+                        <td>
+                          {item[i]}
+                          <Link to={`/createOrder/${item[i]}`}>
+                            <button>Send Form</button>
+                          </Link>
+                        </td>
+                      );
+                    }
                     return <td>{item[i]}</td>;
                   })}
                 </tr>
@@ -68,12 +78,22 @@ export default ({
                       return (
                         <Link
                           to={{
-                            pathname: `${document.location.pathname}/${item[i]}`,
+                            pathname: `${document.location.pathname}/${item["videoTemplateId"]}`,
                             state: { video: item },
                           }}
                         >
                           <td>{item[i]}</td>
                         </Link>
+                      );
+                    }
+                    if (index == 2) {
+                      return (
+                        <td>
+                          {item[i]}
+                          <Link to={`/createOrder/${item["videoTemplateId"]}`}>
+                            <button>Send Form</button>
+                          </Link>
+                        </td>
                       );
                     }
                     return <td>{item[i]}</td>;
