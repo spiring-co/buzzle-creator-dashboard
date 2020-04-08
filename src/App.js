@@ -9,12 +9,13 @@ import Register from "pages/Register";
 import React from "react";
 import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import useAuth from "services/auth";
+
 export default () => {
   const { logout, isAuthenticated } = useAuth();
 
   return (
     <div>
-      <Navbar auth={isAuthenticated} log={logout} />
+      <Navbar isAuthenticated={isAuthenticated} logout={logout} />
       <Router>
         <Switch>
           <Route exact path="/" component={Landing} />

@@ -1,66 +1,63 @@
 import React from "react";
-import { Navbar } from "react-bootstrap";
+import Dropdown from "react-bootstrap/Dropdown";
+import Nav from "react-bootstrap/Nav";
+import Navbar from "react-bootstrap/Navbar";
 import styled from "styled-components";
 
-export default ({ auth, log }) => {
-  const Dropdown = styled.div`
-    position: relative;
-    float: right;
-    margin-right: 3vh;
-    margin-top: 1vh;
-    background-color: #78e08f;
-    color: white;
-    padding: 18px;
-    border-radius: 50%;
-  `;
-
-  const DropdownContent = styled.div`
-    display: none;
-
-    position: absolute;
-    background-color: white;
-    min-width: 120px;
-    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-    z-index: 1;
-    top: 5vh;
-    right: 0vh;
-    ${Dropdown}:hover & {
-      display: block;
-    }
-  `;
-
-  const DropdownItem = styled.a`
-    color: black;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-    cursor: pointer;
-  `;
-
+export default ({ isAuthenticated, logout }) => {
   return (
-    <Navbar fixed="top" bg="dark" variant="light">
+    <Navbar
+      sticky="top"
+      bg="light"
+      variant="light"
+      className="justify-content-between"
+    >
       <Navbar.Brand href="/home">
         <img
           src={require("../assets/logo.png")}
-          style={{ height: "2rem", margin: "0.5rem" }}
+          style={{ height: "1.5rem", marginRight: "0.5rem" }}
           alt="Pharaoh Logo"
         />
         Pharaoh
       </Navbar.Brand>
-
-      {auth ? (
-        <button style={{ float: "right", display: "block" }} onClick={log}>
-          Logout
-        </button>
-      ) : null}
-
-      <Dropdown>
-        <DropdownContent>
-          <DropdownItem>Link 1</DropdownItem>
-          <DropdownItem>Link 2</DropdownItem>
-          <DropdownItem>Link 3</DropdownItem>
-        </DropdownContent>
-      </Dropdown>
+      <Nav>
+        {isAuthenticated && (
+          <Dropdown drop="left" id="nav-dropdown">
+            <Dropdown.Toggle as={CustomToggle} />
+            <Dropdown.Menu>
+              <Dropdown.Header>Harsh Bhatia</Dropdown.Header>
+              <Dropdown.Item as="button" onClick={logout}>
+                Logout
+              </Dropdown.Item>
+              <Dropdown.Divider />
+              <Dropdown.Item>Privacy Policy</Dropdown.Item>
+              <Dropdown.Item>Help</Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+        )}
+      </Nav>
     </Navbar>
   );
 };
+
+const StyledDropdown = styled.div`
+  background-color: #78e08f;
+  color: white;
+  height: 5vh;
+  width: 5vh;
+  border-radius: 50%;
+  a::after {
+    color: #78e08f;
+    content: "x";
+  }
+`;
+const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
+  <StyledDropdown
+    ref={ref}
+    onClick={(e) => {
+      e.preventDefault();
+      onClick(e);
+    }}
+    children={children}
+  />
+));
