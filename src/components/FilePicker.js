@@ -1,27 +1,131 @@
 import React, { useState, useEffect } from "react";
-const FilePicker = () => {
+const FilePicker = ({ setCompositions, setTextLayers }) => {
+  const [loading, setLoading] = useState(false);
   const [file, setFile] = useState(null);
+  const [error, setError] = useState(null);
 
-  const pickFile = e => {
+  const extractService = async (fileObj) => {
+    var data = new FormData();
     try {
-      const file = e.target.files[0];
-      setFile(file.name);
-      // const reader = new FileReader();
-      // reader.onload = (function() {
-      //   return function(e) {
-      //     setFile(e.target.result);
-      //   };
-      // })(file);
-      // reader.readAsDataURL(file);
-    } catch (err) {}
+      data.append("aepFile", fileObj);
+      setLoading(true);
+      const response = await fetch(
+        "http://localhost:4488/getStructureFromFile",
+        {
+          method: "POST",
+          body: data,
+        }
+      );
+      setLoading(false);
+      if (response.ok) {
+        const { data } = await response.json();
+        alert(JSON.stringify(data));
+        setCompositions(data.comps);
+        setTextLayers(data.textLayers);
+        setFile(fileObj.name);
+      }
+    } catch (err) {
+      setLoading(false);
+      setError(err);
+    }
+  };
+  const pickFile = (e) => {
+    try {
+      var cFile = e.target.files[0];
+      extractService(cFile);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
+  if (loading) {
+    return (
+      <label
+        class="file_input"
+        style={{
+          margin: 20,
+          padding: 20,
+          borderRadius: 20,
+          paddingTop: 100,
+          paddingBottom: 100,
+          display: "flex",
+          flexDirection: "column",
+          height: 350,
+          boxShadow: "1px 1px 2px 2px lightgrey",
+          textAlign: "center",
+          justifyContent: "center",
+          alignItems: "center",
+          border: "2px dashed grey",
+        }}
+      >
+        <h1 style={{ marginTop: 36, paddingBottom: 0, border: 0 }}>
+          Please wait, While We Doing Our Magic ...
+        </h1>
+        {/* <img
+            style={{ width: "40%", height: "40%" }}
+            src={require("../assets/blackUpload.svg")}
+          /> */}
+      </label>
+    );
+  }
+  if (file === null)
+    return (
+      <label
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={(ev) => {
+          ev.preventDefault();
+          var dFile = ev.dataTransfer.files[0];
+          extractService(dFile);
+        }}
+        for="apex_input"
+        class="file_input"
+        style={{
+          margin: 30,
+          padding: 20,
+          borderRadius: 20,
+          paddingTop: 100,
+          paddingBottom: 100,
+          display: "flex",
+          flexDirection: "column",
+          height: 350,
+          boxShadow: "1px 1px 2px 2px lightgrey",
+          textAlign: "center",
+          justifyContent: "center",
+          alignItems: "center",
+          border: "2px dashed grey",
+        }}
+      >
+        <div>
+          {error && (
+            <p style={{ color: "red" }}>Some Error Occured, Please Retry</p>
+          )}
+          {file !== null && <p>Uploaded - {file}</p>}
+          <img
+            style={{ width: "40%", height: "40%" }}
+            src={require("../assets/blackUpload.svg")}
+          />
+          <p style={{ fontSize: 20, fontWeight: "bold", marginTop: 0 }}>
+            Drag & Drop APEX File Here
+          </p>
+          <p style={{ fontSize: 15, fontWeight: "bold", marginTop: 0 }}>Or</p>
+          <p class="choose_button">Choose File</p>
+        </div>
+        <input
+          onChange={pickFile}
+          id="apex_input"
+          style={{ display: "none" }}
+          type="file"
+          accept=".aepx"
+        />
+      </label>
+    );
   return (
     <label
-      onDragOver={e => e.preventDefault()}
-      onDrop={ev => {
+      onDragOver={(e) => e.preventDefault()}
+      onDrop={(ev) => {
         ev.preventDefault();
-        setFile(ev.dataTransfer.files[0].name);
+        var dFile = ev.dataTransfer.files[0];
+        extractService(dFile);
       }}
       for="apex_input"
       class="file_input"
@@ -38,31 +142,22 @@ const FilePicker = () => {
         textAlign: "center",
         justifyContent: "center",
         alignItems: "center",
-        border: "2px dashed grey"
+        border: "2px dashed green",
       }}
     >
-      <div>
-        {file !== null && <p>Uploaded - {file}</p>}
-        <img
-          style={{ width: "40%", height: "40%" }}
-          src={require("../assets/blackUpload.svg")}
-        />
-        <p style={{ fontSize: 20, fontWeight: "bold", marginTop: 0 }}>
-          Drag & Drop APEX File Here
-        </p>
-        <p style={{ fontSize: 15, fontWeight: "bold", marginTop: 0 }}>Or</p>
-        <p class="choose_button">Choose File</p>
-      </div>
-      <input
-        onChange={pickFile}
-        id="apex_input"
-        style={{ display: "none" }}
-        type="file"
-        accept=".apex"
+      <img
+        style={{ width: "40%", height: "40%" }}
+        src={require("../assets/success.svg")}
       />
+      <h1
+        style={{ color: "green", marginTop: 36, paddingBottom: 0, border: 0 }}
+      >
+        {file} Uploaded Successfully.
+      </h1>
     </label>
   );
 };
+
 export default function FilePickerScreen({ setCompositions }) {
   useEffect(() => {
     setCompositions(["single_event", "double_event"]);
