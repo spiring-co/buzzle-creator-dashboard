@@ -1,14 +1,43 @@
 import { CountryList } from "components/CountryList";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import styled from "styled-components";
+const config = { hostUrl: "http://pharaoh-api.herokuapp.com/creator" };
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
 const config = { hostUrl: "http://localhost:5000/creator" };
 const countryCodeRegExp = /^(\+?\d{1,3}|\d{1,4})$/gm;
 const phoneRegExp = /^\d{10}$/;
-
 export default () => {
+  const Background = styled.div`
+  background-color:#dcdde1;
+  height:150vh;
+  width:100%:
+  overflow-y: hidden;
+
+  
+    }
+  `;
+
+  const Form = styled.div`
+    position: relative;
+    background: white;
+    left: 65vh;
+    top: 40px;
+    justify-content: center;
+    width: 80vh;
+    height: 120vh;
+    border-radius: 20px 20px 20px 20px;
+    padding: 25px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    @media (max-width: 768px) {
+      left: 3vh;
+      width: 90%;
+      top: 8vh;
+    }
+  `;
+
   const [error, setError] = useState(null);
   const { handleChange, handleSubmit, values, errors, touched } = useFormik({
     initialValues: {
@@ -62,52 +91,53 @@ export default () => {
   });
 
   return (
-    <div>
-      <p>
-        Welcome to pharaoh please login to continue, if you don't have an
-        account <Link to="/login">click here to login.</Link>
-      </p>
-      {error && <p style={{ color: "red" }}>Error: {error?.message}</p>}
-      <form onSubmit={handleSubmit}>
-        <label>Name </label>
+    <Background>
+      <Form onSubmit={handleSubmit}>
+        <p
+          style={{
+            marginTop: "0",
+            fontSize: "25px",
+            fontWeight: "bolder",
+
+            marginBottom: "10px",
+          }}
+        >
+          Register
+        </p>
+
+        <label style={{ float: "left", fontWeight: "bolder" }}>Name </label>
         <input
+          style={{ backgroundColor: "#dcdde1", borderRadius: "10px" }}
           type="text"
           placeholder="Enter your name"
-          name="name"
-          onChange={handleChange}
-          value={values.name}
+          name="creatorName"
         />
-        {touched.name && errors.name ? (
-          <p style={{ color: "red" }}>{errors.email}</p>
-        ) : null}
         <br />
-        <label>Email </label>
+        <label style={{ float: "left", fontWeight: "bolder" }}>Email </label>
         <input
+          style={{ backgroundColor: "#dcdde1", borderRadius: "10px" }}
           type="text"
           placeholder="Enter your email"
           name="email"
-          onChange={handleChange}
-          value={values.email}
         />
-        {touched.email && errors.email ? (
-          <p style={{ color: "red" }}>{errors.email}</p>
-        ) : null}
         <br />
-        <label>Password </label>
+        <label style={{ float: "left", fontWeight: "bolder" }}>Password </label>
         <input
+          style={{ backgroundColor: "#dcdde1", borderRadius: "10px" }}
           type="password"
           placeholder="Enter password"
           name="password"
-          onChange={handleChange}
-          value={values.password}
         />
-        {touched.password && errors.password ? (
-          <p style={{ color: "red" }}>{errors.password}</p>
-        ) : null}
         <br />
-        <label>Country Code </label>
+        <label style={{ float: "left", fontWeight: "bolder" }}>
+          Country Code{" "}
+        </label>
         <input
+
+          style={{ backgroundColor: "#dcdde1", borderRadius: "10px" }}
+
           type="text"
+
           placeholder="Enter your country code number"
           name="countryCode"
           onChange={handleChange}
@@ -117,9 +147,14 @@ export default () => {
           <p style={{ color: "red" }}>{errors.countryCode}</p>
         ) : null}
         <br />
-        <label>Phone Number </label>
+        <label style={{ float: "left", fontWeight: "bolder" }}>
+          Phone Number{" "}
+        </label>
         <input
+
+          style={{ backgroundColor: "#dcdde1", borderRadius: "10px" }}
           type="text"
+
           placeholder="Enter your phone number"
           name="phoneNumber"
           value={values.phoneNumber}
@@ -129,9 +164,13 @@ export default () => {
           <p style={{ color: "red" }}>{errors.phoneNumber}</p>
         ) : null}
         <br />
-        <label>Birth Date </label>
+        <label style={{ float: "left", fontWeight: "bolder" }}>
+          Birth Date{" "}
+        </label>
         <input
-          type="Date"
+
+          style={{ backgroundColor: "#dcdde1", borderRadius: "10px" }}
+          type="date"
           placeholder="Enter your birth date"
           name="birthDate"
           onChange={handleChange}
@@ -151,12 +190,12 @@ export default () => {
           <p style={{ color: "red" }}>{errors.country}</p>
         ) : null}
         <br />
-        <label>Gender </label>
+        <label style={{ float: "left", fontWeight: "bolder" }}>Gender </label>
         <select
+          style={{ backgroundColor: "#dcdde1", borderRadius: "10px" }}
+          tyle={{ backgroundColor: "#dcdde1", borderRadius: "10px" }}
           id="gender"
           name="gender"
-          onChange={handleChange}
-          value={values.gender}
         >
           <option value="Male">male</option>
           <option value="Female">female</option>
@@ -164,10 +203,24 @@ export default () => {
         </select>
         <br />
 
-        <button className="-bordered" type="submit">
+        <button
+          style={{
+            backgroundColor: "#0097e6",
+            width: "12vh",
+            marginTop: "35px",
+          }}
+          className="-bordered"
+          type="submit"
+        >
           Register
         </button>
-      </form>
-    </div>
+        <p style={{ marginTop: "0" }}>
+          Already have an account?{" "}
+          <Link to="/login" style={{ color: "#0097e6" }}>
+            Log in
+          </Link>
+        </p>
+      </Form>
+    </Background>
   );
 };

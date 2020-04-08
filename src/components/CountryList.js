@@ -3,8 +3,15 @@ import React from "react";
 export const CountryList = () => {
   return (
     <div>
-      <label for="country">Country </label>
-      <select id="country" name="country" class="form-control">
+      <label style={{ float: "left", fontWeight: "bolder" }} for="country">
+        Country{" "}
+      </label>
+      <select
+        style={{ backgroundColor: "#dcdde1", borderRadius: "10px" }}
+        id="country"
+        name="country"
+        class="form-control"
+      >
         <option value="Afghanistan">Afghanistan</option>
         <option value="Åland Islands">Åland Islands</option>
         <option value="Albania">Albania</option>
