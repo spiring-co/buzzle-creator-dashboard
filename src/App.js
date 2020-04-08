@@ -20,7 +20,7 @@ function App() {
     <div>
       {" "}
       <Navbars auth={isAuthenticated} log={logout} />
-      <div style={{ margin: "auto", width: "40%", textAlign: "center" }}>
+      <div style={{ margin: "auto", width: "100%", textAlign: "center" }}>
         <Router>
           <Switch>
             <Route exact path="/" component={Landing} />

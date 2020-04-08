@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  Navbar,
-  Container,
-  Dropdown,
-  Badge,
-  DropdownButton,
-} from "react-bootstrap";
+import { Navbar, Container } from "react-bootstrap";
 import { Link, BrowserRouter as Router } from "react-router-dom";
 import styled from "styled-components";
 function Navbars({ auth, log }) {
@@ -70,7 +64,7 @@ function Navbars({ auth, log }) {
               style={{ height: "2rem", margin: "0px 10px 10px 0px" }}
               alt="Pharaoh Logo"
             />
-            <Link to="/home" style={{ color: "black" }}>
+            <Link to={{ pathname: "/home" }} style={{ color: "black" }}>
               Pharaoh
             </Link>
           </Router>

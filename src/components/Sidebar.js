@@ -6,7 +6,7 @@ function SideBar({ Url }) {
     height: 100%;
     width: 160px;
     position: fixed;
-
+    top: 45px;
     left: 0;
     background-color: #dfe4ea;
     overflow-x: hidden;
