@@ -26,6 +26,8 @@ function FormBuilder({ submitForm, edit, video }) {
   const [segmentDisplay, setSegmentDisplay] = useState(false);
   const [versionDisplay, setVersionDisplay] = useState(false);
   const [textLayers, setTextLayers] = useState([]);
+  const [imageLayers, setImageLayers] = useState([]);
+  const [pickerLayers, setPickerLayers] = useState([]);
   const [compositions, setCompositions] = useState([]);
   const [comp_name, setComp_name] = useState("");
   const [value, setValue] = useState("");
@@ -174,6 +176,9 @@ function FormBuilder({ submitForm, edit, video }) {
           children="Go Next Segment >"
         />
         <FormBuilderSegment
+          textLayers={textLayers}
+          imageLayers={imageLayers}
+          pickerLayers={pickerLayers}
           edit={edit}
           usedFields={usedFields}
           setUsedFields={setUsedFields}
@@ -267,6 +272,8 @@ function FormBuilder({ submitForm, edit, video }) {
       </p>
       {!edit && (
         <FilePicker
+          setImageLayers={setImageLayers}
+          setPickerLayers={setPickerLayers}
           setTextLayers={setTextLayers}
           setCompositions={setCompositions}
         />

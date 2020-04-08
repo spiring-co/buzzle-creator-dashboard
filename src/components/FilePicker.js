@@ -5,6 +5,7 @@ const FilePicker = ({ setCompositions, setTextLayers }) => {
   const [error, setError] = useState(null);
 
   const extractService = async (fileObj) => {
+    setError(null);
     var data = new FormData();
     try {
       data.append("aepFile", fileObj);
@@ -17,14 +18,16 @@ const FilePicker = ({ setCompositions, setTextLayers }) => {
         }
       );
       setLoading(false);
+
       if (response.ok) {
         const { data } = await response.json();
-        alert(JSON.stringify(data));
+
         setCompositions(data.comps);
         setTextLayers(data.textLayers);
         setFile(fileObj.name);
       }
     } catch (err) {
+      console.log(err);
       setLoading(false);
       setError(err);
     }
@@ -95,11 +98,10 @@ const FilePicker = ({ setCompositions, setTextLayers }) => {
           border: "2px dashed grey",
         }}
       >
+        {error && (
+          <text style={{ color: "red" }}>Some Error Occured, Please Retry</text>
+        )}
         <div>
-          {error && (
-            <p style={{ color: "red" }}>Some Error Occured, Please Retry</p>
-          )}
-          {file !== null && <p>Uploaded - {file}</p>}
           <img
             style={{ width: "40%", height: "40%" }}
             src={require("../assets/blackUpload.svg")}
@@ -115,7 +117,7 @@ const FilePicker = ({ setCompositions, setTextLayers }) => {
           id="apex_input"
           style={{ display: "none" }}
           type="file"
-          accept=".aepx"
+          accept={[".aepx", ".aep"]}
         />
       </label>
     );
@@ -158,9 +160,6 @@ const FilePicker = ({ setCompositions, setTextLayers }) => {
   );
 };
 
-export default function FilePickerScreen({ setCompositions }) {
-  useEffect(() => {
-    setCompositions(["single_event", "double_event"]);
-  }, []);
-  return <FilePicker />;
+export default function FilePickerScreen(props) {
+  return <FilePicker {...props} />;
 }
