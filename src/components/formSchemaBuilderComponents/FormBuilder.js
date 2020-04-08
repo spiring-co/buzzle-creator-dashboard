@@ -16,7 +16,7 @@ function FormBuilder({ submitForm, edit, video }) {
     addVersion,
     removeVersion,
     loadVideo,
-    removeSegment
+    removeSegment,
   } = useActions();
   const [editVersion, setEditVersion] = useState(false);
   const [editIndex, setEditIndex] = useState(0);
@@ -61,13 +61,13 @@ function FormBuilder({ submitForm, edit, video }) {
   const deleteSegment = () => {
     const fields = videoObj.versions[activeVersionIndex].form.segments[
       activeIndex
-    ].fields.map(i => i.name);
-    setUsedFields(usedFields.filter(i => !fields.includes(i)));
+    ].fields.map((i) => i.name);
+    setUsedFields(usedFields.filter((i) => !fields.includes(i)));
     activeIndex !== 0 && goToPreviousSegment();
     removeSegment(activeVersionIndex, activeIndex);
   };
 
-  const handleTagsChange = e => {
+  const handleTagsChange = (e) => {
     var tags = e.target.value.split(",");
     editVideoKeys({ tags });
   };
@@ -90,10 +90,10 @@ function FormBuilder({ submitForm, edit, video }) {
           </strong>
         </p>
         <input
-          onChange={e => {
+          onChange={(e) => {
             setValue(Math.random());
             editversionKeys(editVersion ? editIndex : activeVersionIndex, {
-              title: e.target.value
+              title: e.target.value,
             });
           }}
           style={styles.input}
@@ -105,10 +105,10 @@ function FormBuilder({ submitForm, edit, video }) {
           }
         />
         <input
-          onChange={e => {
+          onChange={(e) => {
             setValue(Math.random());
             editversionKeys(editVersion ? editIndex : activeVersionIndex, {
-              description: e.target.value
+              description: e.target.value,
             });
           }}
           style={styles.input}
@@ -120,10 +120,10 @@ function FormBuilder({ submitForm, edit, video }) {
           }
         />
         <input
-          onChange={e => {
+          onChange={(e) => {
             setValue(Math.random());
             editversionKeys(editVersion ? editIndex : activeVersionIndex, {
-              price: e.target.value
+              price: e.target.value,
             });
           }}
           style={styles.input}
@@ -216,7 +216,7 @@ function FormBuilder({ submitForm, edit, video }) {
         })}
         {!edit && (
           <div style={{ margin: 10 }}>
-            <select onChange={e => setComp_name(e.target.value)}>
+            <select onChange={(e) => setComp_name(e.target.value)}>
               <option disabled selected value="">
                 Select Composition
               </option>
@@ -257,7 +257,7 @@ function FormBuilder({ submitForm, edit, video }) {
   return (
     <div
       style={{
-        textAlign: "center"
+        textAlign: "center",
       }}
     >
       <br />
@@ -266,14 +266,14 @@ function FormBuilder({ submitForm, edit, video }) {
       </p>
       {!edit && <FilePicker setCompositions={setCompositions} />}
       <input
-        onChange={e => editVideoKeys({ title: e.target.value })}
+        onChange={(e) => editVideoKeys({ title: e.target.value })}
         style={styles.input}
         placeholder="Enter Video Title"
         type="text"
         value={videoObj.title}
       />
       <input
-        onChange={e => editVideoKeys({ description: e.target.value })}
+        onChange={(e) => editVideoKeys({ description: e.target.value })}
         style={styles.input}
         placeholder="Enter Video Description"
         type="text"
@@ -294,7 +294,7 @@ function FormBuilder({ submitForm, edit, video }) {
   );
 }
 
-export default props => {
+export default (props) => {
   return (
     <StateProvider>
       <FormBuilder {...props} />
@@ -314,6 +314,6 @@ const styles = {
     height: 40,
     borderWidth: 0,
     borderBottomWidth: 2,
-    borderColor: "grey"
-  }
+    borderColor: "grey",
+  },
 };

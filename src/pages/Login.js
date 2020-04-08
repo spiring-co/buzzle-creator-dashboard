@@ -86,7 +86,7 @@ export default () => {
           placeholder="Enter email"
           name="email"
           value={values.email}
-          onChange={handleChange}
+          onChange={handleChange} 
         />
         {touched.email && errors.email ? (
           <p style={{ color: "red" }}>{errors.email}</p>

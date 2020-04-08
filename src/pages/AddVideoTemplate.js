@@ -20,8 +20,7 @@ export default props => {
       try {
         setIsEditing(true);
         const response = await fetch(
-          process.env.REACT_APP_API_URL +
-            `/video/creator/${creatorId}/${videoTemplateId}`,
+          process.env.REACT_APP_API_URL + `/video/${videoTemplateId}`,
           {
             method: "PUT",
             body: JSON.stringify(data),
@@ -53,17 +52,14 @@ export default props => {
   const handleSubmitForm = async data => {
     try {
       setLoading(true);
-      const response = await fetch(
-        process.env.REACT_APP_API_URL + `/creator/${creatorId}/videoTemplates`,
-        {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(data)
-        }
-      );
+      const response = await fetch(process.env.REACT_APP_API_URL + `/video`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
       setLoading(false);
       if (response.ok) {
         setIsBlocking(false);
