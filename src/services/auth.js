@@ -12,17 +12,17 @@ export default () => {
       method: "POST",
       headers: {
         Accept: "application/json",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ email, password }),
     });
 
     if (!response.ok) {
       throw new Error((await response.json()).message);
     }
-    const { jwtoken, creatorDetails} = await response.json()
-    localStorage.setItem("jwtoken",jwtoken[0]) 
-    localStorage.setItem("creatorDetails",creatorDetails[0]) 
+    const { jwtoken, creatorDetails } = await response.json();
+    localStorage.setItem("jwtoken", jwtoken[0]);
+    localStorage.setItem("creatorDetails", creatorDetails[0]);
     setIsAuthenticated(true);
     return jwtoken;
   };

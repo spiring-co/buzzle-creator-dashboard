@@ -1,7 +1,13 @@
 import AddVideoTemplate from "pages/AddVideoTemplate";
 import VideoTemplate from "pages/VideoTemplate";
 import React from "react";
-import { Link, Route, Switch, useRouteMatch } from "react-router-dom";
+import {
+  Link,
+  Route,
+  Switch,
+  useRouteMatch,
+  useHistory,
+} from "react-router-dom";
 import useApi from "services/api";
 export default () => {
   let { path } = useRouteMatch();
@@ -21,7 +27,7 @@ export default () => {
 
 const CreatorVideoTemplates = () => {
   let { url } = useRouteMatch();
-
+  let history = useHistory();
   const { data, loading, error } = useApi(
     "/creator/sjjsjjjkaaaa/videoTemplates"
   );
@@ -36,8 +42,8 @@ const CreatorVideoTemplates = () => {
           pathname: `${url}/add`,
           state: {
             edit: false,
-            video: null
-          }
+            video: null,
+          },
         }}
       >
         <button>+ Add Template</button>
@@ -56,13 +62,19 @@ const CreatorVideoTemplates = () => {
                 <Link
                   to={{
                     pathname: `${url}/${t._id}`,
-                    state: { video: t }
+                    state: { video: t },
                   }}
                 >
                   <td>{t._id}</td>
                 </Link>
                 <td>{t.title}</td>
-                <td>{t.description}</td>
+                <td>
+                  {t.description}
+                  <span> </span>{" "}
+                  <Link to={`/createOrder/${t.videoTemplateId}`}>
+                    <button>Send Form</button>
+                  </Link>
+                </td>
               </tr>
             );
           }
