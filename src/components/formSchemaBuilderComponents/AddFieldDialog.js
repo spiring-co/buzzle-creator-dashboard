@@ -1,6 +1,10 @@
 import React from "react";
 
 export default function AddFieldDialog(props) {
+  const { textLayers = [], imageLayers = [], pickerLayers = [] } = props;
+  // layers coming may comes as array of object ,
+  //currently all layers are configured as they are array of strings,
+  //except textLayers which is configured as {name:string,value:string}
   const [type, setType] = React.useState(props?.field?.type ?? null);
   const [name, setName] = React.useState(props?.field?.name ?? null);
   const [required, setRequired] = React.useState(
@@ -14,33 +18,20 @@ export default function AddFieldDialog(props) {
     props?.field?.options ?? [
       {
         label: "",
-        value: ""
-      }
+        value: "",
+      },
     ]
   );
   const [width, setWidth] = React.useState(props?.field?.width ?? 0);
   const [height, setHeight] = React.useState(props?.field?.height ?? 0);
-  const [textLayers, setTextLayers] = React.useState([]);
-  const [imageLayers, setImageLayers] = React.useState([]);
-  const [pickerLayers, setPickerLayer] = React.useState([]);
+
   const inputTypes = [
     { label: "Text", value: "custom_text_input" },
     { label: "Picker", value: "custom_picker" },
-    { label: "Image", value: "custom_image_picker" }
+    { label: "Image", value: "custom_image_picker" },
   ];
 
-  React.useEffect(() => {
-    // here all layers are fetched and sets
-
-    setTextLayers(["bride_name", "groom_name"]);
-    setImageLayers(["asset:couple.png"]);
-    setPickerLayer(["primary_event_title"]);
-    return function() {
-      console.log("unmounting");
-    };
-  }, []);
-
-  const toggleDialog = state => {
+  const toggleDialog = (state) => {
     props.toggleDialog(state);
   };
 
@@ -73,14 +64,14 @@ export default function AddFieldDialog(props) {
       <input
         value={label}
         type="text"
-        onChange={e => setLabel(e.target.value)}
+        onChange={(e) => setLabel(e.target.value)}
       />
       <br />
       <label for="required">Required : </label>
       <select
         value={required}
         id="required"
-        onChange={e => {
+        onChange={(e) => {
           setRequired(e.target.value);
         }}
       >
@@ -95,7 +86,7 @@ export default function AddFieldDialog(props) {
       <input
         value={maxLength}
         type="number"
-        onChange={e => setMaxLength(e.target.value)}
+        onChange={(e) => setMaxLength(e.target.value)}
       />
       <br />
     </div>
@@ -106,17 +97,14 @@ export default function AddFieldDialog(props) {
         if (i === index) {
           return {
             label: value,
-            value: value
-              .toLowerCase()
-              .split(" ")
-              .join("_")
+            value: value.toLowerCase().split(" ").join("_"),
           };
         }
         return item;
       })
     );
   };
-  const handleOptionDelete = index => {
+  const handleOptionDelete = (index) => {
     setOptions(options.filter((item, i) => i !== index));
   };
   const addOption = () => {
@@ -128,18 +116,17 @@ export default function AddFieldDialog(props) {
       <input
         value={label}
         type="text"
-        onChange={e => setLabel(e.target.value)}
+        onChange={(e) => setLabel(e.target.value)}
       />
       <br />
       <label for="required">Required : </label>
       <select
         value={required}
         id="required"
-        onChange={e => {
+        onChange={(e) => {
           setRequired(e.target.value);
         }}
       >
-        {" "}
         <option value="" disabled selected>
           Select Required
         </option>
@@ -153,7 +140,7 @@ export default function AddFieldDialog(props) {
             <lable for="label">Option Label</lable>
             <input
               placeholder="Enter Label"
-              onChange={e => handleOption(index, e.target.value)}
+              onChange={(e) => handleOption(index, e.target.value)}
               type="text"
               value={item.label}
             />
@@ -177,14 +164,14 @@ export default function AddFieldDialog(props) {
       <input
         value={label}
         type="text"
-        onChange={e => setLabel(e.target.value)}
+        onChange={(e) => setLabel(e.target.value)}
       />
       <br />
       <label for="required">Required : </label>
       <select
         value={required}
         id="required"
-        onChange={e => {
+        onChange={(e) => {
           setRequired(e.target.value);
         }}
       >
@@ -200,7 +187,7 @@ export default function AddFieldDialog(props) {
         id="width"
         value={width}
         type="number"
-        onChange={e => {
+        onChange={(e) => {
           setWidth(e.target.value);
         }}
       />
@@ -210,7 +197,7 @@ export default function AddFieldDialog(props) {
         id="height"
         value={height}
         type="number"
-        onChange={e => {
+        onChange={(e) => {
           setHeight(e.target.value);
         }}
       />
@@ -233,8 +220,19 @@ export default function AddFieldDialog(props) {
   };
   const fieldsSelector = () => {
     switch (type) {
-      case "custom_text_input" || "custom_picker":
+      case "custom_text_input":
         return textLayers.map((item, index) => {
+          if (props.usedFields.includes(item.name)) {
+            return false;
+          }
+          return (
+            <option key={index} value={item.name}>
+              {item.name}
+            </option>
+          );
+        });
+      case "custom_picker":
+        return pickerLayers.map((item, index) => {
           if (props.usedFields.includes(item)) {
             return false;
           }
@@ -244,7 +242,6 @@ export default function AddFieldDialog(props) {
             </option>
           );
         });
-
       case "custom_image_picker":
         return imageLayers.map((item, index) => {
           if (props.usedFields.includes(item)) {

@@ -6,19 +6,13 @@ function SideBar({ Url }) {
   return (
     <Nav variant="tabs" defaultActiveKey="/home" className="flex-column">
       <Nav.Item>
-        <Nav.Link as={NavLink} to={`${Url}/profile`}>
+        <Nav.Link className="text-dark" as={NavLink} to={`${Url}/profile`}>
           Your Profile and Settings
         </Nav.Link>
       </Nav.Item>
       <Nav.Item>
-        <Nav.Link eventKey="link-1">
-          {" "}
-          <NavLink
-            style={{ textDecoration: "none", color: "black" }}
-            to={`${Url}/videoTemplates`}
-          >
-            Your Video Templates
-          </NavLink>
+        <Nav.Link as={NavLink} to={`${Url}/videoTemplates`}>
+          Your Video Templates
         </Nav.Link>
       </Nav.Item>
       <Nav.Item>

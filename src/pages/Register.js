@@ -4,12 +4,9 @@ import React, { useState } from "react";
 import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import * as Yup from "yup";
-const config = { hostUrl: "http://localhost:5000/creator" };
-const countryCodeRegExp = /^(\+?\d{1,3}|\d{1,4})$/gm;
-const phoneRegExp = /^\d{10}$/;
+
 export default () => {
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
   const {
     handleChange,
     handleSubmit,
@@ -17,35 +14,32 @@ export default () => {
     values,
     errors,
     touched,
+    isSubmitting,
   } = useFormik({
-    initialValues: {},
-    validationSchema: Yup.object({
-      name: Yup.string().required("Name is required"),
-      email: Yup.string()
-        .email("Invalid email address")
-        .required("Email is Required"),
-      password: Yup.string().required("Password is Required"),
-      countryCode: Yup.string()
-        .matches(countryCodeRegExp, "country code is not valid")
-        .required("country code is required"),
-      phoneNumber: Yup.string()
-        .matches(phoneRegExp, "Phone number isn't valid")
-        .required("Phone number is required"),
-      birthDate: Yup.date().required("Birth date is required"),
-      country: Yup.string().required("Country name is required"),
-      gender: Yup.string().required("Gender field is required"),
-    }),
+    initialValues: {
+      name: "",
+      email: "",
+      countryCode: "",
+      password: "",
+      gender: "",
+      country: "",
+      phoneNumber: "",
+      birthDate: "",
+    },
+    validationSchema,
     onSubmit: async (s) => {
       try {
-        setLoading(true);
-        const response = await fetch(config.hostUrl, {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(s),
-        });
+        const response = await fetch(
+          process.env.REACT_APP_API_URL + "/creator",
+          {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(s),
+          }
+        );
         if (response.ok) {
           return window.location.assign("/");
         } else {
@@ -53,8 +47,6 @@ export default () => {
         }
       } catch (e) {
         setError(e);
-      } finally {
-        setLoading(false);
       }
     },
   });
@@ -63,24 +55,33 @@ export default () => {
     <Container>
       <Row className="justify-content-md-center">
         <Col md={6}>
-          {error && <Alert variant="danger" children={error.message} />}
-          <Form onSubmit={handleSubmit} className="mb-4 mt-5">
-            <h3 className="text-center mb-3">Register</h3>
-            <p className="text-muted text-center">
+          <Form
+            isValidated={Object.keys(errors).length}
+            onSubmit={handleSubmit}
+            className="mb-4 mt-5"
+          >
+            <h3 className="text-center mb-4">Register</h3>
+            <p className="text-muted text-center mb-4">
               You can register with your details and have the best time of your
               life. 🎉
             </p>
-            {error && <Alert variant="danger" children={error.message} />}
+            {error && (
+              <Alert
+                variant="danger"
+                children={error.message || "Something went wrong 😕"}
+              />
+            )}
 
             <Form.Group controlId="name">
               <Form.Label>Name</Form.Label>
               <Form.Control
+                name={"name"}
+                value={values.name}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                value={values.name}
-                name={"name"}
                 type="text"
                 placeholder="Your name here"
+                isValid={touched.name && !errors.name}
                 isInvalid={touched.name && !!errors.name}
               />
               <Form.Control.Feedback type="invalid">
@@ -140,9 +141,9 @@ export default () => {
                 <option disabled selected value="">
                   Select a gender
                 </option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
               </Form.Control>
               <Form.Control.Feedback type="invalid">
                 {errors.gender}
@@ -178,6 +179,21 @@ export default () => {
                 {errors.birthDate}
               </Form.Control.Feedback>
             </Form.Group>
+            <Form.Group controlId="countryCode">
+              <Form.Label>Country Code</Form.Label>
+              <Form.Control
+                name={"countryCode"}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.countryCode}
+                type="tel"
+                placeholder="Enter Country Code"
+                isInvalid={touched.countryCode && !!errors.countryCode}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.countryCode}
+              </Form.Control.Feedback>
+            </Form.Group>
             <Form.Group controlId="country">
               <Form.Label>Country</Form.Label>
               <Form.Control
@@ -200,8 +216,8 @@ export default () => {
               block
               variant="primary"
               type="submit"
-              children={loading ? "Loading..." : "Register"}
-              disabled={loading}
+              children={isSubmitting ? "Loading..." : "Register"}
+              disabled={isSubmitting}
             />
           </Form>
           <p className="text-muted text-center">
@@ -212,3 +228,34 @@ export default () => {
     </Container>
   );
 };
+
+const validationSchema = Yup.object({
+  name: Yup.string()
+    .min(3, "Should be at least 3 characters")
+    .max(40, "Should not be more than 40 characters")
+    .matches(/^[a-zA-Z ]*$/, "Should only contain alphabetic characters")
+    .required("Name is required"),
+  email: Yup.string()
+    .email("Invalid email address")
+    .max(100, "Should not be more than 100 characters")
+    .required("Email is Required"),
+  password: Yup.string()
+    .min(8, "Should be at least 8 characters")
+    .max(40, "Should not be more than 40 characters")
+    .matches(
+      /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,40}$/,
+      "Should have  at least a number, and at least a special character"
+    )
+    .required("Password is Required"),
+  countryCode: Yup.string()
+    .matches(/^(\+?\d{1,3}|\d{1,4})$/gm, "Country code is not valid")
+    .required("Country code is required"),
+  phoneNumber: Yup.string()
+    .matches(/^\d{10}$/, "Phone number isn't valid")
+    .required("Phone number is required"),
+
+  //TODO age check
+  birthDate: Yup.date().required("Birth date is required"),
+  country: Yup.string().required("Country name is required"),
+  gender: Yup.string().required("Gender field is required"),
+});

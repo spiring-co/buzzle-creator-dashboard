@@ -3719,6 +3719,11 @@ dom-accessibility-api@^0.3.0:
   resolved "https://registry.yarnpkg.com/dom-accessibility-api/-/dom-accessibility-api-0.3.0.tgz#511e5993dd673b97c87ea47dba0e3892f7e0c983"
   integrity sha512-PzwHEmsRP3IGY4gv/Ug+rMeaTIyTJvadCb+ujYXYeIylbHJezIyNToe8KfEgHTCEYyC+/bUghYOGg8yMGlZ6vA==
 
+dom-confetti@0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/dom-confetti/-/dom-confetti-0.1.1.tgz#f53c355301286430e9f500567adac5041c827468"
+  integrity sha512-cyTs35FOqOlm+9rC8C5p0BFo0aHR2t6VWHdXmvgUEFHsF/P7tZeS5nw71oX6NifJrlxOmZ6VcmCH/hn99mqaAA==
+
 dom-converter@^0.2:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/dom-converter/-/dom-converter-0.2.0.tgz#6721a9daee2e293682955b6afe416771627bb768"
@@ -8724,6 +8729,13 @@ react-dev-utils@^10.2.1:
     strip-ansi "6.0.0"
     text-table "0.2.0"
 
+react-dom-confetti@^0.1.3:
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/react-dom-confetti/-/react-dom-confetti-0.1.3.tgz#151bdbd4e494c5402c24f005d99e116851ae51a6"
+  integrity sha512-F6jRLhg5CAfGi/oNM6fGlv+cHF7wR3xZ6GMZRKt1NgCzC3mVjQ2ctxVDEhe007Tm6b3r6AOQAzZzVyuDdblDxA==
+  dependencies:
+    dom-confetti "0.1.1"
+
 react-dom@^16.13.1:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.13.1.tgz#c1bd37331a0486c078ee54c4740720993b2e0e7f"
@@ -8744,7 +8756,7 @@ react-fast-compare@^2.0.1:
   resolved "https://registry.yarnpkg.com/react-fast-compare/-/react-fast-compare-2.0.4.tgz#e84b4d455b0fec113e0402c329352715196f81f9"
   integrity sha512-suNP+J1VU1MWFKcyt7RtjiSWUjvidmQSlqu+eHslq+342xCbGTYmC0mEhPCOHxlW0CywylOC1u2DFAT+bv4dBw==
 
-react-image-crop@^8.6.2:
+react-image-crop@^8.6.1:
   version "8.6.2"
   resolved "https://registry.yarnpkg.com/react-image-crop/-/react-image-crop-8.6.2.tgz#bac0963ab517cdfba42b3a091774de4c3f4f3ece"
   integrity sha512-mi2UwL1ZhMk/L9DhxnRK/V91HYXNNaeBzrX+IfZWPEun6H5jnrts14K2FEBKMEcyz/5anNk8TiU94yo+dSVDog==

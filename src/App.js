@@ -2,6 +2,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 import Navbar from "components/Navbar";
 import PrivateRoute from "components/PrivateRoute";
+import ForgotPassword from "pages/ForgotPassword";
 import Home from "pages/Home";
 import Landing from "pages/Landing";
 import Login from "pages/Login";
@@ -21,7 +22,7 @@ export default () => {
           <Route exact path="/" component={Landing} />
           <Route path="/login" exact component={Login} />
           <Route path="/register" exact component={Register} />
-
+          <Route path="/forgotPassword" component={ForgotPassword} />
           <PrivateRoute isAuthenticated={isAuthenticated}>
             <Route path="/home" component={Home} />
           </PrivateRoute>
