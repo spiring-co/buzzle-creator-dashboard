@@ -1,6 +1,6 @@
 import AddVideoTemplate from "pages/AddVideoTemplate";
 import VideoTemplate from "pages/VideoTemplate";
-import React from "react";
+import React, { useState } from "react";
 import {
   Link,
   Route,
@@ -9,6 +9,7 @@ import {
   useHistory,
 } from "react-router-dom";
 import useApi from "services/api";
+import LazyLoadingList from "components/LazyLoadingList";
 export default () => {
   let { path } = useRouteMatch();
 
@@ -27,14 +28,9 @@ export default () => {
 
 const CreatorVideoTemplates = () => {
   let { url } = useRouteMatch();
+  const [page, setPageNumber] = useState(1);
+  const uri = `${process.env.REACT_APP_API_URL}/creator/sjjsjjjkaaaa/videoTemplates`;
   let history = useHistory();
-  const { data, loading, error } = useApi(
-    "/creator/sjjsjjjkaaaa/videoTemplates"
-  );
-  console.log(data);
-
-  if (loading) return <p>Loading your templates...</p>;
-  if (error) return <p>Error: {error.message}</p>;
   return (
     <div>
       <Link
@@ -49,7 +45,21 @@ const CreatorVideoTemplates = () => {
         <button>+ Add Template</button>
       </Link>
       <br />
-      <table className="table">
+      <LazyLoadingList
+        from="templates"
+        page={page}
+        url={uri}
+        size={10}
+        setPageNumber={setPageNumber}
+        listHeader={["UID", "Title", "Description"]}
+        listKeys={["_id", "title", "description"]}
+      />
+    </div>
+  );
+};
+
+{
+  /* <table className="table">
         <tr style={{ background: "antiquewhite" }}>
           <th>UID</th>
           <th>Title</th>
@@ -79,7 +89,5 @@ const CreatorVideoTemplates = () => {
             );
           }
         })}
-      </table>
-    </div>
-  );
-};
+      </table> */
+}

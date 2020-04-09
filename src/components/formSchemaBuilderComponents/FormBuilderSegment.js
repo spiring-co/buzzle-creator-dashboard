@@ -5,11 +5,14 @@ import React, { useContext, useEffect, useState } from "react";
 import AddFields from "./AddFieldDialog";
 
 export default ({
+  textLayers,
+  imageLayers,
+  pickerLayers,
   activeIndex,
   usedFields,
   edit,
   activeVersionIndex,
-  setUsedFields
+  setUsedFields,
 }) => {
   const [videoObj] = useContext(SegmentsContext);
 
@@ -19,7 +22,7 @@ export default ({
     removeField,
     swapFields,
     restoreFieldsFromPreviousVersion,
-    setSegmentKeys
+    setSegmentKeys,
   } = useActions();
 
   const [editIndex, setEditIndex] = useState(null);
@@ -48,18 +51,18 @@ export default ({
     }
   }, [activeIndex, videoObj, value]);
 
-  const addField = value => {
+  const addField = (value) => {
     setUsedFields([...usedFields, value.name]);
     addSegmentField(activeVersionIndex, activeIndex, value);
   };
 
-  const _editField = index => {
+  const _editField = (index) => {
     setEditIndex(index);
     setIsDialogVisible(true);
   };
 
   const _deleteField = (item, index) => {
-    setUsedFields(usedFields.filter(i => i !== item.name));
+    setUsedFields(usedFields.filter((i) => i !== item.name));
     removeField(activeVersionIndex, activeIndex, index);
   };
 
@@ -73,7 +76,7 @@ export default ({
     setValue(Math.random());
   };
 
-  const editFieldValue = value => {
+  const editFieldValue = (value) => {
     //if user changed field name
     if (
       videoObj.versions[activeVersionIndex].form.segments[activeIndex].fields[
@@ -81,7 +84,7 @@ export default ({
       ].name !== value.name
     ) {
       setUsedFields(
-        usedFields.map(item => {
+        usedFields.map((item) => {
           if (
             item ===
             videoObj.versions[activeVersionIndex].form.segments[activeIndex]
@@ -108,7 +111,7 @@ export default ({
       <FieldPreviewContainer
         _editField={() => _editField(index)}
         _deleteField={() => _deleteField(item, index)}
-        _onDrop={e => _onDrop(e, index)}
+        _onDrop={(e) => _onDrop(e, index)}
         index={index}
         children={<p>{JSON.stringify(item)}</p>}
       />
@@ -124,10 +127,10 @@ export default ({
         }
         type="text"
         placeholder="Enter Section Title"
-        onChange={e => {
+        onChange={(e) => {
           setValue(Math.random());
           setSegmentKeys(activeVersionIndex, activeIndex, {
-            title: e.target.value
+            title: e.target.value,
           });
         }}
       />
@@ -137,6 +140,9 @@ export default ({
       <button onClick={() => setIsDialogVisible(true)} children="Add Field" />
       {isDialogVisible && (
         <AddFields
+          textLayers={textLayers}
+          imageLayers={imageLayers}
+          pickerLayers={pickerLayers}
           usedFields={usedFields}
           field={
             videoObj.versions[activeVersionIndex].form.segments[activeIndex]
@@ -169,8 +175,8 @@ const FieldPreviewContainer = ({
       style={styles.fieldPreview}
       draggable={true}
       onDrop={_onDrop}
-      onDragOver={e => e.preventDefault()}
-      onDragStart={ev => ev.dataTransfer.setData("text/plain", index)}
+      onDragOver={(e) => e.preventDefault()}
+      onDragStart={(ev) => ev.dataTransfer.setData("text/plain", index)}
       {...props}
     >
       {children}
@@ -184,7 +190,7 @@ const styles = {
   container: {
     border: "1px solid black",
     margin: "auto",
-    padding: 15
+    padding: 15,
   },
-  fieldPreview: { border: " black solid 1px", padding: 20, margin: 10 }
+  fieldPreview: { border: " black solid 1px", padding: 20, margin: 10 },
 };
