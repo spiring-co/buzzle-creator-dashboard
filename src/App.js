@@ -1,61 +1,32 @@
+import "bootstrap/dist/css/bootstrap.min.css";
+
+import Navbar from "components/Navbar";
+import PrivateRoute from "components/PrivateRoute";
 import Home from "pages/Home";
 import Landing from "pages/Landing";
 import Login from "pages/Login";
 import Register from "pages/Register";
 import React from "react";
-import Navbars from "./components/Navbars";
-import {
-  Link,
-  Redirect,
-  Route,
-  BrowserRouter as Router,
-  Switch,
-} from "react-router-dom";
+import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import useAuth from "services/auth";
-import createOrder from "pages/createOrder";
 
-function App() {
+export default () => {
   const { logout, isAuthenticated } = useAuth();
 
   return (
-
     <div>
+      <Navbar isAuthenticated={isAuthenticated} logout={logout} />
+      <Router>
+        <Switch>
+          <Route exact path="/" component={Landing} />
+          <Route path="/login" exact component={Login} />
+          <Route path="/register" exact component={Register} />
 
-      <Navbars auth={isAuthenticated} log={logout} />
-      <div style={{ margin: "auto", width: "100%", textAlign: "center" }}>
-        <Router>
-          <Switch>
-            <Route exact path="/" component={Landing} />
-            <Route path="/login" exact component={Login} />
-            <Route path="/register" exact component={Register} />
-
-            <PrivateRoute isAuthenticated={isAuthenticated}>
-              <Route path="/home" component={Home} />
-            </PrivateRoute>
-          </Switch>
-        </Router>
-      </div>
+          <PrivateRoute isAuthenticated={isAuthenticated}>
+            <Route path="/home" component={Home} />
+          </PrivateRoute>
+        </Switch>
+      </Router>
     </div>
   );
-}
-
-function PrivateRoute({ isAuthenticated, children, ...rest }) {
-  return (
-    <Route
-      {...rest}
-      render={({ location }) =>
-        isAuthenticated ? (
-          children
-        ) : (
-          <Redirect
-            to={{
-              pathname: "/login",
-              state: { from: location },
-            }}
-          />
-        )
-      }
-    />
-  );
-}
-export default App;
+};

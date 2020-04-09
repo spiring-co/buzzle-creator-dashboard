@@ -1,44 +1,37 @@
 import React from "react";
 import { NavLink, Route, Switch, useRouteMatch } from "react-router-dom";
+import Nav from "react-bootstrap/Nav";
 import styled from "styled-components";
 function SideBar({ Url }) {
-  const Sidenav = styled.div`
-    height: 100%;
-    width: 160px;
-    position: fixed;
-    top: 45px;
-    left: 0;
-    background-color: #dfe4ea;
-    overflow-x: hidden;
-    padding-top: 25px;
-  `;
-
-  const SideContent = styled.p`
-    text-decoration: none;
-    padding: 6px 8px 6px 8px;
-    font-size: 20px;
-    font-family: Source;
-    font-weight: 700;
-    color: black;
-    display: block;
-    &:hover {
-      color: white;
-      background-color: #74b9ff;
-    }
-  `;
-
   return (
-    <Sidenav>
-      <NavLink to={`${Url}/profile`}>
-        <SideContent>Your Profile and Settings</SideContent>
-      </NavLink>
-      <NavLink to={`${Url}/videoTemplates`}>
-        <SideContent>Your Video Templates</SideContent>
-      </NavLink>
-      <NavLink to={`${Url}/orders`}>
-        <SideContent>Your Orders</SideContent>
-      </NavLink>
-    </Sidenav>
+    <Nav variant="tabs" defaultActiveKey="/home" className="flex-column">
+      <Nav.Item>
+        <Nav.Link as={NavLink} to={`${Url}/profile`}>
+          Your Profile and Settings
+        </Nav.Link>
+      </Nav.Item>
+      <Nav.Item>
+        <Nav.Link eventKey="link-1">
+          {" "}
+          <NavLink
+            style={{ textDecoration: "none", color: "black" }}
+            to={`${Url}/videoTemplates`}
+          >
+            Your Video Templates
+          </NavLink>
+        </Nav.Link>
+      </Nav.Item>
+      <Nav.Item>
+        <Nav.Link eventKey="link-2">
+          <NavLink
+            style={{ textDecoration: "none", color: "black" }}
+            to={`${Url}/orders`}
+          >
+            Your Orders
+          </NavLink>
+        </Nav.Link>
+      </Nav.Item>
+    </Nav>
   );
 }
 
