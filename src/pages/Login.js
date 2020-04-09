@@ -24,7 +24,7 @@ export default () => {
       try {
         setLoading(true);
         await login(email, password);
-        window.location = "/home";
+        window.location = "/home"; // should we change getcreator in backend to search for isVeirified is true also
       } catch (e) {
         setError(e);
       } finally {
@@ -43,7 +43,7 @@ export default () => {
         Welcome to <b>Pharaoh</b> please login to continue, if you don't have an
         account <Link to="/register">click here to register.</Link>
       </p>
-      {error && <p style={{ color: "red" }}>Error: {error?.message}</p>}
+      {error && <p style={{ color: "red" }}>Error: {error.message}</p>}
       <form onSubmit={handleSubmit}>
         <label>Email </label>
         <input

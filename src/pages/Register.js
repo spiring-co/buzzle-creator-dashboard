@@ -7,6 +7,7 @@ import * as Yup from "yup";
 const config = { hostUrl: "http://localhost:5000/creator" };
 const countryCodeRegExp = /^(\+?\d{1,3}|\d{1,4})$/gm;
 const phoneRegExp = /^\d{10}$/;
+const nameRegExp = /^[a-zA-Z ]+$/;
 
 export default () => {
   const [error, setError] = useState(null);
@@ -19,14 +20,16 @@ export default () => {
       phoneNumber: 8826245256,
       birthDate: "1999-02-12",
       country: "india",
-      gender: "Male"
+      gender: "Male",
     },
     validationSchema: Yup.object({
       email: Yup.string()
         .email("Invalid email address")
         .required("Email is Required"),
       password: Yup.string().required("Password is Required"),
-      name: Yup.string().required("Name is required"),
+      name: Yup.string()
+        .required("Name is required")
+        .matches(nameRegExp, "name is invalid"),
       countryCode: Yup.string()
         .matches(countryCodeRegExp, "country code is not valid")
         .required("country code is required"),
@@ -35,35 +38,39 @@ export default () => {
         .required("Phone number is required"),
       birthDate: Yup.date().required("Birth date is required"),
       country: Yup.string().required("Country name is required"),
-      gender: Yup.string().required("Gender field is required")
+      gender: Yup.string().required("Gender field is required"),
     }),
-    onSubmit: async s => {
+    onSubmit: async (s) => {
       try {
         const response = await fetch(config.hostUrl, {
           method: "POST",
           // mode: 'no-cors',
           headers: {
             Accept: "application/json",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify(s)
+          body: JSON.stringify(s),
         });
         console.log(response);
         if (response.ok) {
           return window.location.assign("/");
         } else {
           const res = await response.json();
-          let resSplice = res.message.slice(0, 6);
-          if (resSplice == "E11000") {
-           return setError("the email is already used for registration");
+          console.log(res.message);
+          let resSlice = res.message.slice(0, 6);
+          if (resSlice == "E11000") {
+            return setError({message:"the email is already used for registration"});
           }
-          return setError(res.message)
+          return setError(res.message);
         }
       } catch (err) {
+        if (err.message === "Failed to fetch") {
+          return setError({ message: "Something went wrong :(" });
+        }
         setError(err);
         console.error("Error:", err);
       }
-    }
+    },
   });
 
   return (
@@ -72,7 +79,7 @@ export default () => {
         Welcome to pharaoh please login to continue, if you don't have an
         account <Link to="/login">click here to login.</Link>
       </p>
-      {error && <p style={{ color: "red" }}>Error: {error}</p>}
+      {error && <p style={{ color: "red" }}>Error: {error.message}</p>}
       <form onSubmit={handleSubmit}>
         <label>Name </label>
         <input
