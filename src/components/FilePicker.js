@@ -7,6 +7,7 @@ const FilePicker = ({ setCompositions, setTextLayers }) => {
   const extractService = async (fileObj) => {
     setError(null);
     var data = new FormData();
+  const pickFile = (e) => {
     try {
       data.append("aepFile", fileObj);
       setLoading(true);
@@ -32,14 +33,7 @@ const FilePicker = ({ setCompositions, setTextLayers }) => {
       setError(err);
     }
   };
-  const pickFile = (e) => {
-    try {
-      var cFile = e.target.files[0];
-      extractService(cFile);
-    } catch (err) {
-      console.log(err);
-    }
-  };
+
 
   if (loading) {
     return (
@@ -163,3 +157,21 @@ const FilePicker = ({ setCompositions, setTextLayers }) => {
 export default function FilePickerScreen(props) {
   return <FilePicker {...props} />;
 }
+
+const styles = {
+  label: {
+    margin: 30,
+    padding: 20,
+    borderRadius: 20,
+    paddingTop: 100,
+    paddingBottom: 100,
+    display: "flex",
+    flexDirection: "column",
+    height: 350,
+    boxShadow: "1px 1px 2px 2px lightgrey",
+    textAlign: "center",
+    justifyContent: "center",
+    alignItems: "center",
+    border: "2px dashed grey",
+  },
+};

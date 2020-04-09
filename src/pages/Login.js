@@ -1,5 +1,6 @@
 import { useFormik } from "formik";
 import React, { useState } from "react";
+import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import useAuth from "services/auth";
 import * as Yup from "yup";
@@ -9,16 +10,23 @@ export default () => {
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
 
-  const { handleChange, handleSubmit, values, errors, touched } = useFormik({
+  const {
+    handleChange,
+    handleBlur,
+    handleSubmit,
+    values,
+    errors,
+    touched,
+  } = useFormik({
     initialValues: {
-      email: "shivam.sasalol@yahoo.com",
-      password: "password"
+      email: "",
+      password: "",
     },
     validationSchema: Yup.object({
       email: Yup.string()
-        .email("Invalid email address")
+        .email("Please enter a valid email address.")
         .required("Email is Required"),
-      password: Yup.string().required("Password is Required")
+      password: Yup.string().required("Password is Required"),
     }),
     onSubmit: async ({ email, password }) => {
       try {
@@ -30,47 +38,67 @@ export default () => {
       } finally {
         setLoading(false);
       }
-    }
+    },
   });
 
-  if (loading) {
-    return <p>Logging you in...</p>;
-  }
-
   return (
-    <div>
-      <p>
-        Welcome to <b>Pharaoh</b> please login to continue, if you don't have an
-        account <Link to="/register">click here to register.</Link>
-      </p>
-      {error && <p style={{ color: "red" }}>Error: {error?.message}</p>}
-      <form onSubmit={handleSubmit}>
-        <label>Email </label>
-        <input
-          type="text"
-          placeholder="Enter email"
-          name="email"
-          value={values.email}
-          onChange={handleChange} 
-        />
-        {touched.email && errors.email ? (
-          <p style={{ color: "red" }}>{errors.email}</p>
-        ) : null}
-        <br />
-        <label>Password </label>
-        <input
-          type="password"
-          placeholder="Enter password"
-          name="password"
-          value={values.password}
-          onChange={handleChange}
-        />
-        {touched.password && errors.password ? (
-          <p style={{ color: "red" }}>{errors.password}</p>
-        ) : null}
-        <br />
-        <button type="submit">Login</button>
-      </form>
-    </div>
+    <Container>
+      <Row className="justify-content-md-center">
+        <Col md={6}>
+          <Form onSubmit={handleSubmit} className="mb-4 mt-5">
+            <h3 className="text-center">Sign In</h3>
+            <p className="text-muted text-center">
+              Welcome back fam, what's cooking? 😎
+            </p>
+            {error && <Alert variant="danger" children={error.message} />}
+
+            <Form.Group controlId="formBasicEmail">
+              <Form.Label>Email address</Form.Label>
+              <Form.Control
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.email}
+                name={"email"}
+                type="email"
+                placeholder="Enter email"
+                isInvalid={touched.email && !!errors.email}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.email}
+              </Form.Control.Feedback>
+              <Form.Text className="text-muted">
+                We'll never share your email with anyone else.
+              </Form.Text>
+            </Form.Group>
+
+            <Form.Group controlId="formBasicPassword">
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.password}
+                name={"password"}
+                type="password"
+                placeholder="Password"
+                isInvalid={touched.password && !!errors.password}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.password}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Button
+              block
+              variant="primary"
+              type="submit"
+              children={loading ? "Loading..." : "Login"}
+              disabled={loading}
+            />
+          </Form>
+          <p className="text-muted text-center">
+            Don't have an account yet? <Link to="/register">Sign up.</Link>
+          </p>
+        </Col>
+      </Row>
+    </Container>
   );
 };

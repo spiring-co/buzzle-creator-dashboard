@@ -62,7 +62,7 @@ template,
   line-height: 1.5;
   -ms-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
-  background-color: white;
+
   color: #222;
   font-size: 16px;
   text-rendering: optimizeLegibility;
@@ -2329,7 +2329,8 @@ article a {
 }
 main a[href*="//"]:not([href*="concisecss.com"]):after, main a[href*="//"]:not([href*="localhost"]):after,
   article a[href*="//"]:not([href*="concisecss.com"]):after,
-  article a[href*="//"]:not([href*="localhost"]):after {
+  article a[href*="//"]:not([href*="localhost"]):after
+{
   content: "°";
   color: #d34a28;
   font-size: 0.9em;
