@@ -6,19 +6,10 @@ import styled from "styled-components";
 
 export default ({ isAuthenticated, logout }) => {
   return (
-    <Navbar
-      sticky="top"
-      bg="light"
-      variant="light"
-      className="justify-content-between"
-    >
-      <Navbar.Brand href="/home">
-        <img
-          src={require("../assets/logo.png")}
-          style={{ height: "1.5rem", marginRight: "0.5rem" }}
-          alt="Pharaoh Logo"
-        />
-        Pharaoh
+    <Navbar sticky="top" bg="light" className="justify-content-between">
+      <Navbar.Brand href="/">
+        <LogoImage src={require("../assets/logo.png")} alt="Pharaoh Logo" />
+        PHARAOH
       </Navbar.Brand>
       <Nav>
         {isAuthenticated && (
@@ -46,10 +37,11 @@ const StyledDropdown = styled.div`
   height: 5vh;
   width: 5vh;
   border-radius: 50%;
-  a::after {
-    color: #78e08f;
-    content: "x";
-  }
+`;
+
+const LogoImage = styled.img`
+  height: 1.5rem;
+  margin-right: 0.5rem;
 `;
 const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
   <StyledDropdown

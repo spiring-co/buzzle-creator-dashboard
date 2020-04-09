@@ -1,219 +1,215 @@
 import { CountryList } from "components/CountryList";
 import { useFormik } from "formik";
 import React, { useState } from "react";
+import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import styled from "styled-components";
 import * as Yup from "yup";
 
 const config = { hostUrl: "http://localhost:5000/creator" };
 const countryCodeRegExp = /^(\+?\d{1,3}|\d{1,4})$/gm;
 const phoneRegExp = /^\d{10}$/;
 export default () => {
-  const Background = styled.div`
-  background-color:#dcdde1;
-  height:150vh;
-  width:100%:
-  overflow-y: hidden;
-
-  
-    }
-  `;
-
-  const Form = styled.div`
-    position: relative;
-    background: white;
-    left: 65vh;
-    top: 40px;
-    justify-content: center;
-    width: 80vh;
-    height: 120vh;
-    border-radius: 20px 20px 20px 20px;
-    padding: 25px;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-    @media (max-width: 768px) {
-      left: 3vh;
-      width: 90%;
-      top: 8vh;
-    }
-  `;
-
   const [error, setError] = useState(null);
-  const { handleChange, handleSubmit, values, errors, touched } = useFormik({
-    initialValues: {
-      name: "sheeevam",
-      email: "shivam.sasalol@yahoo.com",
-      password: "password",
-      countryCode: 101,
-      phoneNumber: 8826245256,
-      birthDate: "1999-02-12",
-      country: "india",
-      gender: "Male",
-    },
+  const [loading, setLoading] = useState(false);
+  const {
+    handleChange,
+    handleSubmit,
+    handleBlur,
+    values,
+    errors,
+    touched,
+  } = useFormik({
+    initialValues: {},
     validationSchema: Yup.object({
+      name: Yup.string().required("Name is required"),
       email: Yup.string()
         .email("Invalid email address")
         .required("Email is Required"),
       password: Yup.string().required("Password is Required"),
-      name: Yup.string().required("Name is required"),
       countryCode: Yup.string()
         .matches(countryCodeRegExp, "country code is not valid")
         .required("country code is required"),
       phoneNumber: Yup.string()
-        .matches(phoneRegExp, "phone number isn't valid")
+        .matches(phoneRegExp, "Phone number isn't valid")
         .required("Phone number is required"),
       birthDate: Yup.date().required("Birth date is required"),
       country: Yup.string().required("Country name is required"),
       gender: Yup.string().required("Gender field is required"),
     }),
     onSubmit: async (s) => {
-      fetch(config.hostUrl, {
-        method: "POST",
-        // mode: 'no-cors',
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(s),
-      })
-        .then((response) => {
-          if (response.ok) {
-            return window.location.assign("/");
-          } else {
-            response.json().then((e) => setError(e));
-          }
-        })
-        .catch((err) => {
-          setError(err);
-          console.error("Error:", err);
+      try {
+        setLoading(true);
+        const response = await fetch(config.hostUrl, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(s),
         });
+        if (response.ok) {
+          return window.location.assign("/");
+        } else {
+          setError(await response.json());
+        }
+      } catch (e) {
+        setError(e);
+      } finally {
+        setLoading(false);
+      }
     },
   });
 
   return (
-    <Background>
-      <Form onSubmit={handleSubmit}>
-        <p
-          style={{
-            marginTop: "0",
-            fontSize: "25px",
-            fontWeight: "bolder",
+    <Container>
+      <Row className="justify-content-md-center">
+        <Col md={6}>
+          {error && <Alert variant="danger" children={error.message} />}
+          <Form onSubmit={handleSubmit} className="mb-4 mt-5">
+            <h3 className="text-center mb-3">Register</h3>
+            <p className="text-muted text-center">
+              You can register with your details and have the best time of your
+              life. 🎉
+            </p>
+            {error && <Alert variant="danger" children={error.message} />}
 
-            marginBottom: "10px",
-          }}
-        >
-          Register
-        </p>
+            <Form.Group controlId="name">
+              <Form.Label>Name</Form.Label>
+              <Form.Control
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.name}
+                name={"name"}
+                type="text"
+                placeholder="Your name here"
+                isInvalid={touched.name && !!errors.name}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.name}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group controlId="email">
+              <Form.Label>Email address</Form.Label>
+              <Form.Control
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.email}
+                name={"email"}
+                type="email"
+                placeholder="Your email here"
+                isInvalid={touched.email && !!errors.email}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.email}
+              </Form.Control.Feedback>
+              <Form.Text className="text-muted">
+                We'll never share your email with anyone else.
+              </Form.Text>
+            </Form.Group>
 
-        <label style={{ float: "left", fontWeight: "bolder" }}>Name </label>
-        <input
-          style={{ backgroundColor: "#dcdde1", borderRadius: "10px" }}
-          type="text"
-          placeholder="Enter your name"
-          name="creatorName"
-        />
-        <br />
-        <label style={{ float: "left", fontWeight: "bolder" }}>Email </label>
-        <input
-          style={{ backgroundColor: "#dcdde1", borderRadius: "10px" }}
-          type="text"
-          placeholder="Enter your email"
-          name="email"
-        />
-        <br />
-        <label style={{ float: "left", fontWeight: "bolder" }}>Password </label>
-        <input
-          style={{ backgroundColor: "#dcdde1", borderRadius: "10px" }}
-          type="password"
-          placeholder="Enter password"
-          name="password"
-        />
-        <br />
-        <label style={{ float: "left", fontWeight: "bolder" }}>
-          Country Code{" "}
-        </label>
-        <input
-          style={{ backgroundColor: "#dcdde1", borderRadius: "10px" }}
-          type="text"
-          placeholder="Enter your country code number"
-          name="countryCode"
-          onChange={handleChange}
-          value={values.countryCode}
-        />
-        {touched.countryCode && errors.countryCode ? (
-          <p style={{ color: "red" }}>{errors.countryCode}</p>
-        ) : null}
-        <br />
-        <label style={{ float: "left", fontWeight: "bolder" }}>
-          Phone Number{" "}
-        </label>
-        <input
-          style={{ backgroundColor: "#dcdde1", borderRadius: "10px" }}
-          type="text"
-          placeholder="Enter your phone number"
-          name="phoneNumber"
-          value={values.phoneNumber}
-          onChange={handleChange}
-        />
-        {touched.phoneNumber && errors.phoneNumber ? (
-          <p style={{ color: "red" }}>{errors.phoneNumber}</p>
-        ) : null}
-        <br />
-        <label style={{ float: "left", fontWeight: "bolder" }}>
-          Birth Date{" "}
-        </label>
-        <input
-          style={{ backgroundColor: "#dcdde1", borderRadius: "10px" }}
-          type="date"
-          placeholder="Enter your birth date"
-          name="birthDate"
-          onChange={handleChange}
-          value={values.birthDate}
-        />
-        {touched.birthDate && errors.birthDate ? (
-          <p style={{ color: "red" }}>{errors.birthDate}</p>
-        ) : null}
-        {/* <input type="text" placeholder="Enter your Country" name="country" /> */}
-        <br />
-        <CountryList
-          name="country"
-          value={values.country}
-          onChange={handleChange}
-        />
-        {touched.country && errors.country ? (
-          <p style={{ color: "red" }}>{errors.country}</p>
-        ) : null}
-        <br />
-        <label style={{ float: "left", fontWeight: "bolder" }}>Gender </label>
-        <select
-          style={{ backgroundColor: "#dcdde1", borderRadius: "10px" }}
-          tyle={{ backgroundColor: "#dcdde1", borderRadius: "10px" }}
-          id="gender"
-          name="gender"
-        >
-          <option value="Male">male</option>
-          <option value="Female">female</option>
-          <option value="Other">other</option>
-        </select>
-        <br />
-
-        <button
-          style={{
-            backgroundColor: "#0097e6",
-            width: "12vh",
-            marginTop: "35px",
-          }}
-          className="-bordered"
-          type="submit"
-        >
-          Register
-        </button>
-        <p style={{ marginTop: "0" }}>
-          Already have an account?{" "}
-          <Link to="/login" style={{ color: "#0097e6" }}>
-            Log in
-          </Link>
-        </p>
-      </Form>
-    </Background>
+            <Form.Group controlId="password">
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.password}
+                name={"password"}
+                type="password"
+                placeholder="Password"
+                isInvalid={touched.password && !!errors.password}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.password}
+              </Form.Control.Feedback>
+              <Form.Text className="text-muted">
+                Your password should have at least 1 uppercase character.
+              </Form.Text>
+            </Form.Group>
+            <Form.Group controlId="gender">
+              <Form.Label>Gender</Form.Label>
+              <Form.Control
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.gender}
+                name={"gender"}
+                type="text"
+                placeholder="Select gender"
+                isInvalid={touched.gender && !!errors.gender}
+                as="select"
+                custom
+              >
+                <option disabled selected value="">
+                  Select a gender
+                </option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </Form.Control>
+              <Form.Control.Feedback type="invalid">
+                {errors.gender}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group controlId="phoneNumber">
+              <Form.Label>Phone Number</Form.Label>
+              <Form.Control
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.phoneNumber}
+                name={"phoneNumber"}
+                type="tel"
+                placeholder="Enter Phone Number"
+                isInvalid={touched.phoneNumber && !!errors.phoneNumber}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.phoneNumber}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group controlId="birthDate">
+              <Form.Label>Birth Date</Form.Label>
+              <Form.Control
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.birthDate}
+                name={"birthDate"}
+                type="date"
+                placeholder="Enter Birth Date"
+                isInvalid={touched.birthDate && !!errors.birthDate}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.birthDate}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group controlId="country">
+              <Form.Label>Country</Form.Label>
+              <Form.Control
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.country}
+                name={"country"}
+                placeholder="Select country"
+                isInvalid={touched.country && !!errors.country}
+                as="select"
+                custom
+              >
+                <CountryList />
+              </Form.Control>
+              <Form.Control.Feedback type="invalid">
+                {errors.country}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Button
+              block
+              variant="primary"
+              type="submit"
+              children={loading ? "Loading..." : "Register"}
+              disabled={loading}
+            />
+          </Form>
+          <p className="text-muted text-center">
+            Already registered? <Link to="/login">Sign In.</Link>
+          </p>
+        </Col>
+      </Row>
+    </Container>
   );
 };
