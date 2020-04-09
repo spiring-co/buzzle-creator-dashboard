@@ -32,7 +32,7 @@ export default () => {
       try {
         setLoading(true);
         await login(email, password);
-        window.location = "/home";
+        window.location = "/home"; // should we change getcreator in backend to search for isVeirified is true also
       } catch (e) {
         setError(e);
       } finally {
