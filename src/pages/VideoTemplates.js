@@ -1,8 +1,15 @@
 import AddVideoTemplate from "pages/AddVideoTemplate";
 import VideoTemplate from "pages/VideoTemplate";
-import React from "react";
-import { Link, Route, Switch, useRouteMatch } from "react-router-dom";
+import React, { useState } from "react";
+import {
+  Link,
+  Route,
+  Switch,
+  useRouteMatch,
+  useHistory,
+} from "react-router-dom";
 import useApi from "services/api";
+import LazyLoadingList from "components/LazyLoadingList";
 export default () => {
   let { path } = useRouteMatch();
 
@@ -12,6 +19,7 @@ export default () => {
       <Switch>
         <Route path={`${path}/`} exact component={CreatorVideoTemplates} />
         <Route path={`${path}/add`} component={AddVideoTemplate} />
+        <Route path={`${path}/:uid/edit`} component={AddVideoTemplate} />
         <Route path={`${path}/:uid`} component={VideoTemplate} />
       </Switch>
     </div>
@@ -20,21 +28,38 @@ export default () => {
 
 const CreatorVideoTemplates = () => {
   let { url } = useRouteMatch();
-
-  const { data, loading, error } = useApi(
-    "/creator/sjjsjjjkaaaa/videoTemplates"
-  );
-  console.log(data);
-
-  if (loading) return <p>Loading your templates...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+  const [page, setPageNumber] = useState(1);
+  const uri = `${process.env.REACT_APP_API_URL}/creator/sjjsjjjkaaaa/videoTemplates`;
+  let history = useHistory();
   return (
     <div>
-      <Link to={`${url}/add`}>
+      <Link
+        to={{
+          pathname: `${url}/add`,
+          state: {
+            edit: false,
+            video: null,
+          },
+        }}
+      >
         <button>+ Add Template</button>
       </Link>
       <br />
-      <table className="table">
+      <LazyLoadingList
+        from="templates"
+        page={page}
+        url={uri}
+        size={10}
+        setPageNumber={setPageNumber}
+        listHeader={["UID", "Title", "Description"]}
+        listKeys={["_id", "title", "description"]}
+      />
+    </div>
+  );
+};
+
+{
+  /* <table className="table">
         <tr style={{ background: "antiquewhite" }}>
           <th>UID</th>
           <th>Title</th>
@@ -47,18 +72,22 @@ const CreatorVideoTemplates = () => {
                 <Link
                   to={{
                     pathname: `${url}/${t._id}`,
-                    state: { video: t }
+                    state: { video: t },
                   }}
                 >
                   <td>{t._id}</td>
                 </Link>
                 <td>{t.title}</td>
-                <td>{t.description}</td>
+                <td>
+                  {t.description}
+                  <span> </span>{" "}
+                  <Link to={`/createOrder/${t.videoTemplateId}`}>
+                    <button>Send Form</button>
+                  </Link>
+                </td>
               </tr>
             );
           }
         })}
-      </table>
-    </div>
-  );
-};
+      </table> */
+}

@@ -1,74 +1,37 @@
+import "bootstrap/dist/css/bootstrap.min.css";
+
+import Navbar from "components/Navbar";
+import PrivateRoute from "components/PrivateRoute";
+import ForgotPassword from "pages/ForgotPassword";
 import Home from "pages/Home";
 import Landing from "pages/Landing";
 import Login from "pages/Login";
 import Register from "pages/Register";
 import Email from "pages/Email";
 import React from "react";
-
-import {
-  Link,
-  Redirect,
-  Route,
-  BrowserRouter as Router,
-  Switch
-} from "react-router-dom";
+import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import useAuth from "services/auth";
 
-function App() {
+export default () => {
   const { logout, isAuthenticated } = useAuth();
 
   return (
-    <div style={{ margin: "auto", width: "65%" }}>
+    <div>
+      <Navbar isAuthenticated={isAuthenticated} logout={logout} />
       <Router>
-
-
-        {isAuthenticated && (
-          <button style={{ float: "right", display: "block" }} onClick={logout}>
-            Logout
-          </button>
-        )}
-        <h1>
-          <img
-            src={require("./assets/logo.png")}
-            style={{ height: "2rem", margin: "0px 10px 10px 0px" }}
-            alt="Pharaoh Logo"
-          />
-          <Link to="/home">Pharaoh</Link>
-        </h1>
         <Switch>
           <Route exact path="/" component={Landing} />
           <Route path="/login" exact component={Login} />
           <Route path="/register" exact component={Register} />
+
           <Route path="/Password" exact component={Email} />
 
+          <Route path="/forgotPassword" component={ForgotPassword} />
           <PrivateRoute isAuthenticated={isAuthenticated}>
             <Route path="/home" component={Home} />
           </PrivateRoute>
         </Switch>
-
-
       </Router>
     </div>
   );
-}
-
-function PrivateRoute({ isAuthenticated, children, ...rest }) {
-  return (
-    <Route
-      {...rest}
-      render={({ location }) =>
-        isAuthenticated ? (
-          children
-        ) : (
-          <Redirect
-            to={{
-              pathname: "/login",
-              state: { from: location }
-            }}
-          />
-        )
-      }
-    />
-  );
-}
-export default App;
+};

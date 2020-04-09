@@ -10,10 +10,10 @@
       content="Web site created using create-react-app"
     />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <link rel="stylesheet" href="%PUBLIC_URL%/concise.min.css" />
+    <!-- <link rel="stylesheet" href="%PUBLIC_URL%/concise.min.css" /> -->
 
     <link
-      href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,400;0,600;0,700;0,900;1,400&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap"
       rel="stylesheet"
     />
     <style>
@@ -30,6 +30,8 @@
         color: #000;
         padding-left: 0px;
         padding-right: 0px;
+        margin-bottom: 20px;
+        margin-top: 0;
         padding: 15px;
         font-weight: bold;
         border-radius: 10px;
@@ -39,6 +41,10 @@
       .choose_button:hover {
         box-shadow: "1px 1px 2px 2px #82baff";
         background-color: #4092f7;
+      }
+      html,
+      body {
+        font-family: "Lato", sans-serif;
       }
     </style>
     <!--
@@ -71,10 +77,16 @@
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
     <footer class="main-footer">
-      <p>
+      <!-- <p>
         Pharaoh is a product of
-        <a href="https://spiring.co" style="cursor:pointer">spiring.</a>
-      </p>
+        <a href="https://spiring.co" style="cursor: pointer;">spiring.</a>
+      </p> -->
     </footer>
   </body>
+  <style>
+    html,
+    body {
+      font-family: "Lato", sans-serif;
+    }
+  </style>
 </html>

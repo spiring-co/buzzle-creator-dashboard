@@ -1,57 +1,46 @@
 import { CountryList } from "components/CountryList";
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import { useFormik } from "formik";
+import React, { useState } from "react";
+import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import * as Yup from "yup";
 
-const config = { hostUrl: "http://localhost:5000/creator" };
-const countryCodeRegExp = /^(\+?\d{1,3}|\d{1,4})$/gm;
-const phoneRegExp = /^\d{10}$/;
-const nameRegExp = /^[a-zA-Z ]+$/;
 
 export default () => {
   const [error, setError] = useState(null);
-  const { handleChange, handleSubmit, values, errors, touched } = useFormik({
+  const {
+    handleChange,
+    handleSubmit,
+    handleBlur,
+    values,
+    errors,
+    touched,
+    isSubmitting,
+  } = useFormik({
     initialValues: {
-      name: "sheeevam",
-      email: "shivam.sasalol@yahoo.com",
-      password: "password",
-      countryCode: 101,
-      phoneNumber: 8826245256,
-      birthDate: "1999-02-12",
-      country: "india",
-      gender: "Male",
+      name: "",
+      email: "",
+      countryCode: "",
+      password: "",
+      gender: "",
+      country: "",
+      phoneNumber: "",
+      birthDate: "",
     },
-    validationSchema: Yup.object({
-      email: Yup.string()
-        .email("Invalid email address")
-        .required("Email is Required"),
-      password: Yup.string().required("Password is Required"),
-      name: Yup.string()
-        .required("Name is required")
-        .matches(nameRegExp, "name is invalid"),
-      countryCode: Yup.string()
-        .matches(countryCodeRegExp, "country code is not valid")
-        .required("country code is required"),
-      phoneNumber: Yup.string()
-        .matches(phoneRegExp, "phone number isn't valid")
-        .required("Phone number is required"),
-      birthDate: Yup.date().required("Birth date is required"),
-      country: Yup.string().required("Country name is required"),
-      gender: Yup.string().required("Gender field is required"),
-    }),
+    validationSchema,
     onSubmit: async (s) => {
       try {
-        const response = await fetch(config.hostUrl, {
-          method: "POST",
-          // mode: 'no-cors',
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(s),
-        });
-        console.log(response);
+        const response = await fetch(
+          process.env.REACT_APP_API_URL + "/creator",
+          {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(s),
+          }
+        );
         if (response.ok) {
           return window.location.assign("/");
         } else {
@@ -63,123 +52,218 @@ export default () => {
           }
           return setError(res.message);
         }
-      } catch (err) {
-        if (err.message === "Failed to fetch") {
-          return setError({ message: "Something went wrong :(" });
-        }
-        setError(err);
-        console.error("Error:", err);
+      } catch (e) {
+        setError(e);
       }
     },
   });
 
   return (
-    <div>
-      <p>
-        Welcome to pharaoh please login to continue, if you don't have an
-        account <Link to="/login">click here to login.</Link>
-      </p>
-      {error && <p style={{ color: "red" }}>Error: {error.message}</p>}
-      <form onSubmit={handleSubmit}>
-        <label>Name </label>
-        <input
-          type="text"
-          placeholder="Enter your name"
-          name="name"
-          onChange={handleChange}
-          value={values.name}
-        />
-        {touched.name && errors.name ? (
-          <p style={{ color: "red" }}>{errors.email}</p>
-        ) : null}
-        <br />
-        <label>Email </label>
-        <input
-          type="text"
-          placeholder="Enter your email"
-          name="email"
-          onChange={handleChange}
-          value={values.email}
-        />
-        {touched.email && errors.email ? (
-          <p style={{ color: "red" }}>{errors.email}</p>
-        ) : null}
-        <br />
-        <label>Password </label>
-        <input
-          type="password"
-          placeholder="Enter password"
-          name="password"
-          onChange={handleChange}
-          value={values.password}
-        />
-        {touched.password && errors.password ? (
-          <p style={{ color: "red" }}>{errors.password}</p>
-        ) : null}
-        <br />
-        <label>Country Code </label>
-        <input
-          type="text"
-          placeholder="Enter your country code number"
-          name="countryCode"
-          onChange={handleChange}
-          value={values.countryCode}
-        />
-        {touched.countryCode && errors.countryCode ? (
-          <p style={{ color: "red" }}>{errors.countryCode}</p>
-        ) : null}
-        <br />
-        <label>Phone Number </label>
-        <input
-          type="text"
-          placeholder="Enter your phone number"
-          name="phoneNumber"
-          value={values.phoneNumber}
-          onChange={handleChange}
-        />
-        {touched.phoneNumber && errors.phoneNumber ? (
-          <p style={{ color: "red" }}>{errors.phoneNumber}</p>
-        ) : null}
-        <br />
-        <label>Birth Date </label>
-        <input
-          type="Date"
-          placeholder="Enter your birth date"
-          name="birthDate"
-          onChange={handleChange}
-          value={values.birthDate}
-        />
-        {touched.birthDate && errors.birthDate ? (
-          <p style={{ color: "red" }}>{errors.birthDate}</p>
-        ) : null}
-        {/* <input type="text" placeholder="Enter your Country" name="country" /> */}
-        <br />
-        <CountryList
-          name="country"
-          value={values.country}
-          onChange={handleChange}
-        />
-        {touched.country && errors.country ? (
-          <p style={{ color: "red" }}>{errors.country}</p>
-        ) : null}
-        <br />
-        <label>Gender </label>
-        <select
-          id="gender"
-          name="gender"
-          onChange={handleChange}
-          value={values.gender}
-        >
-          <option value="Male">male</option>
-          <option value="Female">female</option>
-          <option value="Other">other</option>
-        </select>
-        <br />
 
-        <button className="-bordered" type="submit">
-          Register
-        </button>
-      </form>
-    </div>
+    <Container>
+      <Row className="justify-content-md-center">
+        <Col md={6}>
+          <Form
+            isValidated={Object.keys(errors).length}
+            onSubmit={handleSubmit}
+            className="mb-4 mt-5"
+          >
+            <h3 className="text-center mb-4">Register</h3>
+            <p className="text-muted text-center mb-4">
+              You can register with your details and have the best time of your
+              life. 🎉
+            </p>
+            {error && (
+              <Alert
+                variant="danger"
+                children={error.message || "Something went wrong 😕"}
+              />
+            )}
+
+            <Form.Group controlId="name">
+              <Form.Label>Name</Form.Label>
+              <Form.Control
+                name={"name"}
+                value={values.name}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                type="text"
+                placeholder="Your name here"
+                isValid={touched.name && !errors.name}
+                isInvalid={touched.name && !!errors.name}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.name}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group controlId="email">
+              <Form.Label>Email address</Form.Label>
+              <Form.Control
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.email}
+                name={"email"}
+                type="email"
+                placeholder="Your email here"
+                isInvalid={touched.email && !!errors.email}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.email}
+              </Form.Control.Feedback>
+              <Form.Text className="text-muted">
+                We'll never share your email with anyone else.
+              </Form.Text>
+            </Form.Group>
+
+            <Form.Group controlId="password">
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.password}
+                name={"password"}
+                type="password"
+                placeholder="Password"
+                isInvalid={touched.password && !!errors.password}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.password}
+              </Form.Control.Feedback>
+              <Form.Text className="text-muted">
+                Your password should have at least 1 uppercase character.
+              </Form.Text>
+            </Form.Group>
+            <Form.Group controlId="gender">
+              <Form.Label>Gender</Form.Label>
+              <Form.Control
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.gender}
+                name={"gender"}
+                type="text"
+                placeholder="Select gender"
+                isInvalid={touched.gender && !!errors.gender}
+                as="select"
+                custom
+              >
+                <option disabled selected value="">
+                  Select a gender
+                </option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </Form.Control>
+              <Form.Control.Feedback type="invalid">
+                {errors.gender}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group controlId="phoneNumber">
+              <Form.Label>Phone Number</Form.Label>
+              <Form.Control
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.phoneNumber}
+                name={"phoneNumber"}
+                type="tel"
+                placeholder="Enter Phone Number"
+                isInvalid={touched.phoneNumber && !!errors.phoneNumber}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.phoneNumber}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group controlId="birthDate">
+              <Form.Label>Birth Date</Form.Label>
+              <Form.Control
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.birthDate}
+                name={"birthDate"}
+                type="date"
+                placeholder="Enter Birth Date"
+                isInvalid={touched.birthDate && !!errors.birthDate}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.birthDate}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group controlId="countryCode">
+              <Form.Label>Country Code</Form.Label>
+              <Form.Control
+                name={"countryCode"}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.countryCode}
+                type="tel"
+                placeholder="Enter Country Code"
+                isInvalid={touched.countryCode && !!errors.countryCode}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.countryCode}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group controlId="country">
+              <Form.Label>Country</Form.Label>
+              <Form.Control
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.country}
+                name={"country"}
+                placeholder="Select country"
+                isInvalid={touched.country && !!errors.country}
+                as="select"
+                custom
+              >
+                <CountryList />
+              </Form.Control>
+              <Form.Control.Feedback type="invalid">
+                {errors.country}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Button
+              block
+              variant="primary"
+              type="submit"
+              children={isSubmitting ? "Loading..." : "Register"}
+              disabled={isSubmitting}
+            />
+          </Form>
+          <p className="text-muted text-center">
+            Already registered? <Link to="/login">Sign In.</Link>
+          </p>
+        </Col>
+      </Row>
+    </Container>
   );
 };
+
+const validationSchema = Yup.object({
+  name: Yup.string()
+    .min(3, "Should be at least 3 characters")
+    .max(40, "Should not be more than 40 characters")
+    .matches(/^[a-zA-Z ]*$/, "Should only contain alphabetic characters")
+    .required("Name is required"),
+  email: Yup.string()
+    .email("Invalid email address")
+    .max(100, "Should not be more than 100 characters")
+    .required("Email is Required"),
+  password: Yup.string()
+    .min(8, "Should be at least 8 characters")
+    .max(40, "Should not be more than 40 characters")
+    .matches(
+      /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,40}$/,
+      "Should have  at least a number, and at least a special character"
+    )
+    .required("Password is Required"),
+  countryCode: Yup.string()
+    .matches(/^(\+?\d{1,3}|\d{1,4})$/gm, "Country code is not valid")
+    .required("Country code is required"),
+  phoneNumber: Yup.string()
+    .matches(/^\d{10}$/, "Phone number isn't valid")
+    .required("Phone number is required"),
+
+  //TODO age check
+  birthDate: Yup.date().required("Birth date is required"),
+  country: Yup.string().required("Country name is required"),
+  gender: Yup.string().required("Gender field is required"),
+});

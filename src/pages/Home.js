@@ -5,30 +5,24 @@ import VideoTemplates from "pages/VideoTemplates";
 import React from "react";
 import { NavLink, Route, Switch, useRouteMatch } from "react-router-dom";
 
+import SideBar from "../components/SideBar";
 
 export default () => {
-
   let { path, url } = useRouteMatch();
 
   return (
+
     <div>
-      <div>
-        <NavLink to={`${url}/profile`}>
-          <h3 style={{ display: "inline" }}>Your Profile and Settings</h3>
-        </NavLink>
-        <NavLink to={`${url}/videoTemplates`}>
-          <h3 style={{ display: "inline" }}>Your Video Templates</h3>
-        </NavLink>
-        <NavLink to={`${url}/orders`}>
-          <h3 style={{ display: "inline" }}>Your Orders</h3>
-        </NavLink>
-      </div>
+      <SideBar Url={url} />
+
       <Switch>
-        <Route path={`${path}/`} exact component={Dashboard} />
-        <Route path={`${path}/profile`} component={Profile} />
-        <Route path={`${path}/videoTemplates`} component={VideoTemplates} />
-        <Route path={`${path}/orders`} component={Orders} />
+        <div style={{ flex: 3 }}>
+          <Route path={`${path}/`} exact component={Dashboard} />
+          <Route path={`${path}/profile`} component={Profile} />
+          <Route path={`${path}/videoTemplates`} component={VideoTemplates} />
+          <Route path={`${path}/orders`} component={Orders} />
+        </div>
       </Switch>
     </div>
   );
-}
+};
