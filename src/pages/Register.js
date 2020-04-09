@@ -2,10 +2,10 @@ import { CountryList } from "components/CountryList";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-const config = { hostUrl: "http://pharaoh-api.herokuapp.com/creator" };
+
 import { useFormik } from "formik";
 import * as Yup from "yup";
-
+const config = { hostUrl: "http://pharaoh-api.herokuapp.com/creator" };
 const config = { hostUrl: "http://localhost:5000/creator" };
 const countryCodeRegExp = /^(\+?\d{1,3}|\d{1,4})$/gm;
 const phoneRegExp = /^\d{10}$/;
@@ -48,7 +48,7 @@ export default () => {
       phoneNumber: 8826245256,
       birthDate: "1999-02-12",
       country: "india",
-      gender: "Male"
+      gender: "Male",
     },
     validationSchema: Yup.object({
       email: Yup.string()
@@ -64,30 +64,30 @@ export default () => {
         .required("Phone number is required"),
       birthDate: Yup.date().required("Birth date is required"),
       country: Yup.string().required("Country name is required"),
-      gender: Yup.string().required("Gender field is required")
+      gender: Yup.string().required("Gender field is required"),
     }),
-    onSubmit: async s => {
+    onSubmit: async (s) => {
       fetch(config.hostUrl, {
         method: "POST",
         // mode: 'no-cors',
         headers: {
           Accept: "application/json",
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(s)
+        body: JSON.stringify(s),
       })
-        .then(response => {
+        .then((response) => {
           if (response.ok) {
             return window.location.assign("/");
           } else {
-            response.json().then(e => setError(e));
+            response.json().then((e) => setError(e));
           }
         })
-        .catch(err => {
+        .catch((err) => {
           setError(err);
           console.error("Error:", err);
         });
-    }
+    },
   });
 
   return (
@@ -133,11 +133,8 @@ export default () => {
           Country Code{" "}
         </label>
         <input
-
           style={{ backgroundColor: "#dcdde1", borderRadius: "10px" }}
-
           type="text"
-
           placeholder="Enter your country code number"
           name="countryCode"
           onChange={handleChange}
@@ -151,10 +148,8 @@ export default () => {
           Phone Number{" "}
         </label>
         <input
-
           style={{ backgroundColor: "#dcdde1", borderRadius: "10px" }}
           type="text"
-
           placeholder="Enter your phone number"
           name="phoneNumber"
           value={values.phoneNumber}
@@ -168,7 +163,6 @@ export default () => {
           Birth Date{" "}
         </label>
         <input
-
           style={{ backgroundColor: "#dcdde1", borderRadius: "10px" }}
           type="date"
           placeholder="Enter your birth date"

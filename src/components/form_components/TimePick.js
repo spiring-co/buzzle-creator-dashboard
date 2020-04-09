@@ -1,7 +1,7 @@
 import "react-datepicker/dist/react-datepicker.css";
 
 import React, { useState } from "react";
-import DatePicker from "react-datepicker";
+
 import styled from "styled-components";
 
 const StyledInput = styled.input`
@@ -33,7 +33,7 @@ const TimePick = ({ label, name, value, onChange, required }) => {
         id="time"
         type="time"
         value={time}
-        onChange={e => {
+        onChange={(e) => {
           var result = e.target.value;
           setTime(result);
           onChange(label, name, result, required);
@@ -51,8 +51,8 @@ const styles = {
     marginBottom: 5,
     fontSize: 18,
     fontFamily: "Poppins",
-    fontWeight: 600
-  }
+    fontWeight: 600,
+  },
 };
 
 export default TimePick;
