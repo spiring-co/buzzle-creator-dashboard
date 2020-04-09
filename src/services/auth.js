@@ -18,7 +18,8 @@ export default () => {
     });
 
     if (!response.ok) {
-      throw new Error((await response.json()).message);
+      throw new Error((await response.json()).message); //Help
+//      throw new Error("password is incorrect");
     }
     const { jwtoken, creatorDetails } = await response.json();
     localStorage.setItem("jwtoken", jwtoken[0]);

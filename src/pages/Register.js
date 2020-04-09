@@ -5,6 +5,7 @@ import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import * as Yup from "yup";
 
+
 export default () => {
   const [error, setError] = useState(null);
   const {
@@ -43,7 +44,13 @@ export default () => {
         if (response.ok) {
           return window.location.assign("/");
         } else {
-          setError(await response.json());
+          const res = await response.json();
+          console.log(res.message);
+          let resSlice = res.message.slice(0, 6);
+          if (resSlice == "E11000") {
+            return setError({message:"the email is already used for registration"});
+          }
+          return setError(res.message);
         }
       } catch (e) {
         setError(e);
@@ -52,6 +59,7 @@ export default () => {
   });
 
   return (
+
     <Container>
       <Row className="justify-content-md-center">
         <Col md={6}>
