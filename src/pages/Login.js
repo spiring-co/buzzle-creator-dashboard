@@ -44,10 +44,10 @@ export default () => {
   return (
     <Container>
       <Row className="justify-content-md-center">
-        <Col md={6}>
-          <Form onSubmit={handleSubmit} className="mb-4 mt-5">
-            <h3 className="text-center">Sign In</h3>
-            <p className="text-muted text-center">
+        <Col md={4}>
+          <Form onSubmit={handleSubmit} noValidate className="mb-4 mt-5">
+            <h3 className="text-center mb-4">Sign In</h3>
+            <p className="text-muted text-center mb-4">
               Welcome back fam, what's cooking? 😎
             </p>
             {error && <Alert variant="danger" children={error.message} />}
@@ -72,7 +72,14 @@ export default () => {
             </Form.Group>
 
             <Form.Group controlId="formBasicPassword">
-              <Form.Label>Password</Form.Label>
+              <Row>
+                <Col>
+                  <Form.Label className="d-block">Password</Form.Label>
+                </Col>
+                <Col className="text-right text-muted">
+                  <Link to="/forgotPassword">Forgot Password</Link>
+                </Col>
+              </Row>
               <Form.Control
                 onChange={handleChange}
                 onBlur={handleBlur}

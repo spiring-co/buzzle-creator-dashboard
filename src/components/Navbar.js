@@ -6,10 +6,9 @@ import styled from "styled-components";
 
 export default ({ isAuthenticated, logout }) => {
   return (
-    <Navbar sticky="top" bg="light" className="justify-content-between">
-      <Navbar.Brand href="/">
+    <Navbar bg="light" className="justify-content-between shadow-sm mb-5">
+      <Navbar.Brand href="/" className="m-auto">
         <LogoImage src={require("../assets/logo.png")} alt="Pharaoh Logo" />
-        PHARAOH
       </Navbar.Brand>
       <Nav>
         {isAuthenticated && (

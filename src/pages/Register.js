@@ -5,12 +5,8 @@ import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import * as Yup from "yup";
 
-const config = { hostUrl: "http://localhost:5000/creator" };
-const countryCodeRegExp = /^(\+?\d{1,3}|\d{1,4})$/gm;
-const phoneRegExp = /^\d{10}$/;
 export default () => {
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
   const {
     handleChange,
     handleSubmit,
@@ -32,17 +28,18 @@ export default () => {
     },
     validationSchema,
     onSubmit: async (s) => {
-      console.log("submitting form");
       try {
-        setLoading(true);
-        const response = await fetch(config.hostUrl, {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(s),
-        });
+        const response = await fetch(
+          process.env.REACT_APP_API_URL + "/creator",
+          {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(s),
+          }
+        );
         if (response.ok) {
           return window.location.assign("/");
         } else {
@@ -50,8 +47,6 @@ export default () => {
         }
       } catch (e) {
         setError(e);
-      } finally {
-        setLoading(false);
       }
     },
   });
@@ -65,8 +60,8 @@ export default () => {
             onSubmit={handleSubmit}
             className="mb-4 mt-5"
           >
-            <h3 className="text-center mb-3">Register</h3>
-            <p className="text-muted text-center">
+            <h3 className="text-center mb-4">Register</h3>
+            <p className="text-muted text-center mb-4">
               You can register with your details and have the best time of your
               life. 🎉
             </p>
@@ -253,10 +248,10 @@ const validationSchema = Yup.object({
     )
     .required("Password is Required"),
   countryCode: Yup.string()
-    .matches(countryCodeRegExp, "Country code is not valid")
+    .matches(/^(\+?\d{1,3}|\d{1,4})$/gm, "Country code is not valid")
     .required("Country code is required"),
   phoneNumber: Yup.string()
-    .matches(phoneRegExp, "Phone number isn't valid")
+    .matches(/^\d{10}$/, "Phone number isn't valid")
     .required("Phone number is required"),
 
   //TODO age check
