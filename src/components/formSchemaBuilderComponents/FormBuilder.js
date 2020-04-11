@@ -2,6 +2,7 @@ import FormBuilderSegment from "components/formSchemaBuilderComponents/FormBuild
 import useActions from "contextStore/actions";
 import { SegmentsContext, StateProvider } from "contextStore/store";
 import React, { useContext, useEffect, useState } from "react";
+
 import FilePicker from "../FilePicker";
 const MAX_SEGMENT_COUNT = 5;
 
@@ -318,7 +319,6 @@ export default (props) => {
 const styles = {
   input: {
     fontSize: 20,
-    fontFamily: "Poppins-Bold",
     padding: 10,
     margin: 10,
     marginRight: 30,

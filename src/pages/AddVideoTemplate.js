@@ -1,20 +1,21 @@
 import FormBuilder from "components/formSchemaBuilderComponents/FormBuilder";
 import React from "react";
-import { Prompt, useHistory } from "react-router-dom";
-import useApi from "services/api";
-export default props => {
-  let [isBlocking, setIsBlocking] = React.useState(true);
-  const { edit, video } = props?.location?.state ?? null;
-  const videoTemplateId = video?.videoTemplateId ?? null;
-  const history = useHistory();
+import Container from "react-bootstrap/Col";
+import { Prompt, useHistory, useLocation } from "react-router-dom";
+export default (props) => {
+  const [isBlocking, setIsBlocking] = React.useState(true);
   const [isEditing, setIsEditing] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState(null);
-  const creatorId = "sjjsjjjkaaaa";
-  const handleEditForm = async data => {
-    console.log(data);
-    // here comes edited obj from form
 
+  const { pathname } = useLocation();
+  const { video } = props?.location?.state ?? {};
+  const videoTemplateId = video?.videoTemplateId ?? null;
+
+  const edit = pathname.includes("edit");
+  const history = useHistory();
+
+  const handleEditForm = async (data) => {
     var action = window.confirm("Are you sure, you want to save changes");
     if (action) {
       try {
@@ -27,8 +28,8 @@ export default props => {
             headers: {
               Accept: "application/json",
               "Content-Type": "application/json",
-              Authorization: `bearer ${localStorage.getItem("jwtoken")}`
-            }
+              Authorization: `bearer ${localStorage.getItem("jwtoken")}`,
+            },
           }
         );
         setIsEditing(false);
@@ -40,7 +41,7 @@ export default props => {
           setIsBlocking(false);
           history.push({
             pathname: `/home/videoTemplates/${data.videoTemplateId}`,
-            state: { video: data }
+            state: { video: data },
           });
         }
       } catch (err) {
@@ -49,16 +50,16 @@ export default props => {
       }
     }
   };
-  const handleSubmitForm = async data => {
+  const handleSubmitForm = async (data) => {
     try {
       setLoading(true);
       const response = await fetch(process.env.REACT_APP_API_URL + `/video`, {
         method: "POST",
         headers: {
           Accept: "application/json",
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       });
       setLoading(false);
       if (response.ok) {
@@ -70,19 +71,20 @@ export default props => {
     }
   };
 
-  if (loading | isEditing)
-    return <p>{isEditing ? "Editing " : "submitting "}your template...</p>;
   if (error) return <p>Error: {error.message}</p>;
+  if (loading || isEditing)
+    return <p>{isEditing ? "Editing" : "Submitting"} your template...</p>;
   return (
-    <div>
+    <Container fluid className="mb-5">
       <Prompt when={isBlocking} message={`You will lose all your data.`} />
-      <h4>{edit ? "Edit your Video Template" : "Add Video Template"}</h4>
-      <hr />
+      <h3 className="text-center mb-4">
+        {edit ? "Edit Your " : "Add"} Video Template
+      </h3>
       <FormBuilder
         edit={edit}
         video={video}
         submitForm={edit ? handleEditForm : handleSubmitForm}
       />
-    </div>
+    </Container>
   );
 };
