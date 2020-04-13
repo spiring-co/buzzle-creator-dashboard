@@ -26,9 +26,6 @@ function FormBuilder({ submitForm, edit, video }) {
   const [usedFields, setUsedFields] = useState([]);
   const [segmentDisplay, setSegmentDisplay] = useState(false);
   const [versionDisplay, setVersionDisplay] = useState(false);
-  const [textLayers, setTextLayers] = useState([]);
-  const [imageLayers, setImageLayers] = useState([]);
-  const [pickerLayers, setPickerLayers] = useState([]);
   const [compositions, setCompositions] = useState([]);
   const [comp_name, setComp_name] = useState("");
   const [value, setValue] = useState("");
@@ -53,8 +50,6 @@ function FormBuilder({ submitForm, edit, video }) {
     if (fromEdit) {
       setEditIndex(index);
       setEditVersion(true);
-
-      console.log(editVersion, editIndex);
     } else {
       addVersion({ comp_name });
     }
@@ -177,9 +172,7 @@ function FormBuilder({ submitForm, edit, video }) {
           children="Go Next Segment >"
         />
         <FormBuilderSegment
-          textLayers={textLayers}
-          imageLayers={imageLayers}
-          pickerLayers={pickerLayers}
+          compositions={compositions}
           edit={edit}
           usedFields={usedFields}
           setUsedFields={setUsedFields}
@@ -227,7 +220,7 @@ function FormBuilder({ submitForm, edit, video }) {
               <option disabled selected value="">
                 Select Composition
               </option>
-              {compositions.map((item, index) => {
+              {Object.keys(compositions).map((item, index) => {
                 return (
                   <option key={index} id={index} value={item}>
                     {item}
@@ -271,14 +264,7 @@ function FormBuilder({ submitForm, edit, video }) {
       <p>
         <strong>{edit ? "Edit Video Details" : "Fill Video Details"}</strong>
       </p>
-      {!edit && (
-        <FilePicker
-          setImageLayers={setImageLayers}
-          setPickerLayers={setPickerLayers}
-          setTextLayers={setTextLayers}
-          setCompositions={setCompositions}
-        />
-      )}
+      {!edit && <FilePicker setCompositions={setCompositions} />}
       <input
         onChange={(e) => editVideoKeys({ title: e.target.value })}
         style={styles.input}
@@ -301,7 +287,7 @@ function FormBuilder({ submitForm, edit, video }) {
         value={videoObj.tags.toString()}
       />
 
-      <button onClick={openVersionDisplay}>
+      <button disabled={compositions.length === 0} onClick={openVersionDisplay}>
         {edit ? "View Versions" : "Create Versions"}
       </button>
     </div>
