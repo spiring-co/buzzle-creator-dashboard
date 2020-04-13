@@ -1,6 +1,7 @@
 import AddVideoTemplate from "pages/AddVideoTemplate";
 import VideoTemplate from "pages/VideoTemplate";
 import React, { useState } from "react";
+import Button from "react-bootstrap/Button";
 import {
   Link,
   Route,
@@ -42,7 +43,9 @@ const CreatorVideoTemplates = () => {
           },
         }}
       >
-        <button>+ Add Template</button>
+        <Button className="mb-4 float-right" variant="outline-primary">
+          + Add Template
+        </Button>
       </Link>
       <br />
       <LazyLoadingList

@@ -1,6 +1,8 @@
 import React, { useState, useRef, useCallback } from "react";
 import usePaginatedFetch from "../services/usePaginatedFetch";
 import { Link } from "react-router-dom";
+import Table from "react-bootstrap/Table";
+import Button from "react-bootstrap/Button";
 export default ({
   page,
   url,
@@ -30,7 +32,11 @@ export default ({
   );
   if (from === "templates") {
     return (
-      <table>
+      <Table
+        className="table-borderless table-condensed table-hover"
+        responsive
+        size="sm"
+      >
         <thead>
           <tr>
             {listHeader.map((item) => (
@@ -60,8 +66,11 @@ export default ({
                       return (
                         <td>
                           {item[i]}
+
                           <Link to={`/createOrder/${item[i]}`}>
-                            <button>Send Form</button>
+                            <Button className="mr-4 float-right" variant="info">
+                              Send Form
+                            </Button>
                           </Link>
                         </td>
                       );
@@ -91,7 +100,9 @@ export default ({
                         <td>
                           {item[i]}
                           <Link to={`/createOrder/${item["videoTemplateId"]}`}>
-                            <button>Send Form</button>
+                            <Button className="mr-4 float-right" variant="info">
+                              Send Form
+                            </Button>
                           </Link>
                         </td>
                       );
@@ -106,11 +117,11 @@ export default ({
           <tr>{loading && "Loading Templates..."}</tr>
           <tr>{error && alert(error.message)}</tr>
         </tbody>
-      </table>
+      </Table>
     );
   } else {
     return (
-      <table>
+      <Table>
         <thead>
           <tr>
             {listHeader.map((item) => (
@@ -142,7 +153,7 @@ export default ({
           <tr>{loading && "Loading Templates..."}</tr>
           <tr>{error && alert(error.message)}</tr>
         </tbody>
-      </table>
+      </Table>
     );
   }
 };

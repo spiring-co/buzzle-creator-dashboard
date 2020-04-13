@@ -7,7 +7,7 @@ import Home from "pages/Home";
 import Landing from "pages/Landing";
 import Login from "pages/Login";
 import Register from "pages/Register";
-import Email from "pages/Email";
+
 import React from "react";
 import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import useAuth from "services/auth";
@@ -23,8 +23,6 @@ export default () => {
           <Route exact path="/" component={Landing} />
           <Route path="/login" exact component={Login} />
           <Route path="/register" exact component={Register} />
-
-          <Route path="/Password" exact component={Email} />
 
           <Route path="/forgotPassword" component={ForgotPassword} />
           <PrivateRoute isAuthenticated={isAuthenticated}>
