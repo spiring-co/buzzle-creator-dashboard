@@ -22,8 +22,8 @@ const FilePicker = ({ setCompositions, setTextLayers }) => {
       if (response.ok) {
         const { data } = await response.json();
 
-        setCompositions(data.comps);
-        setTextLayers(data.textLayers);
+        setCompositions(data);
+
         setFile(fileObj.name);
       }
     } catch (err) {
@@ -163,21 +163,3 @@ const FilePicker = ({ setCompositions, setTextLayers }) => {
 export default function FilePickerScreen(props) {
   return <FilePicker {...props} />;
 }
-
-const styles = {
-  label: {
-    margin: 30,
-    padding: 20,
-    borderRadius: 20,
-    paddingTop: 100,
-    paddingBottom: 100,
-    display: "flex",
-    flexDirection: "column",
-    height: 350,
-    boxShadow: "1px 1px 2px 2px lightgrey",
-    textAlign: "center",
-    justifyContent: "center",
-    alignItems: "center",
-    border: "2px dashed grey",
-  },
-};
