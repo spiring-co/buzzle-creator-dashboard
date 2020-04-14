@@ -5,6 +5,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { SegmentsContext, StateProvider } from "contextStore/store";
 import React, { useContext, useEffect, useState } from "react";
+
 import Form from "react-bootstrap/Form";
 import FilePicker from "../FilePicker";
 const MAX_SEGMENT_COUNT = 5;
@@ -29,9 +30,6 @@ function FormBuilder({ submitForm, edit, video }) {
   const [usedFields, setUsedFields] = useState([]);
   const [segmentDisplay, setSegmentDisplay] = useState(false);
   const [versionDisplay, setVersionDisplay] = useState(false);
-  const [textLayers, setTextLayers] = useState([]);
-  const [imageLayers, setImageLayers] = useState([]);
-  const [pickerLayers, setPickerLayers] = useState([]);
   const [compositions, setCompositions] = useState([]);
   const [comp_name, setComp_name] = useState("");
   const [value, setValue] = useState("");
@@ -56,8 +54,6 @@ function FormBuilder({ submitForm, edit, video }) {
     if (fromEdit) {
       setEditIndex(index);
       setEditVersion(true);
-
-      console.log(editVersion, editIndex);
     } else {
       addVersion({ comp_name });
     }
@@ -180,9 +176,7 @@ function FormBuilder({ submitForm, edit, video }) {
           children="Go Next Segment >"
         />
         <FormBuilderSegment
-          textLayers={textLayers}
-          imageLayers={imageLayers}
-          pickerLayers={pickerLayers}
+          compositions={compositions}
           edit={edit}
           usedFields={usedFields}
           setUsedFields={setUsedFields}
@@ -225,6 +219,7 @@ function FormBuilder({ submitForm, edit, video }) {
           );
         })}
         {!edit && (
+
           <Form>
             <Form.Group as={Row}>
               <Col sm="7">
@@ -235,6 +230,7 @@ function FormBuilder({ submitForm, edit, video }) {
                 >
                   <option disabled selected value="">
                     Select Composition
+
                   </option>
                   {compositions.map((item, index) => {
                     return (
@@ -337,6 +333,7 @@ function FormBuilder({ submitForm, edit, video }) {
         variant="outline-primary"
         onClick={openVersionDisplay}
       >
+
         {edit ? "View Versions" : "Create Versions"}
       </Button>
     </div>

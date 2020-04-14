@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Card from "react-bootstrap/Card";
+
 const FilePicker = ({ setCompositions, setTextLayers }) => {
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState(null);
@@ -22,9 +23,9 @@ const FilePicker = ({ setCompositions, setTextLayers }) => {
 
       if (response.ok) {
         const { data } = await response.json();
-
         setCompositions(data.comps);
         setTextLayers(data.textLayers);
+
         setFile(fileObj.name);
       }
     } catch (err) {
@@ -46,21 +47,6 @@ const FilePicker = ({ setCompositions, setTextLayers }) => {
     return (
       <label
         class="file_input"
-        /*  style={{
-          margin: 20,
-          padding: 20,
-          borderRadius: 20,
-          paddingTop: 100,
-          paddingBottom: 100,
-          display: "flex",
-          flexDirection: "column",
-          height: 350,
-          boxShadow: "1px 1px 2px 2px lightgrey",
-          textAlign: "center",
-          justifyContent: "center",
-          alignItems: "center",
-          border: "2px dashed grey",
-        }} */
       >
         <h1 style={{ marginTop: 36, paddingBottom: 0, border: 0 }}>
           Please wait, While We Doing Our Magic ...
@@ -74,6 +60,7 @@ const FilePicker = ({ setCompositions, setTextLayers }) => {
   }
   if (file === null)
     return (
+
       <div style={{ position: "relative", left: "17%" }}>
         <Card
           className="text-center"
@@ -124,39 +111,15 @@ const FilePicker = ({ setCompositions, setTextLayers }) => {
           </Card>
         </Card>
       </div>
-    );
-  return (
-    <label
-      onDragOver={(e) => e.preventDefault()}
-      onDrop={(ev) => {
-        ev.preventDefault();
-        var dFile = ev.dataTransfer.files[0];
-        extractService(dFile);
-      }}
-      for="apex_input"
-      class="file_input"
-      /*  style={{
-        margin: 30,
-        padding: 20,
-        borderRadius: 20,
-        paddingTop: 100,
-        paddingBottom: 100,
-        display: "flex",
-        flexDirection: "column",
-        height: 350,
-        boxShadow: "1px 1px 2px 2px lightgrey",
-        textAlign: "center",
-        justifyContent: "center",
-        alignItems: "center",
-        border: "2px dashed green",
+
       }}*/
     >
       <img
-        //  style={{ width: "40%", height: "40%" }}
+
         src={require("../assets/success.svg")}
       />
       <h1
-      // style={{ color: "green", marginTop: 36, paddingBottom: 0, border: 0 }}
+
       >
         {file} Uploaded Successfully.
       </h1>
@@ -168,20 +131,3 @@ export default function FilePickerScreen(props) {
   return <FilePicker {...props} />;
 }
 
-// const styles = {
-//   label: {
-//     margin: 30,
-//     padding: 20,
-//     borderRadius: 20,
-//     paddingTop: 100,
-//     paddingBottom: 100,
-//     display: "flex",
-//     flexDirection: "column",
-//     height: 350,
-//     boxShadow: "1px 1px 2px 2px lightgrey",
-//     textAlign: "center",
-//     justifyContent: "center",
-//     alignItems: "center",
-//     border: "2px dashed grey",
-//   },
-//};
