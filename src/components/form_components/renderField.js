@@ -9,7 +9,6 @@ import TextInput from "./TextInput";
 import TimePick from "./TimePick";
 
 export default function renderField(f, handleChange, order) {
-  console.log(f);
   switch (f.type) {
     case "custom_text_input":
       return (

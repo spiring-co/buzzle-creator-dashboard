@@ -27,7 +27,6 @@ const TextInput = ({ name, label, value, required, onChange }) => {
       name={name}
       onChange={(e) => {
         setText(e.target.value);
-        console.log(e.target.value, name);
         onChange(label, name, e.target.value, required);
       }}
       required={required}
