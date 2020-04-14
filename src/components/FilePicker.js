@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import Card from "react-bootstrap/Card";
+
 const FilePicker = ({ setCompositions, setTextLayers }) => {
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState(null);
@@ -21,8 +23,8 @@ const FilePicker = ({ setCompositions, setTextLayers }) => {
 
       if (response.ok) {
         const { data } = await response.json();
-
-        setCompositions(data);
+        setCompositions(data.comps);
+        setTextLayers(data.textLayers);
 
         setFile(fileObj.name);
       }
@@ -45,21 +47,6 @@ const FilePicker = ({ setCompositions, setTextLayers }) => {
     return (
       <label
         class="file_input"
-        style={{
-          margin: 20,
-          padding: 20,
-          borderRadius: 20,
-          paddingTop: 100,
-          paddingBottom: 100,
-          display: "flex",
-          flexDirection: "column",
-          height: 350,
-          boxShadow: "1px 1px 2px 2px lightgrey",
-          textAlign: "center",
-          justifyContent: "center",
-          alignItems: "center",
-          border: "2px dashed grey",
-        }}
       >
         <h1 style={{ marginTop: 36, paddingBottom: 0, border: 0 }}>
           Please wait, While We Doing Our Magic ...
@@ -73,86 +60,66 @@ const FilePicker = ({ setCompositions, setTextLayers }) => {
   }
   if (file === null)
     return (
-      <label
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={(ev) => {
-          ev.preventDefault();
-          var dFile = ev.dataTransfer.files[0];
-          extractService(dFile);
-        }}
-        for="apex_input"
-        class="file_input"
-        style={{
-          margin: 30,
-          padding: 20,
-          borderRadius: 20,
-          paddingTop: 100,
-          paddingBottom: 100,
-          display: "flex",
-          flexDirection: "column",
-          height: 350,
-          boxShadow: "1px 1px 2px 2px lightgrey",
-          textAlign: "center",
-          justifyContent: "center",
-          alignItems: "center",
-          border: "2px dashed grey",
-        }}
-      >
-        {error && (
-          <text style={{ color: "red" }}>Some Error Occured, Please Retry</text>
-        )}
-        <div>
-          <img
-            style={{ width: "40%", height: "40%" }}
-            src={require("../assets/blackUpload.svg")}
-          />
-          <p style={{ fontSize: 20, fontWeight: "bold", marginTop: 0 }}>
-            Drag & Drop APEX File Here
-          </p>
-          <p style={{ fontSize: 15, fontWeight: "bold", marginTop: 0 }}>Or</p>
-          <p class="choose_button">Choose File</p>
-        </div>
-        <input
-          onChange={pickFile}
-          id="apex_input"
-          style={{ display: "none" }}
-          type="file"
-          accept={[".aepx", ".aep"]}
-        />
-      </label>
-    );
-  return (
-    <label
-      onDragOver={(e) => e.preventDefault()}
-      onDrop={(ev) => {
-        ev.preventDefault();
-        var dFile = ev.dataTransfer.files[0];
-        extractService(dFile);
-      }}
-      for="apex_input"
-      class="file_input"
-      style={{
-        margin: 30,
-        padding: 20,
-        borderRadius: 20,
-        paddingTop: 100,
-        paddingBottom: 100,
-        display: "flex",
-        flexDirection: "column",
-        height: 350,
-        boxShadow: "1px 1px 2px 2px lightgrey",
-        textAlign: "center",
-        justifyContent: "center",
-        alignItems: "center",
-        border: "2px dashed green",
-      }}
+
+      <div style={{ position: "relative", left: "17%" }}>
+        <Card
+          className="text-center"
+          style={{
+            width: "60%",
+            height: "30vh",
+            marginBottom: "2vh",
+          }}
+        >
+          <Card
+            style={{
+              marginTop: "4vh",
+              marginRight: "5vh",
+              marginLeft: "5vh",
+              height: "70%",
+              border: "dashed grey 1px",
+            }}
+          >
+            <Card.Body
+              as="label"
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(ev) => {
+                ev.preventDefault();
+                var dFile = ev.dataTransfer.files[0];
+                extractService(dFile);
+              }}
+              for="apex_input"
+              class="file_input"
+            >
+              {error && (
+                <text style={{ color: "red" }}>
+                  Some Error Occured, Please Retry
+                </text>
+              )}
+
+              <Card.Title style={{ marginTop: "8vh" }}>
+                Drag files here to upload
+              </Card.Title>
+
+              <input
+                onChange={pickFile}
+                id="apex_input"
+                style={{ display: "none" }}
+                type="file"
+                accept={[".aepx", ".aep"]}
+              />
+            </Card.Body>
+          </Card>
+        </Card>
+      </div>
+
+      }}*/
     >
       <img
-        style={{ width: "40%", height: "40%" }}
+
         src={require("../assets/success.svg")}
       />
       <h1
-        style={{ color: "green", marginTop: 36, paddingBottom: 0, border: 0 }}
+
       >
         {file} Uploaded Successfully.
       </h1>
@@ -163,3 +130,4 @@ const FilePicker = ({ setCompositions, setTextLayers }) => {
 export default function FilePickerScreen(props) {
   return <FilePicker {...props} />;
 }
+
