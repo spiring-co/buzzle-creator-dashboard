@@ -1,7 +1,11 @@
 import FormBuilderSegment from "components/formSchemaBuilderComponents/FormBuilderSegment";
 import useActions from "contextStore/actions";
+import Button from "react-bootstrap/Button";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 import { SegmentsContext, StateProvider } from "contextStore/store";
 import React, { useContext, useEffect, useState } from "react";
+import Form from "react-bootstrap/Form";
 import FilePicker from "../FilePicker";
 const MAX_SEGMENT_COUNT = 5;
 
@@ -86,20 +90,20 @@ function FormBuilder({ submitForm, edit, video }) {
   };
   if (segmentDisplay) {
     return (
-      <div style={{ textAlign: "center", marginTop: 20 }}>
+      <Form>
         <p>
           <strong>
             {edit ? "Edit Version Details" : "Add Version Details"}
           </strong>
         </p>
-        <input
+        <Form.Control
           onChange={(e) => {
             setValue(Math.random());
             editversionKeys(editVersion ? editIndex : activeVersionIndex, {
               title: e.target.value,
             });
           }}
-          style={styles.input}
+          //style={styles.input}
           placeholder="Enter Version Title"
           type="text"
           value={
@@ -107,14 +111,14 @@ function FormBuilder({ submitForm, edit, video }) {
               .title
           }
         />
-        <input
+        <Form.Control
           onChange={(e) => {
             setValue(Math.random());
             editversionKeys(editVersion ? editIndex : activeVersionIndex, {
               description: e.target.value,
             });
           }}
-          style={styles.input}
+          //style={styles.input}
           placeholder="Enter Version Description"
           type="text"
           value={
@@ -122,14 +126,14 @@ function FormBuilder({ submitForm, edit, video }) {
               .description
           }
         />
-        <input
+        <Form.Control
           onChange={(e) => {
             setValue(Math.random());
             editversionKeys(editVersion ? editIndex : activeVersionIndex, {
               price: e.target.value,
             });
           }}
-          style={styles.input}
+          // style={styles.input}
           placeholder="Enter Version Price"
           type="number"
           value={
@@ -140,7 +144,7 @@ function FormBuilder({ submitForm, edit, video }) {
         <p>
           <strong>{edit ? "Edit Segments" : "Add Segments"}</strong>
         </p>
-        <button
+        <Button
           onClick={_addSegment}
           disabled={
             videoObj.versions[editVersion ? editIndex : activeVersionIndex].form
@@ -149,7 +153,7 @@ function FormBuilder({ submitForm, edit, video }) {
           children="+ Add Segment"
         />
 
-        <button
+        <Button
           onClick={deleteSegment}
           disabled={
             videoObj.versions[editVersion ? editIndex : activeVersionIndex].form
@@ -158,13 +162,13 @@ function FormBuilder({ submitForm, edit, video }) {
           children="- Delete Segment"
         />
         <br />
-        <button
+        <Button
           onClick={goToPreviousSegment}
           className="rounded _bg-state-warning"
           disabled={activeIndex < 1}
           children="< Go To previous"
         />
-        <button
+        <Button
           onClick={goToNextSegment}
           className="rounded _bg-state-warning"
           disabled={
@@ -191,7 +195,7 @@ function FormBuilder({ submitForm, edit, video }) {
               .segments.length
           }`}
         />
-        <button
+        <Button
           onClick={() => {
             if (!editVersion) {
               setActiveVersionIndex(activeVersionIndex + 1);
@@ -200,12 +204,12 @@ function FormBuilder({ submitForm, edit, video }) {
           }}
           children={edit ? "Back To Versions" : "Create Version"}
         />
-      </div>
+      </Form>
     );
   }
   if (versionDisplay) {
     return (
-      <div style={{ textAlign: "center" }}>
+      <div>
         <p>{edit ? "View Versions" : "Create Versions"}</p>
 
         {videoObj?.versions.map((item, index) => {
@@ -221,88 +225,120 @@ function FormBuilder({ submitForm, edit, video }) {
           );
         })}
         {!edit && (
-          <div style={{ margin: 10 }}>
-            <select onChange={(e) => setComp_name(e.target.value)}>
-              <option disabled selected value="">
-                Select Composition
-              </option>
-              {compositions.map((item, index) => {
-                return (
-                  <option key={index} id={index} value={item}>
-                    {item}
+          <Form>
+            <Form.Group as={Row}>
+              <Col sm="7">
+                <Form.Control
+                  as="select"
+                  value="Choose..."
+                  onChange={(e) => setComp_name(e.target.value)}
+                >
+                  <option disabled selected value="">
+                    Select Composition
                   </option>
-                );
-              })}
-            </select>
-            <button
-              onClick={() => openSegmentsBuilder()}
-              disabled={comp_name === ""}
-            >
-              Add
-            </button>
-          </div>
+                  {compositions.map((item, index) => {
+                    return (
+                      <option key={index} id={index} value={item}>
+                        {item}
+                      </option>
+                    );
+                  })}
+                </Form.Control>
+              </Col>
+              <Col sm="3">
+                <Button
+                  // style={{ float: "right" }}
+                  variant="outline-primary"
+                  onClick={() => openSegmentsBuilder()}
+                  disabled={comp_name === ""}
+                >
+                  Add
+                </Button>
+              </Col>
+            </Form.Group>
+          </Form>
         )}
         <br />
-        <button
+        <Button
+          variant="outline-primary"
+          style={{ float: "left", marginRight: "2%" }}
           onClick={() =>
             segmentDisplay ? setSegmentDisplay(false) : setVersionDisplay(false)
           }
           disabled={!segmentDisplay && !versionDisplay}
         >
           Back
-        </button>
-        <button
+        </Button>
+        <Button
+          style={{ float: "left" }}
+          variant="outline-primary"
           disabled={videoObj.versions.length === 0}
           onClick={handleSubmitForm}
         >
           {edit ? "Save Edits" : "Submit Form"}
-        </button>
+        </Button>
       </div>
     );
   }
   return (
-    <div
-      style={{
-        textAlign: "center",
-      }}
-    >
-      <br />
-      <p>
-        <strong>{edit ? "Edit Video Details" : "Fill Video Details"}</strong>
-      </p>
-      {!edit && (
-        <FilePicker
-          setImageLayers={setImageLayers}
-          setPickerLayers={setPickerLayers}
-          setTextLayers={setTextLayers}
-          setCompositions={setCompositions}
-        />
-      )}
-      <input
-        onChange={(e) => editVideoKeys({ title: e.target.value })}
-        style={styles.input}
-        placeholder="Enter Video Title"
-        type="text"
-        value={videoObj.title}
-      />
-      <input
-        onChange={(e) => editVideoKeys({ description: e.target.value })}
-        style={styles.input}
-        placeholder="Enter Video Description"
-        type="text"
-        value={videoObj.description}
-      />
-      <input
-        onChange={handleTagsChange}
-        style={styles.input}
-        placeholder="Enter Video Tags"
-        type="text"
-        value={videoObj.tags.toString()}
-      />
+    <div>
+      <Form>
+        <p>
+          <strong>{edit ? "Edit Video Details" : "Fill Video Details"}</strong>
+        </p>
+        {!edit && (
+          <FilePicker
+            setImageLayers={setImageLayers}
+            setPickerLayers={setPickerLayers}
+            setTextLayers={setTextLayers}
+            setCompositions={setCompositions}
+          />
+        )}
+        <Form.Group>
+          <Col sm="12">
+            <Form.Control
+              size="md"
+              type="textarea"
+              onChange={(e) => editVideoKeys({ title: e.target.value })}
+              placeholder="Enter Video Title"
+              type="text"
+              value={videoObj.title}
+            />
+          </Col>
+        </Form.Group>
+        <Form.Group>
+          <Col sm="12">
+            <Form.Control
+              size="md"
+              onChange={(e) => editVideoKeys({ description: e.target.value })}
+              //style={styles.input}
+              placeholder="Enter Video Description"
+              type="textarea"
+              value={videoObj.description}
+            />
+          </Col>
+        </Form.Group>
 
-      <button onClick={openVersionDisplay}>
+        <Form.Group>
+          <Col sm="12">
+            <Form.Control
+              size="md"
+              onChange={handleTagsChange}
+              //style={styles.input}
+              placeholder="Enter Video Tags"
+              type="textarea"
+              value={videoObj.tags.toString()}
+            />
+          </Col>
+        </Form.Group>
+      </Form>
+      <Button
+        style={{ position: "relative", left: "3%" }}
+        variant="outline-primary"
+        onClick={openVersionDisplay}
+      >
         {edit ? "View Versions" : "Create Versions"}
-      </button>
+      </Button>
     </div>
   );
 }
@@ -318,7 +354,6 @@ export default (props) => {
 const styles = {
   input: {
     fontSize: 20,
-    fontFamily: "Poppins-Bold",
     padding: 10,
     margin: 10,
     marginRight: 30,
