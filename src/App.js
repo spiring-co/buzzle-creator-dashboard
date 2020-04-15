@@ -11,6 +11,7 @@ import Register from "pages/Register";
 import React from "react";
 import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import useAuth from "services/auth";
+import createOrder from "pages/createOrder";
 
 export default () => {
   const { logout, isAuthenticated } = useAuth();
@@ -25,7 +26,7 @@ export default () => {
           <Route path="/register" exact component={Register} />
 
           {/* <Route path="/Password" exact component={Email} /> */}
-
+          <Route path="/createOrder/:videoTemplateId" component={createOrder} />
           <Route path="/forgotPassword" component={ForgotPassword} />
           <PrivateRoute isAuthenticated={isAuthenticated}>
             <Route path="/home" component={Home} />
