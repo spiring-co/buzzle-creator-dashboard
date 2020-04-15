@@ -3,7 +3,8 @@ import useActions from "contextStore/actions";
 import { SegmentsContext, StateProvider } from "contextStore/store";
 import React, { useContext, useEffect, useState } from "react";
 
-import FilePicker from "../FilePicker";
+import VideoTemplateMetaForm from "./VideoTemplateMetaForm";
+
 const MAX_SEGMENT_COUNT = 5;
 
 function FormBuilder({ submitForm, edit, video }) {
@@ -85,6 +86,22 @@ function FormBuilder({ submitForm, edit, video }) {
   const handleSubmitForm = async () => {
     submitForm(videoObj);
   };
+
+  const handleVideoTemplateMetaSubmit = async (data) => {
+    const { tags, title, description, projectFile } = data;
+    setTextLayers([]);
+    setImageLayers([]);
+    setCompositions([]);
+    setEditVersion(false);
+    setEditIndex(0);
+    setActiveIndex(0);
+    setComp_name("");
+    setUsedFields([]);
+    setSegmentDisplay(false);
+    setVersionDisplay(true);
+    editVideoKeys({ tags, title, description });
+  };
+
   if (segmentDisplay) {
     return (
       <div style={{ textAlign: "center", marginTop: 20 }}>
@@ -100,7 +117,6 @@ function FormBuilder({ submitForm, edit, video }) {
               title: e.target.value,
             });
           }}
-          style={styles.input}
           placeholder="Enter Version Title"
           type="text"
           value={
@@ -115,7 +131,6 @@ function FormBuilder({ submitForm, edit, video }) {
               description: e.target.value,
             });
           }}
-          style={styles.input}
           placeholder="Enter Version Description"
           type="text"
           value={
@@ -130,7 +145,6 @@ function FormBuilder({ submitForm, edit, video }) {
               price: e.target.value,
             });
           }}
-          style={styles.input}
           placeholder="Enter Version Price"
           type="number"
           value={
@@ -262,48 +276,10 @@ function FormBuilder({ submitForm, edit, video }) {
     );
   }
   return (
-    <div
-      style={{
-        textAlign: "center",
-      }}
-    >
-      <br />
-      <p>
-        <strong>{edit ? "Edit Video Details" : "Fill Video Details"}</strong>
-      </p>
+    <div>
       {!edit && (
-        <FilePicker
-          setImageLayers={setImageLayers}
-          setPickerLayers={setPickerLayers}
-          setTextLayers={setTextLayers}
-          setCompositions={setCompositions}
-        />
+        <VideoTemplateMetaForm onSubmit={handleVideoTemplateMetaSubmit} />
       )}
-      <input
-        onChange={(e) => editVideoKeys({ title: e.target.value })}
-        style={styles.input}
-        placeholder="Enter Video Title"
-        type="text"
-        value={videoObj.title}
-      />
-      <input
-        onChange={(e) => editVideoKeys({ description: e.target.value })}
-        style={styles.input}
-        placeholder="Enter Video Description"
-        type="text"
-        value={videoObj.description}
-      />
-      <input
-        onChange={handleTagsChange}
-        style={styles.input}
-        placeholder="Enter Video Tags"
-        type="text"
-        value={videoObj.tags.toString()}
-      />
-
-      <button onClick={openVersionDisplay}>
-        {edit ? "View Versions" : "Create Versions"}
-      </button>
     </div>
   );
 }
@@ -316,17 +292,6 @@ export default (props) => {
   );
 };
 
-const styles = {
-  input: {
-    fontSize: 20,
-    padding: 10,
-    margin: 10,
-    marginRight: 30,
-    marginLeft: 30,
-    width: "100%",
-    height: 40,
-    borderWidth: 0,
-    borderBottomWidth: 2,
-    borderColor: "grey",
-  },
-};
+// <button onClick={openVersionDisplay}>
+//   {edit ? "View Versions" : "Create Versions"}
+// </button>;
