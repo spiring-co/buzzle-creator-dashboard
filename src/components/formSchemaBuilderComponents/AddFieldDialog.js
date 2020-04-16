@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function AddFieldDialog(props) {
+export default (props) => {
   const { textLayers = [], imageLayers = [], pickerLayers = [] } = props;
   // layers coming may comes as array of object ,
   //currently all layers are configured as they are array of strings,
@@ -300,4 +300,4 @@ export default function AddFieldDialog(props) {
       </div>
     </dialog>
   );
-}
+};

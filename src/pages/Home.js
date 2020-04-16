@@ -7,6 +7,7 @@ import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 import Row from "react-bootstrap/Row";
+import { useSpring, animated } from "react-spring";
 import { NavLink, Route, Switch, useRouteMatch } from "react-router-dom";
 
 import SideBar from "../components/Sidebar";
@@ -14,7 +15,7 @@ import SideBar from "../components/Sidebar";
 export default () => {
   let { path, url } = useRouteMatch();
   const [sidebarStatus, setSidebarStatus] = useState(false);
-
+  const props = useSpring({ opacity: 1, from: { opacity: 0 } });
   const handleClick = () => {
     setSidebarStatus(true);
   };
@@ -23,17 +24,17 @@ export default () => {
     <Container fluid>
       <Row>
         <Col md={sidebarStatus ? 2 : null}>
-          {sidebarStatus && <SideBar onclick={handleCloseSidebar} />}
+          {sidebarStatus && <SideBar onclick={handleCloseSidebar} Url={url} />}
         </Col>
 
         <Col className="bg-light" md={sidebarStatus ? 10 : 12}>
           <Row>
-            <Col sm="1">
+            <Col>
               <Button onClick={handleClick}>
                 <i class="material-icons">menu</i>
               </Button>
             </Col>
-            <Col sm="10">
+            <Col sm="11">
               <Switch>
                 <div style={{ flex: 3 }}>
                   <Route path={`${path}/`} exact component={Dashboard} />

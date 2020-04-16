@@ -1,13 +1,15 @@
 import FormBuilderSegment from "components/formSchemaBuilderComponents/FormBuilderSegment";
 import useActions from "contextStore/actions";
-import Button from "react-bootstrap/Button";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
 import { SegmentsContext, StateProvider } from "contextStore/store";
 import React, { useContext, useEffect, useState } from "react";
-
+import Button from "react-bootstrap/Button";
+import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
-import FilePicker from "../FilePicker";
+import Row from "react-bootstrap/Row";
+
+import VersionSummary from "./VersionSummary";
+import VideoTemplateMetaForm from "./VideoTemplateMetaForm";
+
 const MAX_SEGMENT_COUNT = 5;
 
 function FormBuilder({ submitForm, edit, video }) {
@@ -84,6 +86,22 @@ function FormBuilder({ submitForm, edit, video }) {
   const handleSubmitForm = async () => {
     submitForm(videoObj);
   };
+
+  const handleVideoTemplateMetaSubmit = async (data) => {
+    const { tags, title, description, projectFile } = data;
+    // setTextLayers([]);
+    // setImageLayers([]);
+    setCompositions(Object.keys(projectFile.data));
+    setEditVersion(false);
+    setEditIndex(0);
+    setActiveIndex(0);
+    setComp_name("");
+    setUsedFields([]);
+    setSegmentDisplay(false);
+    setVersionDisplay(true);
+    editVideoKeys({ tags, title, description });
+  };
+
   if (segmentDisplay) {
     return (
       <Form>
@@ -99,7 +117,6 @@ function FormBuilder({ submitForm, edit, video }) {
               title: e.target.value,
             });
           }}
-          //style={styles.input}
           placeholder="Enter Version Title"
           type="text"
           value={
@@ -114,7 +131,6 @@ function FormBuilder({ submitForm, edit, video }) {
               description: e.target.value,
             });
           }}
-          //style={styles.input}
           placeholder="Enter Version Description"
           type="text"
           value={
@@ -129,7 +145,6 @@ function FormBuilder({ submitForm, edit, video }) {
               price: e.target.value,
             });
           }}
-          // style={styles.input}
           placeholder="Enter Version Price"
           type="number"
           value={
@@ -202,137 +217,27 @@ function FormBuilder({ submitForm, edit, video }) {
     );
   }
   if (versionDisplay) {
-    return (
-      <div>
-        <p>{edit ? "View Versions" : "Create Versions"}</p>
-
-        {videoObj?.versions.map((item, index) => {
-          return (
-            <div style={{ border: "1px solid black", padding: 10, margin: 10 }}>
-              <p style={{ fontSize: 15 }}>{JSON.stringify(item)}</p>
-              <button onClick={() => openSegmentsBuilder(index, true)}>
-                Edit
-              </button>
-              <span> </span>
-              <button onClick={() => removeVersion(index)}>Delete</button>
-            </div>
-          );
-        })}
-        {!edit && (
-          <Form>
-            <Form.Group as={Row}>
-              <Col sm="7">
-                <Form.Control
-                  as="select"
-                  value="Choose..."
-                  onChange={(e) => setComp_name(e.target.value)}
-                >
-                  <option disabled selected value="">
-                    Select Composition
-                  </option>
-                  {compositions.map((item, index) => {
-                    return (
-                      <option key={index} id={index} value={item}>
-                        {item}
-                      </option>
-                    );
-                  })}
-                </Form.Control>
-              </Col>
-              <Col sm="3">
-                <Button
-                  // style={{ float: "right" }}
-                  variant="outline-primary"
-                  onClick={() => openSegmentsBuilder()}
-                  disabled={comp_name === ""}
-                >
-                  Add
-                </Button>
-              </Col>
-            </Form.Group>
-          </Form>
-        )}
-        <br />
-        <Button
-          variant="outline-primary"
-          style={{ float: "left", marginRight: "2%" }}
-          onClick={() =>
-            segmentDisplay ? setSegmentDisplay(false) : setVersionDisplay(false)
-          }
-          disabled={!segmentDisplay && !versionDisplay}
-        >
-          Back
-        </Button>
-        <Button
-          style={{ float: "left" }}
-          variant="outline-primary"
-          disabled={videoObj.versions.length === 0}
-          onClick={handleSubmitForm}
-        >
-          {edit ? "Save Edits" : "Submit Form"}
-        </Button>
-      </div>
-    );
+    const props = {
+      edit,
+      videoObj,
+      openSegmentsBuilder,
+      removeVersion,
+      setComp_name,
+      compositions,
+      comp_name,
+      segmentDisplay,
+      handleSubmitForm,
+      setSegmentDisplay,
+      versionDisplay,
+      setVersionDisplay,
+    };
+    return <VersionSummary {...props} />;
   }
   return (
     <div>
-      <Form>
-        <p>
-          <strong>{edit ? "Edit Video Details" : "Fill Video Details"}</strong>
-        </p>
-        {!edit && (
-          <FilePicker
-            // setImageLayers={setImageLayers}
-            //setPickerLayers={setPickerLayers}
-            //setTextLayers={setTextLayers}
-            setCompositions={setCompositions}
-          />
-        )}
-        <Form.Group>
-          <Col sm="12">
-            <Form.Control
-              size="md"
-              type="textarea"
-              onChange={(e) => editVideoKeys({ title: e.target.value })}
-              placeholder="Enter Video Title"
-              type="text"
-              value={videoObj.title}
-            />
-          </Col>
-        </Form.Group>
-        <Form.Group>
-          <Col sm="12">
-            <Form.Control
-              size="md"
-              onChange={(e) => editVideoKeys({ description: e.target.value })}
-              //style={styles.input}
-              placeholder="Enter Video Description"
-              type="textarea"
-              value={videoObj.description}
-            />
-          </Col>
-        </Form.Group>
-
-        <Form.Group>
-          <Col sm="12">
-            <Form.Control
-              size="md"
-              onChange={handleTagsChange}
-              //style={styles.input}
-              placeholder="Enter Video Tags"
-              type="textarea"
-              value={videoObj.tags.toString()}
-            />
-          </Col>
-        </Form.Group>
-      </Form>
-      <Button
-        style={{ position: "relative", left: "3%" }}
-        variant="outline-primary"
-        onClick={openVersionDisplay}
-      >
-        {edit ? "View Versions" : "Create Versions"}
-      </Button>
+      {!edit && (
+        <VideoTemplateMetaForm onSubmit={handleVideoTemplateMetaSubmit} />
+      )}
     </div>
   );
 }
@@ -345,17 +250,6 @@ export default (props) => {
   );
 };
 
-const styles = {
-  input: {
-    fontSize: 20,
-    padding: 10,
-    margin: 10,
-    marginRight: 30,
-    marginLeft: 30,
-    width: "100%",
-    height: 40,
-    borderWidth: 0,
-    borderBottomWidth: 2,
-    borderColor: "grey",
-  },
-};
+// <button onClick={openVersionDisplay}>
+//   {edit ? "View Versions" : "Create Versions"}
+// </button>;

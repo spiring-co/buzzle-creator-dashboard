@@ -4,14 +4,18 @@ import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import useAuth from "services/auth";
 import * as Yup from "yup";
-
+import eyeof from "../components/eyeoff.svg";
+import eye from "../components/eye.svg";
 export default () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [pass, setPass] = useState("password");
+  const [img, setImg] = useState("false");
   const { login } = useAuth();
-  const handelpass = () => {
+  const handelpass = (event) => {
+    event.preventDefault();
     setPass(pass === "password" ? "text" : "password");
+    setImg(true);
   };
   const {
     handleChange,
@@ -82,28 +86,39 @@ export default () => {
                 <Col className="text-right text-muted">
                   <Link to="/forgotPassword">Forgot Password</Link>
                 </Col>
-
-                <input
-                  class="fa fa-eye"
-                  onChange={handelpass}
-                  type="checkbox"
-                  style={{
-                    fontSize: "15px",
-                    position: "relative",
-                    top: "6vh",
-                    right: "4vh",
-                  }}
-                />
               </Row>
-              <Form.Control
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.password}
-                name="password"
-                type={pass}
-                placeholder="Password"
-                isInvalid={touched.password && !!errors.password}
-              />
+              <div style={{ display: "flex" }}>
+                <Form.Control
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.password}
+                  name="password"
+                  type={pass}
+                  data-toggle="password"
+                  placeholder="Password"
+                  isInvalid={touched.password && !!errors.password}
+                />
+                <div
+                  class="input-group-addon"
+                  style={{
+                    position: "relative",
+                    right: "5vh",
+                    marginTop: "5px",
+                  }}
+                >
+                  <a
+                    href=""
+                    onClick={handelpass}
+                    style={{ position: "relative" }}
+                  >
+                    {pass == "password" ? (
+                      <img src={eye} />
+                    ) : (
+                      <img src={eyeof} />
+                    )}
+                  </a>
+                </div>
+              </div>
               <Form.Control.Feedback type="invalid">
                 {errors.password}
               </Form.Control.Feedback>
