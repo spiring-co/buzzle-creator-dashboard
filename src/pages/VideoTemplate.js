@@ -1,7 +1,8 @@
 import React from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
+import Button from "react-bootstrap/Button";
 import useApi from "services/api";
-export default props => {
+export default (props) => {
   let { url } = useRouteMatch();
 
   const videoTemplateId = props.location.state.video.videoTemplateId;
@@ -18,8 +19,8 @@ export default props => {
       pathname: `${url}/edit`,
       state: {
         edit: true,
-        video: props.location.state.video
-      }
+        video: props.location.state.video,
+      },
     });
   };
 
@@ -36,8 +37,8 @@ export default props => {
             headers: {
               Accept: "application/json",
               "Content-Type": "application/json",
-              Authorization: `bearer ${localStorage.getItem("jwtoken")}`
-            }
+              Authorization: `bearer ${localStorage.getItem("jwtoken")}`,
+            },
           }
         );
         setIsDeleting(false);
@@ -75,9 +76,13 @@ export default props => {
         {data.description}
       </p>
 
-      <button onClick={handleEdit}>Edit</button>
+      <Button variant="outline-primary" onClick={handleEdit}>
+        Edit
+      </Button>
       <span> </span>
-      <button onClick={handleDelete}>Delete</button>
+      <Button variant="outline-primary" onClick={handleDelete}>
+        Delete
+      </Button>
     </div>
   );
 };

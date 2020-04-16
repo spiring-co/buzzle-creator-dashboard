@@ -219,7 +219,6 @@ function FormBuilder({ submitForm, edit, video }) {
           );
         })}
         {!edit && (
-
           <Form>
             <Form.Group as={Row}>
               <Col sm="7">
@@ -230,7 +229,6 @@ function FormBuilder({ submitForm, edit, video }) {
                 >
                   <option disabled selected value="">
                     Select Composition
-
                   </option>
                   {compositions.map((item, index) => {
                     return (
@@ -284,9 +282,9 @@ function FormBuilder({ submitForm, edit, video }) {
         </p>
         {!edit && (
           <FilePicker
-            setImageLayers={setImageLayers}
-            setPickerLayers={setPickerLayers}
-            setTextLayers={setTextLayers}
+            // setImageLayers={setImageLayers}
+            //setPickerLayers={setPickerLayers}
+            //setTextLayers={setTextLayers}
             setCompositions={setCompositions}
           />
         )}
@@ -333,7 +331,6 @@ function FormBuilder({ submitForm, edit, video }) {
         variant="outline-primary"
         onClick={openVersionDisplay}
       >
-
         {edit ? "View Versions" : "Create Versions"}
       </Button>
     </div>

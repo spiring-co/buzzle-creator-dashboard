@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import Dropdown from "react-bootstrap/Dropdown";
 import Nav from "react-bootstrap/Nav";
+
+import Sidebar from "./Sidebar";
 import Navbar from "react-bootstrap/Navbar";
 import styled from "styled-components";
 
@@ -10,6 +12,7 @@ export default ({ isAuthenticated, logout }) => {
       <Navbar.Brand href="/" className="m-auto">
         <LogoImage src={require("../assets/logo.png")} alt="Pharaoh Logo" />
       </Navbar.Brand>
+
       <Nav>
         {isAuthenticated && (
           <Dropdown drop="left" id="nav-dropdown">
