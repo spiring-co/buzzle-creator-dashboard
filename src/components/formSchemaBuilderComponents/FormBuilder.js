@@ -2,7 +2,12 @@ import FormBuilderSegment from "components/formSchemaBuilderComponents/FormBuild
 import useActions from "contextStore/actions";
 import { SegmentsContext, StateProvider } from "contextStore/store";
 import React, { useContext, useEffect, useState } from "react";
+import Button from "react-bootstrap/Button";
+import Col from "react-bootstrap/Col";
+import Form from "react-bootstrap/Form";
+import Row from "react-bootstrap/Row";
 
+import VersionSummary from "./VersionSummary";
 import VideoTemplateMetaForm from "./VideoTemplateMetaForm";
 
 const MAX_SEGMENT_COUNT = 5;
@@ -27,9 +32,6 @@ function FormBuilder({ submitForm, edit, video }) {
   const [usedFields, setUsedFields] = useState([]);
   const [segmentDisplay, setSegmentDisplay] = useState(false);
   const [versionDisplay, setVersionDisplay] = useState(false);
-  const [textLayers, setTextLayers] = useState([]);
-  const [imageLayers, setImageLayers] = useState([]);
-  const [pickerLayers, setPickerLayers] = useState([]);
   const [compositions, setCompositions] = useState([]);
   const [comp_name, setComp_name] = useState("");
   const [value, setValue] = useState("");
@@ -54,8 +56,6 @@ function FormBuilder({ submitForm, edit, video }) {
     if (fromEdit) {
       setEditIndex(index);
       setEditVersion(true);
-
-      console.log(editVersion, editIndex);
     } else {
       addVersion({ comp_name });
     }
@@ -89,9 +89,9 @@ function FormBuilder({ submitForm, edit, video }) {
 
   const handleVideoTemplateMetaSubmit = async (data) => {
     const { tags, title, description, projectFile } = data;
-    setTextLayers([]);
-    setImageLayers([]);
-    setCompositions([]);
+    // setTextLayers([]);
+    // setImageLayers([]);
+    setCompositions(Object.keys(projectFile.data));
     setEditVersion(false);
     setEditIndex(0);
     setActiveIndex(0);
@@ -104,13 +104,13 @@ function FormBuilder({ submitForm, edit, video }) {
 
   if (segmentDisplay) {
     return (
-      <div style={{ textAlign: "center", marginTop: 20 }}>
+      <Form>
         <p>
           <strong>
             {edit ? "Edit Version Details" : "Add Version Details"}
           </strong>
         </p>
-        <input
+        <Form.Control
           onChange={(e) => {
             setValue(Math.random());
             editversionKeys(editVersion ? editIndex : activeVersionIndex, {
@@ -124,7 +124,7 @@ function FormBuilder({ submitForm, edit, video }) {
               .title
           }
         />
-        <input
+        <Form.Control
           onChange={(e) => {
             setValue(Math.random());
             editversionKeys(editVersion ? editIndex : activeVersionIndex, {
@@ -138,7 +138,7 @@ function FormBuilder({ submitForm, edit, video }) {
               .description
           }
         />
-        <input
+        <Form.Control
           onChange={(e) => {
             setValue(Math.random());
             editversionKeys(editVersion ? editIndex : activeVersionIndex, {
@@ -155,7 +155,7 @@ function FormBuilder({ submitForm, edit, video }) {
         <p>
           <strong>{edit ? "Edit Segments" : "Add Segments"}</strong>
         </p>
-        <button
+        <Button
           onClick={_addSegment}
           disabled={
             videoObj.versions[editVersion ? editIndex : activeVersionIndex].form
@@ -164,7 +164,7 @@ function FormBuilder({ submitForm, edit, video }) {
           children="+ Add Segment"
         />
 
-        <button
+        <Button
           onClick={deleteSegment}
           disabled={
             videoObj.versions[editVersion ? editIndex : activeVersionIndex].form
@@ -173,13 +173,13 @@ function FormBuilder({ submitForm, edit, video }) {
           children="- Delete Segment"
         />
         <br />
-        <button
+        <Button
           onClick={goToPreviousSegment}
           className="rounded _bg-state-warning"
           disabled={activeIndex < 1}
           children="< Go To previous"
         />
-        <button
+        <Button
           onClick={goToNextSegment}
           className="rounded _bg-state-warning"
           disabled={
@@ -191,9 +191,7 @@ function FormBuilder({ submitForm, edit, video }) {
           children="Go Next Segment >"
         />
         <FormBuilderSegment
-          textLayers={textLayers}
-          imageLayers={imageLayers}
-          pickerLayers={pickerLayers}
+          compositions={compositions}
           edit={edit}
           usedFields={usedFields}
           setUsedFields={setUsedFields}
@@ -206,7 +204,7 @@ function FormBuilder({ submitForm, edit, video }) {
               .segments.length
           }`}
         />
-        <button
+        <Button
           onClick={() => {
             if (!editVersion) {
               setActiveVersionIndex(activeVersionIndex + 1);
@@ -215,65 +213,25 @@ function FormBuilder({ submitForm, edit, video }) {
           }}
           children={edit ? "Back To Versions" : "Create Version"}
         />
-      </div>
+      </Form>
     );
   }
   if (versionDisplay) {
-    return (
-      <div style={{ textAlign: "center" }}>
-        <p>{edit ? "View Versions" : "Create Versions"}</p>
-
-        {videoObj?.versions.map((item, index) => {
-          return (
-            <div style={{ border: "1px solid black", padding: 10, margin: 10 }}>
-              <p style={{ fontSize: 15 }}>{JSON.stringify(item)}</p>
-              <button onClick={() => openSegmentsBuilder(index, true)}>
-                Edit
-              </button>
-              <span> </span>
-              <button onClick={() => removeVersion(index)}>Delete</button>
-            </div>
-          );
-        })}
-        {!edit && (
-          <div style={{ margin: 10 }}>
-            <select onChange={(e) => setComp_name(e.target.value)}>
-              <option disabled selected value="">
-                Select Composition
-              </option>
-              {compositions.map((item, index) => {
-                return (
-                  <option key={index} id={index} value={item}>
-                    {item}
-                  </option>
-                );
-              })}
-            </select>
-            <button
-              onClick={() => openSegmentsBuilder()}
-              disabled={comp_name === ""}
-            >
-              Add
-            </button>
-          </div>
-        )}
-        <br />
-        <button
-          onClick={() =>
-            segmentDisplay ? setSegmentDisplay(false) : setVersionDisplay(false)
-          }
-          disabled={!segmentDisplay && !versionDisplay}
-        >
-          Back
-        </button>
-        <button
-          disabled={videoObj.versions.length === 0}
-          onClick={handleSubmitForm}
-        >
-          {edit ? "Save Edits" : "Submit Form"}
-        </button>
-      </div>
-    );
+    const props = {
+      edit,
+      videoObj,
+      openSegmentsBuilder,
+      removeVersion,
+      setComp_name,
+      compositions,
+      comp_name,
+      segmentDisplay,
+      handleSubmitForm,
+      setSegmentDisplay,
+      versionDisplay,
+      setVersionDisplay,
+    };
+    return <VersionSummary {...props} />;
   }
   return (
     <div>

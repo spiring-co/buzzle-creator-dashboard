@@ -60,10 +60,12 @@ export default (props) => {
     if (required) {
       if (value === "") {
         alert(label + " Cannot Be Empty");
-      } else {
-        if (value !== " ") {
-          setIsBlocking(true);
-        }
+      }
+    } else {
+      if (value !== " ") {
+        setIsBlocking(true);
+      }
+      if (name) {
         formData[name] = value;
         setFormData({ ...formData });
       }
@@ -83,17 +85,32 @@ export default (props) => {
         form_data: formData,
         user,
         composition: video.versions[versionIndex].comp_name,
-        template: video.uid,
+        template: video._id,
         edit,
-        uid: video.uid,
+        uid: video._id,
       };
       console.log("from ", postRequestData);
       const status = true;
       //submit video
       // const status = await createOrder(postRequestData);
-      if (status) {
+      // render video
+      const response = await fetch("http://localhost:4488/render", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          data: postRequestData.form_data,
+          composition: postRequestData.composition,
+          templateFilePath: "http://localhost:4488/templates/myfile.aep",
+        }),
+      });
+      if (response.ok) {
         setSubmitting(false);
-        alert("Your Order Will Be Ready Soon");
+        setForm(false);
+        const { message } = await response.json();
+        alert(message);
       }
     } catch (err) {
       setSubmitting(false);

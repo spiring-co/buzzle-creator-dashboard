@@ -1,11 +1,14 @@
 import React, { useCallback, useRef, useState } from "react";
 import Table from "react-bootstrap/Table";
-
+import { useHistory } from "react-router-dom";
 import usePaginatedFetch from "../services/usePaginatedFetch";
-
+import Button from "react-bootstrap/Button";
 export default ({ url, listHeader, listKeys }) => {
+  const history = useHistory();
   const [page, setPage] = useState(1);
+
   let { data, hasMore, loading, error } = usePaginatedFetch(url, page, 10);
+  console.log(data);
   const observer = useRef();
 
   const lastElement = useCallback(
@@ -13,7 +16,6 @@ export default ({ url, listHeader, listKeys }) => {
       if (loading) return;
       if (observer.current) observer.current.disconnect();
       observer.current = new IntersectionObserver((entries) => {
-        console.log(hasMore);
         if (entries[0].isIntersecting && hasMore) {
           setPage(page + 1);
         }
@@ -35,8 +37,21 @@ export default ({ url, listHeader, listKeys }) => {
       <tbody>
         {data.map((item, index) => (
           <tr ref={data.length === index + 1 ? lastElement : null} key={index}>
-            {listKeys.map((i) => (
-              <td>{item[i]}</td>
+            {listKeys.map((i, index) => (
+              <td>
+                {item[i]}
+                {index === 1 && (
+                  <Button
+                    style={{ marginLeft: 10 }}
+                    onClick={() =>
+                      history.push({
+                        pathname: `/createOrder/${item.videoTemplateId}`,
+                      })
+                    }
+                    children={"Render Form"}
+                  />
+                )}
+              </td>
             ))}
           </tr>
         ))}

@@ -6,15 +6,21 @@ import styled from "styled-components";
 export default ({ value, onData, name, isInvalid }) => {
   const [hasPickedFile, setHasPickedFile] = useState(false);
   const [hasExtractedData, setHasExtractedData] = useState(false);
+  const [error, setError] = useState(null);
 
   const handlePickFile = async (e) => {
-    e.preventDefault();
-    const file =
-      (e?.target?.files ?? [null])[0] || (e?.dataTransfer?.files ?? [null])[0];
-    if (!file) return;
-    setHasPickedFile(true);
-    onData(await extractStructureFromFile(file));
-    setHasExtractedData(true);
+    try {
+      e.preventDefault();
+      const file =
+        (e?.target?.files ?? [null])[0] ||
+        (e?.dataTransfer?.files ?? [null])[0];
+      if (!file) return;
+      setHasPickedFile(true);
+      onData(await extractStructureFromFile(file));
+      setHasExtractedData(true);
+    } catch (error) {
+      setError(error);
+    }
   };
 
   return (
@@ -26,11 +32,14 @@ export default ({ value, onData, name, isInvalid }) => {
       for={name}
     >
       <LabelContent>
+        {error && <p className={"text-danger"}>{error.message}</p>}
         {!hasPickedFile && (
           <>
             <p>Drag Your File Here OR</p>
             <Button as={"div"}>Pick File</Button>
-            <HiddenFileInput
+            <br />
+            <input
+              className="invisible"
               isInvalid={isInvalid}
               id={name}
               name={name}
@@ -74,7 +83,4 @@ const LabelContent = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-`;
-const HiddenFileInput = styled.input`
-  display: none;
 `;

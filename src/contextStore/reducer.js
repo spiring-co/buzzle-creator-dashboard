@@ -15,10 +15,23 @@ export const RESTORE_FIELDS = "RESTORE_FIELDS";
 
 export default (state, action) => {
   switch (action.type) {
-    //payload : activeVersionIndex
+    //payload : activeVersionIndex,currentCompositionFields
     case RESTORE_FIELDS:
-      state.versions[action.payload.activeVersionIndex].form.segments =
-        state.versions[0].form.segments;
+      var filteredSegments = state.versions[0].form.segments.map((segment) => {
+        return {
+          ...segment,
+          fields: Object.assign(
+            [],
+            ...segment.fields.filter((field) =>
+              action.payload.currentCompositionFields.includes(field.name)
+            )
+          ),
+        };
+      });
+      state.versions[
+        action.payload.activeVersionIndex
+      ].form.segments = filteredSegments;
+
       return state;
     //payload: action.payload.value={key:action.payload.value}
     case EDIT_VIDEO_KEYS:
@@ -36,10 +49,10 @@ export default (state, action) => {
           segments: [
             {
               title: "",
-              fields: []
-            }
-          ]
-        }
+              fields: [],
+            },
+          ],
+        },
       });
 
       return state;
@@ -50,7 +63,7 @@ export default (state, action) => {
         ...state,
         versions: state.versions.filter(
           (item, index) => index !== action.payload.activeVersionIndex
-        )
+        ),
       };
 
     //payload: action.payload.activeVersionIndex,action.payload.value={title:action.payload.value}
@@ -65,7 +78,7 @@ export default (state, action) => {
     case ADD_SEGMENT:
       state.versions[action.payload.activeVersionIndex].form.segments.push({
         title: "",
-        fields: []
+        fields: [],
       });
       return state;
 
@@ -80,11 +93,11 @@ export default (state, action) => {
               form: {
                 segments: item.form.segments.filter(
                   (item, i) => i !== action.payload.segmentIndex
-                )
-              }
+                ),
+              },
             };
           } else return item;
-        })
+        }),
       };
 
     //payload:{action.payload.activeIndex, action.payload.activeVersionIndex, action.payload.fieldIndex}
@@ -103,14 +116,14 @@ export default (state, action) => {
                       ...segment,
                       fields: segment.fields.filter(
                         (field, j) => j !== action.payload.fieldIndex
-                      )
+                      ),
                     };
                   } else return segment;
-                })
-              }
+                }),
+              },
             };
           } else return item;
-        })
+        }),
       };
       return state;
 
@@ -122,7 +135,7 @@ export default (state, action) => {
         ...state.versions[action.payload.activeVersionIndex].form.segments[
           action.payload.activeIndex
         ],
-        ...action.payload.value
+        ...action.payload.value,
       };
       return state;
 
@@ -134,14 +147,14 @@ export default (state, action) => {
         ].fields[action.payload.swapIndex],
         state.versions[action.payload.activeVersionIndex].form.segments[
           action.payload.activeIndex
-        ].fields[action.payload.targetSwapIndex]
+        ].fields[action.payload.targetSwapIndex],
       ] = [
         state.versions[action.payload.activeVersionIndex].form.segments[
           action.payload.activeIndex
         ].fields[action.payload.targetSwapIndex],
         state.versions[action.payload.activeVersionIndex].form.segments[
           action.payload.activeIndex
-        ].fields[action.payload.swapIndex]
+        ].fields[action.payload.swapIndex],
       ];
       return state;
 
@@ -157,7 +170,7 @@ export default (state, action) => {
         versions: [],
         isDeleted: false,
         title: "",
-        description: ""
+        description: "",
       };
     default:
       throw new Error("Action not recognized");
