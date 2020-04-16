@@ -7,7 +7,7 @@ import { NavLink, Route, Switch, useRouteMatch } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import SideBar from "../components/SideBar";
+import Sidebar from "../components/Sidebar";
 
 export default () => {
   let { path, url } = useRouteMatch();
@@ -16,7 +16,7 @@ export default () => {
     <Container fluid>
       <Row>
         <Col md="2">
-          <SideBar Url={url} />
+          <Sidebar Url={url} />
         </Col>
         <Col md="10">
           <Switch>
