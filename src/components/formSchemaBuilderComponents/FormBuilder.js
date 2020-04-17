@@ -25,9 +25,7 @@ function FormBuilder({ submitForm, edit, video }) {
     setLoading(false);
   }, []);
   useEffect(() => {}, [activeDisplayIndex]);
-  useEffect(() => {
-    alert("init");
-  }, []);
+
   const openVersionDisplay = () => {
     setEditVersion(false);
     setEditIndex(0);

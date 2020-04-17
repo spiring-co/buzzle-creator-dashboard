@@ -45,12 +45,16 @@ export default ({
         );
       })}
       {!edit && (
-        <Form>
+        <Form
+          onSubmit={(e) => {
+            e.preventDefault();
+          }}
+        >
           <Form.Group as={Row}>
             <Col sm="7">
               <Form.Control
                 as="select"
-                value="Choose..."
+                value={comp_name}
                 onChange={(e) => setComp_name(e.target.value)}
               >
                 <option disabled selected value="">
@@ -79,18 +83,20 @@ export default ({
         </Form>
       )}
       <br />
-      <Button
-        variant="outline-primary"
-        style={{ float: "left", marginRight: "2%" }}
-        onClick={() =>
-          activeDisplayIndex === 2
-            ? setActiveDisplayIndex(1)
-            : setActiveDisplayIndex(0)
-        }
-        disabled={!activeDisplayIndex === 2 && !activeDisplayIndex === 1}
-      >
-        Back
-      </Button>
+      {edit && (
+        <Button
+          variant="outline-primary"
+          style={{ float: "left", marginRight: "2%" }}
+          onClick={() =>
+            activeDisplayIndex === 2
+              ? setActiveDisplayIndex(1)
+              : setActiveDisplayIndex(0)
+          }
+          disabled={!activeDisplayIndex === 2 && !activeDisplayIndex === 1}
+        >
+          Back
+        </Button>
+      )}
       <Button
         style={{ float: "left" }}
         variant="outline-primary"

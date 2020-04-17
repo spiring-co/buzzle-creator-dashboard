@@ -43,7 +43,11 @@ export default ({
     setActiveIndex(activeIndex - 1);
   };
   return (
-    <Form>
+    <Form
+      onSubmit={(e) => {
+        e.preventDefault();
+      }}
+    >
       <p>
         <strong>{edit ? "Edit Version Details" : "Add Version Details"}</strong>
       </p>

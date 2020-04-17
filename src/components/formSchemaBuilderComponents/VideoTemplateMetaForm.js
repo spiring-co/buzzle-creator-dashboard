@@ -36,8 +36,14 @@ export default ({ restoredValues, onSubmit }) => {
   //   );
   // }, [restoredValues]);
   return (
-    <Form onSubmit={handleSubmit} noValidate className="mb-3 mt-3">
-      <p>{JSON.stringify(errors)}</p>
+    <Form
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleSubmit();
+      }}
+      noValidate
+      className="mb-3 mt-3"
+    >
       {!restoredValues && (
         <Form.Group>
           <Form.Label>Project File</Form.Label>
