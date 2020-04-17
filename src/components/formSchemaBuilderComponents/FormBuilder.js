@@ -9,7 +9,7 @@ function FormBuilder({ submitForm, edit, video }) {
   const [videoObj] = useContext(SegmentsContext);
 
   const { resetVideo, editVideoKeys, loadVideo } = useActions();
-
+  const [loading, setLoading] = useState(true);
   const [editVersion, setEditVersion] = useState(false);
   const [editIndex, setEditIndex] = useState(0);
   const [activeVersionIndex, setActiveVersionIndex] = useState(0);
@@ -17,19 +17,21 @@ function FormBuilder({ submitForm, edit, video }) {
   const [compositions, setCompositions] = useState([]);
 
   useEffect(() => {
-    edit ? loadVideo(video) : resetVideo();
+    if (edit) {
+      loadVideo(video);
+    } else {
+      resetVideo();
+    }
+    setLoading(false);
   }, []);
   useEffect(() => {}, [activeDisplayIndex]);
-
+  useEffect(() => {
+    alert("init");
+  }, []);
   const openVersionDisplay = () => {
     setEditVersion(false);
     setEditIndex(0);
     setActiveDisplayIndex(1);
-  };
-
-  const handleTagsChange = (e) => {
-    var tags = e.target.value.split(",");
-    editVideoKeys({ tags });
   };
 
   const handleSubmitForm = async () => {
@@ -37,20 +39,22 @@ function FormBuilder({ submitForm, edit, video }) {
   };
 
   const handleVideoTemplateMetaSubmit = async (data) => {
-    const { tags, title, description, projectFile } = data;
-
-    setCompositions(projectFile.data);
+    const { tags, title, description, projectFile = "" } = data;
+    setCompositions(projectFile?.data ?? []);
     setEditVersion(false);
     setEditIndex(0);
-    setActiveDisplayIndex(1);
     editVideoKeys({ tags, title, description });
+    setActiveDisplayIndex(1);
   };
 
   const renderFormBuilder = (activeDisplayIndex) => {
     switch (activeDisplayIndex) {
       case 0:
         return (
-          <VideoTemplateMetaForm onSubmit={handleVideoTemplateMetaSubmit} />
+          <VideoTemplateMetaForm
+            restoredValues={edit ? videoObj : null}
+            onSubmit={handleVideoTemplateMetaSubmit}
+          />
         );
       case 1:
         return (
@@ -81,6 +85,7 @@ function FormBuilder({ submitForm, edit, video }) {
         return;
     }
   };
+  if (loading) return <p>Loading...</p>;
   return renderFormBuilder(activeDisplayIndex);
 }
 

@@ -1,14 +1,11 @@
+import React, { useEffect, useContext } from "react";
 import ProjectFilePicker from "components/ProjectFilePicker";
 import { useFormik } from "formik";
-import React from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import * as Yup from "yup";
 
-export default ({
-  initialValues = { projectFile: null, title: "", description: "", tags: [] },
-  onSubmit,
-}) => {
+export default ({ restoredValues, onSubmit }) => {
   const {
     handleChange,
     handleBlur,
@@ -19,29 +16,43 @@ export default ({
     errors,
     touched,
   } = useFormik({
-    initialValues,
+    initialValues: restoredValues || {
+      title: "",
+      tags: [],
+      description: "",
+      projectFile: "",
+    },
     validationSchema: Yup.object({
       title: Yup.string().required("Title is Required"),
-      projectFile: Yup.object().required("Project File is required"),
+      projectFile: restoredValues
+        ? null
+        : Yup.object().required("Project File is required"),
     }),
     onSubmit,
   });
-
+  // useEffect(() => {
+  //   Object.keys(restoredValues).map((key) =>
+  //     setFieldValue(key, restoredValues[key])
+  //   );
+  // }, [restoredValues]);
   return (
     <Form onSubmit={handleSubmit} noValidate className="mb-3 mt-3">
-      <Form.Group>
-        <Form.Label>Project File</Form.Label>
-        <Form.Control
-          as={ProjectFilePicker}
-          onData={(f) => setFieldValue("projectFile", f)}
-          value={values.projectFile}
-          name={"projectFile"}
-          placeholder="Pick or drop project file"
-        />
-        <Form.Control.Feedback type="invalid">
-          {errors.projectFile}
-        </Form.Control.Feedback>
-      </Form.Group>
+      <p>{JSON.stringify(errors)}</p>
+      {!restoredValues && (
+        <Form.Group>
+          <Form.Label>Project File</Form.Label>
+          <Form.Control
+            as={ProjectFilePicker}
+            onData={(f) => setFieldValue("projectFile", f)}
+            value={values.projectFile}
+            name={"projectFile"}
+            placeholder="Pick or drop project file"
+          />
+          <Form.Control.Feedback type="invalid">
+            {errors.projectFile}
+          </Form.Control.Feedback>
+        </Form.Group>
+      )}
       <Form.Group>
         <Form.Label> Title</Form.Label>
         <Form.Control

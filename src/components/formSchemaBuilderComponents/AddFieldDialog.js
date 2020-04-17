@@ -2,6 +2,7 @@ import React from "react";
 
 export default (props) => {
   const { textLayers = [], imageLayers = [], pickerLayers = [] } = props;
+  alert(JSON.stringify(...textLayers));
   // layers coming may comes as array of object ,
   //currently all layers are configured as they are array of strings,
   //except textLayers which is configured as {name:string,value:string}
@@ -36,6 +37,7 @@ export default (props) => {
   };
 
   const handleFieldSubmit = () => {
+    alert(1);
     switch (type) {
       case "custom_text_input":
         props.editField
