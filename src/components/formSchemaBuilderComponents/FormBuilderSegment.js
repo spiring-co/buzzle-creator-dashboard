@@ -1,3 +1,4 @@
+/* eslint-disable default-case */
 import useActions from "contextStore/actions";
 import { SegmentsContext } from "contextStore/store";
 import React, { useContext, useEffect, useState } from "react";
@@ -5,9 +6,7 @@ import React, { useContext, useEffect, useState } from "react";
 import AddFields from "./AddFieldDialog";
 
 export default ({
-  textLayers,
-  imageLayers,
-  pickerLayers,
+  compositions,
   activeIndex,
   usedFields,
   edit,
@@ -24,7 +23,7 @@ export default ({
     restoreFieldsFromPreviousVersion,
     setSegmentKeys,
   } = useActions();
-
+  const [currentCompositionFields, setCurrentCompositionFields] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
   const [isDialogVisible, setIsDialogVisible] = useState(false);
   const [value, setValue] = useState(null);
@@ -32,6 +31,25 @@ export default ({
   // TODO deepCompare
 
   useEffect(() => {
+    setCurrentCompositionFields([
+      ...currentCompositionFields,
+      ...getLayers(
+        compositions[videoObj?.versions[activeVersionIndex]?.comp_name],
+        "textLayers"
+      ).map((i) => i.name),
+      ...getLayers(
+        compositions[videoObj?.versions[activeVersionIndex]?.comp_name],
+        "imageLayers"
+      ).map((i) => i.name),
+      ...getLayers(
+        compositions[videoObj?.versions[activeVersionIndex]?.comp_name],
+        "pickerLayers"
+      ).map((i) => i.name),
+    ]);
+  }, []);
+
+  useEffect(() => {
+    console.log(currentCompositionFields.length);
     if (
       !restoreStatus &&
       !edit &&
@@ -43,7 +61,12 @@ export default ({
       if (
         window.confirm("Do you want to restore fields from previous version")
       ) {
-        restoreFieldsFromPreviousVersion(activeVersionIndex);
+        // make array of current comp fields
+
+        restoreFieldsFromPreviousVersion(
+          activeVersionIndex,
+          currentCompositionFields
+        );
         // TODO proper rerender after restore
         setRestoreStatus(true);
         setValue(Math.random());
@@ -51,8 +74,18 @@ export default ({
     }
   }, [activeIndex, videoObj, value]);
 
+  //  function to extract layers from compositions, c is composition object and type is textLayer or imageLayer
+  function getLayers(c, type) {
+    if (!c) return [];
+    return (
+      c[type] ??
+      [].concat(...Object.values(c.comps || {}).map((i) => getLayers(i, type)))
+    );
+  }
+
   const addField = (value) => {
     setUsedFields([...usedFields, value.name]);
+    console.log(usedFields.length);
     addSegmentField(activeVersionIndex, activeIndex, value);
   };
 
@@ -137,27 +170,44 @@ export default ({
       {videoObj.versions[activeVersionIndex].form.segments[
         activeIndex
       ].fields.map(renderFieldPreview)}
-      <button onClick={() => setIsDialogVisible(true)} children="Add Field" />
-      {isDialogVisible && (
-        <AddFields
-          textLayers={textLayers}
-          imageLayers={imageLayers}
-          pickerLayers={pickerLayers}
-          usedFields={usedFields}
-          field={
-            videoObj.versions[activeVersionIndex].form.segments[activeIndex]
-              .fields[editIndex]
-          }
-          editField={editIndex !== null}
-          toggleDialog={setIsDialogVisible}
-          editFieldValue={editFieldValue}
-          addField={addField}
-          name={
-            videoObj.versions[activeVersionIndex].form.segments[activeIndex]
-              .title
-          }
-        />
-      )}
+      <button
+        onClick={() => {
+          usedFields.length !== currentCompositionFields.length
+            ? setIsDialogVisible(true)
+            : alert("All Fields in this version are used up");
+        }}
+        children="Add Field"
+      />
+      {isDialogVisible &&
+        usedFields.length !== currentCompositionFields.length && (
+          <AddFields
+            textLayers={getLayers(
+              compositions[videoObj?.versions[activeVersionIndex]?.comp_name],
+              "textLayers"
+            )}
+            imageLayers={getLayers(
+              compositions[videoObj?.versions[activeVersionIndex]?.comp_name],
+              "imageLayers"
+            )}
+            pickerLayers={getLayers(
+              compositions[videoObj?.versions[activeVersionIndex]?.comp_name],
+              "pickerLayers"
+            )}
+            usedFields={usedFields}
+            field={
+              videoObj.versions[activeVersionIndex].form.segments[activeIndex]
+                .fields[editIndex]
+            }
+            editField={editIndex !== null}
+            toggleDialog={setIsDialogVisible}
+            editFieldValue={editFieldValue}
+            addField={addField}
+            name={
+              videoObj.versions[activeVersionIndex].form.segments[activeIndex]
+                .title
+            }
+          />
+        )}
     </div>
   );
 };

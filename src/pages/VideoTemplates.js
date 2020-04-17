@@ -1,15 +1,9 @@
 import AddVideoTemplate from "pages/AddVideoTemplate";
+import CreatorVideoTemplates from "pages/CreatorVideoTemplates";
 import VideoTemplate from "pages/VideoTemplate";
-import React, { useState } from "react";
-import {
-  Link,
-  Route,
-  Switch,
-  useRouteMatch,
-  useHistory,
-} from "react-router-dom";
-import useApi from "services/api";
-import LazyLoadingList from "components/LazyLoadingList";
+import React from "react";
+import { Route, Switch, useRouteMatch } from "react-router-dom";
+
 export default () => {
   let { path } = useRouteMatch();
 
@@ -25,69 +19,3 @@ export default () => {
     </div>
   );
 };
-
-const CreatorVideoTemplates = () => {
-  let { url } = useRouteMatch();
-  const [page, setPageNumber] = useState(1);
-  const uri = `${process.env.REACT_APP_API_URL}/creator/sjjsjjjkaaaa/videoTemplates`;
-  let history = useHistory();
-  return (
-    <div>
-      <Link
-        to={{
-          pathname: `${url}/add`,
-          state: {
-            edit: false,
-            video: null,
-          },
-        }}
-      >
-        <button>+ Add Template</button>
-      </Link>
-      <br />
-      <LazyLoadingList
-        from="templates"
-        page={page}
-        url={uri}
-        size={10}
-        setPageNumber={setPageNumber}
-        listHeader={["UID", "Title", "Description"]}
-        listKeys={["_id", "title", "description"]}
-      />
-    </div>
-  );
-};
-
-{
-  /* <table className="table">
-        <tr style={{ background: "antiquewhite" }}>
-          <th>UID</th>
-          <th>Title</th>
-          <th>Description</th>
-        </tr>
-        {data.map((t, index) => {
-          if (!t.isDeleted) {
-            return (
-              <tr>
-                <Link
-                  to={{
-                    pathname: `${url}/${t._id}`,
-                    state: { video: t },
-                  }}
-                >
-                  <td>{t._id}</td>
-                </Link>
-                <td>{t.title}</td>
-                <td>
-                  {t.description}
-                  <span> </span>{" "}
-                  <Link to={`/createOrder/${t.videoTemplateId}`}>
-                    <button>Send Form</button>
-                  </Link>
-                </td>
-              </tr>
-            );
-          }
-        })}
-      </table> */
-}

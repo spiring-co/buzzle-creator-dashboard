@@ -1,148 +1,75 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, { useCallback, useRef, useState } from "react";
+import Table from "react-bootstrap/Table";
+import { useHistory, Link, useRouteMatch } from "react-router-dom";
 import usePaginatedFetch from "../services/usePaginatedFetch";
-import { Link } from "react-router-dom";
-export default ({
-  page,
-  url,
-  from,
-  size,
-  setPageNumber,
-  listHeader,
-  listKeys,
-}) => {
-  let { data, hasMore, loading, error } = usePaginatedFetch(url, page, size);
-  console.log(hasMore);
+import Button from "react-bootstrap/Button";
+export default ({ url, listHeader, listKeys }) => {
+  const history = useHistory();
+  let { path } = useRouteMatch();
+  const [page, setPage] = useState(1);
+
+  let { data, hasMore, loading, error } = usePaginatedFetch(url, page, 10);
+  console.log(data);
+  console.log(data);
   const observer = useRef();
+
   const lastElement = useCallback(
     (node) => {
       if (loading) return;
       if (observer.current) observer.current.disconnect();
       observer.current = new IntersectionObserver((entries) => {
-        console.log(hasMore);
         if (entries[0].isIntersecting && hasMore) {
-          console.log("increase page number", page);
-          setPageNumber(page + 1);
+          setPage(page + 1);
         }
       });
       if (node) observer.current.observe(node);
     },
-    [loading, hasMore]
+    [loading, hasMore, page]
   );
-  if (from === "templates") {
-    return (
-      <table>
-        <thead>
-          <tr>
-            {listHeader.map((item) => (
-              <th>{item}</th>
+
+  return (
+    <Table responsive bordered striped hover>
+      <thead>
+        <tr>
+          {listHeader.map((item) => (
+            <th>{item}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {data.map((item, index) => (
+          <tr ref={data.length === index + 1 ? lastElement : null} key={index}>
+            {listKeys.map((i, index) => (
+              <td>
+                {index === 0 && (
+                  <Link
+                    to={{
+                      pathname: `${path}${item._id}`,
+                      state: { video: item },
+                    }}
+                  >
+                    {item[i]}
+                  </Link>
+                )}
+
+                {index === 1 && (
+                  <Button
+                    style={{ marginLeft: 10 }}
+                    onClick={() =>
+                      history.push({
+                        pathname: `/createOrder/${item.videoTemplateId}`,
+                      })
+                    }
+                    children={"Render Form"}
+                  />
+                )}
+              </td>
             ))}
           </tr>
-        </thead>
-        <tbody>
-          {data.map((item, index) => {
-            if (data.length === index + 1) {
-              return (
-                <tr ref={lastElement} key={index}>
-                  {listKeys.map((i, index) => {
-                    if (index === 0) {
-                      return (
-                        <Link
-                          to={{
-                            pathname: `${document.location.pathname}/${item[i]}`,
-                            state: { video: item },
-                          }}
-                        >
-                          <td>{item[i]}</td>
-                        </Link>
-                      );
-                    }
-                    if (index == 2) {
-                      return (
-                        <td>
-                          {item[i]}
-                          <Link to={`/createOrder/${item[i]}`}>
-                            <button>Send Form</button>
-                          </Link>
-                        </td>
-                      );
-                    }
-                    return <td>{item[i]}</td>;
-                  })}
-                </tr>
-              );
-            } else {
-              return (
-                <tr key={index}>
-                  {listKeys.map((i, index) => {
-                    if (index == 0) {
-                      return (
-                        <Link
-                          to={{
-                            pathname: `${document.location.pathname}/${item["videoTemplateId"]}`,
-                            state: { video: item },
-                          }}
-                        >
-                          <td>{item[i]}</td>
-                        </Link>
-                      );
-                    }
-                    if (index == 2) {
-                      return (
-                        <td>
-                          {item[i]}
-                          <Link to={`/createOrder/${item["videoTemplateId"]}`}>
-                            <button>Send Form</button>
-                          </Link>
-                        </td>
-                      );
-                    }
-                    return <td>{item[i]}</td>;
-                  })}
-                </tr>
-              );
-            }
-          })}
-
-          <tr>{loading && "Loading Templates..."}</tr>
-          <tr>{error && alert(error.message)}</tr>
-        </tbody>
-      </table>
-    );
-  } else {
-    return (
-      <table>
-        <thead>
-          <tr>
-            {listHeader.map((item) => (
-              <th>{item}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((item, index) => {
-            if (data.length === index + 1) {
-              return (
-                <tr ref={lastElement} key={index}>
-                  {listKeys.map((i, index) => {
-                    return <td>{item[i]}</td>;
-                  })}
-                </tr>
-              );
-            } else {
-              return (
-                <tr key={index}>
-                  {listKeys.map((i, index) => (
-                    <td>{item[i]}</td>
-                  ))}
-                </tr>
-              );
-            }
-          })}
-
-          <tr>{loading && "Loading Templates..."}</tr>
-          <tr>{error && alert(error.message)}</tr>
-        </tbody>
-      </table>
-    );
-  }
+        ))}
+        <tr>{loading && "Loading..."}</tr>
+      </tbody>
+      {error && <p>{error.message}</p>}
+    </Table>
+  );
 };
