@@ -6,9 +6,11 @@ import React from "react";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
-import { NavLink, Route, Switch, useRouteMatch } from "react-router-dom";
 
-import SideBar from "../components/Sidebar";
+import Col from "react-bootstrap/Col";
+import Sidebar from "../components/Sidebar";
+
+import { NavLink, Route, Switch, useRouteMatch } from "react-router-dom";
 
 export default () => {
   let { path, url } = useRouteMatch();
@@ -17,7 +19,7 @@ export default () => {
     <Container fluid>
       <Row>
         <Col md="2">
-          <SideBar Url={url} />
+          <Sidebar Url={url} />
         </Col>
         <Col className="bg-light" md="10">
           <Switch>
