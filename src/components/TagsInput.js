@@ -1,8 +1,5 @@
 import React, { useState, useRef } from "react";
 import Form from "react-bootstrap/Form";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Button from "react-bootstrap/Button";
 
 function TagsInput({
   onchange,
@@ -27,13 +24,11 @@ function TagsInput({
     }
   };
   let TagsInput = useRef(0);
-
   const removeTag = (i) => {
     const newTags = [...tag];
     newTags.splice(i, 1);
     setTag(newTags);
   };
-
   return (
     <div>
       <ul
@@ -51,7 +46,6 @@ function TagsInput({
             }}
           >
             {t}
-
             <button
               size="sm"
               style={{
@@ -69,7 +63,6 @@ function TagsInput({
           </li>
         ))}
       </ul>
-
       <Form.Control
         ref={TagsInput}
         onChange={onchange}
@@ -84,5 +77,4 @@ function TagsInput({
     </div>
   );
 }
-
 export default TagsInput;
