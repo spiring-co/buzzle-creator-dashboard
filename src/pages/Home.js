@@ -3,13 +3,8 @@ import Orders from "pages/Orders";
 import Profile from "pages/Profile";
 import VideoTemplates from "pages/VideoTemplates";
 import React from "react";
-import Col from "react-bootstrap/Col";
-import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
-
-import Col from "react-bootstrap/Col";
+import { Col, Container, Row } from "react-bootstrap";
 import Sidebar from "../components/Sidebar";
-
 import { NavLink, Route, Switch, useRouteMatch } from "react-router-dom";
 
 export default () => {
