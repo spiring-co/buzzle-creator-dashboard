@@ -45,9 +45,7 @@ const FilePicker = ({ setCompositions, setTextLayers }) => {
 
   if (loading) {
     return (
-      <label
-        class="file_input"
-      >
+      <label class="file_input">
         <h1 style={{ marginTop: 36, paddingBottom: 0, border: 0 }}>
           Please wait, While We Doing Our Magic ...
         </h1>
@@ -60,7 +58,6 @@ const FilePicker = ({ setCompositions, setTextLayers }) => {
   }
   if (file === null)
     return (
-
       <div style={{ position: "relative", left: "17%" }}>
         <Card
           className="text-center"
@@ -110,24 +107,13 @@ const FilePicker = ({ setCompositions, setTextLayers }) => {
             </Card.Body>
           </Card>
         </Card>
+
+        <img src={require("../assets/success.svg")} />
+        <h1>{file} Uploaded Successfully.</h1>
       </div>
-
-      }}*/
-    >
-      <img
-
-        src={require("../assets/success.svg")}
-      />
-      <h1
-
-      >
-        {file} Uploaded Successfully.
-      </h1>
-    </label>
-  );
+    );
 };
 
 export default function FilePickerScreen(props) {
   return <FilePicker {...props} />;
 }
-

@@ -54,7 +54,8 @@ export default ({ url, listHeader, listKeys }) => {
 
                 {index === 1 && (
                   <Button
-                    style={{ marginLeft: 10 }}
+                    className="float-right"
+                    variant="outline-primary"
                     onClick={() =>
                       history.push({
                         pathname: `/createOrder/${item.videoTemplateId}`,
