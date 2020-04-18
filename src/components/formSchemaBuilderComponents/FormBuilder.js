@@ -33,6 +33,7 @@ function FormBuilder({ submitForm, edit, video }) {
   };
 
   const handleSubmitForm = async () => {
+    alert("Submiting");
     submitForm(videoObj);
   };
 

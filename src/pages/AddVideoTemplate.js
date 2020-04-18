@@ -63,6 +63,7 @@ export default (props) => {
         history.push("/home/videoTemplates");
       }
     } catch (err) {
+      alert(JSON.stringify(err));
       setError(err);
     }
   };
