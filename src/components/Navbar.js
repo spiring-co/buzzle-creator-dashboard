@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import Dropdown from "react-bootstrap/Dropdown";
 import Nav from "react-bootstrap/Nav";
 
-import Sidebar from "./Sidebar";
 import Navbar from "react-bootstrap/Navbar";
 import styled from "styled-components";
 

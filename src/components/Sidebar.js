@@ -1,15 +1,18 @@
 import React from "react";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import pen from "../components/pen-tool.svg";
+import cart from "../components/shopping-cart.svg";
+import setting from "../components/settings.svg";
 import Button from "react-bootstrap/Button";
 import Nav from "react-bootstrap/Nav";
-import { Link, Route, Switch, useRouteMatch, Router } from "react-router-dom";
+import { Link, Route, Switch, useRouteMatch } from "react-router-dom";
 import styled from "styled-components";
 function SideBar({ Url, onclick }) {
   return (
     <Nav
-      justify
       variant="tabs"
+      justify
       defaultActiveKey="/home"
       className="flex-column text-center font-weight-bold"
     >
@@ -23,10 +26,10 @@ function SideBar({ Url, onclick }) {
         </Button>
       </Nav.Item>
       <Nav.Item>
-        <Nav.Link activeClassName="active" as={Link} to={`${Url}/profile`}>
+        <Nav.Link style={{ color: "black" }} as={Link} to={`${Url}/profile`}>
           <Row>
             <Col md="1">
-              <i class="material-icons">settings</i>
+              <img src={setting} />
             </Col>
             <Col sm="1">Setting</Col>
           </Row>
@@ -34,6 +37,7 @@ function SideBar({ Url, onclick }) {
       </Nav.Item>
       <Nav.Item>
         <Nav.Link
+          style={{ color: "black" }}
           activeClassName="active"
           as={Link}
           to={`${Url}/videoTemplates`}
@@ -41,18 +45,23 @@ function SideBar({ Url, onclick }) {
           <Row>
             <Col sm="1">
               {" "}
-              <i class="material-icons">color_lens</i>
+              <img src={pen} />
             </Col>
             <Col sm="1">Templates</Col>
           </Row>
         </Nav.Link>
       </Nav.Item>
       <Nav.Item>
-        <Nav.Link activeClassName="active" as={Link} to={`${Url}/orders`}>
+        <Nav.Link
+          style={{ color: "black" }}
+          activeClassName="active"
+          as={Link}
+          to={`${Url}/orders`}
+        >
           <Row>
             <Col sm="1">
               {" "}
-              <i class="material-icons">receipt</i>
+              <img src={cart} />
             </Col>
             <Col sm="1"> Orders</Col>
           </Row>

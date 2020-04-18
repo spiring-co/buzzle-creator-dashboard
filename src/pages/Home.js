@@ -1,4 +1,5 @@
 import Dashboard from "pages/Dashboard";
+import menu from "../components/menu.svg";
 import Orders from "pages/Orders";
 import Profile from "pages/Profile";
 import VideoTemplates from "pages/VideoTemplates";
@@ -30,9 +31,9 @@ export default () => {
         <Col className="bg-light" md={sidebarStatus ? 10 : 12}>
           <Row>
             <Col>
-              <Button onClick={handleClick}>
-                <i class="material-icons">menu</i>
-              </Button>
+              <a onClick={handleClick}>
+                <img src={menu} />
+              </a>
             </Col>
             <Col sm="11">
               <Switch>
