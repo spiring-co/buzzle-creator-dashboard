@@ -2,9 +2,8 @@ import { CountryList } from "components/CountryList";
 import { useFormik } from "formik";
 import React, { useState } from "react";
 import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, BrowserRouter } from "react-router-dom";
 import * as Yup from "yup";
-
 
 export default () => {
   const [error, setError] = useState(null);
@@ -48,7 +47,9 @@ export default () => {
           console.log(res.message);
           let resSlice = res.message.slice(0, 6);
           if (resSlice == "E11000") {
-            return setError({message:"the email is already used for registration"});
+            return setError({
+              message: "the email is already used for registration",
+            });
           }
           return setError(res.message);
         }
@@ -59,7 +60,6 @@ export default () => {
   });
 
   return (
-
     <Container>
       <Row className="justify-content-md-center">
         <Col md={6}>
@@ -229,7 +229,11 @@ export default () => {
             />
           </Form>
           <p className="text-muted text-center">
-            Already registered? <Link to="/login">Sign In.</Link>
+            Already registered?
+            <BrowserRouter>
+              {" "}
+              <Link to="/login">Sign In.</Link>{" "}
+            </BrowserRouter>
           </p>
         </Col>
       </Row>
