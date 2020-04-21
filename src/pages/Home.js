@@ -1,5 +1,5 @@
 import Dashboard from "pages/Dashboard";
-import menu from "../components/menu.svg";
+import menu from "../assets/menu.svg";
 import Orders from "pages/Orders";
 import Profile from "pages/Profile";
 import VideoTemplates from "pages/VideoTemplates";

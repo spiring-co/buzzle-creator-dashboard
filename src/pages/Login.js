@@ -1,11 +1,11 @@
 import { useFormik } from "formik";
 import React, { useState } from "react";
 import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, BrowserRouter } from "react-router-dom";
 import useAuth from "services/auth";
 import * as Yup from "yup";
-import eyeof from "../components/eyeoff.svg";
-import eye from "../components/eye.svg";
+import eyeof from "../assets/eyeoff.svg";
+import eye from "../assets/eye.svg";
 export default () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -65,7 +65,7 @@ export default () => {
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.email}
-                name={"email"}
+                name="email"
                 type="email"
                 placeholder="Enter email"
                 isInvalid={touched.email && !!errors.email}
@@ -84,7 +84,9 @@ export default () => {
                   <Form.Label className="d-block">Password</Form.Label>
                 </Col>
                 <Col className="text-right text-muted">
-                  <Link to="/forgotPassword">Forgot Password</Link>
+                  <BrowserRouter>
+                    <Link to="/forgotPassword">Forgot Password</Link>
+                  </BrowserRouter>
                 </Col>
               </Row>
               <div style={{ display: "flex" }}>
@@ -99,7 +101,7 @@ export default () => {
                   isInvalid={touched.password && !!errors.password}
                 />
                 <div
-                  class="input-group-addon"
+                  className="input-group-addon"
                   style={{
                     position: "relative",
                     right: "5vh",
@@ -132,7 +134,9 @@ export default () => {
             />
           </Form>
           <p className="text-muted text-center">
-            Don't have an account yet? <Link to="/register">Sign up.</Link>
+            <BrowserRouter>
+              Don't have an account yet? <Link to="/register">Sign up.</Link>
+            </BrowserRouter>
           </p>
         </Col>
       </Row>

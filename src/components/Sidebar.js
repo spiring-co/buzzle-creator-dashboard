@@ -1,9 +1,9 @@
 import React from "react";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import pen from "../components/pen-tool.svg";
-import cart from "../components/shopping-cart.svg";
-import setting from "../components/settings.svg";
+import pen from "../assets/pen-tool.svg";
+import cart from "../assets/shopping-cart.svg";
+import setting from "../assets/settings.svg";
 import Button from "react-bootstrap/Button";
 import Nav from "react-bootstrap/Nav";
 import { Link, Route, Switch, useRouteMatch } from "react-router-dom";
