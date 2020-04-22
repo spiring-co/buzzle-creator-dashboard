@@ -4,8 +4,10 @@ import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import useAuth from "services/auth";
 import * as Yup from "yup";
+import { useTranslation } from "react-i18next";
 
 export default () => {
+  const { t, i18n } = useTranslation();
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -24,9 +26,9 @@ export default () => {
     },
     validationSchema: Yup.object({
       email: Yup.string()
-        .email("Please enter a valid email address.")
-        .required("Email is Required"),
-      password: Yup.string().required("Password is Required"),
+        .email(t('enterEmail'))
+        .required(t('required')),
+      password: Yup.string().required(t('passwordRequired')),
     }),
     onSubmit: async ({ email, password }) => {
       try {
@@ -67,7 +69,7 @@ export default () => {
                 {errors.email}
               </Form.Control.Feedback>
               <Form.Text className="text-muted">
-                We'll never share your email with anyone else.
+                {t('wontShareEmail')}
               </Form.Text>
             </Form.Group>
 

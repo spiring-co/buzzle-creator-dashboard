@@ -10,6 +10,7 @@ import Register from "pages/Register";
 import React from "react";
 import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import useAuth from "services/auth";
+import './i18next';
 
 export default () => {
   const { logout, isAuthenticated } = useAuth();
