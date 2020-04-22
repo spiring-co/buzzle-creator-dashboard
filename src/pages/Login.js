@@ -1,22 +1,26 @@
 import { useFormik } from "formik";
 import React, { useState } from "react";
-import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
+import {
+  Alert,
+  Button,
+  Col,
+  Container,
+  Form,
+  InputGroup,
+  Row,
+} from "react-bootstrap";
 import { Link } from "react-router-dom";
 import useAuth from "services/auth";
 import * as Yup from "yup";
-import eyeof from "../components/eyeoff.svg";
-import eye from "../components/eye.svg";
+
+import eyeIcon from "../components/eye.svg";
+import eyeOffIcon from "../components/eyeoff.svg";
+
 export default () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [pass, setPass] = useState("password");
-  const [img, setImg] = useState("false");
   const { login } = useAuth();
-  const handelpass = (event) => {
-    event.preventDefault();
-    setPass(pass === "password" ? "text" : "password");
-    setImg(true);
-  };
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const {
     handleChange,
     handleBlur,
@@ -87,38 +91,30 @@ export default () => {
                   <Link to="/forgotPassword">Forgot Password</Link>
                 </Col>
               </Row>
-              <div style={{ display: "flex" }}>
+              <InputGroup>
                 <Form.Control
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.password}
                   name="password"
-                  type={pass}
+                  type={isPasswordVisible ? "text" : "password"}
                   data-toggle="password"
                   placeholder="Password"
                   isInvalid={touched.password && !!errors.password}
                 />
-                <div
-                  class="input-group-addon"
-                  style={{
-                    position: "relative",
-                    right: "5vh",
-                    marginTop: "5px",
-                  }}
-                >
-                  <a
-                    href=""
-                    onClick={handelpass}
-                    style={{ position: "relative" }}
-                  >
-                    {pass == "password" ? (
-                      <img src={eye} />
-                    ) : (
-                      <img src={eyeof} />
-                    )}
-                  </a>
-                </div>
-              </div>
+                <InputGroup.Append>
+                  <InputGroup.Text>
+                    <img
+                      alt={"Password Visible"}
+                      src={isPasswordVisible ? eyeOffIcon : eyeIcon}
+                      onClick={() => {
+                        setIsPasswordVisible(!isPasswordVisible);
+                      }}
+                    />
+                  </InputGroup.Text>
+                </InputGroup.Append>
+              </InputGroup>
+
               <Form.Control.Feedback type="invalid">
                 {errors.password}
               </Form.Control.Feedback>
