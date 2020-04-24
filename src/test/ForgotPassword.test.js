@@ -10,3 +10,21 @@ it("renders correctly when there are no Login", () => {
   const tree = renderer.create(<ForgotPassword />).toJSON();
   expect(tree).toMatchSnapshot();
 });
+
+const updateField = (wrapper, name, value) => {
+  wrapper.simulate("change", {
+    persist: () => {},
+    target: {
+      name,
+      value,
+    },
+  });
+};
+
+const wrapper = mount(<ForgotPassword />);
+const validValue = "vajpayeekaushiki20@gmail.com";
+
+it("Should update subject input field on change", () => {
+  updateField(wrapper.find('input[name="email"]'), "email", validValue);
+  expect(wrapper.find('input[name="email"]').props().value).toEqual(validValue);
+});
