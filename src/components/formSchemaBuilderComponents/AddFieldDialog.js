@@ -1,7 +1,8 @@
 import React from "react";
 
 export default (props) => {
-  const { textLayers = [], imageLayers = [], pickerLayers = [] } = props;
+  const { textLayers = [], imageLayers = [] } = props;
+
   // layers coming may comes as array of object ,
   //currently all layers are configured as they are array of strings,
   //except textLayers which is configured as {name:string,value:string}
@@ -232,24 +233,24 @@ export default (props) => {
           );
         });
       case "custom_picker":
-        return pickerLayers.map((item, index) => {
-          if (props.usedFields.includes(item)) {
+        return textLayers.map((item, index) => {
+          if (props.usedFields.includes(item.name)) {
             return false;
           }
           return (
-            <option key={index} value={item}>
-              {item}
+            <option key={index} value={item.name}>
+              {item.name}
             </option>
           );
         });
       case "custom_image_picker":
         return imageLayers.map((item, index) => {
-          if (props.usedFields.includes(item)) {
+          if (props.usedFields.includes(item.name)) {
             return false;
           }
           return (
-            <option key={index} value={item}>
-              {item}
+            <option key={index} value={item.name}>
+              {item.name}
             </option>
           );
         });

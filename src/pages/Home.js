@@ -10,9 +10,7 @@ import Button from "react-bootstrap/Button";
 import Row from "react-bootstrap/Row";
 import { useSpring, animated } from "react-spring";
 import { NavLink, Route, Switch, useRouteMatch } from "react-router-dom";
-
-import SideBar from "../components/Sidebar";
-
+import SideBar from "../components/SideBar";
 export default () => {
   let { path, url } = useRouteMatch();
   const [sidebarStatus, setSidebarStatus] = useState(false);

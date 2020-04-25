@@ -30,7 +30,6 @@ export default () => {
           <Route path="/login" exact component={Login} />
           <Route path="/register" exact component={Register} />
 
-          {/* <Route path="/Password" exact component={Email} /> */}
           <Route path="/createOrder/:videoTemplateId" component={createOrder} />
           <Route path="/forgotPassword" component={ForgotPassword} />
           <PrivateRoute isAuthenticated={isAuthenticated}>

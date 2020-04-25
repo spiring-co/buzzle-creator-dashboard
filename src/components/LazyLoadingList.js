@@ -1,13 +1,15 @@
 import React, { useCallback, useRef, useState } from "react";
 import Table from "react-bootstrap/Table";
-import { useHistory } from "react-router-dom";
+import { useHistory, Link, useRouteMatch } from "react-router-dom";
 import usePaginatedFetch from "../services/usePaginatedFetch";
 import Button from "react-bootstrap/Button";
 export default ({ url, listHeader, listKeys }) => {
   const history = useHistory();
+  let { path } = useRouteMatch();
   const [page, setPage] = useState(1);
 
   let { data, hasMore, loading, error } = usePaginatedFetch(url, page, 10);
+  console.log(data);
   console.log(data);
   const observer = useRef();
 
@@ -39,7 +41,17 @@ export default ({ url, listHeader, listKeys }) => {
           <tr ref={data.length === index + 1 ? lastElement : null} key={index}>
             {listKeys.map((i, index) => (
               <td>
-                {item[i]}
+                {index === 0 && (
+                  <Link
+                    to={{
+                      pathname: `${path}${item._id}`,
+                      state: { video: item },
+                    }}
+                  >
+                    {item[i]}
+                  </Link>
+                )}
+
                 {index === 1 && (
                   <Button
                     className="float-right"

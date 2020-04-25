@@ -189,10 +189,6 @@ export default ({
               compositions[videoObj?.versions[activeVersionIndex]?.comp_name],
               "imageLayers"
             )}
-            pickerLayers={getLayers(
-              compositions[videoObj?.versions[activeVersionIndex]?.comp_name],
-              "pickerLayers"
-            )}
             usedFields={usedFields}
             field={
               videoObj.versions[activeVersionIndex].form.segments[activeIndex]
