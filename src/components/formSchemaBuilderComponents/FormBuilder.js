@@ -4,7 +4,7 @@ import { SegmentsContext, StateProvider } from "contextStore/store";
 import SegmentDisplay from "./SegmentDisplay";
 import VersionDisplay from "./VersionDisplay";
 import VideoTemplateMetaForm from "./VideoTemplateMetaForm";
-
+import Stepper from "../Stepper";
 function FormBuilder({ submitForm, edit, video }) {
   const [videoObj] = useContext(SegmentsContext);
 
@@ -85,7 +85,20 @@ function FormBuilder({ submitForm, edit, video }) {
     }
   };
   if (loading) return <p>Loading...</p>;
-  return renderFormBuilder(activeDisplayIndex);
+  return (
+    <div>
+      <Stepper
+        activeStepIndex={activeDisplayIndex}
+        steps={[
+          { label: `${edit ? "Edit" : "Add"} File Meta`, index: 0 },
+          { label: `${edit ? "Edit" : "Add"} Versions`, index: 1 },
+          { label: `${edit ? "Edit" : "Add"} Segments`, index: 2 },
+        ]}
+        type={"horizontal"}
+      />
+      {renderFormBuilder(activeDisplayIndex)}
+    </div>
+  );
 }
 
 export default (props) => {
