@@ -10,8 +10,11 @@ export default () => {
   const { t, i18n } = useTranslation();
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [pass, setPass] = useState("password");
   const { login } = useAuth();
-
+  const handelpass = () => {
+    setPass(pass === "password" ? "text" : "password");
+  };
   const {
     handleChange,
     handleBlur,
@@ -21,8 +24,8 @@ export default () => {
     touched,
   } = useFormik({
     initialValues: {
-      email: "",
-      password: "",
+      email: "shivam.sasalol@yahoo.com",
+      password: "password",
     },
     validationSchema: Yup.object({
       email: Yup.string()
@@ -81,13 +84,25 @@ export default () => {
                 <Col className="text-right text-muted">
                   <Link to="/forgotPassword">Forgot Password</Link>
                 </Col>
+
+                <input
+                  class="fa fa-eye"
+                  onChange={handelpass}
+                  type="checkbox"
+                  style={{
+                    fontSize: "15px",
+                    position: "relative",
+                    top: "6vh",
+                    right: "4vh",
+                  }}
+                />
               </Row>
               <Form.Control
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.password}
-                name={"password"}
-                type="password"
+                name="password"
+                type={pass}
                 placeholder="Password"
                 isInvalid={touched.password && !!errors.password}
               />

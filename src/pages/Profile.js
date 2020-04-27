@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 
 export default () => {
@@ -11,11 +10,11 @@ export default () => {
         <label>Profile Image</label>
         <input
           type="file"
-          onChange={e => {
+          onChange={(e) => {
             const file = e.target.files[0];
             const reader = new FileReader();
-            reader.onload = (function(theFile) {
-              return function(e) {
+            reader.onload = (function (theFile) {
+              return function (e) {
                 setImage(e.target.result);
               };
             })(file);
