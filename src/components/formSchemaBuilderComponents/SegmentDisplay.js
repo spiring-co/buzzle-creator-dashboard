@@ -20,7 +20,9 @@ export default ({
   const [activeIndex, setActiveIndex] = useState(0);
   const [usedFields, setUsedFields] = useState([]);
 
-  useEffect(() => {}, [value]);
+  useEffect(() => {
+    console.log(videoObj);
+  }, [value]);
 
   const _addSegment = () => {
     addSegment(activeVersionIndex);
@@ -122,6 +124,7 @@ export default ({
       <FormBuilderSegment
         compositions={compositions}
         edit={edit}
+        editVersion={editVersion}
         usedFields={usedFields}
         setUsedFields={setUsedFields}
         activeVersionIndex={activeVersionIndex}
@@ -140,11 +143,7 @@ export default ({
           openVersionDisplay();
         }}
         children={
-          edit
-            ? "Back To Versions"
-            : editVersion
-            ? "Save Edits"
-            : "Create Version"
+          edit ? "Save Edits" : editVersion ? "Save Edits" : "Create Version"
         }
       />
     </Form>

@@ -1,30 +1,40 @@
 import React, { useEffect } from "react";
 import { Button, Col, Form, Row, Container } from "react-bootstrap";
 
-export default function Stepper({ activeStepIndex, steps, type }) {
+export default function Stepper({ activeStepIndex, steps, type, children }) {
   return (
-    <div style={{ display: "flex", justifyContent: "center" }}>
+    <div style={{ display: "flex" }}>
       <div
         style={{
           display: "flex",
-          flexDirection: "row",
+          flexDirection: type === "horizontal" ? "row" : "column",
         }}
       >
         {steps.map(({ label, index }) => (
           <div
             style={{
-              flexDirection: "column",
+              flexDirection: type === "horizontal" ? "column" : "row",
               display: "flex",
               justifyContent: "center",
             }}
           >
             <StepCircle
+              type={type}
+              children={type === "vertical" && children}
               stepsLength={steps.length}
               stepIndex={index}
               isActive={index === activeStepIndex}
               isDone={activeStepIndex > index}
             />
-            <h4>{label}</h4>
+            <h4
+              style={{
+                position: "relative",
+                left: type === "horizontal" ? -40 : 10,
+                top: type === "horizontal" ? 10 : 5,
+              }}
+            >
+              {label}
+            </h4>
           </div>
         ))}
       </div>
@@ -32,10 +42,23 @@ export default function Stepper({ activeStepIndex, steps, type }) {
   );
 }
 
-function StepCircle({ stepIndex, isActive, isDone, stepsLength }) {
-  useEffect(() => {}, [isActive, isDone]);
+function StepCircle({
+  stepIndex,
+  isActive,
+  isDone,
+  stepsLength,
+  type,
+  children,
+}) {
+  useEffect(() => {}, [isActive, isDone, children]);
+
   return (
-    <div style={{ display: "flex", flexDirection: "row" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: type === "horizontal" ? "row" : "column",
+      }}
+    >
       <div
         style={{
           height: 40,
@@ -55,15 +78,46 @@ function StepCircle({ stepIndex, isActive, isDone, stepsLength }) {
           {stepIndex + 1}
         </p>
       </div>
-      {stepIndex !== stepsLength - 1 && (
+      {type === "vertical" && isActive ? (
         <div
           style={{
-            height: 5,
-            minWidth: 250,
-            backgroundColor: isDone ? "rgb(10,132,255)" : "grey",
+            position: "relative",
+            padding: 50,
+            minHeight: type === "horizontal" ? 5 : isActive ? "auto" : 50,
+            margin: 5,
+
+            minWidth: type === "horizontal" ? 150 : 5,
+            borderBottom:
+              type === "horizontal" &&
+              (isDone ? "2px solid rgb(10,132,255)" : "2px solid grey"),
+
+            borderLeft:
+              type === "vertical" &&
+              (isDone ? "2px solid rgb(10,132,255)" : "2px solid grey"),
             alignSelf: "center",
           }}
-        ></div>
+        >
+          {type === "vertical" && children}
+        </div>
+      ) : (
+        stepIndex !== stepsLength - 1 && (
+          <div
+            style={{
+              minHeight: type === "horizontal" ? 5 : isActive ? "auto" : 50,
+              margin: 5,
+
+              minWidth: type === "horizontal" ? 150 : 5,
+              borderBottom:
+                type === "horizontal" &&
+                (isDone ? "2px solid rgb(10,132,255)" : "2px solid grey"),
+
+              borderLeft:
+                type === "vertical" &&
+                (isDone ? "2px solid rgb(10,132,255)" : "2px solid grey"),
+              alignSelf: "center",
+            }}
+          ></div>
+        )
       )}
     </div>
   );

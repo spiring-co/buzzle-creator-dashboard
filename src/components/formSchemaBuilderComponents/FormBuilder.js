@@ -4,16 +4,19 @@ import { SegmentsContext, StateProvider } from "contextStore/store";
 import SegmentDisplay from "./SegmentDisplay";
 import VersionDisplay from "./VersionDisplay";
 import VideoTemplateMetaForm from "./VideoTemplateMetaForm";
-import Stepper from "../Stepper";
+import FontUpload from "./FontUpload";
+import AssetUpload from "./AssetUpload";
+
+import Stepper from "@material-ui/core/Stepper";
+import Step from "@material-ui/core/Step";
+import StepLabel from "@material-ui/core/StepLabel";
+import Typography from "@material-ui/core/Typography";
+
 function FormBuilder({ submitForm, edit, video }) {
   const [videoObj] = useContext(SegmentsContext);
-
   const { resetVideo, editVideoKeys, loadVideo } = useActions();
   const [loading, setLoading] = useState(true);
-  const [editVersion, setEditVersion] = useState(false);
-  const [editIndex, setEditIndex] = useState(0);
-  const [activeVersionIndex, setActiveVersionIndex] = useState(0);
-  const [activeDisplayIndex, setActiveDisplayIndex] = useState(0);
+  const [activeDisplayIndex, setActiveDisplayIndex] = useState(1);
   const [compositions, setCompositions] = useState([]);
 
   useEffect(() => {
@@ -26,12 +29,6 @@ function FormBuilder({ submitForm, edit, video }) {
   }, []);
   useEffect(() => {}, [activeDisplayIndex]);
 
-  const openVersionDisplay = () => {
-    setEditVersion(false);
-    setEditIndex(0);
-    setActiveDisplayIndex(1);
-  };
-
   const handleSubmitForm = async () => {
     alert("Submiting");
     submitForm(videoObj);
@@ -40,8 +37,7 @@ function FormBuilder({ submitForm, edit, video }) {
   const handleVideoTemplateMetaSubmit = async (data) => {
     const { tags, title, description, projectFile = "" } = data;
     setCompositions(projectFile?.data ?? []);
-    setEditVersion(false);
-    setEditIndex(0);
+
     editVideoKeys({ tags, title, description });
     setActiveDisplayIndex(1);
   };
@@ -59,24 +55,24 @@ function FormBuilder({ submitForm, edit, video }) {
         return (
           <VersionDisplay
             edit={edit}
-            setEditIndex={setEditIndex}
-            setEditVersion={setEditVersion}
-            compositions={compositions}
+            compositions={{ main: {}, temp: {} }}
             activeDisplayIndex={activeDisplayIndex}
             setActiveDisplayIndex={setActiveDisplayIndex}
             handleSubmitForm={handleSubmitForm}
           />
         );
-
       case 2:
         return (
-          <SegmentDisplay
-            edit={edit}
-            editVersion={editVersion}
-            compositions={compositions}
-            activeVersionIndex={editVersion ? editIndex : activeVersionIndex}
-            setActiveVersionIndex={setActiveVersionIndex}
-            openVersionDisplay={openVersionDisplay}
+          <FontUpload
+            setActiveDisplayIndex={setActiveDisplayIndex}
+            activeDisplayIndex={activeDisplayIndex}
+          />
+        );
+      case 3:
+        return (
+          <AssetUpload
+            setActiveDisplayIndex={setActiveDisplayIndex}
+            activeDisplayIndex={activeDisplayIndex}
           />
         );
 
@@ -84,19 +80,29 @@ function FormBuilder({ submitForm, edit, video }) {
         return;
     }
   };
+  const renderStepper = (activeDisplayIndex) => {
+    const steps = [
+      `${edit ? "Edit" : "Add"} File Meta`,
+      `${edit ? "Edit" : "Add"} Versions`,
+      `${edit ? "Edit" : "Add"} Font Files`,
+      `${edit ? "Edit" : "Add"} Assets Files`,
+    ];
+    return (
+      <Stepper activeStep={activeDisplayIndex} alternativeLabel>
+        {steps.map((label) => (
+          <Step key={label}>
+            <StepLabel>{label}</StepLabel>
+          </Step>
+        ))}
+      </Stepper>
+    );
+  };
   if (loading) return <p>Loading...</p>;
   return (
     <div>
-      <Stepper
-        activeStepIndex={activeDisplayIndex}
-        steps={[
-          { label: `${edit ? "Edit" : "Add"} File Meta`, index: 0 },
-          { label: `${edit ? "Edit" : "Add"} Versions`, index: 1 },
-          { label: `${edit ? "Edit" : "Add"} Segments`, index: 2 },
-        ]}
-        type={"horizontal"}
-      />
-      {renderFormBuilder(activeDisplayIndex)}
+      {renderStepper(activeDisplayIndex)}
+
+      <Typography> {renderFormBuilder(activeDisplayIndex)}</Typography>
     </div>
   );
 }

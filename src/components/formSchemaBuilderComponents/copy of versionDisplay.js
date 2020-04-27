@@ -2,11 +2,13 @@ import React, { useContext, useEffect, useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import useActions from "contextStore/actions";
 import { SegmentsContext } from "contextStore/store";
+
 import SegmentDisplay from "./SegmentDisplay";
 import Stepper from "@material-ui/core/Stepper";
 import Step from "@material-ui/core/Step";
 import StepLabel from "@material-ui/core/StepLabel";
 import StepContent from "@material-ui/core/StepContent";
+
 import Typography from "@material-ui/core/Typography";
 
 export default ({
@@ -24,9 +26,7 @@ export default ({
   const [activeStep, setActiveStep] = useState(0);
   const [comp_name, setComp_name] = useState("");
 
-  useEffect(() => {
-    console.log(videoObj);
-  }, [activeStep]);
+  useEffect(() => {}, [activeStep]);
 
   const openSegmentsBuilder = (index, fromEdit = false) => {
     if (fromEdit) {
@@ -39,12 +39,12 @@ export default ({
   };
 
   const openVersionDisplay = () => {
-    console.log(videoObj);
     setEditVersion(false);
     setEditIndex(null);
     setActiveStep(activeStep - 1);
     setComp_name("");
   };
+
   const renderStep = (activeStep) => {
     switch (activeStep) {
       case 0:
@@ -112,7 +112,7 @@ export default ({
           <Step key={label}>
             <StepLabel>{label}</StepLabel>
             <StepContent>
-              <Typography>{renderStep(activeStep)}</Typography>
+              <Typography>{renderStep(index)}</Typography>
             </StepContent>
           </Step>
         ))}
@@ -122,10 +122,8 @@ export default ({
   return (
     <div style={{ display: "flex", flexDirection: "column", margin: 50 }}>
       {videoObj?.versions.map((item, index) => {
-        if (!edit) {
-          if (index === activeVersionIndex) {
-            return <div></div>;
-          }
+        if (index === activeVersionIndex) {
+          return <div></div>;
         }
 
         if (index === editIndex) {
@@ -169,61 +167,3 @@ export default ({
     </div>
   );
 };
-
-{
-  /* <div style={{ textAlign: "center" }}>
-      <p>{edit ? "View Versions" : "Create Versions"}</p>
-
-      {videoObj?.versions.map((item, index) => {
-        return (
-          <div style={{ border: "1px solid black", padding: 10, margin: 10 }}>
-            <p style={{ fontSize: 15 }}>{JSON.stringify(item)}</p>
-            <button onClick={() => openSegmentsBuilder(index, true)}>
-              Edit
-            </button>
-            <span> </span>
-            <button onClick={() => removeVersion(index)}>Delete</button>
-          </div>
-        );
-      })}
-      {!edit && (
-        <div style={{ margin: 10 }}>
-          <select onChange={(e) => setComp_name(e.target.value)}>
-            <option disabled selected value="">
-              Select Composition
-            </option>
-            {Object.keys(compositions).map((item, index) => {
-              return (
-                <option key={index} id={index} value={item}>
-                  {item}
-                </option>
-              );
-            })}
-          </select>
-          <button
-            onClick={() => openSegmentsBuilder()}
-            disabled={comp_name === ""}
-          >
-            Add
-          </button>
-        </div>
-      )}
-      <br />
-      <button
-        onClick={() =>
-          activeDisplayIndex === 2
-            ? setActiveDisplayIndex(1)
-            : setActiveDisplayIndex(0)
-        }
-        disabled={!activeDisplayIndex === 2 && !activeDisplayIndex === 1}
-      >
-        Back
-      </button>
-      <button
-        disabled={videoObj.versions.length === 0}
-        onClick={handleSubmitForm}
-      >
-        {edit ? "Save Edits" : "Submit Form"}
-      </button>
-    </div> */
-}

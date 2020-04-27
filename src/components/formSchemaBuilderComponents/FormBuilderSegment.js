@@ -10,6 +10,7 @@ export default ({
   activeIndex,
   usedFields,
   edit,
+  editVersion,
   activeVersionIndex,
   setUsedFields,
 }) => {
@@ -46,13 +47,10 @@ export default ({
         "pickerLayers"
       ).map((i) => i.name),
     ]);
-  }, []);
-
-  useEffect(() => {
-    console.log(currentCompositionFields.length);
     if (
       !restoreStatus &&
       !edit &&
+      !editVersion &&
       videoObj.versions[0].title !== "" &&
       activeVersionIndex !== 0 &&
       videoObj.versions[activeVersionIndex].form.segments[activeIndex].fields
@@ -72,8 +70,9 @@ export default ({
         setValue(Math.random());
       }
     }
-  }, [activeIndex, videoObj, value]);
+  }, []);
 
+  useEffect(() => {}, [value, videoObj]);
   //  function to extract layers from compositions, c is composition object and type is textLayer or imageLayer
   function getLayers(c, type) {
     if (!c) return [];
