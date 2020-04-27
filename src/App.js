@@ -9,12 +9,7 @@ import Landing from "pages/Landing";
 import Login from "pages/Login";
 import Register from "pages/Register";
 import React from "react";
-import {
-  Route,
-  BrowserRouter as Router,
-  Switch,
-  MemoryRouter,
-} from "react-router-dom";
+import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import useAuth from "services/auth";
 import createOrder from "pages/createOrder";
 

@@ -1,34 +1,36 @@
 import React, { useState } from "react";
 import Dropdown from "react-bootstrap/Dropdown";
-import Nav from "react-bootstrap/Nav";
+import { Nav, Breadcrumb } from "react-bootstrap";
 
 import Navbar from "react-bootstrap/Navbar";
 import styled from "styled-components";
 
 export default ({ isAuthenticated, logout }) => {
   return (
-    <Navbar bg="dark" className="justify-content-between shadow-sm">
-      <Navbar.Brand href="/" className="m-auto">
-        <LogoImage src={require("../assets/logo.png")} alt="Pharaoh Logo" />
-      </Navbar.Brand>
+    <div>
+      <Navbar bg="dark" className="justify-content-between shadow-sm">
+        <Navbar.Brand href="/" className="m-auto">
+          <LogoImage src={require("../assets/logo.png")} alt="Pharaoh Logo" />
+        </Navbar.Brand>
 
-      <Nav>
-        {isAuthenticated && (
-          <Dropdown drop="left" id="nav-dropdown">
-            <Dropdown.Toggle as={CustomToggle} />
-            <Dropdown.Menu>
-              <Dropdown.Header>Harsh Bhatia</Dropdown.Header>
-              <Dropdown.Item as="button" onClick={logout}>
-                Logout
-              </Dropdown.Item>
-              <Dropdown.Divider />
-              <Dropdown.Item>Privacy Policy</Dropdown.Item>
-              <Dropdown.Item>Help</Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-        )}
-      </Nav>
-    </Navbar>
+        <Nav>
+          {isAuthenticated && (
+            <Dropdown drop="left" id="nav-dropdown">
+              <Dropdown.Toggle as={CustomToggle} />
+              <Dropdown.Menu>
+                <Dropdown.Header>Harsh Bhatia</Dropdown.Header>
+                <Dropdown.Item as="button" onClick={logout}>
+                  Logout
+                </Dropdown.Item>
+                <Dropdown.Divider />
+                <Dropdown.Item>Privacy Policy</Dropdown.Item>
+                <Dropdown.Item>Help</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          )}
+        </Nav>
+      </Navbar>
+    </div>
   );
 };
 

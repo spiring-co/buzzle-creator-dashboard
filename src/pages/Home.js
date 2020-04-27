@@ -5,7 +5,7 @@ import Profile from "pages/Profile";
 import VideoTemplates from "pages/VideoTemplates";
 import React, { useState } from "react";
 import Col from "react-bootstrap/Col";
-import Container from "react-bootstrap/Container";
+import { Container, Breadcrumb } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Row from "react-bootstrap/Row";
 import { useSpring, animated } from "react-spring";
@@ -34,6 +34,16 @@ export default () => {
               </a>
             </Col>
             <Col sm="11">
+              <Breadcrumb>
+                <Breadcrumb.Item href={`${path}/`}>Dashboard</Breadcrumb.Item>
+                <Breadcrumb.Item href={`${path}/profile`}>
+                  Profile
+                </Breadcrumb.Item>
+                <Breadcrumb.Item href={`${path}/videoTemplates`}>
+                  videoTemplates
+                </Breadcrumb.Item>
+                <Breadcrumb.Item href={`${path}/orders`}>Order</Breadcrumb.Item>
+              </Breadcrumb>
               <Switch>
                 <div style={{ flex: 3 }}>
                   <Route path={`${path}/`} exact component={Dashboard} />
