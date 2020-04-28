@@ -70,12 +70,11 @@ export default (props) => {
   if (error) return <p>Error: {error.message}</p>;
   if (loading || isEditing)
     return <p>{isEditing ? "Editing" : "Submitting"} your template...</p>;
+
   return (
     <Container fluid className="mb-5">
       <Prompt when={isBlocking} message={`You will lose all your data.`} />
-      <h3 className="text-center mb-4">
-        {edit ? "Edit Your " : "Add"} Video Template
-      </h3>
+      <h2 className="mb-4">{edit ? "Edit Your " : "Add"} Video Template</h2>
       <FormBuilder
         edit={edit}
         video={video}

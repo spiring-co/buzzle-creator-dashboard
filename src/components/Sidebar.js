@@ -1,29 +1,26 @@
 import React from "react";
-import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import Button from "react-bootstrap/Button";
 import Nav from "react-bootstrap/Nav";
-import { Link, Route, Switch, useRouteMatch, Router } from "react-router-dom";
-import styled from "styled-components";
-function SideBar({ Url, onclick }) {
+import Row from "react-bootstrap/Row";
+import { Link, useRouteMatch } from "react-router-dom";
+
+export default () => {
+  let { path } = useRouteMatch();
+
   return (
-    <Nav
-      justify
-      variant="tabs"
-      defaultActiveKey="/home"
-      className="flex-column text-center font-weight-bold"
-    >
+    <Nav justify activeKey={`${path}/`} className="flex-column ">
       <Nav.Item>
-        <Button
-          variant="dark"
-          className="float-right mt-2 mb-2"
-          onClick={onclick}
-        >
-          X
-        </Button>
+        <Nav.Link as={Link} to={`${path}/`}>
+          <Row>
+            <Col md="1">
+              <i class="material-icons">home</i>
+            </Col>
+            <Col sm="1">Home</Col>
+          </Row>
+        </Nav.Link>
       </Nav.Item>
       <Nav.Item>
-        <Nav.Link activeClassName="active" as={Link} to={`${Url}/profile`}>
+        <Nav.Link as={Link} to={`${path}/profile`}>
           <Row>
             <Col md="1">
               <i class="material-icons">settings</i>
@@ -33,14 +30,9 @@ function SideBar({ Url, onclick }) {
         </Nav.Link>
       </Nav.Item>
       <Nav.Item>
-        <Nav.Link
-          activeClassName="active"
-          as={Link}
-          to={`${Url}/videoTemplates`}
-        >
+        <Nav.Link as={Link} to={`${path}/videoTemplates`}>
           <Row>
             <Col sm="1">
-              {" "}
               <i class="material-icons">color_lens</i>
             </Col>
             <Col sm="1">Templates</Col>
@@ -48,10 +40,9 @@ function SideBar({ Url, onclick }) {
         </Nav.Link>
       </Nav.Item>
       <Nav.Item>
-        <Nav.Link activeClassName="active" as={Link} to={`${Url}/orders`}>
+        <Nav.Link as={Link} to={`${path}/orders`}>
           <Row>
             <Col sm="1">
-              {" "}
               <i class="material-icons">receipt</i>
             </Col>
             <Col sm="1"> Orders</Col>
@@ -60,6 +51,4 @@ function SideBar({ Url, onclick }) {
       </Nav.Item>
     </Nav>
   );
-}
-
-export default SideBar;
+};

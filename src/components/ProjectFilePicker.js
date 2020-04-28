@@ -3,7 +3,7 @@ import { Button } from "react-bootstrap";
 import { extractStructureFromFile } from "services/ae";
 import styled from "styled-components";
 
-export default ({ value, onData, name, isInvalid }) => {
+export default ({ value, onData, name, onError, onTouched }) => {
   const [hasPickedFile, setHasPickedFile] = useState(false);
   const [hasExtractedData, setHasExtractedData] = useState(false);
   const [error, setError] = useState(null);
@@ -18,7 +18,9 @@ export default ({ value, onData, name, isInvalid }) => {
       setHasPickedFile(true);
       onData(await extractStructureFromFile(file));
       setHasExtractedData(true);
+      onTouched(true);
     } catch (error) {
+      setHasPickedFile(false);
       setError(error);
     }
   };
@@ -32,7 +34,6 @@ export default ({ value, onData, name, isInvalid }) => {
       for={name}
     >
       <LabelContent>
-        {error && <p className={"text-danger"}>{error.message}</p>}
         {!hasPickedFile && (
           <>
             <p>Drag Your File Here OR</p>
@@ -40,7 +41,6 @@ export default ({ value, onData, name, isInvalid }) => {
             <br />
             <input
               className="invisible"
-              isInvalid={isInvalid}
               id={name}
               name={name}
               type="file"
@@ -64,6 +64,7 @@ export default ({ value, onData, name, isInvalid }) => {
           ) : (
             <p>Extracting Layer and compositions ...</p>
           ))}
+        {error && <p className={"text-danger"}>{error.message}</p>}
       </LabelContent>
     </Container>
   );
