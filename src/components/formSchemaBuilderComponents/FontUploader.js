@@ -1,0 +1,65 @@
+import React, { useContext, useEffect, useState } from "react";
+import { Button } from "react-bootstrap";
+export default function FontUploader({ fontName }) {
+  const [loading, setLoading] = useState(true);
+  const [result, setResult] = useState(false);
+  const [error, setError] = useState(null);
+  // takes all font used in template
+  useEffect(() => {
+    // fetch call
+    fetchFontInstallbleStatus(fontName);
+  }, []);
+
+  const fetchFontInstallbleStatus = async (fontName) => {
+    const response = await fetch(
+      `http://localhost:4488/getFontInstallableStatus?fontName=${fontName}`
+    );
+    setResult(await response.json());
+    setLoading(false);
+  };
+  const handleFontUpload = (e) => {
+    setLoading(true);
+    // upload to s3
+    setLoading(false);
+    // set uri in result and add uri to global videoObj
+    setResult(true);
+  };
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        textAlign: "center",
+        border: "1px solid grey",
+        borderRadius: 20,
+        padding: 20,
+        margin: 20,
+      }}
+    >
+      <p>
+        <b>{fontName}</b>
+      </p>
+      {loading ? (
+        <p>Resolving...</p>
+      ) : result ? (
+        <p style={{ color: "green" }}>Success</p>
+      ) : (
+        <label
+          style={{ padding: 5, border: "1px solid black", borderRadius: 10 }}
+        >
+          Upload Font
+          <input
+            id={fontName}
+            style={{ display: "none" }}
+            type="file"
+            name={fontName}
+            accept={[".ttf", ".otf"]}
+            onChange={handleFontUpload}
+          />
+        </label>
+      )}
+    </div>
+  );
+}

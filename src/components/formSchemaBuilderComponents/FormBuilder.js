@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import useActions from "contextStore/actions";
 import { SegmentsContext, StateProvider } from "contextStore/store";
-import SegmentDisplay from "./SegmentDisplay";
 import VersionDisplay from "./VersionDisplay";
 import VideoTemplateMetaForm from "./VideoTemplateMetaForm";
 import FontUpload from "./FontUpload";
@@ -16,7 +15,7 @@ function FormBuilder({ submitForm, edit, video }) {
   const [videoObj] = useContext(SegmentsContext);
   const { resetVideo, editVideoKeys, loadVideo } = useActions();
   const [loading, setLoading] = useState(true);
-  const [activeDisplayIndex, setActiveDisplayIndex] = useState(1);
+  const [activeDisplayIndex, setActiveDisplayIndex] = useState(3);
   const [compositions, setCompositions] = useState([]);
 
   useEffect(() => {
@@ -55,15 +54,15 @@ function FormBuilder({ submitForm, edit, video }) {
         return (
           <VersionDisplay
             edit={edit}
-            compositions={{ main: {}, temp: {} }}
+            compositions={compositions}
             activeDisplayIndex={activeDisplayIndex}
             setActiveDisplayIndex={setActiveDisplayIndex}
-            handleSubmitForm={handleSubmitForm}
           />
         );
       case 2:
         return (
           <FontUpload
+            compositions={compositions}
             setActiveDisplayIndex={setActiveDisplayIndex}
             activeDisplayIndex={activeDisplayIndex}
           />
@@ -73,6 +72,7 @@ function FormBuilder({ submitForm, edit, video }) {
           <AssetUpload
             setActiveDisplayIndex={setActiveDisplayIndex}
             activeDisplayIndex={activeDisplayIndex}
+            handleSubmitForm={handleSubmitForm}
           />
         );
 

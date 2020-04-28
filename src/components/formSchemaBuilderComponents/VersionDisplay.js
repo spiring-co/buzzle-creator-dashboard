@@ -8,12 +8,12 @@ import Step from "@material-ui/core/Step";
 import StepLabel from "@material-ui/core/StepLabel";
 import StepContent from "@material-ui/core/StepContent";
 import Typography from "@material-ui/core/Typography";
-
+import VersionMeta from "./VersionMeta";
 export default ({
   edit,
   compositions,
   activeDisplayIndex,
-  handleSubmitForm,
+
   setActiveDisplayIndex,
 }) => {
   const [videoObj] = useContext(SegmentsContext);
@@ -25,10 +25,13 @@ export default ({
   const [comp_name, setComp_name] = useState("");
 
   useEffect(() => {
-    console.log(videoObj);
-  }, [activeStep]);
+    if (edit) {
+      setActiveVersionIndex(videoObj.versions.length);
+    }
+  }, []);
+  useEffect(() => {}, [activeStep]);
 
-  const openSegmentsBuilder = (index, fromEdit = false) => {
+  const openVersionMeta = (index, fromEdit = false) => {
     if (fromEdit) {
       setEditIndex(index);
       setEditVersion(true);
@@ -38,11 +41,15 @@ export default ({
     setActiveStep(activeStep + 1);
   };
 
+  const openSegmentBuilder = () => {
+    setActiveStep(activeStep + 1);
+  };
+
   const openVersionDisplay = () => {
     console.log(videoObj);
     setEditVersion(false);
     setEditIndex(null);
-    setActiveStep(activeStep - 1);
+    setActiveStep(0);
     setComp_name("");
   };
   const renderStep = (activeStep) => {
@@ -77,7 +84,7 @@ export default ({
                 <Button
                   // style={{ float: "right" }}
                   variant="outline-primary"
-                  onClick={() => openSegmentsBuilder()}
+                  onClick={() => openVersionMeta()}
                   disabled={comp_name === ""}
                 >
                   Add
@@ -87,6 +94,13 @@ export default ({
           </Form>
         );
       case 1:
+        return (
+          <VersionMeta
+            activeVersionIndex={editVersion ? editIndex : activeVersionIndex}
+            openSegmentBuilder={openSegmentBuilder}
+          />
+        );
+      case 2:
         return (
           <SegmentDisplay
             edit={edit}
@@ -103,8 +117,9 @@ export default ({
   };
   const renderVersionStepper = (activeStep) => {
     const steps = [
-      `${edit ? "Edit" : "Add"} Version`,
-      `${edit ? "Edit" : "Add"} Segment`,
+      `${editVersion ? "Edit" : "Add"} Version`,
+      `${editVersion ? "Edit" : "Add"} Version Meta`,
+      `${editVersion ? "Edit" : "Add"} Segment`,
     ];
     return (
       <Stepper activeStep={activeStep} orientation="vertical">
@@ -122,10 +137,8 @@ export default ({
   return (
     <div style={{ display: "flex", flexDirection: "column", margin: 50 }}>
       {videoObj?.versions.map((item, index) => {
-        if (!edit) {
-          if (index === activeVersionIndex) {
-            return <div></div>;
-          }
+        if (index === activeVersionIndex) {
+          return <div></div>;
         }
 
         if (index === editIndex) {
@@ -134,9 +147,7 @@ export default ({
         return (
           <div style={{ border: "1px solid black", padding: 10, margin: 10 }}>
             <p style={{ fontSize: 15 }}>{JSON.stringify(item)}</p>
-            <button onClick={() => openSegmentsBuilder(index, true)}>
-              Edit
-            </button>
+            <button onClick={() => openVersionMeta(index, true)}>Edit</button>
             <span> </span>
             <button onClick={() => removeVersion(index)}>Delete</button>
           </div>
@@ -178,7 +189,7 @@ export default ({
         return (
           <div style={{ border: "1px solid black", padding: 10, margin: 10 }}>
             <p style={{ fontSize: 15 }}>{JSON.stringify(item)}</p>
-            <button onClick={() => openSegmentsBuilder(index, true)}>
+            <button onClick={() => openVersionMeta(index, true)}>
               Edit
             </button>
             <span> </span>
@@ -201,7 +212,7 @@ export default ({
             })}
           </select>
           <button
-            onClick={() => openSegmentsBuilder()}
+            onClick={() => openVersionMeta()}
             disabled={comp_name === ""}
           >
             Add

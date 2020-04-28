@@ -2,14 +2,13 @@
 import useActions from "contextStore/actions";
 import { SegmentsContext } from "contextStore/store";
 import React, { useContext, useEffect, useState } from "react";
-
+import { getLayers } from "../../services/helper";
 import AddFields from "./AddFieldDialog";
 
 export default ({
   compositions,
   activeIndex,
   usedFields,
-  edit,
   editVersion,
   activeVersionIndex,
   setUsedFields,
@@ -47,9 +46,11 @@ export default ({
         "pickerLayers"
       ).map((i) => i.name),
     ]);
+  }, []);
+
+  useEffect(() => {
     if (
       !restoreStatus &&
-      !edit &&
       !editVersion &&
       videoObj.versions[0].title !== "" &&
       activeVersionIndex !== 0 &&
@@ -72,15 +73,8 @@ export default ({
     }
   }, []);
 
-  useEffect(() => {}, [value, videoObj]);
+  useEffect(() => {}, [value]);
   //  function to extract layers from compositions, c is composition object and type is textLayer or imageLayer
-  function getLayers(c, type) {
-    if (!c) return [];
-    return (
-      c[type] ??
-      [].concat(...Object.values(c.comps || {}).map((i) => getLayers(i, type)))
-    );
-  }
 
   const addField = (value) => {
     setUsedFields([...usedFields, value.name]);
