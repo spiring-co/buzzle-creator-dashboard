@@ -15,7 +15,7 @@ function FormBuilder({ submitForm, edit, video }) {
   const [videoObj] = useContext(SegmentsContext);
   const { resetVideo, editVideoKeys, loadVideo } = useActions();
   const [loading, setLoading] = useState(true);
-  const [activeDisplayIndex, setActiveDisplayIndex] = useState(3);
+  const [activeDisplayIndex, setActiveDisplayIndex] = useState(0);
   const [compositions, setCompositions] = useState([]);
 
   useEffect(() => {
@@ -35,6 +35,7 @@ function FormBuilder({ submitForm, edit, video }) {
 
   const handleVideoTemplateMetaSubmit = async (data) => {
     const { tags, title, description, projectFile = "" } = data;
+    console.log(projectFile);
     setCompositions(projectFile?.data ?? []);
 
     editVideoKeys({ tags, title, description });
