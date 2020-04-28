@@ -1,3 +1,4 @@
+
 import ProjectFilePicker from "components/ProjectFilePicker";
 import { useFormik } from "formik";
 import React from "react";
@@ -83,14 +84,15 @@ export default ({
       </Form.Group>
       <Form.Group>
         <Form.Label>Tags</Form.Label>
-        <TagsInput
-          onchange={handleChange}
-          onblur={handleBlur}
-          values={values.tags}
-          names="tags"
-          types="text"
-          placeholders="Enter tags"
-          isInvalids={touched.tags && !!errors.tags}
+        <Form.Control
+          onChange={handleChange}
+          onBlur={handleBlur}
+          value={values.tags}
+          name={"tags"}
+          type="text"
+          placeholder="Enter tags"
+          isInvalid={touched.tags && !!errors.tags}
+
         />
         <Form.Control.Feedback type="invalid">
           {errors.tags}

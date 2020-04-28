@@ -3,15 +3,15 @@ import menu from "../components/menu.svg";
 import Orders from "pages/Orders";
 import Profile from "pages/Profile";
 import VideoTemplates from "pages/VideoTemplates";
+
 import React, { useState } from "react";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 import Row from "react-bootstrap/Row";
 import { useSpring, animated } from "react-spring";
-import { NavLink, Route, Switch, useRouteMatch } from "react-router-dom";
 
-import SideBar from "../components/Sidebar";
+import { NavLink, Route, Switch, useRouteMatch } from "react-router-dom";
 
 export default () => {
   let { path, url } = useRouteMatch();

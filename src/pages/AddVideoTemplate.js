@@ -34,10 +34,6 @@ export default (props) => {
         );
         setIsEditing(false);
         if (response.ok) {
-          //TOOD
-          // to be handled in backend return the edited video object in response
-          // const editedVideo = await response.json();
-          // refresh the page with updated props
           setIsBlocking(false);
           history.push({
             pathname: `/home/videoTemplates/${data.videoTemplateId}`,
@@ -67,6 +63,7 @@ export default (props) => {
         history.push("/home/videoTemplates");
       }
     } catch (err) {
+      alert(JSON.stringify(err));
       setError(err);
     }
   };
