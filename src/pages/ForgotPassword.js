@@ -5,6 +5,7 @@ import Confetti from "react-dom-confetti";
 import { Link } from "react-router-dom";
 import useAuth from "services/auth";
 import * as Yup from "yup";
+import { useTranslation } from "react-i18next";
 
 const config = {
   angle: 45,
@@ -19,6 +20,7 @@ const config = {
   colors: ["#a864fd", "#29cdff", "#78ff44", "#ff718d", "#fdff6a"],
 };
 export default () => {
+  const { t, i18n } = useTranslation();
   const [error, setError] = useState(null);
   const [otpEmailSent, setOtpEmailSent] = useState(false);
   const [passwordResetSuccess, setPasswordResetSuccess] = useState(false);
@@ -38,8 +40,8 @@ export default () => {
     },
     validationSchema: Yup.object({
       email: Yup.string()
-        .email("Please enter a valid email address.")
-        .required("Email is Required"),
+        .email(t('enterEmail'))
+        .required(t('required')),
     }),
     onSubmit: async ({ email, newPassword,otp }) => {
       otpEmailSent ? resetPassword(email, newPassword,otp) : sendPasswordResetOtp(email);
@@ -97,11 +99,11 @@ export default () => {
           {passwordResetSuccess ? (
             <>
               <h3 className="text-center mb-4 mt-5">
-                Password Reset Successfully!
+                {t('passwordSuccess')}{" "}
               </h3>
 
               <p className="text-muted text-center mb-4">
-                Wohoo, enjoy your brand new password and don't forget it. 🎉
+                {t('woohoo')}
               </p>
               <Confetti active={passwordResetSuccess} config={config} />
               <Button
@@ -117,12 +119,12 @@ export default () => {
               <Form onSubmit={handleSubmit} noValidate className="mb-4 mt-5">
                 <h3 className="text-center mb-4">Forgot Password</h3>
                 <p className="text-muted text-center mb-4">
-                  No worries happens to all of us, we got you fam. 😌
+                  {t('noWorries')}
                 </p>
                 {error && <Alert variant="danger" children={error.message} />}
                 {otpEmailSent && (
                   <Alert variant="primary">
-                    Please check your mail for an OTP we just sent!
+                    {t('checkEmail')}
                   </Alert>
                 )}
                 <Form.Group controlId="formBasicEmail">
@@ -194,7 +196,7 @@ export default () => {
                 />
               </Form>
               <p className="text-muted text-center">
-                Don't have an account yet? <Link to="/register">Sign up.</Link>
+                {t('dontHave')} <Link to="/register">Sign up.</Link>
               </p>
             </>
           )}
