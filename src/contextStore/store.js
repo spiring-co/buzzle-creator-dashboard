@@ -12,7 +12,9 @@ const StateProvider = ({ children }) => {
     versions: [],
     isDeleted: false,
     title: "",
-    description: ""
+    description: "",
+    assetsUri: "",
+    fonts: [],
   });
 
   return (

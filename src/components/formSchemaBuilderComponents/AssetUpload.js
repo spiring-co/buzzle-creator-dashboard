@@ -1,17 +1,23 @@
-import React, { useState, useEffect } from "react";
-import { Button } from "react-bootstrap";
-import Radio from "@material-ui/core/Radio";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import FormControl from "@material-ui/core/FormControl";
+import React, { useState, useEffect, useContext } from "react";
+import { Button, Container, Form, Col } from "react-bootstrap";
+
 import AssetUploader from "./AssetUploader";
+import useActions from "contextStore/actions";
+import { SegmentsContext } from "contextStore/store";
+import { zipMaker } from "services/helper";
 
 export default function AssetUpload({
   setActiveDisplayIndex,
   activeDisplayIndex,
   handleSubmitForm,
 }) {
+  const [videoObj] = useContext(SegmentsContext);
   const [uploadType, setUploadType] = useState("");
   const [assetsArray, setAssetsArray] = useState([]);
+  const [assets, setAssets] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const { editVideoKeys } = useActions();
 
   useEffect(() => {
     //sets asset array retrieve it from composition
@@ -20,6 +26,26 @@ export default function AssetUpload({
       { type: "audio", name: "background.mp4" },
     ]);
   }, []);
+
+  useEffect(() => {
+    if (
+      assets.length === assetsArray.length &&
+      assetsArray.length !== 0 &&
+      uploadType === "file"
+    ) {
+      handleZipAssetUpload();
+    } else if (
+      assetsArray.length !== 0 &&
+      uploadType === "folder" &&
+      assets.length !== 0
+    ) {
+      handleZipAssetUpload();
+    }
+  }, [assets]);
+
+  useEffect(() => {
+    setAssets([]);
+  }, [uploadType]);
 
   const handleSubmit = () => {
     if (
@@ -31,14 +57,21 @@ export default function AssetUpload({
       // call it to submit handleSubmitForm()
     }
   };
+
   const handleChange = (e) => {
     setUploadType(e.target.value);
   };
+
   const renderAssetFileUploader = () => {
     return (
-      <div>
+      <div
+        style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}
+      >
         {assetsArray.map((asset) => (
           <AssetUploader
+            assetsUri={videoObj.assetsUri}
+            setAssets={setAssets}
+            assets={assets}
             uploadType={uploadType}
             accept={asset.type}
             uploadFileName={asset.name}
@@ -47,11 +80,37 @@ export default function AssetUpload({
       </div>
     );
   };
+
+  const handleZipAssetUpload = () => {
+    try {
+      setError(null);
+      setLoading(true);
+      // filter only files required in template with all files
+      const assetNames = assetsArray.map((i) => i.name.toLowerCase());
+
+      const newAssets = assets.filter(({ name }) =>
+        assetNames.includes(name.toLowerCase())
+      );
+      // call zipMaker and upload it to s3 get the uri
+      const uri = zipMaker(newAssets);
+      // save this uri to global State
+      editVideoKeys({ assetsUri: uri });
+
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+
+      setError("Something Went Wrong, Please Retry...");
+    }
+  };
+
   const renderAssetUploader = () => {
     switch (uploadType) {
       case "folder":
         return (
           <AssetUploader
+            assetsUri={videoObj.assetsUri}
+            setAssets={setAssets}
             uploadType={uploadType}
             uploadFileName="assets"
             assetsArray={assetsArray}
@@ -64,10 +123,35 @@ export default function AssetUpload({
         return;
     }
   };
+  if (error) {
+    return (
+      <Container style={styles.container}>
+        <p style={{ color: "red" }}>{error}</p>
+        <Button
+          style={{
+            color: "red",
+            border: "1px solid red",
+            backgroundColor: "white",
+          }}
+          onClick={handleZipAssetUpload}
+        >
+          Retry
+        </Button>
+      </Container>
+    );
+  }
+
+  if (loading) {
+    return (
+      <Container style={styles.container}>
+        <h4>Uploading Assets...</h4>
+      </Container>
+    );
+  }
 
   return (
-    <div style={styles.container}>
-      <FormControl component="fieldset">
+    <Container fluid style={styles.container}>
+      <Form>
         <h4>Upload Asset Files</h4>
         <p style={{ color: "grey" }}>
           Assets Files includes, files which are not associated with user input,
@@ -76,32 +160,23 @@ export default function AssetUpload({
         <p>
           <b>Choose Asset Upload Structure</b>
         </p>
-        <FormControlLabel
-          // style={{ justifyContent: "center" }}
-          value="folder"
-          control={
-            <Radio
-              onChange={handleChange}
-              checked={uploadType === "folder"}
-              color="primary"
-            />
-          }
-          label="Complete Assets Folder"
-          labelPlacement="end"
-        />
-        <FormControlLabel
-          value="file"
-          control={
-            <Radio
-              onChange={handleChange}
-              checked={uploadType === "file"}
-              color="primary"
-            />
-          }
-          label="Individual Assets"
-          labelPlacement="end"
-        />
-      </FormControl>
+        <Col sm={10}>
+          <Form.Check
+            onChange={handleChange}
+            type="radio"
+            checked={uploadType === "folder"}
+            label="Complete Assets Folder"
+            value="folder"
+          />
+          <Form.Check
+            onChange={handleChange}
+            checked={uploadType === "file"}
+            type="radio"
+            label="Individual Assets"
+            value="file"
+          />
+        </Col>
+      </Form>
       {renderAssetUploader(uploadType)}
       <Button
         children={"back"}
@@ -109,7 +184,7 @@ export default function AssetUpload({
       />
       <br />
       <Button children={"Submit"} onClick={handleSubmit} />
-    </div>
+    </Container>
   );
 }
 
@@ -121,7 +196,7 @@ const styles = {
     alignItems: "center",
     backgroundColor: "white",
     marginTop: 30,
-    marginBottom: 30,
+    marginBottom: 50,
     padding: 50,
   },
 };

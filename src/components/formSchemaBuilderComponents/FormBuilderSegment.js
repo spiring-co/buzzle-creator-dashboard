@@ -2,7 +2,7 @@
 import useActions from "contextStore/actions";
 import { SegmentsContext } from "contextStore/store";
 import React, { useContext, useEffect, useState } from "react";
-import { getLayers } from "../../services/helper";
+import { getLayersFromComposition } from "services/helper";
 import AddFields from "./AddFieldDialog";
 
 export default ({
@@ -33,15 +33,15 @@ export default ({
   useEffect(() => {
     setCurrentCompositionFields([
       ...currentCompositionFields,
-      ...getLayers(
+      ...getLayersFromComposition(
         compositions[videoObj?.versions[activeVersionIndex]?.comp_name],
         "textLayers"
       ).map((i) => i.name),
-      ...getLayers(
+      ...getLayersFromComposition(
         compositions[videoObj?.versions[activeVersionIndex]?.comp_name],
         "imageLayers"
       ).map((i) => i.name),
-      ...getLayers(
+      ...getLayersFromComposition(
         compositions[videoObj?.versions[activeVersionIndex]?.comp_name],
         "pickerLayers"
       ).map((i) => i.name),
@@ -174,11 +174,11 @@ export default ({
       {isDialogVisible &&
         usedFields.length !== currentCompositionFields.length && (
           <AddFields
-            textLayers={getLayers(
+            textLayers={getLayersFromComposition(
               compositions[videoObj?.versions[activeVersionIndex]?.comp_name],
               "textLayers"
             )}
-            imageLayers={getLayers(
+            imageLayers={getLayersFromComposition(
               compositions[videoObj?.versions[activeVersionIndex]?.comp_name],
               "imageLayers"
             )}

@@ -7,7 +7,7 @@ import Stepper from "@material-ui/core/Stepper";
 import Step from "@material-ui/core/Step";
 import StepLabel from "@material-ui/core/StepLabel";
 import StepContent from "@material-ui/core/StepContent";
-import Typography from "@material-ui/core/Typography";
+
 import VersionMeta from "./VersionMeta";
 export default ({
   edit,
@@ -126,9 +126,7 @@ export default ({
         {steps.map((label, index) => (
           <Step key={label}>
             <StepLabel>{label}</StepLabel>
-            <StepContent>
-              <Typography>{renderStep(activeStep)}</Typography>
-            </StepContent>
+            <StepContent>{renderStep(activeStep)}</StepContent>
           </Step>
         ))}
       </Stepper>

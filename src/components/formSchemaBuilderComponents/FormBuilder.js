@@ -5,17 +5,15 @@ import VersionDisplay from "./VersionDisplay";
 import VideoTemplateMetaForm from "./VideoTemplateMetaForm";
 import FontUpload from "./FontUpload";
 import AssetUpload from "./AssetUpload";
-
 import Stepper from "@material-ui/core/Stepper";
 import Step from "@material-ui/core/Step";
 import StepLabel from "@material-ui/core/StepLabel";
-import Typography from "@material-ui/core/Typography";
 
 function FormBuilder({ submitForm, edit, video }) {
   const [videoObj] = useContext(SegmentsContext);
   const { resetVideo, editVideoKeys, loadVideo } = useActions();
   const [loading, setLoading] = useState(true);
-  const [activeDisplayIndex, setActiveDisplayIndex] = useState(0);
+  const [activeDisplayIndex, setActiveDisplayIndex] = useState(2);
   const [compositions, setCompositions] = useState([]);
 
   useEffect(() => {
@@ -82,12 +80,7 @@ function FormBuilder({ submitForm, edit, video }) {
     }
   };
   const renderStepper = (activeDisplayIndex) => {
-    const steps = [
-      `${edit ? "Edit" : "Add"} File Meta`,
-      `${edit ? "Edit" : "Add"} Versions`,
-      `${edit ? "Edit" : "Add"} Font Files`,
-      `${edit ? "Edit" : "Add"} Assets Files`,
-    ];
+    const steps = [`File Meta`, `Versions`, `Font Files`, `Assets Files`];
     return (
       <Stepper activeStep={activeDisplayIndex} alternativeLabel>
         {steps.map((label) => (
@@ -103,7 +96,7 @@ function FormBuilder({ submitForm, edit, video }) {
     <div>
       {renderStepper(activeDisplayIndex)}
 
-      <Typography> {renderFormBuilder(activeDisplayIndex)}</Typography>
+      {renderFormBuilder(activeDisplayIndex)}
     </div>
   );
 }

@@ -1,8 +1,15 @@
 import React, { useContext, useEffect, useState } from "react";
 
-export default function AssetUploader({ uploadType, uploadFileName, accept }) {
+export default function AssetUploader({
+  uploadType,
+  uploadFileName,
+  accept,
+  assets,
+  setAssets,
+  assetsUri,
+}) {
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState(false);
+  const [result, setResult] = useState(Boolean(assetsUri));
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -10,9 +17,12 @@ export default function AssetUploader({ uploadType, uploadFileName, accept }) {
   }, []);
 
   const handleAssetUpload = (e) => {
-    console.log(e.target.files);
     setLoading(true);
-    // upload to s3
+    if (uploadType === "folder") {
+      setAssets(Object.assign([], e.target.files));
+    } else {
+      setAssets([...assets, ...e.target.files]);
+    }
     setLoading(false);
     // set uri in result and add uri of asset to global videoObj
     setResult(true);

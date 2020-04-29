@@ -1,22 +1,18 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
+import { fetchFontInstallbleStatus } from "services/ae";
 export default function FontUploader({ fontName }) {
   const [loading, setLoading] = useState(true);
   const [result, setResult] = useState(false);
   const [error, setError] = useState(null);
+
   // takes all font used in template
   useEffect(() => {
     // fetch call
-    fetchFontInstallbleStatus(fontName);
+    fetchFontInstallbleStatus(fontName).then((response) => setResult(response));
+    setLoading(false);
   }, []);
 
-  const fetchFontInstallbleStatus = async (fontName) => {
-    const response = await fetch(
-      `http://localhost:4488/getFontInstallableStatus?fontName=${fontName}`
-    );
-    setResult(await response.json());
-    setLoading(false);
-  };
   const handleFontUpload = (e) => {
     setLoading(true);
     // upload to s3
@@ -26,18 +22,7 @@ export default function FontUploader({ fontName }) {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        textAlign: "center",
-        border: "1px solid grey",
-        borderRadius: 20,
-        padding: 20,
-        margin: 20,
-      }}
-    >
+    <div style={styles.container}>
       <p>
         <b>{fontName}</b>
       </p>
@@ -63,3 +48,15 @@ export default function FontUploader({ fontName }) {
     </div>
   );
 }
+const styles = {
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    textAlign: "center",
+    border: "1px solid grey",
+    borderRadius: 20,
+    padding: 20,
+    margin: 20,
+  },
+};
