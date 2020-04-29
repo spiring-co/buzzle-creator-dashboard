@@ -4,8 +4,10 @@ import React, { useState } from "react";
 import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
 import { Link, BrowserRouter } from "react-router-dom";
 import * as Yup from "yup";
+import { useTranslation } from "react-i18next";
 
 export default () => {
+  const { t, i18n } = useTranslation();
   const [error, setError] = useState(null);
   const submition = async (s) => {
     try {
@@ -55,7 +57,38 @@ export default () => {
       birthDate: "",
     },
     validationSchema,
+<<<<<<< HEAD
     onSubmit: submition,
+=======
+    onSubmit: async (s) => {
+      try {
+        const response = await fetch(
+          process.env.REACT_APP_API_URL + "/creator",
+          {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(s),
+          }
+        );
+        if (response.ok) {
+          return window.location.assign("/");
+        } else {
+          const res = await response.json();
+          console.log(res.message);
+          let resSlice = res.message.slice(0, 6);
+          if (resSlice == "E11000") {
+            return setError({message:t('emailUsed')});
+          }
+          return setError(res.message);
+        }
+      } catch (e) {
+        setError(e);
+      }
+    },
+>>>>>>> 67cb855796b5a687e93f7f49969fbffab2beb3d6
   });
   return (
     <Container>
@@ -68,13 +101,12 @@ export default () => {
           >
             <h3 className="text-center mb-4">Register</h3>
             <p className="text-muted text-center mb-4">
-              You can register with your details and have the best time of your
-              life. 🎉
+              {t('register')}
             </p>
             {error && (
               <Alert
                 variant="danger"
-                children={error.message || "Something went wrong 😕"}
+                children={error.message ||t('wrong')}
               />
             )}
 
@@ -109,7 +141,7 @@ export default () => {
                 {errors.email}
               </Form.Control.Feedback>
               <Form.Text className="text-muted">
-                We'll never share your email with anyone else.
+               {t('wontShareEmail')}
               </Form.Text>
             </Form.Group>
 
@@ -128,7 +160,7 @@ export default () => {
                 {errors.password}
               </Form.Control.Feedback>
               <Form.Text className="text-muted">
-                Your password should have at least 1 uppercase character.
+                {t('passwordMust')}
               </Form.Text>
             </Form.Group>
             <Form.Group controlId="gender">
