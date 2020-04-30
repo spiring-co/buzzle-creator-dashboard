@@ -1,15 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "react-bootstrap";
 import { extractStructureFromFile } from "services/ae";
 import styled from "styled-components";
+import { s3FileReader } from "services/helper";
 
-export default ({ value, onData, name, isInvalid }) => {
+export default ({
+  value = "http://localhost:4488/static/templates/myfile.aep",
+  onData,
+  name,
+  isInvalid,
+}) => {
   const [hasPickedFile, setHasPickedFile] = useState(false);
   const [hasExtractedData, setHasExtractedData] = useState(false);
   const [error, setError] = useState(null);
 
-  //TODO edit handle on mount  extract layers
-
+  //handle extract layers on mount
+  useEffect(() => {
+    if (value) {
+      setHasPickedFile(true);
+      // get file data frm s3
+      // s3FileReader(value).then(extractStructureFromFile).then(onData).catch(setError);
+      setHasExtractedData(true);
+    }
+  }, []);
   const handlePickFile = async (e) => {
     try {
       e.preventDefault();
@@ -53,7 +66,7 @@ export default ({ value, onData, name, isInvalid }) => {
         {hasPickedFile &&
           (hasExtractedData ? (
             <>
-              <p>Good to go!</p>
+              <p className={"text-success"}>Good to go!</p>
               <Button
                 as={"div"}
                 children="Change"

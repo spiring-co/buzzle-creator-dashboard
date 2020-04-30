@@ -75,3 +75,9 @@ export async function zipMaker(assets) {
     throw new Error(err);
   }
 }
+
+export async function s3FileReader(fileUrl) {
+  // TODO s3 read file using url
+  // return the fileObj from s3
+  //return {}
+}

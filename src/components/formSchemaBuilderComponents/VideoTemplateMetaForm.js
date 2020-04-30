@@ -25,7 +25,7 @@ export default ({ restoredValues, onSubmit }) => {
     validationSchema: Yup.object({
       title: Yup.string().required("Title is Required"),
       projectFile: restoredValues
-        ? null
+        ? Yup.object().required("Project File is required")
         : Yup.object().required("Project File is required"),
     }),
     onSubmit,

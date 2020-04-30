@@ -34,7 +34,7 @@ function FormBuilder({ submitForm, isEdit, video }) {
 
   const handleVideoTemplateMetaSubmit = async (data) => {
     const { tags, title, description, projectFile = "" } = data;
-    console.log(projectFile);
+
     setCompositions(projectFile?.data ?? []);
 
     editVideoKeys({ tags, title, description });
