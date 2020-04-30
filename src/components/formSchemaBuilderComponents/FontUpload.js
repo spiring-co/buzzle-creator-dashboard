@@ -9,9 +9,8 @@ export default function FontUpload({
   setActiveDisplayIndex,
   activeDisplayIndex,
 }) {
-  const [videoObj] = useContext(SegmentsContext);
   const [fontList, setFontList] = useState([]);
-
+  const [fontsStatus, setFontsStatus] = useState([]);
   // takes all font used in template
   useEffect(() => {
     Object.keys(compositions).map((comp) => {
@@ -26,8 +25,33 @@ export default function FontUpload({
         )
       );
     });
+    fetchFontStatus();
   }, []);
 
+  useEffect(() => {
+    // if all fonts extracted call
+    //fetchFontStatus()
+  }, [fontList]);
+
+  const fetchFontStatus = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:4488/getFontInstallableStatus`,
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ fontArray: fontList }),
+        }
+      );
+      const result = await response.json();
+      setFontsStatus(result);
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <Container fluid style={styles.container}>
       <h3>Upload Font Files</h3>
@@ -38,8 +62,8 @@ export default function FontUpload({
       <Container
         style={{ display: "flex", justifyContent: "center", flexWrap: "wrap" }}
       >
-        {fontList.map((font) => (
-          <FontUploader fontName={font} />
+        {fontList.map((font, index) => (
+          <FontUploader fontName={font} fontStatus={fontsStatus[index]} />
         ))}
       </Container>
       <Button

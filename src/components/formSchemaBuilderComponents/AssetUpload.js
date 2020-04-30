@@ -12,7 +12,9 @@ export default function AssetUpload({
   handleSubmitForm,
 }) {
   const [videoObj] = useContext(SegmentsContext);
-  const [uploadType, setUploadType] = useState("");
+  const [uploadType, setUploadType] = useState(
+    Boolean(videoObj.assetsUri) ? "file" : ""
+  );
   const [assetsArray, setAssetsArray] = useState([]);
   const [assets, setAssets] = useState([]);
   const [loading, setLoading] = useState(false);

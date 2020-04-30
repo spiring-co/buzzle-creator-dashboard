@@ -6,7 +6,7 @@ import { Form, Button } from "react-bootstrap";
 
 const MAX_SEGMENT_COUNT = 5;
 export default ({
-  edit,
+  isEdit,
   activeVersionIndex,
   editVersion,
   compositions,
@@ -100,7 +100,7 @@ export default ({
           openVersionDisplay();
         }}
         children={
-          edit ? "Save Edits" : editVersion ? "Save Edits" : "Create Version"
+          isEdit ? "Save Edits" : editVersion ? "Save Edits" : "Create Version"
         }
       />
     </Form>

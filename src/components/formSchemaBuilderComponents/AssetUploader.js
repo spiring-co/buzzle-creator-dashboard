@@ -10,11 +10,6 @@ export default function AssetUploader({
 }) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(Boolean(assetsUri));
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    // fetch call
-  }, []);
 
   const handleAssetUpload = (e) => {
     setLoading(true);
@@ -24,7 +19,7 @@ export default function AssetUploader({
       setAssets([...assets, ...e.target.files]);
     }
     setLoading(false);
-    // set uri in result and add uri of asset to global videoObj
+
     setResult(true);
   };
 

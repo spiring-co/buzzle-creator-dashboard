@@ -1,24 +1,40 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Button } from "react-bootstrap";
-import { fetchFontInstallbleStatus } from "services/ae";
-export default function FontUploader({ fontName }) {
+import { SegmentsContext } from "contextStore/store";
+import useActions from "contextStore/actions";
+
+export default function FontUploader({ fontName, fontStatus }) {
+  const [videoObj] = useContext(SegmentsContext);
+  const { editVideoKeys } = useActions();
   const [loading, setLoading] = useState(true);
-  const [result, setResult] = useState(false);
+  const [result, setResult] = useState(fontStatus);
   const [error, setError] = useState(null);
 
   // takes all font used in template
   useEffect(() => {
     // fetch call
-    fetchFontInstallbleStatus(fontName).then((response) => setResult(response));
+    setResult(videoObj.fonts.map((i) => i.name).includes(fontName));
+    //fetchFontInstallbleStatus(fontName).then((response) => setResult(response));
     setLoading(false);
-  }, []);
+  }, [fontStatus]);
 
   const handleFontUpload = (e) => {
-    setLoading(true);
-    // upload to s3
-    setLoading(false);
-    // set uri in result and add uri to global videoObj
-    setResult(true);
+    try {
+      setError(null);
+      setLoading(true);
+      // upload to s3
+      // get the url
+      // set the url
+      editVideoKeys({
+        fonts: [...videoObj.fonts, { name: fontName, uri: "here comes uri" }],
+      });
+
+      setLoading(false);
+      // set uri in result and add uri to global videoObj
+      setResult(true);
+    } catch (err) {
+      setLoading(false);
+      setError("Failed, Retry?");
+    }
   };
 
   return (
@@ -26,6 +42,7 @@ export default function FontUploader({ fontName }) {
       <p>
         <b>{fontName}</b>
       </p>
+      <p style={{ color: "red" }}>{error}</p>
       {loading ? (
         <p>Resolving...</p>
       ) : result ? (

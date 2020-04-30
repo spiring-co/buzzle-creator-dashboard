@@ -3,14 +3,11 @@ import { Button, Col, Form, Row } from "react-bootstrap";
 import useActions from "contextStore/actions";
 import { SegmentsContext } from "contextStore/store";
 import SegmentDisplay from "./SegmentDisplay";
-import Stepper from "@material-ui/core/Stepper";
-import Step from "@material-ui/core/Step";
-import StepLabel from "@material-ui/core/StepLabel";
-import StepContent from "@material-ui/core/StepContent";
-
+import VersionStepper from "./VersionStepper";
+import CompositionPicker from "./CompositionPicker";
 import VersionMeta from "./VersionMeta";
 export default ({
-  edit,
+  isEdit,
   compositions,
   activeDisplayIndex,
 
@@ -25,7 +22,7 @@ export default ({
   const [comp_name, setComp_name] = useState("");
 
   useEffect(() => {
-    if (edit) {
+    if (isEdit) {
       setActiveVersionIndex(videoObj.versions.length);
     }
   }, []);
@@ -52,46 +49,17 @@ export default ({
     setActiveStep(0);
     setComp_name("");
   };
+
   const renderStep = (activeStep) => {
     switch (activeStep) {
       case 0:
         return (
-          <Form
-            onSubmit={(e) => {
-              e.preventDefault();
-            }}
-          >
-            <Form.Group as={Row}>
-              <Col sm="7">
-                <Form.Control
-                  as="select"
-                  value={comp_name}
-                  onChange={(e) => setComp_name(e.target.value)}
-                >
-                  <option disabled selected value="">
-                    Select Composition
-                  </option>
-                  {Object.keys(compositions).map((item, index) => {
-                    return (
-                      <option key={index} id={index} value={item}>
-                        {item}
-                      </option>
-                    );
-                  })}
-                </Form.Control>
-              </Col>
-              <Col sm="3">
-                <Button
-                  // style={{ float: "right" }}
-                  variant="outline-primary"
-                  onClick={() => openVersionMeta()}
-                  disabled={comp_name === ""}
-                >
-                  Add
-                </Button>
-              </Col>
-            </Form.Group>
-          </Form>
+          <CompositionPicker
+            comp_name={comp_name}
+            setComp_name={setComp_name}
+            compositions={compositions}
+            openVersionMeta={openVersionMeta}
+          />
         );
       case 1:
         return (
@@ -103,7 +71,7 @@ export default ({
       case 2:
         return (
           <SegmentDisplay
-            edit={edit}
+            isEdit={isEdit}
             editVersion={editVersion}
             compositions={compositions}
             activeVersionIndex={editVersion ? editIndex : activeVersionIndex}
@@ -115,23 +83,7 @@ export default ({
         return;
     }
   };
-  const renderVersionStepper = (activeStep) => {
-    const steps = [
-      `${editVersion ? "Edit" : "Add"} Version`,
-      `${editVersion ? "Edit" : "Add"} Version Meta`,
-      `${editVersion ? "Edit" : "Add"} Segment`,
-    ];
-    return (
-      <Stepper activeStep={activeStep} orientation="vertical">
-        {steps.map((label, index) => (
-          <Step key={label}>
-            <StepLabel>{label}</StepLabel>
-            <StepContent>{renderStep(activeStep)}</StepContent>
-          </Step>
-        ))}
-      </Stepper>
-    );
-  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", margin: 50 }}>
       {videoObj?.versions.map((item, index) => {
@@ -145,15 +97,15 @@ export default ({
         return (
           <div style={{ border: "1px solid black", padding: 10, margin: 10 }}>
             <p style={{ fontSize: 15 }}>{JSON.stringify(item)}</p>
-            <button onClick={() => openVersionMeta(index, true)}>Edit</button>
+            <button onClick={() => openVersionMeta(index, true)}>isEdit</button>
             <span> </span>
             <button onClick={() => removeVersion(index)}>Delete</button>
           </div>
         );
       })}
-      {renderVersionStepper(activeStep)}
+      <VersionStepper activeStep={activeStep} renderStep={renderStep} />
       <br />
-      {edit && (
+      {isEdit && (
         <Button
           variant="outline-primary"
           style={{ float: "left", marginRight: "2%" }}
@@ -181,21 +133,21 @@ export default ({
 
 {
   /* <div style={{ textAlign: "center" }}>
-      <p>{edit ? "View Versions" : "Create Versions"}</p>
+      <p>{isEdit ? "View Versions" : "Create Versions"}</p>
 
       {videoObj?.versions.map((item, index) => {
         return (
           <div style={{ border: "1px solid black", padding: 10, margin: 10 }}>
             <p style={{ fontSize: 15 }}>{JSON.stringify(item)}</p>
             <button onClick={() => openVersionMeta(index, true)}>
-              Edit
+              isEdit
             </button>
             <span> </span>
             <button onClick={() => removeVersion(index)}>Delete</button>
           </div>
         );
       })}
-      {!edit && (
+      {!isEdit && (
         <div style={{ margin: 10 }}>
           <select onChange={(e) => setComp_name(e.target.value)}>
             <option disabled selected value="">
@@ -232,7 +184,7 @@ export default ({
         disabled={videoObj.versions.length === 0}
         onClick={handleSubmitForm}
       >
-        {edit ? "Save Edits" : "Submit Form"}
+        {isEdit ? "Save Edits" : "Submit Form"}
       </button>
     </div> */
 }

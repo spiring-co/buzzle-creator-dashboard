@@ -171,6 +171,8 @@ export default (state, action) => {
         isDeleted: false,
         title: "",
         description: "",
+        assetsUri: "",
+        fonts: [],
       };
     default:
       throw new Error("Action not recognized");

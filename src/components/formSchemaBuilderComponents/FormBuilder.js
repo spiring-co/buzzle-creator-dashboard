@@ -8,8 +8,9 @@ import AssetUpload from "./AssetUpload";
 import Stepper from "@material-ui/core/Stepper";
 import Step from "@material-ui/core/Step";
 import StepLabel from "@material-ui/core/StepLabel";
+import FormStepper from "./FormStepper";
 
-function FormBuilder({ submitForm, edit, video }) {
+function FormBuilder({ submitForm, isEdit, video }) {
   const [videoObj] = useContext(SegmentsContext);
   const { resetVideo, editVideoKeys, loadVideo } = useActions();
   const [loading, setLoading] = useState(true);
@@ -17,7 +18,7 @@ function FormBuilder({ submitForm, edit, video }) {
   const [compositions, setCompositions] = useState([]);
 
   useEffect(() => {
-    if (edit) {
+    if (isEdit) {
       loadVideo(video);
     } else {
       resetVideo();
@@ -25,7 +26,97 @@ function FormBuilder({ submitForm, edit, video }) {
     setLoading(false);
   }, []);
   useEffect(() => {}, [activeDisplayIndex]);
-
+  useEffect(() => {
+    setCompositions({
+      mycomp2: {
+        textLayers: [],
+        imageLayers: [
+          {
+            name: "spiring banner.png",
+            height: 427,
+            width: 1103,
+          },
+        ],
+        comps: {},
+      },
+      main: {
+        textLayers: [
+          {
+            name: "textLayer1",
+            text: "Hello I am the text layer!",
+            font: "Helvetica",
+          },
+        ],
+        imageLayers: [
+          {
+            name: "myImageLayer",
+            height: 427,
+            width: 1103,
+          },
+        ],
+        comps: {
+          hello: {
+            textLayers: [
+              {
+                name: "<empty text layer>",
+                text: "",
+                font: "Helvetica",
+              },
+            ],
+            imageLayers: [
+              {
+                name: "spiring banner.png",
+                height: 427,
+                width: 1103,
+              },
+            ],
+            comps: {
+              mycomp2: {
+                textLayers: [],
+                imageLayers: [
+                  {
+                    name: "spiring banner.png",
+                    height: 427,
+                    width: 1103,
+                  },
+                ],
+                comps: {},
+              },
+            },
+          },
+        },
+      },
+      hello: {
+        textLayers: [
+          {
+            name: "<empty text layer>",
+            text: "",
+            font: "Helvetica",
+          },
+        ],
+        imageLayers: [
+          {
+            name: "spiring banner.png",
+            height: 427,
+            width: 1103,
+          },
+        ],
+        comps: {
+          mycomp2: {
+            textLayers: [],
+            imageLayers: [
+              {
+                name: "spiring banner.png",
+                height: 427,
+                width: 1103,
+              },
+            ],
+            comps: {},
+          },
+        },
+      },
+    });
+  }, []);
   const handleSubmitForm = async () => {
     alert("Submiting");
     submitForm(videoObj);
@@ -40,63 +131,43 @@ function FormBuilder({ submitForm, edit, video }) {
     setActiveDisplayIndex(1);
   };
 
-  const renderFormBuilder = (activeDisplayIndex) => {
-    switch (activeDisplayIndex) {
-      case 0:
-        return (
-          <VideoTemplateMetaForm
-            restoredValues={edit ? videoObj : null}
-            onSubmit={handleVideoTemplateMetaSubmit}
-          />
-        );
-      case 1:
-        return (
-          <VersionDisplay
-            edit={edit}
-            compositions={compositions}
-            activeDisplayIndex={activeDisplayIndex}
-            setActiveDisplayIndex={setActiveDisplayIndex}
-          />
-        );
-      case 2:
-        return (
-          <FontUpload
-            compositions={compositions}
-            setActiveDisplayIndex={setActiveDisplayIndex}
-            activeDisplayIndex={activeDisplayIndex}
-          />
-        );
-      case 3:
-        return (
-          <AssetUpload
-            setActiveDisplayIndex={setActiveDisplayIndex}
-            activeDisplayIndex={activeDisplayIndex}
-            handleSubmitForm={handleSubmitForm}
-          />
-        );
+  const Steps = {
+    VideoTemplateMetaForm: (
+      <VideoTemplateMetaForm
+        restoredValues={isEdit ? videoObj : null}
+        onSubmit={handleVideoTemplateMetaSubmit}
+      />
+    ),
+    VersionDisplay: (
+      <VersionDisplay
+        isEdit={isEdit}
+        compositions={compositions}
+        activeDisplayIndex={activeDisplayIndex}
+        setActiveDisplayIndex={setActiveDisplayIndex}
+      />
+    ),
+    FontUpload: (
+      <FontUpload
+        compositions={compositions}
+        setActiveDisplayIndex={setActiveDisplayIndex}
+        activeDisplayIndex={activeDisplayIndex}
+      />
+    ),
+    AssetUpload: (
+      <AssetUpload
+        setActiveDisplayIndex={setActiveDisplayIndex}
+        activeDisplayIndex={activeDisplayIndex}
+        handleSubmitForm={handleSubmitForm}
+      />
+    ),
+  };
 
-      default:
-        return;
-    }
-  };
-  const renderStepper = (activeDisplayIndex) => {
-    const steps = [`File Meta`, `Versions`, `Font Files`, `Assets Files`];
-    return (
-      <Stepper activeStep={activeDisplayIndex} alternativeLabel>
-        {steps.map((label) => (
-          <Step key={label}>
-            <StepLabel>{label}</StepLabel>
-          </Step>
-        ))}
-      </Stepper>
-    );
-  };
   if (loading) return <p>Loading...</p>;
   return (
     <div>
-      {renderStepper(activeDisplayIndex)}
+      <FormStepper activeDisplayIndex={activeDisplayIndex} />
 
-      {renderFormBuilder(activeDisplayIndex)}
+      {Steps[Object.keys(Steps)[activeDisplayIndex]]}
     </div>
   );
 }
