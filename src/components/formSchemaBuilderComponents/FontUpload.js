@@ -53,8 +53,7 @@ export default function FontUpload({
         }
       );
       const result = await response.json();
-      console.log(result);
-      setFontsStatus(await result.json());
+      setFontsStatus(result);
     } catch (err) {
       console.log(err);
     }
