@@ -8,6 +8,8 @@ export default ({ value, onData, name, isInvalid }) => {
   const [hasExtractedData, setHasExtractedData] = useState(false);
   const [error, setError] = useState(null);
 
+  //TODO edit handle on mount  extract layers
+
   const handlePickFile = async (e) => {
     try {
       e.preventDefault();
