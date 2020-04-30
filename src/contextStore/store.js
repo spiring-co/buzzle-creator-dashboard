@@ -15,6 +15,7 @@ const StateProvider = ({ children }) => {
     description: "",
     assetsUri: "",
     fonts: [],
+    fileUrl: "",
   });
 
   return (

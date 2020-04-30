@@ -1,6 +1,5 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Container } from "react-bootstrap";
-import { SegmentsContext } from "contextStore/store";
 import { getLayersFromComposition } from "../../services/helper";
 import FontUploader from "./FontUploader";
 
@@ -10,22 +9,28 @@ export default function FontUpload({
   activeDisplayIndex,
 }) {
   const [fontList, setFontList] = useState([]);
+
   const [fontsStatus, setFontsStatus] = useState([]);
   // takes all font used in template
   useEffect(() => {
-    Object.keys(compositions).map((comp) => {
-      setFontList((fontList) =>
+    // Object.keys(compositions).forEach((comp) => {
+    var array = [];
+    for (let i = 0; i < 2; i++) {
+      array = array.concat(
         Array.from(
           new Set([
             ...fontList,
-            ...getLayersFromComposition(compositions[comp], "textLayers").map(
-              (item) => item.font
-            ),
+            ...getLayersFromComposition(
+              compositions[Object.keys(compositions)[i]],
+              "textLayers"
+            ).map((item) => item.font),
           ])
         )
       );
-    });
-    fetchFontStatus();
+    }
+    setFontList(array);
+    //console.log(array, fontList);
+    fetchFontStatus(array);
   }, []);
 
   useEffect(() => {
@@ -33,7 +38,8 @@ export default function FontUpload({
     //fetchFontStatus()
   }, [fontList]);
 
-  const fetchFontStatus = async () => {
+  const fetchFontStatus = async (array) => {
+    console.log(array);
     try {
       const response = await fetch(
         `http://localhost:4488/getFontInstallableStatus`,
@@ -43,11 +49,12 @@ export default function FontUpload({
             Accept: "application/json",
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ fontArray: fontList }),
+          body: JSON.stringify({ fontArray: array }),
         }
       );
       const result = await response.json();
-      setFontsStatus(result);
+      console.log(result);
+      setFontsStatus(await result.json());
     } catch (err) {
       console.log(err);
     }

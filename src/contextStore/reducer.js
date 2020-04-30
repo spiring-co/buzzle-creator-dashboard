@@ -173,6 +173,7 @@ export default (state, action) => {
         description: "",
         assetsUri: "",
         fonts: [],
+        fileUrl: "",
       };
     default:
       throw new Error("Action not recognized");
