@@ -4,33 +4,52 @@ import useActions from "contextStore/actions";
 
 export default function FontUploader({ fontName, fontStatus }) {
   const [videoObj] = useContext(SegmentsContext);
+
   const { editVideoKeys } = useActions();
   const [loading, setLoading] = useState(true);
-  const [result, setResult] = useState(fontStatus);
+  const [result, setResult] = useState(
+    fontStatus ? true : videoObj.fonts.map((f) => f.name).includes(fontName)
+  );
+
   const [error, setError] = useState(null);
 
   // takes all font used in template
   useEffect(() => {
-    // fetch call
-    setResult(videoObj.fonts.map((i) => i.name).includes(fontName));
-    //fetchFontInstallbleStatus(fontName).then((response) => setResult(response));
     setLoading(false);
+    setResult(
+      fontStatus ? true : videoObj.fonts.map((f) => f.name).includes(fontName)
+    );
   }, [fontStatus]);
 
-  const handleFontUpload = (e) => {
+  const handleFontUpload = async (e) => {
     try {
       setError(null);
       setLoading(true);
-      // upload to s3
-      // get the url
-      // set the url
-      editVideoKeys({
-        fonts: [...videoObj.fonts, { name: fontName, uri: "here comes uri" }],
-      });
+      var data = new FormData();
+      data.append("file", e.target.files[0]);
 
+      // var response = await fetch(
+      //   "https://infinite-atoll-19947.herokuapp.com/upload_file",
+      //   {
+      //     mode: "no-cors",
+      //     method: "POST",
+
+      //     body: data,
+      //   }
+      // );
+
+      // var result = await response.text();
+      // console.log(result);
+      // if (response.ok) {
+      //   editVideoKeys({
+      //     fonts: [...videoObj.fonts, { name: fontName, uri: result }],
+      //   });
+      editVideoKeys({
+        fonts: [...videoObj.fonts, { name: fontName, uri: true }],
+      });
       setLoading(false);
-      // set uri in result and add uri to global videoObj
       setResult(true);
+      return result;
     } catch (err) {
       setLoading(false);
       setError("Failed, Retry?");
