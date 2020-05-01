@@ -9,37 +9,22 @@ export default function FontUpload({
   activeDisplayIndex,
 }) {
   const [fontList, setFontList] = useState([]);
-
-  const [fontsStatus, setFontsStatus] = useState([]);
+  const [loading, setLoading] = useState(true);
   // takes all font used in template
   useEffect(() => {
-    // Object.keys(compositions).forEach((comp) => {
-    var array = [];
-    for (let i = 0; i < 2; i++) {
-      array = array.concat(
-        Array.from(
-          new Set([
-            ...fontList,
-            ...getLayersFromComposition(
-              compositions[Object.keys(compositions)[i]],
-              "textLayers"
-            ).map((item) => item.font),
-          ])
-        )
-      );
-    }
-    setFontList(array);
-    //console.log(array, fontList);
-    fetchFontStatus(array);
+    const allTextLayers = Object.values(compositions)
+      .map((c) => getLayersFromComposition(c, "textLayers"))
+      .flat();
+
+    const fontNames = Array.from(new Set(allTextLayers.map((l) => l.font)));
+
+    fetchFontStatus(fontNames)
+      .then(setFontList)
+      .catch(console.log)
+      .finally(() => setLoading(false));
   }, []);
 
-  useEffect(() => {
-    // if all fonts extracted call
-    //fetchFontStatus()
-  }, [fontList]);
-
-  const fetchFontStatus = async (array) => {
-    console.log(array);
+  const fetchFontStatus = async (fontArray) => {
     try {
       const response = await fetch(
         `http://localhost:4488/getFontInstallableStatus`,
@@ -49,15 +34,21 @@ export default function FontUpload({
             Accept: "application/json",
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ fontArray: array }),
+          body: JSON.stringify({ fontArray }),
         }
       );
-      const result = await response.json();
-      setFontsStatus(result);
+      return await response.json();
     } catch (err) {
       console.log(err);
     }
   };
+  if (loading) {
+    return (
+      <Container style={styles.container}>
+        <h4>Resolving Font...</h4>
+      </Container>
+    );
+  }
   return (
     <Container fluid style={styles.container}>
       <h3>Upload Font Files</h3>
@@ -69,7 +60,7 @@ export default function FontUpload({
         style={{ display: "flex", justifyContent: "center", flexWrap: "wrap" }}
       >
         {fontList.map((font, index) => (
-          <FontUploader fontName={font} fontStatus={fontsStatus[index]} />
+          <FontUploader fontName={font.name} fontStatus={font.resolved} />
         ))}
       </Container>
       <Button

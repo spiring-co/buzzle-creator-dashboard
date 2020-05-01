@@ -63,15 +63,35 @@ export async function zipMaker(assets) {
       zip.file(`${item.name}`, item);
     });
 
-    await zip.generateAsync({ type: "blob" }).then(function (blob) {
-      // TODO S3 upload here instead of download and return the uri from s3
-      // set uri
-      // downloadBlob(blob, "assets.zip");
-    });
-    // return uri
-    return true;
+    return await zip
+      .generateAsync({ type: "blob" })
+      .then(async function (blob) {
+        // TODO S3 upload here instead of download and return the uri from s3
+        // set uri
+        // downloadBlob(blob, "assets.zip");
+        var data = new FormData();
+        data.append("file", blob);
+        var response = await fetch(
+          "https://infinite-atoll-19947.herokuapp.com/upload_file",
+          {
+            method: "POST",
+            mode: "no-cors",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            body: data,
+          }
+        );
+        var result = await response.text();
+        console.log(result);
+        console.log(result);
+        if (response.ok) {
+          return result;
+        }
+        throw new Error(result);
+      });
   } catch (err) {
-    console.log(err);
     throw new Error(err);
   }
 }

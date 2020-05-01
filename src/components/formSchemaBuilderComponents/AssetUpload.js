@@ -83,7 +83,7 @@ export default function AssetUpload({
     );
   };
 
-  const handleZipAssetUpload = () => {
+  const handleZipAssetUpload = async () => {
     try {
       setError(null);
       setLoading(true);
@@ -94,7 +94,8 @@ export default function AssetUpload({
         assetNames.includes(name.toLowerCase())
       );
       // call zipMaker and upload it to s3 get the uri
-      const uri = zipMaker(newAssets);
+      const uri = await zipMaker(newAssets);
+      console.log(uri);
       // save this uri to global State
       editVideoKeys({ assetsUri: uri });
 
