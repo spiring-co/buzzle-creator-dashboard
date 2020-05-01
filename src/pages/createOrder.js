@@ -103,7 +103,7 @@ export default (props) => {
         body: JSON.stringify({
           data: postRequestData.form_data,
           composition: postRequestData.composition,
-          templateFilePath: videoTemplateId?.fileUr,
+          templateFilePath: videoTemplateId?.fileUrl,
         }),
       });
       if (response.ok) {
