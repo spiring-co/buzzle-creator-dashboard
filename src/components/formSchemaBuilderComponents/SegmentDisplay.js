@@ -139,7 +139,13 @@ export default ({
           }
           openVersionDisplay();
         }}
-        children={edit ? "Back To Versions" : "Create Version"}
+        children={
+          edit
+            ? "Back To Versions"
+            : editVersion
+            ? "Save Edits"
+            : "Create Version"
+        }
       />
     </Form>
   );
