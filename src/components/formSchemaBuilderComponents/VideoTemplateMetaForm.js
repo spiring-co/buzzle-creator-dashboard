@@ -49,6 +49,7 @@ export default ({ restoredValues, onSubmit }) => {
         <Form.Control
           as={ProjectFilePicker}
           onData={(f) => setFieldValue("projectFile", f)}
+          //to restore value={values.fileUrl}
           value={values.projectFile}
           name={"projectFile"}
           placeholder="Pick or drop project file"

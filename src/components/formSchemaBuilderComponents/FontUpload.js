@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, Container } from "react-bootstrap";
-import { getLayersFromComposition } from "../../services/helper";
+import { getLayersFromComposition } from "services/helper";
 import FontUploader from "./FontUploader";
 
 export default function FontUpload({
