@@ -6,21 +6,19 @@ import { Form, Button } from "react-bootstrap";
 
 const MAX_SEGMENT_COUNT = 5;
 export default ({
-  edit,
+  isEdit,
   activeVersionIndex,
   editVersion,
   compositions,
   setActiveVersionIndex,
   openVersionDisplay,
 }) => {
-  const { addSegment, editversionKeys, removeSegment } = useActions();
+  const { addSegment, removeSegment } = useActions();
 
   const [videoObj] = useContext(SegmentsContext);
-  const [value, setValue] = useState(0);
+
   const [activeIndex, setActiveIndex] = useState(0);
   const [usedFields, setUsedFields] = useState([]);
-
-  useEffect(() => {}, [value]);
 
   const _addSegment = () => {
     addSegment(activeVersionIndex);
@@ -48,45 +46,6 @@ export default ({
         e.preventDefault();
       }}
     >
-      <p>
-        <strong>{edit ? "Edit Version Details" : "Add Version Details"}</strong>
-      </p>
-      <Form.Control
-        onChange={(e) => {
-          setValue(Math.random());
-          editversionKeys(activeVersionIndex, {
-            title: e.target.value,
-          });
-        }}
-        placeholder="Enter Version Title"
-        type="text"
-        value={videoObj.versions[activeVersionIndex].title}
-      />
-      <Form.Control
-        onChange={(e) => {
-          setValue(Math.random());
-          editversionKeys(activeVersionIndex, {
-            description: e.target.value,
-          });
-        }}
-        placeholder="Enter Version Description"
-        type="text"
-        value={videoObj.versions[activeVersionIndex].description}
-      />
-      <Form.Control
-        onChange={(e) => {
-          setValue(Math.random());
-          editversionKeys(activeVersionIndex, {
-            price: e.target.value,
-          });
-        }}
-        placeholder="Enter Version Price"
-        type="number"
-        value={videoObj.versions[activeVersionIndex].price}
-      />
-      <p>
-        <strong>{edit ? "Edit Segments" : "Add Segments"}</strong>
-      </p>
       <Button
         onClick={_addSegment}
         disabled={
@@ -119,9 +78,10 @@ export default ({
         }
         children="Go Next Segment >"
       />
+
       <FormBuilderSegment
         compositions={compositions}
-        edit={edit}
+        editVersion={editVersion}
         usedFields={usedFields}
         setUsedFields={setUsedFields}
         activeVersionIndex={activeVersionIndex}
@@ -140,11 +100,7 @@ export default ({
           openVersionDisplay();
         }}
         children={
-          edit
-            ? "Back To Versions"
-            : editVersion
-            ? "Save Edits"
-            : "Create Version"
+          isEdit ? "Save Edits" : editVersion ? "Save Edits" : "Create Version"
         }
       />
     </Form>

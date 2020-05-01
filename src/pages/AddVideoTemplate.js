@@ -1,18 +1,18 @@
-import FormBuilder from "components/formSchemaBuilderComponents/FormBuilder";
 import React from "react";
 import Container from "react-bootstrap/Col";
-import { Prompt, useHistory, useLocation } from "react-router-dom";
+import { Prompt, useHistory } from "react-router-dom";
+import FormBuilder from "components/formSchemaBuilderComponents/FormBuilder";
+
 export default (props) => {
   const [isBlocking, setIsBlocking] = React.useState(true);
   const [isEditing, setIsEditing] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState(null);
 
-  const { pathname } = useLocation();
   const { video } = props?.location?.state ?? {};
   const videoTemplateId = video?.videoTemplateId ?? null;
 
-  const edit = pathname.includes("edit");
+  const isEdit = props?.location?.state?.isEdit ?? false;
   const history = useHistory();
 
   const handleEditForm = async (data) => {
@@ -75,12 +75,12 @@ export default (props) => {
     <Container fluid className="mb-5">
       <Prompt when={isBlocking} message={`You will lose all your data.`} />
       <h3 className="text-center mb-4">
-        {edit ? "Edit Your " : "Add"} Video Template
+        {isEdit ? "Edit Your " : "Add"} Video Template
       </h3>
       <FormBuilder
-        edit={edit}
+        isEdit={isEdit}
         video={video}
-        submitForm={edit ? handleEditForm : handleSubmitForm}
+        submitForm={isEdit ? handleEditForm : handleSubmitForm}
       />
     </Container>
   );

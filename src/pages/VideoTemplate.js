@@ -1,7 +1,7 @@
 import React from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import useApi from "services/api";
-export default props => {
+export default (props) => {
   let { url } = useRouteMatch();
 
   const videoTemplateId = props.location.state.video.videoTemplateId;
@@ -17,9 +17,9 @@ export default props => {
     history.push({
       pathname: `${url}/edit`,
       state: {
-        edit: true,
-        video: props.location.state.video
-      }
+        isEdit: true,
+        video: props.location.state.video,
+      },
     });
   };
 
@@ -36,8 +36,8 @@ export default props => {
             headers: {
               Accept: "application/json",
               "Content-Type": "application/json",
-              Authorization: `bearer ${localStorage.getItem("jwtoken")}`
-            }
+              Authorization: `bearer ${localStorage.getItem("jwtoken")}`,
+            },
           }
         );
         setIsDeleting(false);
