@@ -1,13 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "react-bootstrap";
 import { extractStructureFromFile } from "services/ae";
 import styled from "styled-components";
+import { s3FileReader, getLayersFromComposition } from "services/helper";
 
 export default ({ value, onData, name, isInvalid }) => {
   const [hasPickedFile, setHasPickedFile] = useState(false);
   const [hasExtractedData, setHasExtractedData] = useState(false);
   const [error, setError] = useState(null);
-
+  const [compositions, setCompositions] = useState(null);
+  //handle extract layers on mount
+  useEffect(() => {
+    if (value) {
+      setHasPickedFile(true);
+      // get file data frm s3
+      // s3FileReader(value).then(extractStructureFromFile).then(onData).catch(setError);
+      setHasExtractedData(true);
+    }
+  }, []);
   const handlePickFile = async (e) => {
     try {
       e.preventDefault();
@@ -16,13 +26,26 @@ export default ({ value, onData, name, isInvalid }) => {
         (e?.dataTransfer?.files ?? [null])[0];
       if (!file) return;
       setHasPickedFile(true);
-      onData(await extractStructureFromFile(file));
+      setCompositions(await extractStructureFromFile(file));
+
       setHasExtractedData(true);
     } catch (error) {
       setError(error);
     }
   };
-
+  useEffect(() => {
+    onData(compositions);
+  }, [compositions]);
+  function getTotalLayers() {
+    var length = 0;
+    const allLayers = Object.values(compositions.data)
+      .map((c) => {
+        var { textLayers, imageLayers } = getLayersFromComposition(c);
+        return [...textLayers, ...imageLayers];
+      })
+      .flat();
+    return allLayers.length;
+  }
   return (
     <Container
       className="text-muted p-4 bg-white"
@@ -51,7 +74,9 @@ export default ({ value, onData, name, isInvalid }) => {
         {hasPickedFile &&
           (hasExtractedData ? (
             <>
-              <p>Good to go!</p>
+              <p className={"text-success"}>{`${
+                Object.keys(compositions.data).length
+              } compositions and ${getTotalLayers()} layers extracted.`}</p>
               <Button
                 as={"div"}
                 children="Change"

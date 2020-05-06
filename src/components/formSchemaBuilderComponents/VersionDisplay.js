@@ -2,88 +2,110 @@ import React, { useContext, useEffect, useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import useActions from "contextStore/actions";
 import { SegmentsContext } from "contextStore/store";
-
+import SegmentDisplay from "./SegmentDisplay";
+import VersionStepper from "./VersionStepper";
+import CompositionPicker from "./CompositionPicker";
+import VersionMeta from "./VersionMeta";
 export default ({
-  edit,
-  setEditIndex,
-  setEditVersion,
+  isEdit,
   compositions,
   activeDisplayIndex,
-  handleSubmitForm,
+
   setActiveDisplayIndex,
 }) => {
   const [videoObj] = useContext(SegmentsContext);
-
+  const [activeVersionIndex, setActiveVersionIndex] = useState(0);
+  const [editIndex, setEditIndex] = useState(null);
+  const [editVersion, setEditVersion] = useState(false);
   const { addVersion, removeVersion } = useActions();
-
+  const [activeStep, setActiveStep] = useState(0);
   const [comp_name, setComp_name] = useState("");
 
-  const openSegmentsBuilder = (index, fromEdit = false) => {
+  useEffect(() => {
+    if (isEdit) {
+      setActiveVersionIndex(videoObj.versions.length);
+    }
+  }, []);
+  useEffect(() => {}, [activeStep]);
+
+  const openVersionMeta = (index, fromEdit = false) => {
     if (fromEdit) {
       setEditIndex(index);
       setEditVersion(true);
     } else {
       addVersion({ comp_name });
     }
-    setActiveDisplayIndex(2);
+    setActiveStep(activeStep + 1);
+  };
+
+  const openSegmentBuilder = () => {
+    setActiveStep(activeStep + 1);
+  };
+
+  const openVersionDisplay = () => {
+    console.log(videoObj);
+    setEditVersion(false);
+    setEditIndex(null);
+    setActiveStep(0);
+    setComp_name("");
+  };
+
+  const renderStep = (activeStep) => {
+    switch (activeStep) {
+      case 0:
+        return (
+          <CompositionPicker
+            comp_name={comp_name}
+            setComp_name={setComp_name}
+            compositions={compositions}
+            openVersionMeta={openVersionMeta}
+          />
+        );
+      case 1:
+        return (
+          <VersionMeta
+            activeVersionIndex={editVersion ? editIndex : activeVersionIndex}
+            openSegmentBuilder={openSegmentBuilder}
+          />
+        );
+      case 2:
+        return (
+          <SegmentDisplay
+            isEdit={isEdit}
+            editVersion={editVersion}
+            compositions={compositions}
+            activeVersionIndex={editVersion ? editIndex : activeVersionIndex}
+            setActiveVersionIndex={setActiveVersionIndex}
+            openVersionDisplay={openVersionDisplay}
+          />
+        );
+      default:
+        return;
+    }
   };
 
   return (
-    <div>
-      <p>{edit ? "View Versions" : "Create Versions"}</p>
-
+    <div style={{ display: "flex", flexDirection: "column", margin: 50 }}>
       {videoObj?.versions.map((item, index) => {
+        if (index === activeVersionIndex) {
+          return <div></div>;
+        }
+
+        if (index === editIndex) {
+          return <div></div>;
+        }
         return (
           <div style={{ border: "1px solid black", padding: 10, margin: 10 }}>
             <p style={{ fontSize: 15 }}>{JSON.stringify(item)}</p>
-            <button onClick={() => openSegmentsBuilder(index, true)}>
-              Edit
-            </button>
+            <button onClick={() => openVersionMeta(index, true)}>isEdit</button>
             <span> </span>
             <button onClick={() => removeVersion(index)}>Delete</button>
           </div>
         );
       })}
-      {!edit && (
-        <Form
-          onSubmit={(e) => {
-            e.preventDefault();
-          }}
-        >
-          <Form.Group as={Row}>
-            <Col sm="7">
-              <Form.Control
-                as="select"
-                value={comp_name}
-                onChange={(e) => setComp_name(e.target.value)}
-              >
-                <option disabled selected value="">
-                  Select Composition
-                </option>
-                {Object.keys(compositions).map((item, index) => {
-                  return (
-                    <option key={index} id={index} value={item}>
-                      {item}
-                    </option>
-                  );
-                })}
-              </Form.Control>
-            </Col>
-            <Col sm="3">
-              <Button
-                // style={{ float: "right" }}
-                variant="outline-primary"
-                onClick={() => openSegmentsBuilder()}
-                disabled={comp_name === ""}
-              >
-                Add
-              </Button>
-            </Col>
-          </Form.Group>
-        </Form>
-      )}
+      <VersionStepper activeStep={activeStep} renderStep={renderStep} />
       <br />
-      {edit && (
+      {isEdit && (
         <Button
           variant="outline-primary"
           style={{ float: "left", marginRight: "2%" }}
@@ -101,9 +123,9 @@ export default ({
         style={{ float: "left" }}
         variant="outline-primary"
         disabled={videoObj.versions.length === 0}
-        onClick={handleSubmitForm}
+        onClick={() => setActiveDisplayIndex(activeDisplayIndex + 1)}
       >
-        {edit ? "Save Edits" : "Submit Form"}
+        Next
       </Button>
     </div>
   );
@@ -111,21 +133,21 @@ export default ({
 
 {
   /* <div style={{ textAlign: "center" }}>
-      <p>{edit ? "View Versions" : "Create Versions"}</p>
+      <p>{isEdit ? "View Versions" : "Create Versions"}</p>
 
       {videoObj?.versions.map((item, index) => {
         return (
           <div style={{ border: "1px solid black", padding: 10, margin: 10 }}>
             <p style={{ fontSize: 15 }}>{JSON.stringify(item)}</p>
-            <button onClick={() => openSegmentsBuilder(index, true)}>
-              Edit
+            <button onClick={() => openVersionMeta(index, true)}>
+              isEdit
             </button>
             <span> </span>
             <button onClick={() => removeVersion(index)}>Delete</button>
           </div>
         );
       })}
-      {!edit && (
+      {!isEdit && (
         <div style={{ margin: 10 }}>
           <select onChange={(e) => setComp_name(e.target.value)}>
             <option disabled selected value="">
@@ -140,7 +162,7 @@ export default ({
             })}
           </select>
           <button
-            onClick={() => openSegmentsBuilder()}
+            onClick={() => openVersionMeta()}
             disabled={comp_name === ""}
           >
             Add
@@ -162,7 +184,7 @@ export default ({
         disabled={videoObj.versions.length === 0}
         onClick={handleSubmitForm}
       >
-        {edit ? "Save Edits" : "Submit Form"}
+        {isEdit ? "Save Edits" : "Submit Form"}
       </button>
     </div> */
 }

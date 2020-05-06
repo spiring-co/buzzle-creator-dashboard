@@ -25,7 +25,7 @@ export default ({ restoredValues, onSubmit }) => {
     validationSchema: Yup.object({
       title: Yup.string().required("Title is Required"),
       projectFile: restoredValues
-        ? null
+        ? Yup.object().required("Project File is required")
         : Yup.object().required("Project File is required"),
     }),
     onSubmit,
@@ -44,21 +44,21 @@ export default ({ restoredValues, onSubmit }) => {
       noValidate
       className="mb-3 mt-3"
     >
-      {!restoredValues && (
-        <Form.Group>
-          <Form.Label>Project File</Form.Label>
-          <Form.Control
-            as={ProjectFilePicker}
-            onData={(f) => setFieldValue("projectFile", f)}
-            value={values.projectFile}
-            name={"projectFile"}
-            placeholder="Pick or drop project file"
-          />
-          <Form.Control.Feedback type="invalid">
-            {errors.projectFile}
-          </Form.Control.Feedback>
-        </Form.Group>
-      )}
+      <Form.Group>
+        <Form.Label>Project File</Form.Label>
+        <Form.Control
+          as={ProjectFilePicker}
+          onData={(f) => setFieldValue("projectFile", f)}
+          //to restore value={values.fileUrl}
+          value={values.projectFile}
+          name={"projectFile"}
+          placeholder="Pick or drop project file"
+        />
+        <Form.Control.Feedback type="invalid">
+          {errors.projectFile}
+        </Form.Control.Feedback>
+      </Form.Group>
+
       <Form.Group>
         <Form.Label> Title</Form.Label>
         <Form.Control

@@ -103,7 +103,7 @@ export default (props) => {
         body: JSON.stringify({
           data: postRequestData.form_data,
           composition: postRequestData.composition,
-          templateFilePath: "http://localhost:4488/templates/myfile.aep",
+          templateFilePath: videoTemplateId?.fileUrl,
         }),
       });
       if (response.ok) {

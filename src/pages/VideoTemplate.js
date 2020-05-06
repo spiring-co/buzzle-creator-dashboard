@@ -18,7 +18,8 @@ export default (props) => {
     history.push({
       pathname: `${url}/edit`,
       state: {
-        edit: true,
+        isEdit: true,
+
         video: props.location.state.video,
       },
     });

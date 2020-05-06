@@ -15,5 +15,12 @@ const extractStructureFromFile = async (file) => {
     throw new Error(await response.json());
   }
 };
+const fetchFontInstallbleStatus = async (fontName) => {
+  const response = await fetch(
+    `http://localhost:4488/getFontInstallableStatus?fontName=${fontName}`
+  );
+  const result = await response.json();
 
-export { extractStructureFromFile };
+  return result;
+};
+export { extractStructureFromFile, fetchFontInstallbleStatus };

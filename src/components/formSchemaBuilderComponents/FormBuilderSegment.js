@@ -2,14 +2,14 @@
 import useActions from "contextStore/actions";
 import { SegmentsContext } from "contextStore/store";
 import React, { useContext, useEffect, useState } from "react";
-
+import { getLayersFromComposition } from "services/helper";
 import AddFields from "./AddFieldDialog";
 
 export default ({
   compositions,
   activeIndex,
   usedFields,
-  edit,
+  editVersion,
   activeVersionIndex,
   setUsedFields,
 }) => {
@@ -33,15 +33,15 @@ export default ({
   useEffect(() => {
     setCurrentCompositionFields([
       ...currentCompositionFields,
-      ...getLayers(
+      ...getLayersFromComposition(
         compositions[videoObj?.versions[activeVersionIndex]?.comp_name],
         "textLayers"
       ).map((i) => i.name),
-      ...getLayers(
+      ...getLayersFromComposition(
         compositions[videoObj?.versions[activeVersionIndex]?.comp_name],
         "imageLayers"
       ).map((i) => i.name),
-      ...getLayers(
+      ...getLayersFromComposition(
         compositions[videoObj?.versions[activeVersionIndex]?.comp_name],
         "pickerLayers"
       ).map((i) => i.name),
@@ -49,10 +49,9 @@ export default ({
   }, []);
 
   useEffect(() => {
-    console.log(currentCompositionFields.length);
     if (
       !restoreStatus &&
-      !edit &&
+      !editVersion &&
       videoObj.versions[0].title !== "" &&
       activeVersionIndex !== 0 &&
       videoObj.versions[activeVersionIndex].form.segments[activeIndex].fields
@@ -72,16 +71,10 @@ export default ({
         setValue(Math.random());
       }
     }
-  }, [activeIndex, videoObj, value]);
+  }, []);
 
+  useEffect(() => {}, [value]);
   //  function to extract layers from compositions, c is composition object and type is textLayer or imageLayer
-  function getLayers(c, type) {
-    if (!c) return [];
-    return (
-      c[type] ??
-      [].concat(...Object.values(c.comps || {}).map((i) => getLayers(i, type)))
-    );
-  }
 
   const addField = (value) => {
     setUsedFields([...usedFields, value.name]);
@@ -181,11 +174,11 @@ export default ({
       {isDialogVisible &&
         usedFields.length !== currentCompositionFields.length && (
           <AddFields
-            textLayers={getLayers(
+            textLayers={getLayersFromComposition(
               compositions[videoObj?.versions[activeVersionIndex]?.comp_name],
               "textLayers"
             )}
-            imageLayers={getLayers(
+            imageLayers={getLayersFromComposition(
               compositions[videoObj?.versions[activeVersionIndex]?.comp_name],
               "imageLayers"
             )}
