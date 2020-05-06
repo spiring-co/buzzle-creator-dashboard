@@ -1,5 +1,6 @@
 import React from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
+import Button from "react-bootstrap/Button";
 import useApi from "services/api";
 export default (props) => {
   let { url } = useRouteMatch();
@@ -18,6 +19,7 @@ export default (props) => {
       pathname: `${url}/edit`,
       state: {
         isEdit: true,
+
         video: props.location.state.video,
       },
     });
@@ -75,9 +77,13 @@ export default (props) => {
         {data.description}
       </p>
 
-      <button onClick={handleEdit}>Edit</button>
+      <Button variant="outline-primary" onClick={handleEdit}>
+        Edit
+      </Button>
       <span> </span>
-      <button onClick={handleDelete}>Delete</button>
+      <Button variant="outline-primary" onClick={handleDelete}>
+        Delete
+      </Button>
     </div>
   );
 };

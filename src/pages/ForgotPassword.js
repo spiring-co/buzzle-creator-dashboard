@@ -2,7 +2,7 @@ import { useFormik } from "formik";
 import React, { useState } from "react";
 import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
 import Confetti from "react-dom-confetti";
-import { Link } from "react-router-dom";
+import { Link, BrowserRouter } from "react-router-dom";
 import useAuth from "services/auth";
 import * as Yup from "yup";
 import { useTranslation } from "react-i18next";
@@ -106,13 +106,15 @@ export default () => {
                 {t('woohoo')}
               </p>
               <Confetti active={passwordResetSuccess} config={config} />
-              <Button
-                as={Link}
-                to="/login"
-                variant="primary"
-                children="Login"
-                block
-              />
+              <BrowserRouter>
+                <Button
+                  as={Link}
+                  to="/login"
+                  variant="primary"
+                  children="Login"
+                  block
+                />
+              </BrowserRouter>
             </>
           ) : (
             <>
@@ -196,7 +198,15 @@ export default () => {
                 />
               </Form>
               <p className="text-muted text-center">
+<<<<<<< HEAD
+                Don't have an account yet?{" "}
+                <BrowserRouter>
+                  {" "}
+                  <Link to="/register">Sign up.</Link>{" "}
+                </BrowserRouter>
+=======
                 {t('dontHave')} <Link to="/register">Sign up.</Link>
+>>>>>>> 67cb855796b5a687e93f7f49969fbffab2beb3d6
               </p>
             </>
           )}

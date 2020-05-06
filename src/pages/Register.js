@@ -2,14 +2,41 @@ import { CountryList } from "components/CountryList";
 import { useFormik } from "formik";
 import React, { useState } from "react";
 import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, BrowserRouter } from "react-router-dom";
 import * as Yup from "yup";
 import { useTranslation } from "react-i18next";
-
 
 export default () => {
   const { t, i18n } = useTranslation();
   const [error, setError] = useState(null);
+  const submition = async (s) => {
+    try {
+      const response = await fetch(process.env.REACT_APP_API_URL + "/creator", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(s),
+      });
+      if (response.ok) {
+        return window.location.assign("/");
+      } else {
+        const res = await response.json();
+        console.log(res.message);
+        let resSlice = res.message.slice(0, 6);
+        if (resSlice == "E11000") {
+          return setError({
+            message: "the email is already used for registration",
+          });
+        }
+        return setError(res.message);
+      }
+    } catch (e) {
+      setError(e);
+    }
+  };
+
   const {
     handleChange,
     handleSubmit,
@@ -30,6 +57,9 @@ export default () => {
       birthDate: "",
     },
     validationSchema,
+<<<<<<< HEAD
+    onSubmit: submition,
+=======
     onSubmit: async (s) => {
       try {
         const response = await fetch(
@@ -58,10 +88,9 @@ export default () => {
         setError(e);
       }
     },
+>>>>>>> 67cb855796b5a687e93f7f49969fbffab2beb3d6
   });
-
   return (
-
     <Container>
       <Row className="justify-content-md-center">
         <Col md={6}>
@@ -230,7 +259,11 @@ export default () => {
             />
           </Form>
           <p className="text-muted text-center">
-            Already registered? <Link to="/login">Sign In.</Link>
+            Already registered?
+            <BrowserRouter>
+              {" "}
+              <Link to="/login">Sign In.</Link>{" "}
+            </BrowserRouter>
           </p>
         </Col>
       </Row>

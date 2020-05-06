@@ -1,19 +1,27 @@
 import { useFormik } from "formik";
 import React, { useState } from "react";
 import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, BrowserRouter } from "react-router-dom";
 import useAuth from "services/auth";
 import * as Yup from "yup";
+<<<<<<< HEAD
+import eyeof from "../assets/eyeoff.svg";
+import eye from "../assets/eye.svg";
+=======
 import { useTranslation } from "react-i18next";
 
+>>>>>>> 67cb855796b5a687e93f7f49969fbffab2beb3d6
 export default () => {
   const { t, i18n } = useTranslation();
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [pass, setPass] = useState("password");
+  const [img, setImg] = useState("false");
   const { login } = useAuth();
-  const handelpass = () => {
+  const handelpass = (event) => {
+    event.preventDefault();
     setPass(pass === "password" ? "text" : "password");
+    setImg(true);
   };
   const {
     handleChange,
@@ -63,7 +71,7 @@ export default () => {
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.email}
-                name={"email"}
+                name="email"
                 type="email"
                 placeholder="Enter email"
                 isInvalid={touched.email && !!errors.email}
@@ -82,30 +90,43 @@ export default () => {
                   <Form.Label className="d-block">Password</Form.Label>
                 </Col>
                 <Col className="text-right text-muted">
-                  <Link to="/forgotPassword">Forgot Password</Link>
+                  <BrowserRouter>
+                    <Link to="/forgotPassword">Forgot Password</Link>
+                  </BrowserRouter>
                 </Col>
-
-                <input
-                  class="fa fa-eye"
-                  onChange={handelpass}
-                  type="checkbox"
-                  style={{
-                    fontSize: "15px",
-                    position: "relative",
-                    top: "6vh",
-                    right: "4vh",
-                  }}
-                />
               </Row>
-              <Form.Control
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.password}
-                name="password"
-                type={pass}
-                placeholder="Password"
-                isInvalid={touched.password && !!errors.password}
-              />
+              <div style={{ display: "flex" }}>
+                <Form.Control
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.password}
+                  name="password"
+                  type={pass}
+                  data-toggle="password"
+                  placeholder="Password"
+                  isInvalid={touched.password && !!errors.password}
+                />
+                <div
+                  className="input-group-addon"
+                  style={{
+                    position: "relative",
+                    right: "5vh",
+                    marginTop: "5px",
+                  }}
+                >
+                  <a
+                    href=""
+                    onClick={handelpass}
+                    style={{ position: "relative" }}
+                  >
+                    {pass == "password" ? (
+                      <img src={eye} />
+                    ) : (
+                      <img src={eyeof} />
+                    )}
+                  </a>
+                </div>
+              </div>
               <Form.Control.Feedback type="invalid">
                 {errors.password}
               </Form.Control.Feedback>
@@ -119,7 +140,9 @@ export default () => {
             />
           </Form>
           <p className="text-muted text-center">
-            Don't have an account yet? <Link to="/register">Sign up.</Link>
+            <BrowserRouter>
+              Don't have an account yet? <Link to="/register">Sign up.</Link>
+            </BrowserRouter>
           </p>
         </Col>
       </Row>
