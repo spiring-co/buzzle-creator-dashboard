@@ -1,6 +1,5 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 
-import Navbar from "components/Navbar";
 import PrivateRoute from "components/PrivateRoute";
 // import Email from "pages/Email";
 import ForgotPassword from "pages/ForgotPassword";
@@ -14,11 +13,10 @@ import useAuth from "services/auth";
 import createOrder from "pages/createOrder";
 
 export default () => {
-  const { logout, isAuthenticated } = useAuth();
+
 
   return (
     <div>
-      <Navbar isAuthenticated={isAuthenticated} logout={logout} />
       <Router>
         <Switch>
           <Route exact path="/" component={Landing} />
@@ -27,7 +25,7 @@ export default () => {
 
           <Route path="/createOrder/:videoTemplateId" component={createOrder} />
           <Route path="/forgotPassword" component={ForgotPassword} />
-          <PrivateRoute isAuthenticated={isAuthenticated}>
+          <PrivateRoute>
             <Route path="/home" component={Home} />
           </PrivateRoute>
         </Switch>

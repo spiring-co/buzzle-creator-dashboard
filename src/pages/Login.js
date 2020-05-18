@@ -1,20 +1,48 @@
 import { useFormik } from "formik";
 import React, { useState } from "react";
-import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
+import { Alert } from "react-bootstrap";
+import {
+  Container,
+  Button,
+  TextField,
+  IconButton,
+  InputAdornment,
+  Typography,
+} from '@material-ui/core';
+import clsx from 'clsx';
+import { makeStyles } from '@material-ui/core/styles';
 import { Link } from "react-router-dom";
 import useAuth from "services/auth";
 import * as Yup from "yup";
 import { useTranslation } from "react-i18next";
+import Visibility from '@material-ui/icons/Visibility';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
+const useStyles = makeStyles((theme) => ({
+
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+    margin: 50,
+  },
+  rightEnd: {
+    textAlign: 'right'
+  }
+  , loginButton: {
+    margin: 10
+  }
+}));
 export default () => {
+  const classes = useStyles()
+  const [showPassword, setShowPassword] = useState(false)
   const { t, i18n } = useTranslation();
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [pass, setPass] = useState("password");
   const { login } = useAuth();
-  const handelpass = () => {
-    setPass(pass === "password" ? "text" : "password");
-  };
+
   const {
     handleChange,
     handleBlur,
@@ -45,84 +73,80 @@ export default () => {
       }
     },
   });
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword)
+  };
 
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
   return (
     <Container>
-      <Row className="justify-content-md-center">
-        <Col md={4}>
-          <Form onSubmit={handleSubmit} noValidate className="mb-4 mt-5">
-            <h3 className="text-center mb-4">Sign In</h3>
-            <p className="text-muted text-center mb-4">
-              Welcome back fam, what's cooking? 😎
+      <div className={classes.container}>
+
+        <form onSubmit={handleSubmit} noValidate >
+          <Typography variant="h4" >Sign In</Typography>
+          <p style={{ margin: 10, marginBottom: 20 }}>
+            Welcome back fam, what's cooking? 😎
             </p>
-            {error && <Alert variant="danger" children={error.message} />}
+          {error && <Alert variant="danger" children={error.message} />}
+          <TextField
+            fullWidth
+            margin={'dense'}
+            variant={'outlined'}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            value={values.email}
+            name={"email"}
 
-            <Form.Group controlId="formBasicEmail">
-              <Form.Label>Email address</Form.Label>
-              <Form.Control
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.email}
-                name={"email"}
-                type="email"
-                placeholder="Enter email"
-                isInvalid={touched.email && !!errors.email}
-              />
-              <Form.Control.Feedback type="invalid">
-                {errors.email}
-              </Form.Control.Feedback>
-              <Form.Text className="text-muted">
-                {t('wontShareEmail')}
-              </Form.Text>
-            </Form.Group>
-
-            <Form.Group controlId="formBasicPassword">
-              <Row>
-                <Col>
-                  <Form.Label className="d-block">Password</Form.Label>
-                </Col>
-                <Col className="text-right text-muted">
-                  <Link to="/forgotPassword">Forgot Password</Link>
-                </Col>
-
-                <input
-                  class="fa fa-eye"
-                  onChange={handelpass}
-                  type="checkbox"
-                  style={{
-                    fontSize: "15px",
-                    position: "relative",
-                    top: "6vh",
-                    right: "4vh",
-                  }}
-                />
-              </Row>
-              <Form.Control
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.password}
-                name="password"
-                type={pass}
-                placeholder="Password"
-                isInvalid={touched.password && !!errors.password}
-              />
-              <Form.Control.Feedback type="invalid">
-                {errors.password}
-              </Form.Control.Feedback>
-            </Form.Group>
-            <Button
-              block
-              variant="primary"
-              type="submit"
-              children={loading ? "Loading..." : "Login"}
-              disabled={loading}
-            />
-          </Form>
-          <p className="text-muted text-center">
-            Don't have an account yet? <Link to="/register">Sign up.</Link>
-          </p>
-        </Col>
-      </Row>
+            placeholder="Enter email"
+            label="Email address"
+            error={touched.email && !!errors.email}
+            helperText={touched.email ? errors?.email : t('wontShareEmail')}
+          />
+          <div className={classes.rightEnd}>
+            <Link to="/forgotPassword">Forgot Password</Link>
+          </div>
+          <TextField
+            fullWidth
+            margin={'dense'}
+            variant={'outlined'}
+            type={showPassword ? 'text' : 'password'}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            value={values.password}
+            name="password"
+            label="Password"
+            placeholder="Password"
+            helperText={errors.password}
+            error={touched.password && !!errors.password}
+          // endAdornment={
+          //   <InputAdornment position="end">
+          //     <IconButton
+          //       aria-label="toggle password visibility"
+          //       onClick={handleClickShowPassword}
+          //       onMouseDown={handleMouseDownPassword}
+          //       edge="end"
+          //     >
+          //       {showPassword ? <Visibility /> : <VisibilityOff />}
+          //     </IconButton>
+          //   </InputAdornment>
+          // }
+          />
+          <br />
+          <Button
+            className={classes.loginButton}
+            color="primary"
+            variant="contained"
+            type="submit"
+            children={loading ? "Loading..." : "Login"}
+            disabled={loading}
+          />
+        </form>
+        <p >
+          Don't have an account yet? <Link to="/register">Sign up.</Link>
+        </p>
+      </div>
     </Container>
   );
 };

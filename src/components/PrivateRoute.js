@@ -1,20 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Redirect, Route } from "react-router-dom";
-
-export default ({ isAuthenticated, children, ...rest }) => (
-  <Route
-    {...rest}
-    render={({ location }) =>
-      isAuthenticated ? (
-        children
-      ) : (
-        <Redirect
-          to={{
-            pathname: "/login",
-            state: { from: location },
-          }}
-        />
-      )
-    }
-  />
-);
+import useAuth from 'services/auth'
+export default ({ children, ...rest }) => {
+  const { isAuthenticated } = useAuth();
+  return (
+    <Route
+      {...rest}
+      render={({ location }) =>
+        isAuthenticated ? (
+          children
+        ) : window.location = "/login"
+      }
+    />
+  );
+}
