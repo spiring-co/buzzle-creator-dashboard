@@ -1,6 +1,5 @@
 import { useFormik } from "formik";
 import React, { useState } from "react";
-import { Alert } from "react-bootstrap";
 import {
   Container,
   Button,
@@ -12,6 +11,7 @@ import {
   InputAdornment,
   Typography,
 } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import { Link } from "react-router-dom";
@@ -29,13 +29,17 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'center',
     alignItems: 'center',
     textAlign: 'center',
-    margin: 50,
+    marginTop: 50,
+    margin: 'auto',
   },
   rightEnd: {
     textAlign: 'right'
   }
   , loginButton: {
     margin: 10
+  },
+  alert: {
+    margin: 15
   }
 }));
 export default () => {
@@ -84,77 +88,76 @@ export default () => {
     event.preventDefault();
   };
   return (
-    <Container>
-      <div className={classes.container}>
 
-        <form onSubmit={handleSubmit} noValidate >
-          <Typography variant="h4" >Sign In</Typography>
-          <p style={{ margin: 10, marginBottom: 20 }}>
-            Welcome back fam, what's cooking? 😎
+    <div className={classes.container}>
+
+      <form onSubmit={handleSubmit} noValidate >
+        <Typography variant="h4" >Sign In</Typography>
+        <p style={{ margin: 10, marginBottom: 20 }}>
+          Welcome back fam, what's cooking? 😎
             </p>
-          {error && <Alert variant="danger" children={error.message} />}
-          <TextField
-            fullWidth
-            margin={'dense'}
-            variant={'outlined'}
+        {error && <Alert className={classes.alert} severity="error" children={error.message} />}
+        <TextField
+          fullWidth
+          margin={'dense'}
+          variant={'outlined'}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          value={values.email}
+          name={"email"}
+          placeholder="Enter email"
+          label="Email address"
+          error={touched.email && !!errors.email}
+          helperText={touched.email ? errors?.email : t('wontShareEmail')}
+        />
+        <div className={classes.rightEnd}>
+          <Link to="/forgotPassword">Forgot Password</Link>
+        </div>
+        <FormControl
+          fullWidth
+          margin={'dense'}
+          variant="outlined">
+          <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+          <OutlinedInput
+            id="outlined-adornment-password"
+            type={showPassword ? 'text' : 'password'}
             onChange={handleChange}
             onBlur={handleBlur}
-            value={values.email}
-            name={"email"}
-
-            placeholder="Enter email"
-            label="Email address"
-            error={touched.email && !!errors.email}
-            helperText={touched.email ? errors?.email : t('wontShareEmail')}
+            value={values.password}
+            name="password"
+            labelWidth={75}
+            placeholder="Password"
+            error={touched.password && !!errors.password}
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={handleClickShowPassword}
+                  onMouseDown={handleMouseDownPassword}
+                  edge="end"
+                >
+                  {showPassword ? <Visibility /> : <VisibilityOff />}
+                </IconButton>
+              </InputAdornment>
+            }
           />
-          <div className={classes.rightEnd}>
-            <Link to="/forgotPassword">Forgot Password</Link>
-          </div>
-          <FormControl
-            fullWidth
-            margin={'dense'}
-            variant="outlined">
-            <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
-            <OutlinedInput
-              id="outlined-adornment-password"
-              type={showPassword ? 'text' : 'password'}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              value={values.password}
-              name="password"
-              labelWidth={75}
-              placeholder="Password"
-              error={touched.password && !!errors.password}
-              endAdornment={
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={handleClickShowPassword}
-                    onMouseDown={handleMouseDownPassword}
-                    edge="end"
-                  >
-                    {showPassword ? <Visibility /> : <VisibilityOff />}
-                  </IconButton>
-                </InputAdornment>
-              }
-            />
-            <FormHelperText error={errors.password}
-            >{errors.password}</FormHelperText>
-          </FormControl>
+          <FormHelperText error={errors.password}
+          >{errors.password}</FormHelperText>
+        </FormControl>
 
-          <Button
-            className={classes.loginButton}
-            color="primary"
-            variant="contained"
-            type="submit"
-            children={loading ? "Loading..." : "Login"}
-            disabled={loading}
-          />
-        </form>
-        <p >
-          Don't have an account yet? <Link to="/register">Sign up.</Link>
-        </p>
-      </div>
-    </Container>
+        <Button
+          className={classes.loginButton}
+          color="primary"
+          variant="contained"
+          type="submit"
+          children={loading ? "Loading..." : "Login"}
+          disabled={loading}
+        />
+      </form>
+      <p >
+        Don't have an account yet? <Link to="/register">Sign up.</Link>
+      </p>
+    </div>
+
   );
 };

@@ -1,13 +1,39 @@
-import { CountryList } from "components/CountryList";
 import { useFormik } from "formik";
 import React, { useState } from "react";
-import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import * as Yup from "yup";
 import { useTranslation } from "react-i18next";
+import { Alert } from '@material-ui/lab'
+import {
+  TextField,
+  Button, Typography,
+  FormHelperText, FormControl, InputLabel, Select, MenuItem
+} from '@material-ui/core'
 
+import { makeStyles } from '@material-ui/core/styles';
+import { countryList } from 'components/CountryList'
+
+
+const useStyles = makeStyles((theme) => ({
+  alert: {
+    margin: 15
+  }, container: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+    marginTop: 50,
+    margin: 'auto',
+    width: 400,
+    marginBottom: 50
+
+  },
+
+}))
 
 export default () => {
+  const classes = useStyles()
   const { t, i18n } = useTranslation();
   const [error, setError] = useState(null);
   const {
@@ -27,7 +53,7 @@ export default () => {
       gender: "",
       country: "",
       phoneNumber: "",
-      birthDate: "",
+      birthDate: new Date().toISOString().substr(0, 10),
     },
     validationSchema,
     onSubmit: async (s) => {
@@ -50,7 +76,7 @@ export default () => {
           console.log(res.message);
           let resSlice = res.message.slice(0, 6);
           if (resSlice == "E11000") {
-            return setError({message:t('emailUsed')});
+            return setError({ message: t('emailUsed') });
           }
           return setError(res.message);
         }
@@ -62,179 +88,178 @@ export default () => {
 
   return (
 
-    <Container>
-      <Row className="justify-content-md-center">
-        <Col md={6}>
-          <Form
-            isValidated={Object.keys(errors).length}
-            onSubmit={handleSubmit}
-            className="mb-4 mt-5"
+
+    <div className={classes.container}>
+      <form
+        isValidated={Object.keys(errors).length}
+        onSubmit={handleSubmit}
+
+      >
+        <Typography variant="h4" >Register</Typography>
+        <p style={{ margin: 10, marginBottom: 20 }}>
+          {t('register')}
+        </p>
+        {error && (
+          <Alert className={classes.alert} severity="error"
+            children={error.message || t('wrong')}
+          />
+        )}
+        <TextField
+          fullWidth
+          margin={'dense'}
+          variant={'outlined'}
+          name={"name"}
+          value={values.name}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          type="text"
+          placeholder="Your name here"
+          label="Name"
+          error={touched.name && !!errors.name}
+          helperText={errors?.name ?? ""}
+        />
+        <TextField
+          fullWidth
+          margin={'dense'}
+          variant={'outlined'}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          value={values.email}
+          name={"email"}
+          type="email"
+          placeholder="Your email here"
+          label="Email Adresss"
+          error={touched.email && !!errors.email}
+          helperText={errors?.email ?? t('wontShareEmail')}
+        />
+        <TextField
+          fullWidth
+          margin={'dense'}
+          variant={'outlined'}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          value={values.password}
+          name={"password"}
+          type="password"
+          placeholder="Password"
+          label="Password"
+          error={touched.password && !!errors.password}
+          helperText={errors?.password ?? t('passwordMust')}
+        />
+        <FormControl
+          fullWidth
+          margin="dense"
+          error={touched.gender && !!errors.gender}
+          variant="outlined"
+        >
+          <InputLabel id="demo-simple-select-outlined-label">Gender</InputLabel>
+          <Select
+            style={{ textAlign: 'left' }}
+            labelId="demo-simple-select-outlined-label"
+            id="demo-simple-select-outlined"
+            onChange={handleChange}
+            onBlur={handleBlur}
+            value={values.gender}
+            name={"gender"}
+            type="text"
+            placeholder="Select gender"
+            label="Gender"
           >
-            <h3 className="text-center mb-4">Register</h3>
-            <p className="text-muted text-center mb-4">
-              {t('register')}
-            </p>
-            {error && (
-              <Alert
-                variant="danger"
-                children={error.message ||t('wrong')}
-              />
-            )}
+            <MenuItem value="Male">Male</MenuItem>
+            <MenuItem value="Female">Twenty</MenuItem>
+            <MenuItem value="Other">Thirty</MenuItem>
+          </Select>
+          <FormHelperText error={touched.gender && !!errors.gender}>
+            {errors?.gender}
+          </FormHelperText>
+        </FormControl>
 
-            <Form.Group controlId="name">
-              <Form.Label>Name</Form.Label>
-              <Form.Control
-                name={"name"}
-                value={values.name}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                type="text"
-                placeholder="Your name here"
-                isValid={touched.name && !errors.name}
-                isInvalid={touched.name && !!errors.name}
-              />
-              <Form.Control.Feedback type="invalid">
-                {errors.name}
-              </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group controlId="email">
-              <Form.Label>Email address</Form.Label>
-              <Form.Control
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.email}
-                name={"email"}
-                type="email"
-                placeholder="Your email here"
-                isInvalid={touched.email && !!errors.email}
-              />
-              <Form.Control.Feedback type="invalid">
-                {errors.email}
-              </Form.Control.Feedback>
-              <Form.Text className="text-muted">
-               {t('wontShareEmail')}
-              </Form.Text>
-            </Form.Group>
+        <TextField
 
-            <Form.Group controlId="password">
-              <Form.Label>Password</Form.Label>
-              <Form.Control
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.password}
-                name={"password"}
-                type="password"
-                placeholder="Password"
-                isInvalid={touched.password && !!errors.password}
-              />
-              <Form.Control.Feedback type="invalid">
-                {errors.password}
-              </Form.Control.Feedback>
-              <Form.Text className="text-muted">
-                {t('passwordMust')}
-              </Form.Text>
-            </Form.Group>
-            <Form.Group controlId="gender">
-              <Form.Label>Gender</Form.Label>
-              <Form.Control
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.gender}
-                name={"gender"}
-                type="text"
-                placeholder="Select gender"
-                isInvalid={touched.gender && !!errors.gender}
-                as="select"
-                custom
-              >
-                <option disabled selected value="">
-                  Select a gender
-                </option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
-              </Form.Control>
-              <Form.Control.Feedback type="invalid">
-                {errors.gender}
-              </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group controlId="phoneNumber">
-              <Form.Label>Phone Number</Form.Label>
-              <Form.Control
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.phoneNumber}
-                name={"phoneNumber"}
-                type="tel"
-                placeholder="Enter Phone Number"
-                isInvalid={touched.phoneNumber && !!errors.phoneNumber}
-              />
-              <Form.Control.Feedback type="invalid">
-                {errors.phoneNumber}
-              </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group controlId="birthDate">
-              <Form.Label>Birth Date</Form.Label>
-              <Form.Control
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.birthDate}
-                name={"birthDate"}
-                type="date"
-                placeholder="Enter Birth Date"
-                isInvalid={touched.birthDate && !!errors.birthDate}
-              />
-              <Form.Control.Feedback type="invalid">
-                {errors.birthDate}
-              </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group controlId="countryCode">
-              <Form.Label>Country Code</Form.Label>
-              <Form.Control
-                name={"countryCode"}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.countryCode}
-                type="tel"
-                placeholder="Enter Country Code"
-                isInvalid={touched.countryCode && !!errors.countryCode}
-              />
-              <Form.Control.Feedback type="invalid">
-                {errors.countryCode}
-              </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group controlId="country">
-              <Form.Label>Country</Form.Label>
-              <Form.Control
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.country}
-                name={"country"}
-                placeholder="Select country"
-                isInvalid={touched.country && !!errors.country}
-                as="select"
-                custom
-              >
-                <CountryList />
-              </Form.Control>
-              <Form.Control.Feedback type="invalid">
-                {errors.country}
-              </Form.Control.Feedback>
-            </Form.Group>
-            <Button
-              block
-              variant="primary"
-              type="submit"
-              children={isSubmitting ? "Loading..." : "Register"}
-              disabled={isSubmitting}
-            />
-          </Form>
-          <p className="text-muted text-center">
-            Already registered? <Link to="/login">Sign In.</Link>
-          </p>
-        </Col>
-      </Row>
-    </Container>
+          fullWidth
+          margin={'dense'}
+          variant={'outlined'}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          value={values.phoneNumber}
+          name={"phoneNumber"}
+          type="tel"
+          placeholder="Enter Phone Number"
+          label="Phone Number"
+          error={touched.phoneNumber && !!errors.phoneNumber}
+          helperText={errors?.phoneNumber ?? ""}
+        />
+        <TextField
+
+          fullWidth
+          margin={'dense'}
+          variant={'outlined'}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          value={values.birthDate}
+          name={"birthDate"}
+          type="date"
+          placeholder="Enter Birth Date"
+          label="Birth Date"
+          error={touched.birthDate && !!errors.birthDate}
+          helperText={errors?.birthDate ?? ""}
+        />
+        <TextField
+
+          fullWidth
+          margin={'dense'}
+          variant={'outlined'}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          type="tel"
+          placeholder="Enter Country Code"
+          name={"countryCode"}
+          defaultValue={new Date().toISOString().substr(0, 10)}
+          value={values.countryCode}
+          placeholder="Enter Country Code"
+          label="Country Code"
+          error={touched.countryCode && !!errors.countryCode}
+          helperText={errors.countryCode ?? ""}
+        />
+
+        <FormControl
+
+          fullWidth
+          margin="dense"
+          error={touched.country && !!errors.country}
+          variant="outlined"
+        >
+          <InputLabel id="demo-simple-select-outlined-label">Country</InputLabel>
+          <Select
+            style={{ textAlign: 'left' }}
+            labelId="demo-simple-select-outlined-label"
+            id="demo-simple-select-outlined"
+            onChange={handleChange}
+            onBlur={handleBlur}
+            value={values.country}
+            name={"country"}
+            placeholder="Select country"
+            label="Country"
+          >
+            {countryList.map(country => <MenuItem value={country}>{country}</MenuItem>)}
+          </Select>
+          <FormHelperText error={touched.country && !!errors.country}>
+            {errors?.country ?? ""}
+          </FormHelperText>
+        </FormControl>
+        <Button
+          variant="contained"
+          color="primary"
+          type="submit"
+          children={isSubmitting ? "Loading..." : "Register"}
+          disabled={isSubmitting}
+        />
+      </form>
+      <Typography style={{ marginTop: 15 }}>
+        Already registered? <Link to="/login">Sign In.</Link>
+      </Typography>
+    </div>
+
   );
 };
 
