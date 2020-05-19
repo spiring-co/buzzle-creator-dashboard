@@ -32,6 +32,11 @@ const useStyles = makeStyles((theme) => ({
 
 }))
 
+function renderCountryMenuItem(country) {
+  return <MenuItem value={country}>{country}</MenuItem>
+}
+
+
 export default () => {
   const classes = useStyles()
   const { t, i18n } = useTranslation();
@@ -241,7 +246,7 @@ export default () => {
             placeholder="Select country"
             label="Country"
           >
-            {countryList.map(country => <MenuItem value={country}>{country}</MenuItem>)}
+            {countryList.map(renderCountryMenuItem)}
           </Select>
           <FormHelperText error={touched.country && !!errors.country}>
             {errors?.country ?? ""}

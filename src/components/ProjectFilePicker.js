@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button } from "react-bootstrap";
+import { Button } from "@material-ui/core";
 import { extractStructureFromFile } from "services/ae";
 import styled from "styled-components";
 import { s3FileReader, getLayersFromComposition } from "services/helper";
@@ -59,7 +59,7 @@ export default ({ value, onData, name, isInvalid }) => {
         {!hasPickedFile && (
           <>
             <p>Drag Your File Here OR</p>
-            <Button as={"div"}>Pick File</Button>
+            <Button variant="contained" color="primary">Pick File</Button>
             <br />
             <input
               className="invisible"
@@ -76,7 +76,7 @@ export default ({ value, onData, name, isInvalid }) => {
             <>
               <p className={"text-success"}>{`${
                 Object.keys(compositions.data).length
-              } compositions and ${getTotalLayers()} layers extracted.`}</p>
+                } compositions and ${getTotalLayers()} layers extracted.`}</p>
               <Button
                 as={"div"}
                 children="Change"
@@ -87,8 +87,8 @@ export default ({ value, onData, name, isInvalid }) => {
               />
             </>
           ) : (
-            <p>Extracting Layer and compositions ...</p>
-          ))}
+              <p>Extracting Layer and compositions ...</p>
+            ))}
       </LabelContent>
     </Container>
   );

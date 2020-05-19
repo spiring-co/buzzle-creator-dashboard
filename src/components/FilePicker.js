@@ -112,18 +112,18 @@ const FilePicker = ({ setCompositions, setTextLayers }) => {
         </Card>
       </div>
 
-      }}*/
-    >
-      <img
+      }}* /
+  >
+  <img
 
-        src={require("../assets/success.svg")}
-      />
-      <h1
+    src={require("../assets/success.svg")}
+  />
+  <h1
 
-      >
-        {file} Uploaded Successfully.
+  >
+    {file} Uploaded Successfully.
       </h1>
-    </label>
+    </label >
   );
 };
 

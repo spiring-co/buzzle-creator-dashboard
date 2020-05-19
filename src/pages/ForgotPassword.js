@@ -1,11 +1,12 @@
 import { useFormik } from "formik";
 import React, { useState } from "react";
-import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
 import Confetti from "react-dom-confetti";
 import { Link } from "react-router-dom";
-import useAuth from "services/auth";
 import * as Yup from "yup";
 import { useTranslation } from "react-i18next";
+import { Button, TextField, Typography } from '@material-ui/core'
+import { Alert } from '@material-ui/lab'
+import { makeStyles } from '@material-ui/core/styles'
 
 const config = {
   angle: 45,
@@ -19,7 +20,24 @@ const config = {
   height: "10px",
   colors: ["#a864fd", "#29cdff", "#78ff44", "#ff718d", "#fdff6a"],
 };
+
+const useStyles = makeStyles((theme) => ({
+  alert: {
+    margin: 15
+  }, container: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+    marginTop: 50,
+    margin: 'auto',
+    width: 400
+  },
+
+}))
 export default () => {
+  const classes = useStyles()
   const { t, i18n } = useTranslation();
   const [error, setError] = useState(null);
   const [otpEmailSent, setOtpEmailSent] = useState(false);
@@ -43,13 +61,13 @@ export default () => {
         .email(t('enterEmail'))
         .required(t('required')),
     }),
-    onSubmit: async ({ email, newPassword,otp }) => {
-      otpEmailSent ? resetPassword(email, newPassword,otp) : sendPasswordResetOtp(email);
+    onSubmit: async ({ email, newPassword, otp }) => {
+      otpEmailSent ? resetPassword(email, newPassword, otp) : sendPasswordResetOtp(email);
     },
   });
 
-   const  resetPassword = async (email, newPassword, otp ) =>{
-    try{
+  const resetPassword = async (email, newPassword, otp) => {
+    try {
       const response = await fetch(
         process.env.REACT_APP_API_URL + "/creator/resetPassword",
         {
@@ -64,14 +82,14 @@ export default () => {
       console.log(await response.json());
       setPasswordResetSuccess(true)
     }
-    catch(e){
+    catch (e) {
       console.log(e)
       setError(e)
     }
 
   }
 
-   const sendPasswordResetOtp = async (email) =>{
+  const sendPasswordResetOtp = async (email) => {
     try {
       const response = await fetch(
         process.env.REACT_APP_API_URL + "/creator/resetPasswordEmail",
@@ -92,116 +110,112 @@ export default () => {
     }
   }
   return (
-    <Container>
-      <Row className="justify-content-md-center">
-        <Col md={4}>
-          <Confetti active={passwordResetSuccess} config={config} />
-          {passwordResetSuccess ? (
-            <>
-              <h3 className="text-center mb-4 mt-5">
-                {t('passwordSuccess')}{" "}
-              </h3>
+    <div className={classes.container}>
+      <Confetti active={passwordResetSuccess} config={config} />
+      {passwordResetSuccess ? (
+        <>
+          <h3 className="text-center mb-4 mt-5">
+            {t('passwordSuccess')}{" "}
+          </h3>
 
-              <p className="text-muted text-center mb-4">
-                {t('woohoo')}
+          <p className="text-muted text-center mb-4">
+            {t('woohoo')}
+          </p>
+          <Confetti active={passwordResetSuccess} config={config} />
+          <Button
+            onClick={() => window.location = "/login"}
+            variant="contained"
+            color="primary"
+            children="Login"
+
+          />
+        </>
+      ) : (
+          <>
+            <form onSubmit={handleSubmit} noValidate >
+              <Typography variant="h4" >Forgot Password</Typography>
+              <p style={{ margin: 10, marginBottom: 20 }}>
+                {t('noWorries')}
               </p>
-              <Confetti active={passwordResetSuccess} config={config} />
-              <Button
-                as={Link}
-                to="/login"
-                variant="primary"
-                children="Login"
-                block
+              {error && <Alert severity="error" children={error.message} />}
+              {otpEmailSent && (
+                <Alert severity="info">
+                  {t('checkEmail')}
+                </Alert>
+              )}
+              <TextField
+                fullWidth
+                margin={'dense'}
+                variant={'outlined'}
+                disabled={otpEmailSent}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.email}
+                name={"email"}
+                type="email"
+                readOnly={otpEmailSent}
+                plaintext={otpEmailSent}
+                placeholder="Enter email"
+                label="Email Adresss"
+                error={touched.email && !!errors.email}
+                helperText={touched.email && errors?.email}
               />
-            </>
-          ) : (
-            <>
-              <Form onSubmit={handleSubmit} noValidate className="mb-4 mt-5">
-                <h3 className="text-center mb-4">Forgot Password</h3>
-                <p className="text-muted text-center mb-4">
-                  {t('noWorries')}
-                </p>
-                {error && <Alert variant="danger" children={error.message} />}
-                {otpEmailSent && (
-                  <Alert variant="primary">
-                    {t('checkEmail')}
-                  </Alert>
-                )}
-                <Form.Group controlId="formBasicEmail">
-                  <Form.Label>Email address</Form.Label>
-                  <Form.Control
-                    disabled={otpEmailSent}
+
+
+              {otpEmailSent && (
+                <>
+                  <TextField
+                    fullWidth
+                    margin={'dense'}
+                    variant={'outlined'}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    value={values.email}
-                    name={"email"}
-                    type="email"
-                    readOnly={otpEmailSent}
-                    plaintext={otpEmailSent}
-                    placeholder="Enter email"
-                    isInvalid={touched.email && !!errors.email}
+                    value={values.OTP}
+                    name={"otp"}
+                    type="otp"
+                    placeholder="Enter otp"
+                    label="OTP"
+                    error={touched.otp && !!errors.otp}
+                    helperText={errors?.otp}
+                  /> <TextField
+                    fullWidth
+                    margin={'dense'}
+                    variant={'outlined'}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.password}
+                    name={"password"}
+                    type="password"
+                    placeholder="Enter password"
+                    label="New Password"
+                    error={touched.password && !!errors.password}
+                    helperText={errors.password}
                   />
-                  <Form.Control.Feedback type="invalid">
-                    {errors.email}
-                  </Form.Control.Feedback>
-                </Form.Group>
-                {otpEmailSent && (
-                  <>
-                    <Form.Group controlId="formBasicEmail">
-                      <Form.Label>OTP</Form.Label>
-                      <Form.Control
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        value={values.OTP}
-                        name={"otp"}
-                        type="otp"
-                        placeholder="Enter otp"
-                        isInvalid={touched.otp && !!errors.otp}
-                      />
-                      <Form.Control.Feedback type="invalid">
-                        {errors.email}
-                      </Form.Control.Feedback>
-                    </Form.Group>{" "}
-                    <Form.Group controlId="formBasicEmail">
-                      <Form.Label>New Password</Form.Label>
-                      <Form.Control
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        value={values.password}
-                        name={"password"}
-                        type="password"
-                        placeholder="Enter password"
-                        isInvalid={touched.password && !!errors.password}
-                      />
-                      <Form.Control.Feedback type="invalid">
-                        {errors.password}
-                      </Form.Control.Feedback>
-                    </Form.Group>
-                  </>
-                )}
-                <Button
-                  block
-                  variant="primary"
-                  type="submit"
-                  children={
-                    otpEmailSent
-                      ? isSubmitting
-                        ? "Resetting password..."
-                        : "Reset"
-                      : isSubmitting
+
+                </>
+              )}
+              <Button
+                style={{ marginTop: 10 }}
+                variant="contained"
+                color="primary"
+                type="submit"
+                children={
+                  otpEmailSent
+                    ? isSubmitting
+                      ? "Resetting password..."
+                      : "Reset"
+                    : isSubmitting
                       ? "Sending OTP..."
                       : "Proceed"
-                  }
-                  disabled={isSubmitting}
-                />
-              </Form>
-              <p className="text-muted text-center">
-                {t('dontHave')} <Link to="/register">Sign up.</Link>
-              </p>
-            </>
-          )}
-        </Col>
-      </Row>
-    </Container>
+                }
+                disabled={isSubmitting}
+              />
+            </form>
+            <Typography style={{ marginTop: 15 }}>
+              {t('dontHave')} <Link to="/register">Sign up.</Link>
+            </Typography>
+          </>
+        )}
+    </div>
   );
 };

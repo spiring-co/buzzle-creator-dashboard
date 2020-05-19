@@ -1,0 +1,16 @@
+{
+  "welcome": "welcome to pharaoh the place to automate your templates with ease. ",
+  "enterEmail": "Please enter a valid email address. ",
+  "required": "Email is Required ",
+  "passwordRequired": "Password is Required",
+  "woohoo": "Wohoo, enjoy your brand new password and don't forget it. 🎉 ",
+  "noWorries": "No worries happens to all of us, we got you fam. 😌 ",
+  "checkEmail": "Please check your mail for an OTP we just sent! ",
+  "passwordSuccess": "Password Reset Successfully!",
+  "dontHave": "Don't have an account yet? ",
+  "wontShareEmail": "We'll never share your email with anyone else.",
+  "passwordMust": "Your password should have at least 1 uppercase character.",
+  "emailUsed": "the email is already used for registration",
+  "register": "You can register with your details and have the best time of your life. 🎉",
+  "wrong": "Something went wrong 😕"
+}
