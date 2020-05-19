@@ -6,6 +6,9 @@ import {
   Button,
   TextField,
   IconButton,
+  FormControl, OutlinedInput
+  , InputLabel,
+  FormHelperText,
   InputAdornment,
   Typography,
 } from '@material-ui/core';
@@ -107,33 +110,38 @@ export default () => {
           <div className={classes.rightEnd}>
             <Link to="/forgotPassword">Forgot Password</Link>
           </div>
-          <TextField
+          <FormControl
             fullWidth
             margin={'dense'}
-            variant={'outlined'}
-            type={showPassword ? 'text' : 'password'}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            value={values.password}
-            name="password"
-            label="Password"
-            placeholder="Password"
-            helperText={errors.password}
-            error={touched.password && !!errors.password}
-          // endAdornment={
-          //   <InputAdornment position="end">
-          //     <IconButton
-          //       aria-label="toggle password visibility"
-          //       onClick={handleClickShowPassword}
-          //       onMouseDown={handleMouseDownPassword}
-          //       edge="end"
-          //     >
-          //       {showPassword ? <Visibility /> : <VisibilityOff />}
-          //     </IconButton>
-          //   </InputAdornment>
-          // }
-          />
-          <br />
+            variant="outlined">
+            <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+            <OutlinedInput
+              id="outlined-adornment-password"
+              type={showPassword ? 'text' : 'password'}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values.password}
+              name="password"
+              labelWidth={75}
+              placeholder="Password"
+              error={touched.password && !!errors.password}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
+                  >
+                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              }
+            />
+            <FormHelperText error={errors.password}
+            >{errors.password}</FormHelperText>
+          </FormControl>
+
           <Button
             className={classes.loginButton}
             color="primary"
