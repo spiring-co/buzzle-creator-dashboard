@@ -1,5 +1,4 @@
 import React from "react";
-import Container from "react-bootstrap/Col";
 import { Prompt, useHistory } from "react-router-dom";
 import FormBuilder from "components/formSchemaBuilderComponents/FormBuilder";
 
@@ -72,7 +71,7 @@ export default (props) => {
   if (loading || isEditing)
     return <p>{isEditing ? "Editing" : "Submitting"} your template...</p>;
   return (
-    <Container fluid className="mb-5">
+    <div>
       <Prompt when={isBlocking} message={`You will lose all your data.`} />
       <h3 className="text-center mb-4">
         {isEdit ? "Edit Your " : "Add"} Video Template
@@ -82,6 +81,6 @@ export default (props) => {
         video={video}
         submitForm={isEdit ? handleEditForm : handleSubmitForm}
       />
-    </Container>
+    </div>
   );
 };
