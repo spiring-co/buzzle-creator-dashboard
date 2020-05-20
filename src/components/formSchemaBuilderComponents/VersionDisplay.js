@@ -18,7 +18,7 @@ export default ({
   const [editIndex, setEditIndex] = useState(null);
   const [editVersion, setEditVersion] = useState(false);
   const { addVersion, removeVersion } = useActions();
-  const [activeStep, setActiveStep] = useState(1);
+  const [activeStep, setActiveStep] = useState(0);
   const [comp_name, setComp_name] = useState("");
 
   useEffect(() => {
