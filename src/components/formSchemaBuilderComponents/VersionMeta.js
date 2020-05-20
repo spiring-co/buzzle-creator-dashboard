@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import useActions from "contextStore/actions";
 import { SegmentsContext } from "contextStore/store";
-import { Form, Button } from "react-bootstrap";
+import { Button, TextField } from "@material-ui/core";
 
 export default ({ activeVersionIndex, openSegmentBuilder }) => {
   const { editversionKeys } = useActions();
@@ -9,23 +9,35 @@ export default ({ activeVersionIndex, openSegmentBuilder }) => {
   const [videoObj] = useContext(SegmentsContext);
   const [value, setValue] = useState(0);
 
-  useEffect(() => {}, [value]);
+  useEffect(() => { }, [value]);
 
   return (
-    <Form>
-      <Form.Control
+    <div style={{
+      display: 'flex', flexDirection: 'column',
+      justifyContent: 'center'
+    }}>
+      <TextField
+        variant="outlined"
+        fulWidth={true}
+        margin="dense"
+        placeholder="Enter Version Title"
+        label="Version Title"
         onChange={(e) => {
+
           setValue(Math.random());
           editversionKeys(activeVersionIndex, {
             title: e.target.value,
           });
         }}
-        placeholder="Enter Version Title"
         type="text"
         value={videoObj.versions[activeVersionIndex].title}
       />
-      <br />
-      <Form.Control
+
+
+      <TextField
+        variant="outlined"
+        fulWidth={true}
+        margin="dense"
         onChange={(e) => {
           setValue(Math.random());
           editversionKeys(activeVersionIndex, {
@@ -33,11 +45,16 @@ export default ({ activeVersionIndex, openSegmentBuilder }) => {
           });
         }}
         placeholder="Enter Version Description"
+        label="Version Description"
+
         type="text"
         value={videoObj.versions[activeVersionIndex].description}
       />
-      <br />
-      <Form.Control
+      <TextField
+        variant="outlined"
+        fulWidth={true}
+        margin="dense"
+        label="Version Price"
         onChange={(e) => {
           setValue(Math.random());
           editversionKeys(activeVersionIndex, {
@@ -48,8 +65,11 @@ export default ({ activeVersionIndex, openSegmentBuilder }) => {
         type="number"
         value={videoObj.versions[activeVersionIndex].price}
       />
-      <br />
+
       <Button
+        style={{ width: 'fit-content', marginTop: 10 }}
+        color="primary"
+        variant="contained"
         onClick={openSegmentBuilder}
         disabled={
           !videoObj.versions[activeVersionIndex].title &&
@@ -57,6 +77,6 @@ export default ({ activeVersionIndex, openSegmentBuilder }) => {
         }
         children="Next"
       />
-    </Form>
+    </div>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Button, Col, Form, Row } from "react-bootstrap";
+import { Button, } from "@material-ui/core";
 import useActions from "contextStore/actions";
 import { SegmentsContext } from "contextStore/store";
 import SegmentDisplay from "./SegmentDisplay";
@@ -18,7 +18,7 @@ export default ({
   const [editIndex, setEditIndex] = useState(null);
   const [editVersion, setEditVersion] = useState(false);
   const { addVersion, removeVersion } = useActions();
-  const [activeStep, setActiveStep] = useState(0);
+  const [activeStep, setActiveStep] = useState(1);
   const [comp_name, setComp_name] = useState("");
 
   useEffect(() => {
@@ -26,7 +26,7 @@ export default ({
       setActiveVersionIndex(videoObj.versions.length);
     }
   }, []);
-  useEffect(() => {}, [activeStep]);
+  useEffect(() => { }, [activeStep]);
 
   const openVersionMeta = (index, fromEdit = false) => {
     if (fromEdit) {
@@ -107,7 +107,8 @@ export default ({
       <br />
       {isEdit && (
         <Button
-          variant="outline-primary"
+          color="primary"
+          variant="outlined"
           style={{ float: "left", marginRight: "2%" }}
           onClick={() =>
             activeDisplayIndex === 2
@@ -120,8 +121,9 @@ export default ({
         </Button>
       )}
       <Button
-        style={{ float: "left" }}
-        variant="outline-primary"
+
+        color="primary"
+        variant="outlined"
         disabled={videoObj.versions.length === 0}
         onClick={() => setActiveDisplayIndex(activeDisplayIndex + 1)}
       >
