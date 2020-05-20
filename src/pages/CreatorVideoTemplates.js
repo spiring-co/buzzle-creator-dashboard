@@ -1,8 +1,7 @@
 import LazyLoadingList from "components/LazyLoadingList";
 import React, { useState } from "react";
-import { Container } from "react-bootstrap";
-import Button from "react-bootstrap/Button";
-import { Link, useRouteMatch } from "react-router-dom";
+import { Button, Container, Typography } from "@material-ui/core";
+import { Link, useRouteMatch, Redirect } from "react-router-dom";
 
 export default () => {
   let { url } = useRouteMatch();
@@ -11,14 +10,20 @@ export default () => {
 
   return (
     <Container>
-      <h3 className="mb-3">Your video templates</h3>
+      <Typography variant="h4">Your video templates</Typography>
       <Button
-        className="mb-5"
-        as={Link}
-        to={`${url}/add`}
-        children={"+ Add Template"}
-      />
+        style={{ marginTop: 20, marginBottom: 20 }}
+        color="primary"
+        variant="contained"
+        children={<Link to={`${url}/add`}
+          style={{
+            textDecoration: 'none',
+            color: 'white',
 
+          }}>
+          + Add Template
+        </Link>}
+      />
       <LazyLoadingList
         from="templates"
         page={page}
