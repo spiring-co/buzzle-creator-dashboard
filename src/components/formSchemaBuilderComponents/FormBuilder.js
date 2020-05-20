@@ -14,7 +14,7 @@ function FormBuilder({ submitForm, isEdit, video }) {
   const [videoObj] = useContext(SegmentsContext);
   const { resetVideo, editVideoKeys, loadVideo } = useActions();
   const [loading, setLoading] = useState(true);
-  const [activeDisplayIndex, setActiveDisplayIndex] = useState(0);
+  const [activeDisplayIndex, setActiveDisplayIndex] = useState(3);
   const [compositions, setCompositions] = useState([]);
 
   useEffect(() => {
@@ -25,7 +25,7 @@ function FormBuilder({ submitForm, isEdit, video }) {
     }
     setLoading(false);
   }, []);
-  useEffect(() => {}, [activeDisplayIndex]);
+  useEffect(() => { }, [activeDisplayIndex]);
 
   const handleSubmitForm = async () => {
     alert("Submiting");

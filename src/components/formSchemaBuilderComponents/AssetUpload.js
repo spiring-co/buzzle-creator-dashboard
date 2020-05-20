@@ -1,16 +1,33 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Button, Container, Form, Col } from "react-bootstrap";
-
+import { Button, Radio, FormControlLabel, FormControl } from '@material-ui/core'
 import AssetUploader from "./AssetUploader";
+import { makeStyles } from '@material-ui/core/styles'
 import useActions from "contextStore/actions";
 import { SegmentsContext } from "contextStore/store";
 import { zipMaker } from "services/helper";
+
+
+const useStyles = makeStyles((theme) => ({
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    backgroundColor: "white",
+    marginTop: 30,
+    marginBottom: 50,
+    padding: 50,
+  },
+  rowWrapped: {
+    display: "flex", flexWrap: "wrap", justifyContent: "center"
+  }
+}))
 
 export default function AssetUpload({
   setActiveDisplayIndex,
   activeDisplayIndex,
   handleSubmitForm,
 }) {
+  const classes = useStyles()
   const [videoObj] = useContext(SegmentsContext);
   const [uploadType, setUploadType] = useState(
     Boolean(videoObj.assetsUri) ? "file" : ""
@@ -67,7 +84,7 @@ export default function AssetUpload({
   const renderAssetFileUploader = () => {
     return (
       <div
-        style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}
+        className={classes.rowWrapped}
       >
         {assetsArray.map((asset) => (
           <AssetUploader
@@ -128,33 +145,29 @@ export default function AssetUpload({
   };
   if (error) {
     return (
-      <Container style={styles.container}>
+      <div className={classes.container}>
         <p style={{ color: "red" }}>{error}</p>
         <Button
-          style={{
-            color: "red",
-            border: "1px solid red",
-            backgroundColor: "white",
-          }}
+          variant="outlined"
+          color="secondary"
           onClick={handleZipAssetUpload}
-        >
-          Retry
-        </Button>
-      </Container>
+          children="Retry"
+        />
+      </div>
     );
   }
 
   if (loading) {
     return (
-      <Container style={styles.container}>
+      <div className={classes.container}>
         <h4>Uploading Assets...</h4>
-      </Container>
+      </div>
     );
   }
 
   return (
-    <Container fluid style={styles.container}>
-      <Form>
+    <div className={classes.container}>
+      <FormControl component="fieldset">
         <h4>Upload Asset Files</h4>
         <p style={{ color: "grey" }}>
           Assets Files includes, files which are not associated with user input,
@@ -163,43 +176,44 @@ export default function AssetUpload({
         <p>
           <b>Choose Asset Upload Structure</b>
         </p>
-        <Col sm={10}>
-          <Form.Check
-            onChange={handleChange}
-            type="radio"
-            checked={uploadType === "folder"}
-            label="Complete Assets Folder"
-            value="folder"
-          />
-          <Form.Check
-            onChange={handleChange}
-            checked={uploadType === "file"}
-            type="radio"
-            label="Individual Assets"
-            value="file"
-          />
-        </Col>
-      </Form>
+        <FormControlLabel
+
+          value="folder"
+          control={
+            <Radio
+              onChange={handleChange}
+              checked={uploadType === "folder"}
+              color="primary"
+            />
+          }
+          label="Complete Assets Folder"
+          labelPlacement="end"
+        />
+        <FormControlLabel
+          value="file"
+          control={
+            <Radio
+              onChange={handleChange}
+              checked={uploadType === "file"}
+              color="primary"
+            />
+          }
+          label="Individual Assets"
+          labelPlacement="end"
+        />
+      </FormControl>
       {renderAssetUploader(uploadType)}
       <Button
+        variant="contained"
+        color="primary"
         children={"back"}
         onClick={() => setActiveDisplayIndex(activeDisplayIndex - 1)}
       />
       <br />
-      <Button children={"Submit"} onClick={handleSubmit} />
-    </Container>
+      <Button
+        variant="contained"
+        color="primary"
+        children={"Submit"} onClick={handleSubmit} />
+    </div>
   );
 }
-
-const styles = {
-  container: {
-    display: "flex",
-    flexDirection: "column",
-
-    alignItems: "center",
-    backgroundColor: "white",
-    marginTop: 30,
-    marginBottom: 50,
-    padding: 50,
-  },
-};
