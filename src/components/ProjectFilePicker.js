@@ -59,7 +59,8 @@ export default ({ value, onData, name, isInvalid }) => {
         {!hasPickedFile && (
           <>
             <p>Drag Your File Here OR</p>
-            <Button variant="contained" color="primary">Pick File</Button>
+            <PickerButton>
+              Pick File</PickerButton>
             <br />
             <input
               className="invisible"
@@ -78,7 +79,8 @@ export default ({ value, onData, name, isInvalid }) => {
                 Object.keys(compositions.data).length
                 } compositions and ${getTotalLayers()} layers extracted.`}</p>
               <Button
-                as={"div"}
+                color="primary"
+                variant="contained"
                 children="Change"
                 onClick={() => {
                   setHasPickedFile(false);
@@ -103,9 +105,18 @@ const Container = styled.label`
   position: relative;
 `;
 const LabelContent = styled.div`
-  margin: 0;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:center;
 `;
+
+const PickerButton = styled.div`
+
+  background:#3f51b5; color: #fff;
+  padding: 10px;
+  padding-top: 6px;
+   padding-bottom: 6px;
+  border-radius: 5px;
+  width: fit-content;
+`
