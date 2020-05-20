@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Button, Container } from "react-bootstrap";
+
+import { Button, Container, Typography } from '@material-ui/core'
 import { getLayersFromComposition } from "services/helper";
 import FontUploader from "./FontUploader";
 
@@ -22,6 +23,7 @@ export default function FontUpload({
       .then(setFontList)
       .catch(console.log)
       .finally(() => setLoading(false));
+
   }, []);
 
   const fetchFontStatus = async (fontArray) => {
@@ -45,17 +47,17 @@ export default function FontUpload({
   if (loading) {
     return (
       <Container style={styles.container}>
-        <h4>Resolving Font...</h4>
+        <Typography variant="h5">Resolving Font...</Typography>
       </Container>
     );
   }
   return (
-    <Container fluid style={styles.container}>
-      <h3>Upload Font Files</h3>
-      <h5 style={{ color: "grey" }}>
+    <Container style={styles.container}>
+      <Typography variant="h4" >Upload Font Files</Typography>
+      <Typography variant="h6" style={{ color: "grey" }}>
         We will try to resolve your fonts automatically, if not resolved, Upload
         your Font File
-      </h5>
+      </Typography>
       <Container
         style={{ display: "flex", justifyContent: "center", flexWrap: "wrap" }}
       >
@@ -63,12 +65,14 @@ export default function FontUpload({
           <FontUploader fontName={font.name} fontStatus={font.resolved} />
         ))}
       </Container>
-      <Button
+      <Button color="primary"
+        variant="contained"
         children={"back"}
         onClick={() => setActiveDisplayIndex(activeDisplayIndex - 1)}
       />
       <br />
-      <Button
+      <Button variant="contained"
+        color="primary"
         children={"Next"}
         onClick={() => setActiveDisplayIndex(activeDisplayIndex + 1)}
       />
