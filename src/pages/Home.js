@@ -3,11 +3,11 @@ import Dashboard from "pages/Dashboard";
 import Orders from "pages/Orders";
 import Profile from "pages/Profile";
 import VideoTemplates from "pages/VideoTemplates";
+import Jobs from "pages/Jobs"
 import { Route, Switch, useRouteMatch } from "react-router-dom";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
 import NavBar from "../components/NavBar"
-import { VideoLibrary, MonetizationOn, AssignmentInd } from "@material-ui/icons";
-
+import { VideoLibrary, MonetizationOn, AssignmentInd, Work } from "@material-ui/icons";
 
 const useStyles = makeStyles(theme =>
   createStyles({
@@ -49,6 +49,11 @@ export default () => {
       icon: <MonetizationOn />,
       to: `${url}/orders`,
     },
+    {
+      text: "Jobs",
+      icon: <Work />,
+      to: `${url}/jobs`,
+    },
 
   ];
   return (
@@ -74,6 +79,10 @@ export default () => {
             path={`${path}/orders`}
           >
             <Orders />
+          </Route>
+          <Route
+            path={`${path}/jobs`}
+          ><Jobs />
           </Route>
         </Switch>
       </main>
