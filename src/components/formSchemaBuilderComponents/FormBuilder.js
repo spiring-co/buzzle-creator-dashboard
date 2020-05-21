@@ -1,6 +1,6 @@
 import useActions from "contextStore/actions";
 import { SegmentsContext, StateProvider } from "contextStore/store";
-import React, {useContext, useEffect, useState} from 'react'
+import React, { useContext, useEffect, useState } from "react";
 
 import AssetUpload from "./AssetUpload";
 import FontUpload from "./FontUpload";
@@ -23,7 +23,7 @@ function FormBuilder({ submitForm, isEdit, video }) {
     }
     setLoading(false);
   }, []);
-  useEffect(() => { }, [activeDisplayIndex]);
+  useEffect(() => {}, [activeDisplayIndex]);
 
   const handleSubmitForm = async () => {
     alert("Submiting");

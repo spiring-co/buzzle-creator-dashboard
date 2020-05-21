@@ -1,7 +1,7 @@
+import { Button, Container, Typography } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
-
-import { Button, Container, Typography } from '@material-ui/core'
 import { getLayersFromComposition } from "services/helper";
+
 import FontUploader from "./FontUploader";
 
 export default function FontUpload({
@@ -23,26 +23,21 @@ export default function FontUpload({
       .then(setFontList)
       .catch(console.log)
       .finally(() => setLoading(false));
-
   }, []);
 
   const fetchFontStatus = async (fontArray) => {
-    try {
-      const response = await fetch(
-        `http://localhost:4488/getFontInstallableStatus`,
-        {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ fontArray }),
-        }
-      );
-      return await response.json();
-    } catch (err) {
-      console.log(err);
-    }
+    const response = await fetch(
+      `http://localhost:4488/getFontInstallableStatus`,
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ fontArray }),
+      }
+    );
+    return await response.json();
   };
   if (loading) {
     return (
@@ -53,7 +48,7 @@ export default function FontUpload({
   }
   return (
     <Container style={styles.container}>
-      <Typography variant="h4" >Upload Font Files</Typography>
+      <Typography variant="h4">Upload Font Files</Typography>
       <Typography variant="h6" style={{ color: "grey" }}>
         We will try to resolve your fonts automatically, if not resolved, Upload
         your Font File
@@ -65,13 +60,15 @@ export default function FontUpload({
           <FontUploader fontName={font.name} fontStatus={font.resolved} />
         ))}
       </Container>
-      <Button color="primary"
+      <Button
+        color="primary"
         variant="contained"
         children={"back"}
         onClick={() => setActiveDisplayIndex(activeDisplayIndex - 1)}
       />
       <br />
-      <Button variant="contained"
+      <Button
+        variant="contained"
         color="primary"
         children={"Next"}
         onClick={() => setActiveDisplayIndex(activeDisplayIndex + 1)}

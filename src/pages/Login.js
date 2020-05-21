@@ -9,12 +9,12 @@ import {
   OutlinedInput,
   TextField,
   Typography,
-} from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import Visibility from '@material-ui/icons/Visibility';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
-import { Alert } from '@material-ui/lab';
-import clsx from 'clsx';
+} from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import Visibility from "@material-ui/icons/Visibility";
+import VisibilityOff from "@material-ui/icons/VisibilityOff";
+import { Alert } from "@material-ui/lab";
+import clsx from "clsx";
 import { useFormik } from "formik";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -23,29 +23,28 @@ import useAuth from "services/auth";
 import * as Yup from "yup";
 
 const useStyles = makeStyles((theme) => ({
-
   container: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    textAlign: 'center',
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    textAlign: "center",
     marginTop: 50,
-    margin: 'auto',
+    margin: "auto",
   },
   rightEnd: {
-    textAlign: 'right'
-  }
-  , loginButton: {
-    margin: 10
+    textAlign: "right",
+  },
+  loginButton: {
+    margin: 10,
   },
   alert: {
-    margin: 15
-  }
+    margin: 15,
+  },
 }));
 export default () => {
-  const classes = useStyles()
-  const [showPassword, setShowPassword] = useState(false)
+  const classes = useStyles();
+  const [showPassword, setShowPassword] = useState(false);
   const { t, i18n } = useTranslation();
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -63,10 +62,8 @@ export default () => {
       password: "password",
     },
     validationSchema: Yup.object({
-      email: Yup.string()
-        .email(t('enterEmail'))
-        .required(t('required')),
-      password: Yup.string().required(t('passwordRequired')),
+      email: Yup.string().email(t("enterEmail")).required(t("required")),
+      password: Yup.string().required(t("passwordRequired")),
     }),
     onSubmit: async ({ email, password }) => {
       try {
@@ -81,26 +78,30 @@ export default () => {
     },
   });
   const handleClickShowPassword = () => {
-    setShowPassword(!showPassword)
+    setShowPassword(!showPassword);
   };
 
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
   return (
-
     <div className={classes.container}>
-
-      <form onSubmit={handleSubmit} noValidate >
-        <Typography variant="h4" >Sign In</Typography>
+      <form onSubmit={handleSubmit} noValidate>
+        <Typography variant="h4">Sign In</Typography>
         <p style={{ margin: 10, marginBottom: 20 }}>
           Welcome back fam, what's cooking? 😎
-            </p>
-        {error && <Alert className={classes.alert} severity="error" children={error.message} />}
+        </p>
+        {error && (
+          <Alert
+            className={classes.alert}
+            severity="error"
+            children={error.message}
+          />
+        )}
         <TextField
           fullWidth
-          margin={'dense'}
-          variant={'outlined'}
+          margin={"dense"}
+          variant={"outlined"}
           onChange={handleChange}
           onBlur={handleBlur}
           value={values.email}
@@ -108,19 +109,18 @@ export default () => {
           placeholder="Enter email"
           label="Email address"
           error={touched.email && !!errors.email}
-          helperText={touched.email ? errors?.email : t('wontShareEmail')}
+          helperText={touched.email ? errors?.email : t("wontShareEmail")}
         />
         <div className={classes.rightEnd}>
           <Link to="/forgotPassword">Forgot Password</Link>
         </div>
-        <FormControl
-          fullWidth
-          margin={'dense'}
-          variant="outlined">
-          <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+        <FormControl fullWidth margin={"dense"} variant="outlined">
+          <InputLabel htmlFor="outlined-adornment-password">
+            Password
+          </InputLabel>
           <OutlinedInput
             id="outlined-adornment-password"
-            type={showPassword ? 'text' : 'password'}
+            type={showPassword ? "text" : "password"}
             onChange={handleChange}
             onBlur={handleBlur}
             value={values.password}
@@ -141,8 +141,9 @@ export default () => {
               </InputAdornment>
             }
           />
-          <FormHelperText error={errors.password}
-          >{errors.password}</FormHelperText>
+          <FormHelperText error={errors.password}>
+            {errors.password}
+          </FormHelperText>
         </FormControl>
 
         <Button
@@ -154,10 +155,9 @@ export default () => {
           disabled={loading}
         />
       </form>
-      <p >
+      <p>
         Don't have an account yet? <Link to="/register">Sign up.</Link>
       </p>
     </div>
-
   );
 };

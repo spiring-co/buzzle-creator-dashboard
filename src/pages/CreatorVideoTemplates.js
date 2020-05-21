@@ -6,7 +6,7 @@ import { Link, useRouteMatch, Redirect } from "react-router-dom";
 export default () => {
   let { url } = useRouteMatch();
   const [page, setPageNumber] = useState(1);
-  const uri = `${process.env.REACT_APP_API_URL}/creator/sjjsjjjkaaaa/videoTemplates`;
+  const uri = `${process.env.REACT_APP_API_URL}/creator/Iz2xpU8AKw/videoTemplates`;
 
   return (
     <Container>

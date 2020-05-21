@@ -60,8 +60,7 @@ export default ({ value, onData, name, onError, onTouched }) => {
         {!hasPickedFile && (
           <>
             <p>Drag Your File Here OR</p>
-            <PickerButton>
-              Pick File</PickerButton>
+            <PickerButton>Pick File</PickerButton>
             <br />
             <input
               className="invisible"
@@ -77,7 +76,7 @@ export default ({ value, onData, name, onError, onTouched }) => {
             <>
               <p className={"text-success"}>{`${
                 Object.keys(compositions.data).length
-                } compositions and ${getTotalLayers()} layers extracted.`}</p>
+              } compositions and ${getTotalLayers()} layers extracted.`}</p>
               <Button
                 color="primary"
                 variant="contained"
@@ -89,8 +88,8 @@ export default ({ value, onData, name, onError, onTouched }) => {
               />
             </>
           ) : (
-              <p>Extracting Layer and compositions ...</p>
-            ))}
+            <p>Extracting Layer and compositions ...</p>
+          ))}
       </LabelContent>
     </Container>
   );
@@ -105,18 +104,18 @@ const Container = styled.label`
   position: relative;
 `;
 const LabelContent = styled.div`
- display:flex;
- flex-direction:column;
- align-items:center;
- justify-content:center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 `;
 
 const PickerButton = styled.div`
-
-  background:#3f51b5; color: #fff;
+  background: #3f51b5;
+  color: #fff;
   padding: 10px;
   padding-top: 6px;
-   padding-bottom: 6px;
+  padding-bottom: 6px;
   border-radius: 5px;
   width: fit-content;
-`
+`;

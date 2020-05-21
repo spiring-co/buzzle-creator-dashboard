@@ -1,9 +1,5 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import Form from "react-bootstrap/Form";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Button from "react-bootstrap/Button";
-
 function TagsInput({
   onchange,
   onblur,
@@ -13,74 +9,80 @@ function TagsInput({
   placeholders,
   isInvalids,
 }) {
-  const [tag, setTag] = useState([]);
-  const inputKeyDown = (e) => {
-    const val = e.target.value;
-    if (e.key === "Enter" && val) {
-      TagsInput.current.val = "";
-      if (tag.find((tags) => tags.toLowerCase() === val.toLowerCase())) {
-        return;
-      }
-      setTag([...tag, val]);
-    } else if (e.key === "Backspace" && !val) {
-      removeTag(tag.length - 1);
+  const [items, setItems] = useState([]);
+
+  const [input, setInput] = useState("");
+  const styles = {
+    container: {
+      border: "1px solid #ddd",
+      padding: "5px",
+      borderRadius: "5px",
+    },
+
+    items: {
+      display: "inline-block",
+      padding: "2px",
+      border: "1px solid blue",
+      fontFamily: "Helvetica, sans-serif",
+      borderRadius: "5px",
+      marginRight: "5px",
+      cursor: "pointer",
+    },
+
+    input: {
+      outline: "none",
+      border: "none",
+      fontSize: "14px",
+      fontFamily: "Helvetica, sans-serif",
+    },
+  };
+
+  const handleInputChange = (evt) => {
+    setInput(evt.target.value);
+  };
+
+  const handleInputKeyDown = (evt) => {
+    if (evt.keyCode === 13) {
+      const { value } = evt.target;
+
+      setItems([...items, value]);
+      setInput("");
+    }
+
+    if (items.length && evt.keyCode === 8 && !input.length) {
+      setItems(items.slice(0, items.length - 1));
     }
   };
-  let TagsInput = useRef(0);
 
-  const removeTag = (i) => {
-    const newTags = [...tag];
-    newTags.splice(i, 1);
-    setTag(newTags);
+  const handleRemoveItem = (index) => {
+    return () => {
+      setItems(items.filter((item, i) => i !== index));
+    };
   };
 
   return (
     <div>
-      <ul
-        style={{
-          listStyle: "none",
-          display: "flex",
-        }}
-      >
-        {tag.map((t, i) => (
-          <li
-            key={t}
-            style={{
-              fontSize: "large",
-              fontWeight: "bold",
-            }}
-          >
-            {t}
-
-            <button
-              size="sm"
-              style={{
-                backgroundColor: "blue",
-                border: "none",
-                borderRadius: "5px",
-              }}
-              type="button"
-              onClick={() => {
-                removeTag(i);
-              }}
-            >
-              x
-            </button>
+      <ul style={styles.container}>
+        {items.map((item, i) => (
+          <li key={i} style={styles.items} onClick={handleRemoveItem(i)}>
+            {item}
+            <span>(x)</span>
           </li>
         ))}
+        <input
+          onChange={onchange}
+          onBlur={onblur}
+          value={values}
+          name={names}
+          type={types}
+          placeholder={placeholders}
+          isInvalid={isInvalids}
+          style={styles.input}
+          //value={input}
+          //onChange={handleInputChange}
+          onKeyDown={handleInputKeyDown}
+        />
       </ul>
-
-      <Form.Control
-        ref={TagsInput}
-        onChange={onchange}
-        onBlur={onblur}
-        value={values}
-        name={names}
-        type={types}
-        placeholder={placeholders}
-        isInvalid={isInvalids}
-        onKeyDown={inputKeyDown}
-      />
     </div>
   );
 }

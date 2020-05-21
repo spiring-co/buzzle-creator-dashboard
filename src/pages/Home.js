@@ -1,5 +1,9 @@
 import { createStyles, makeStyles } from "@material-ui/core/styles";
-import { AssignmentInd, MonetizationOn, VideoLibrary } from "@material-ui/icons";
+import {
+  AssignmentInd,
+  MonetizationOn,
+  VideoLibrary,
+} from "@material-ui/icons";
 import Dashboard from "pages/Dashboard";
 import Orders from "pages/Orders";
 import Profile from "pages/Profile";
@@ -7,9 +11,9 @@ import VideoTemplates from "pages/VideoTemplates";
 import React from "react";
 import { Route, Switch, useRouteMatch } from "react-router-dom";
 
-import NavBar from "../components/Navbar"
+import NavBar from "../components/Navbar";
 
-const useStyles = makeStyles(theme =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
       display: "flex",
@@ -49,7 +53,6 @@ export default () => {
       icon: <MonetizationOn />,
       to: `${url}/orders`,
     },
-
   ];
   return (
     <div className={classes.root}>
@@ -57,22 +60,17 @@ export default () => {
       <main className={classes.content}>
         <div className={classes.toolbar} />
         <Switch>
-          <Route
-            path={`${path}/`}
-            exact >
+          <Route path={`${path}/`} exact>
             <Dashboard />
           </Route>
 
           <Route path={`${path}/profile`}>
             <Profile />
           </Route>
-          <Route
-            path={`${path}/videoTemplates`}
-          ><VideoTemplates />
+          <Route path={`${path}/videoTemplates`}>
+            <VideoTemplates />
           </Route>
-          <Route
-            path={`${path}/orders`}
-          >
+          <Route path={`${path}/orders`}>
             <Orders />
           </Route>
         </Switch>

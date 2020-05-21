@@ -1,4 +1,4 @@
-import { Button, ClickAwayListener, Menu, MenuItem } from '@material-ui/core';
+import { Button, ClickAwayListener, Menu, MenuItem } from "@material-ui/core";
 import AppBar from "@material-ui/core/AppBar";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Divider from "@material-ui/core/Divider";
@@ -16,10 +16,10 @@ import {
 } from "@material-ui/core/styles";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-import AccountCircle from '@material-ui/icons/AccountCircle';
+import AccountCircle from "@material-ui/icons/AccountCircle";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import MenuIcon from '@material-ui/icons/Menu';
+import MenuIcon from "@material-ui/icons/Menu";
 import clsx from "clsx";
 import React, { forwardRef, useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -30,7 +30,6 @@ import {
 import useAuth from "../services/auth";
 
 const drawerWidth = 240;
-
 
 function ListItemLink(props) {
   const { icon, primary, to } = props;
@@ -115,8 +114,6 @@ const useStyles = makeStyles((theme) =>
       padding: theme.spacing(3),
     },
     menu: {
-
-
       position: "absolute",
       right: 15,
     },
@@ -128,8 +125,7 @@ export default function NavBar({ items }) {
   const theme = useTheme();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
-  const { logout } = useAuth()
-
+  const { logout } = useAuth();
 
   const handleDrawerOpen = () => {
     setDrawerOpen(true);
@@ -179,19 +175,19 @@ export default function NavBar({ items }) {
               onClick={handleMenu}
               color="inherit"
             >
-              <AccountCircle fontSize={'large'} />
+              <AccountCircle fontSize={"large"} />
             </IconButton>
             <Menu
               id="menu-appbar"
               anchorEl={anchorEl}
               anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
+                vertical: "top",
+                horizontal: "right",
               }}
               keepMounted
               transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
+                vertical: "top",
+                horizontal: "right",
               }}
               open={open}
               onClose={handleClose}
@@ -200,7 +196,6 @@ export default function NavBar({ items }) {
               <MenuItem onClick={logout}>Logout</MenuItem>
             </Menu>
           </div>
-
         </Toolbar>
       </AppBar>
       <Drawer
@@ -221,8 +216,8 @@ export default function NavBar({ items }) {
             {theme.direction === "rtl" ? (
               <ChevronRightIcon />
             ) : (
-                <ChevronLeftIcon />
-              )}
+              <ChevronLeftIcon />
+            )}
           </IconButton>
         </div>
         <Divider />
@@ -240,7 +235,3 @@ export default function NavBar({ items }) {
     </div>
   );
 }
-
-
-
-
