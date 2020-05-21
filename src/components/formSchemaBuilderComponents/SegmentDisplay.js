@@ -2,25 +2,24 @@ import React, { useContext, useState, useEffect } from "react";
 import FormBuilderSegment from "components/formSchemaBuilderComponents/FormBuilderSegment";
 import useActions from "contextStore/actions";
 import { SegmentsContext } from "contextStore/store";
-import { Form, Button } from "react-bootstrap";
+
+import { Button } from '@material-ui/core'
 
 const MAX_SEGMENT_COUNT = 5;
 export default ({
-  edit,
+  isEdit,
   activeVersionIndex,
   editVersion,
   compositions,
   setActiveVersionIndex,
   openVersionDisplay,
 }) => {
-  const { addSegment, editversionKeys, removeSegment } = useActions();
+  const { addSegment, removeSegment } = useActions();
 
   const [videoObj] = useContext(SegmentsContext);
-  const [value, setValue] = useState(0);
+
   const [activeIndex, setActiveIndex] = useState(0);
   const [usedFields, setUsedFields] = useState([]);
-
-  useEffect(() => {}, [value]);
 
   const _addSegment = () => {
     addSegment(activeVersionIndex);
@@ -43,51 +42,14 @@ export default ({
     setActiveIndex(activeIndex - 1);
   };
   return (
-    <Form
+    <form
       onSubmit={(e) => {
         e.preventDefault();
       }}
     >
-      <p>
-        <strong>{edit ? "Edit Version Details" : "Add Version Details"}</strong>
-      </p>
-      <Form.Control
-        onChange={(e) => {
-          setValue(Math.random());
-          editversionKeys(activeVersionIndex, {
-            title: e.target.value,
-          });
-        }}
-        placeholder="Enter Version Title"
-        type="text"
-        value={videoObj.versions[activeVersionIndex].title}
-      />
-      <Form.Control
-        onChange={(e) => {
-          setValue(Math.random());
-          editversionKeys(activeVersionIndex, {
-            description: e.target.value,
-          });
-        }}
-        placeholder="Enter Version Description"
-        type="text"
-        value={videoObj.versions[activeVersionIndex].description}
-      />
-      <Form.Control
-        onChange={(e) => {
-          setValue(Math.random());
-          editversionKeys(activeVersionIndex, {
-            price: e.target.value,
-          });
-        }}
-        placeholder="Enter Version Price"
-        type="number"
-        value={videoObj.versions[activeVersionIndex].price}
-      />
-      <p>
-        <strong>{edit ? "Edit Segments" : "Add Segments"}</strong>
-      </p>
       <Button
+        color="primary"
+        variant="contained"
         onClick={_addSegment}
         disabled={
           videoObj.versions[activeVersionIndex].form.segments.length >
@@ -97,6 +59,8 @@ export default ({
       />
 
       <Button
+        color="secondary"
+        variant="outlined"
         onClick={deleteSegment}
         disabled={
           videoObj.versions[activeVersionIndex].form.segments.length <= 1
@@ -112,16 +76,18 @@ export default ({
       />
       <Button
         onClick={goToNextSegment}
-        className="rounded _bg-state-warning"
+        color="primary"
+        variant="contained"
         disabled={
           activeIndex >=
           videoObj.versions[activeVersionIndex].form.segments.length - 1
         }
         children="Go Next Segment >"
       />
+
       <FormBuilderSegment
         compositions={compositions}
-        edit={edit}
+        editVersion={editVersion}
         usedFields={usedFields}
         setUsedFields={setUsedFields}
         activeVersionIndex={activeVersionIndex}
@@ -130,9 +96,11 @@ export default ({
       <p
         children={`On section ${activeIndex + 1} of ${
           videoObj.versions[activeVersionIndex].form.segments.length
-        }`}
+          }`}
       />
       <Button
+        color="primary"
+        variant="contained"
         onClick={() => {
           if (!editVersion) {
             setActiveVersionIndex(activeVersionIndex + 1);
@@ -140,13 +108,9 @@ export default ({
           openVersionDisplay();
         }}
         children={
-          edit
-            ? "Back To Versions"
-            : editVersion
-            ? "Save Edits"
-            : "Create Version"
+          isEdit ? "Save Edits" : editVersion ? "Save Edits" : "Create Version"
         }
       />
-    </Form>
+    </form>
   );
 };

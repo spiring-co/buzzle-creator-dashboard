@@ -1,32 +1,82 @@
+import { createStyles, makeStyles } from "@material-ui/core/styles";
+import { AssignmentInd, MonetizationOn, VideoLibrary } from "@material-ui/icons";
 import Dashboard from "pages/Dashboard";
 import Orders from "pages/Orders";
 import Profile from "pages/Profile";
 import VideoTemplates from "pages/VideoTemplates";
 import React from "react";
-import Col from "react-bootstrap/Col";
-import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
 import { Route, Switch, useRouteMatch } from "react-router-dom";
 
-import SideBar from "../components/Sidebar";
+import NavBar from "../components/Navbar"
+
+const useStyles = makeStyles(theme =>
+  createStyles({
+    root: {
+      display: "flex",
+    },
+
+    toolbar: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "flex-end",
+      padding: theme.spacing(0, 1),
+      // necessary for content to be below app bar
+      ...theme.mixins.toolbar,
+    },
+    content: {
+      flexGrow: 1,
+      padding: theme.spacing(3),
+    },
+  })
+);
 
 export default () => {
-  let { path } = useRouteMatch();
+  let { path, url } = useRouteMatch();
+  const classes = useStyles();
+  const links = [
+    {
+      text: "Profile and Settings",
+      icon: <AssignmentInd />,
+      to: `${url}/profile`,
+    },
+    {
+      text: "Video Templates",
+      icon: <VideoLibrary />,
+      to: `${url}/videoTemplates`,
+    },
+    {
+      text: "Orders",
+      icon: <MonetizationOn />,
+      to: `${url}/orders`,
+    },
+
+  ];
   return (
-    <Container fluid>
-      <Row>
-        <Col md={2}>
-          <SideBar />
-        </Col>
-        <Col className="bg-light" md={10}>
-          <Switch>
-            <Route path={`${path}/`} exact component={Dashboard} />
-            <Route path={`${path}/profile`} component={Profile} />
-            <Route path={`${path}/videoTemplates`} component={VideoTemplates} />
-            <Route path={`${path}/orders`} component={Orders} />
-          </Switch>
-        </Col>
-      </Row>
-    </Container>
+    <div className={classes.root}>
+      <NavBar items={links} />
+      <main className={classes.content}>
+        <div className={classes.toolbar} />
+        <Switch>
+          <Route
+            path={`${path}/`}
+            exact >
+            <Dashboard />
+          </Route>
+
+          <Route path={`${path}/profile`}>
+            <Profile />
+          </Route>
+          <Route
+            path={`${path}/videoTemplates`}
+          ><VideoTemplates />
+          </Route>
+          <Route
+            path={`${path}/orders`}
+          >
+            <Orders />
+          </Route>
+        </Switch>
+      </main>
+    </div>
   );
 };

@@ -1,6 +1,6 @@
 import React from "react";
-import { useHistory, useRouteMatch } from "react-router-dom";
 import Button from "react-bootstrap/Button";
+import { useHistory, useRouteMatch } from "react-router-dom";
 import useApi from "services/api";
 export default (props) => {
   let { url } = useRouteMatch();
@@ -18,7 +18,7 @@ export default (props) => {
     history.push({
       pathname: `${url}/edit`,
       state: {
-        edit: true,
+        isEdit: true,
         video: props.location.state.video,
       },
     });

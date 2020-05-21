@@ -1,10 +1,17 @@
 import React from "react";
-
+import { Typography } from '@material-ui/core'
 export default () => {
   return (
     <div>
-      <h2>Dashboard</h2>
-      <p>Generic dashboard here with charts and graphs and an overview.</p>
+      <Typography variant="h4">Dashboard</Typography>
+      <Typography> Generic dashboard here with charts and graphs and an overview.</Typography>
     </div>
   );
 };
+
+
+
+
+
+
+

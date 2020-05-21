@@ -19,7 +19,7 @@ export default () => {
 
     if (!response.ok) {
       throw new Error((await response.json()).message); //Help
-//      throw new Error("password is incorrect");
+      //      throw new Error("password is incorrect");
     }
     const { jwtoken, creatorDetails } = await response.json();
     localStorage.setItem("jwtoken", jwtoken[0]);
@@ -30,6 +30,7 @@ export default () => {
 
   const logout = async () => {
     localStorage.removeItem("jwtoken");
+    window.location = "/login"  // done this because isAuthenticated ,is not rendering in private route after setIsAuthenticated(false)
     setIsAuthenticated(false);
     return true;
   };

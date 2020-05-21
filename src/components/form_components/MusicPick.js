@@ -72,19 +72,20 @@ export default ({ label, required, name, value, defaultValue, onChange }) => {
         <Icon src={icon} />
         <BodyText>{isPlaying ? "Pause" : "Play"}</BodyText>
       </Player>
-      <label style={{ display: "block", textAlign: "center" }} for={name}>
+      <label style={{ display: "block", textAlign: "center" }}>
         <Button disabled={uploading}>
           {uploading ? "Uploading..." : "CHANGE MUSIC"}
         </Button>
+        <input
+          id={name}
+          style={{ display: "none" }}
+          type="file"
+          name={name}
+          accept="audio/*"
+          onChange={pickMusic}
+        />
       </label>
-      <input
-        id={name}
-        style={{ display: "none" }}
-        type="file"
-        name={name}
-        accept="audio/*"
-        onChange={pickMusic}
-      />
+
       {error && <ErrorText>{error.message}</ErrorText>}
     </div>
   );

@@ -1,13 +1,23 @@
-import React, { useState } from "react";
-import { Button } from "react-bootstrap";
+import { Button } from "@material-ui/core";
+import React, { useEffect, useState } from "react";
 import { extractStructureFromFile } from "services/ae";
+import { getLayersFromComposition, s3FileReader } from "services/helper";
 import styled from "styled-components";
 
 export default ({ value, onData, name, onError, onTouched }) => {
   const [hasPickedFile, setHasPickedFile] = useState(false);
   const [hasExtractedData, setHasExtractedData] = useState(false);
   const [error, setError] = useState(null);
-
+  const [compositions, setCompositions] = useState(null);
+  //handle extract layers on mount
+  useEffect(() => {
+    if (value) {
+      setHasPickedFile(true);
+      // get file data frm s3
+      // s3FileReader(value).then(extractStructureFromFile).then(onData).catch(setError);
+      setHasExtractedData(true);
+    }
+  }, []);
   const handlePickFile = async (e) => {
     try {
       e.preventDefault();
@@ -16,7 +26,8 @@ export default ({ value, onData, name, onError, onTouched }) => {
         (e?.dataTransfer?.files ?? [null])[0];
       if (!file) return;
       setHasPickedFile(true);
-      onData(await extractStructureFromFile(file));
+      setCompositions(await extractStructureFromFile(file));
+
       setHasExtractedData(true);
       onTouched(true);
     } catch (error) {
@@ -24,7 +35,19 @@ export default ({ value, onData, name, onError, onTouched }) => {
       setError(error);
     }
   };
-
+  useEffect(() => {
+    onData(compositions);
+  }, [compositions]);
+  function getTotalLayers() {
+    var length = 0;
+    const allLayers = Object.values(compositions.data)
+      .map((c) => {
+        var { textLayers, imageLayers } = getLayersFromComposition(c);
+        return [...textLayers, ...imageLayers];
+      })
+      .flat();
+    return allLayers.length;
+  }
   return (
     <Container
       className="text-muted p-4 bg-white"
@@ -37,7 +60,8 @@ export default ({ value, onData, name, onError, onTouched }) => {
         {!hasPickedFile && (
           <>
             <p>Drag Your File Here OR</p>
-            <Button as={"div"}>Pick File</Button>
+            <PickerButton>
+              Pick File</PickerButton>
             <br />
             <input
               className="invisible"
@@ -51,9 +75,12 @@ export default ({ value, onData, name, onError, onTouched }) => {
         {hasPickedFile &&
           (hasExtractedData ? (
             <>
-              <p>Good to go!</p>
+              <p className={"text-success"}>{`${
+                Object.keys(compositions.data).length
+                } compositions and ${getTotalLayers()} layers extracted.`}</p>
               <Button
-                as={"div"}
+                color="primary"
+                variant="contained"
                 children="Change"
                 onClick={() => {
                   setHasPickedFile(false);
@@ -62,9 +89,8 @@ export default ({ value, onData, name, onError, onTouched }) => {
               />
             </>
           ) : (
-            <p>Extracting Layer and compositions ...</p>
-          ))}
-        {error && <p className={"text-danger"}>{error.message}</p>}
+              <p>Extracting Layer and compositions ...</p>
+            ))}
       </LabelContent>
     </Container>
   );
@@ -79,9 +105,18 @@ const Container = styled.label`
   position: relative;
 `;
 const LabelContent = styled.div`
-  margin: 0;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:center;
 `;
+
+const PickerButton = styled.div`
+
+  background:#3f51b5; color: #fff;
+  padding: 10px;
+  padding-top: 6px;
+   padding-bottom: 6px;
+  border-radius: 5px;
+  width: fit-content;
+`
