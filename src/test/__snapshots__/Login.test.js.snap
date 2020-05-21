@@ -1,0 +1,152 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly when there are no Login 1`] = `
+<div
+  className="container"
+>
+  <div
+    className="justify-content-md-center row"
+  >
+    <div
+      className="col-md-4"
+    >
+      <form
+        className="mb-4 mt-5"
+        noValidate={true}
+        onSubmit={[Function]}
+      >
+        <h3
+          className="text-center mb-4"
+        >
+          Sign In
+        </h3>
+        <p
+          className="text-muted text-center mb-4"
+        >
+          Welcome back fam, what's cooking? 😎
+        </p>
+        <div
+          className="form-group"
+        >
+          <label
+            className="form-label"
+            htmlFor="formBasicEmail"
+          >
+            Email address
+          </label>
+          <input
+            className="form-control"
+            id="formBasicEmail"
+            name="email"
+            onBlur={[Function]}
+            onChange={[Function]}
+            placeholder="Enter email"
+            type="email"
+            value=""
+          />
+          <div
+            className="invalid-feedback"
+          />
+          <small
+            className="text-muted form-text"
+          >
+            We'll never share your email with anyone else.
+          </small>
+        </div>
+        <div
+          className="form-group"
+        >
+          <div
+            className="row"
+          >
+            <div
+              className="col"
+            >
+              <label
+                className="d-block form-label"
+                htmlFor="formBasicPassword"
+              >
+                Password
+              </label>
+            </div>
+            <div
+              className="text-right text-muted col"
+            >
+              <a
+                href="/forgotPassword"
+                onClick={[Function]}
+              >
+                Forgot Password
+              </a>
+            </div>
+          </div>
+          <div
+            style={
+              Object {
+                "display": "flex",
+              }
+            }
+          >
+            <input
+              className="form-control"
+              data-toggle="password"
+              id="formBasicPassword"
+              name="password"
+              onBlur={[Function]}
+              onChange={[Function]}
+              placeholder="Password"
+              type="password"
+              value=""
+            />
+            <div
+              className="input-group-addon"
+              style={
+                Object {
+                  "marginTop": "5px",
+                  "position": "relative",
+                  "right": "5vh",
+                }
+              }
+            >
+              <a
+                href=""
+                onClick={[Function]}
+                style={
+                  Object {
+                    "position": "relative",
+                  }
+                }
+              >
+                <img
+                  src="eye.svg"
+                />
+              </a>
+            </div>
+          </div>
+          <div
+            className="invalid-feedback"
+          />
+        </div>
+        <button
+          className="btn btn-primary btn-block"
+          disabled={false}
+          type="submit"
+        >
+          Login
+        </button>
+      </form>
+      <p
+        className="text-muted text-center"
+      >
+        Don't have an account yet? 
+        <a
+          href="/register"
+          onClick={[Function]}
+        >
+          Sign up.
+        </a>
+      </p>
+    </div>
+  </div>
+</div>
+`;

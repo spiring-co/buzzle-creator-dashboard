@@ -240,7 +240,3 @@ export default function NavBar({ items }) {
     </div>
   );
 }
-
-
-
-
