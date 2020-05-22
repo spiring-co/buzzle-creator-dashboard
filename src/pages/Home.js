@@ -11,7 +11,7 @@ import VideoTemplates from "pages/VideoTemplates";
 import React from "react";
 import { Route, Switch, useRouteMatch } from "react-router-dom";
 import Jobs from 'pages/Jobs'
-import NavBar from "../components/Navbar";
+import NavBar from "../components/NavBar";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
