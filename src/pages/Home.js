@@ -2,7 +2,7 @@ import { createStyles, makeStyles } from "@material-ui/core/styles";
 import {
   AssignmentInd,
   MonetizationOn,
-  VideoLibrary,
+  VideoLibrary, Work
 } from "@material-ui/icons";
 import Dashboard from "pages/Dashboard";
 import Orders from "pages/Orders";
@@ -10,8 +10,8 @@ import Profile from "pages/Profile";
 import VideoTemplates from "pages/VideoTemplates";
 import React from "react";
 import { Route, Switch, useRouteMatch } from "react-router-dom";
-
-import NavBar from "../components/Navbar";
+import Jobs from 'pages/Jobs'
+import NavBar from "../components/NavBar";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -52,6 +52,10 @@ export default () => {
       text: "Orders",
       icon: <MonetizationOn />,
       to: `${url}/orders`,
+    }, {
+      text: "Orders",
+      icon: <Work />,
+      to: `${url}/jobs`,
     },
   ];
   return (
@@ -72,6 +76,9 @@ export default () => {
           </Route>
           <Route path={`${path}/orders`}>
             <Orders />
+          </Route>
+          <Route path={`${path}/jobs`}>
+            <Jobs />
           </Route>
         </Switch>
       </main>
