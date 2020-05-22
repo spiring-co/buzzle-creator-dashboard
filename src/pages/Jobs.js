@@ -38,25 +38,26 @@ const JobsTable = () => {
     let history = useHistory()
     const classes = useStyles()
     let { path } = useRouteMatch();
+    const uri = `${process.env.REACT_APP_API_URL}/jobs/nreIdh0Pq`;
+
     useEffect(() => {
         // make fetch call to fetch Jobs
-        setTimeout(() => {
-            setData([
-                {
-                    id: 'id',
-                    idVideoTemplate: 'iiy867tguhjgb',
-                    idVersion: 'jyutrhe', state: 'created'
-                },
-                {
-                    id: 'id1',
-                    idVideoTemplate: 'iirgr67hjgb',
-                    idVersion: 'urhtrhe', state: 'started'
-                },
-            ])
-            setLoading(false)
-        }, 2000)
+        getJobs()
     }, [])
+    const getJobs = async () => {
+        try {
+            const result = await fetch(uri)
+            var response = await result.json()
 
+            setData([response])
+            setLoading(false)
+        }
+
+        catch (err) {
+            setLoading(false)
+            console.log(err)
+        }
+    }
 
     if (loading) {
         return <Paper style={{ height: 400, }}>
@@ -67,17 +68,31 @@ const JobsTable = () => {
         <div className={classes.container}>
             <MaterialTable
                 options={
-                    { rowStyle: (data, index) => ({ backgroundColor: index % 2 !== 0 ? '#d9dbde' : 'white' }) }
+                    {
+                        rowStyle: (data, index) => ({
+                            backgroundColor: index % 2 !== 0 ? '#d9dbde'
+                                : 'white',
+
+                        })
+                    }
                 }
                 title="Your Jobs"
                 columns={[
                     { title: 'Job Id', field: 'id' },
                     { title: 'Video Template Id', field: 'idVideoTemplate' },
                     { title: 'Version Id', field: 'idVersion' },
-                    { title: 'State', field: 'state', },
+                    {
+                        title: 'State', field: 'state', cellStyle: (data, rowdata) => ({
+                            color: data === 'created' ? 'green' : 'red'
+                        })
+                    },
                 ]}
                 data={data}
-                onRowClick={(e, rowData) => history.push(`${path}${rowData.id}`)} />
+                onRowClick={(e, rowData) => {
+                    history.push(`${path}${rowData.id}`
+                        , { jobDetails: rowData }
+                    )
+                }} />
         </div>
 
     )

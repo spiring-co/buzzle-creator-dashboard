@@ -75,12 +75,13 @@ export default ({ url, listHeader, listKeys }) => {
             <StyledTableRow
               ref={data.length === index + 1 ? lastElement : null}
               key={index}>
+
               {listKeys.map((i, index) => (
                 <StyledTableCell component="th" scope="row">
                   {index === 0 && (
                     <Link
                       to={{
-                        pathname: `${path}${item._id}`,
+                        pathname: `${path}${item.id}`,
                         state: { video: item },
                       }}
                     >

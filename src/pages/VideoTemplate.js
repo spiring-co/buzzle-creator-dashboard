@@ -5,14 +5,14 @@ import useApi from "services/api";
 export default (props) => {
   let { url } = useRouteMatch();
 
-  const videoTemplateId = props.location.state.video.videoTemplateId;
+  const id = props.location.state.video.id;
 
   //fetch creator id from localstorage
   const creatorId = "sjjsjjjkaaaa";
   const [isDeleting, setIsDeleting] = React.useState(false);
 
   const history = useHistory();
-  const { data, loading, error } = useApi(`/video/${videoTemplateId}`);
+  const { data, loading, error } = useApi(`/videoTemplates/${id}`);
 
   const handleEdit = async () => {
     history.push({
@@ -31,7 +31,7 @@ export default (props) => {
         setIsDeleting(true);
         const response = await fetch(
           process.env.REACT_APP_API_URL +
-            `/video/creator/${creatorId}/${videoTemplateId}`,
+          `/video/creator/${creatorId}/${id}`,
           {
             method: "DELETE",
             headers: {
