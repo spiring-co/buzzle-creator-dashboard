@@ -1,7 +1,7 @@
-import { Button, FormHelperText, Paper, TextField } from "@material-ui/core";
+import { Button, Paper, TextField } from "@material-ui/core";
 import ProjectFilePicker from "components/ProjectFilePicker";
 import { useFormik } from "formik";
-import React, { useContext, useEffect } from "react";
+import React from "react";
 import Form from "react-bootstrap/Form";
 import * as Yup from "yup";
 
@@ -12,8 +12,6 @@ export default ({ restoredValues, onSubmit }) => {
     handleSubmit,
     isSubmitting,
     setFieldValue,
-    setFieldError,
-    setFieldTouched,
     values,
     errors,
     touched,

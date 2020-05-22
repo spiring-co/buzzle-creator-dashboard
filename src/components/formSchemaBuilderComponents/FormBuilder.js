@@ -8,7 +8,7 @@ import FormStepper from "./FormStepper";
 import VersionDisplay from "./VersionDisplay";
 import VideoTemplateMetaForm from "./VideoTemplateMetaForm";
 
-function FormBuilder({ submitForm, isEdit, video }) {
+export default ({ submitForm, isEdit, video }) => {
   const [videoObj] = useContext(SegmentsContext);
   const { resetVideo, editVideoKeys, loadVideo } = useActions();
   const [loading, setLoading] = useState(true);
@@ -23,10 +23,10 @@ function FormBuilder({ submitForm, isEdit, video }) {
     }
     setLoading(false);
   }, []);
+
   useEffect(() => {}, [activeDisplayIndex]);
 
   const handleSubmitForm = async () => {
-    alert("Submiting");
     submitForm(videoObj);
   };
 
@@ -71,18 +71,11 @@ function FormBuilder({ submitForm, isEdit, video }) {
   };
 
   if (loading) return <p>Loading...</p>;
-  return (
-    <div>
-      <FormStepper activeDisplayIndex={activeDisplayIndex} />
-      {Steps[Object.keys(Steps)[activeDisplayIndex]]}
-    </div>
-  );
-}
 
-export default (props) => {
   return (
     <StateProvider>
-      <FormBuilder {...props} />
+      <FormStepper activeDisplayIndex={activeDisplayIndex} />
+      {Steps[Object.keys(Steps)[activeDisplayIndex]]}
     </StateProvider>
   );
 };
