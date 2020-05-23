@@ -1,34 +1,34 @@
 import React from "react";
 
 import {
-  ADD_SEGMENT,
-  EDIT_SEGMENT_KEYS,
-  REMOVE_FIELD,
-  REMOVE_SEGMENT,
   EDIT_VIDEO_KEYS,
-  EDIT_VERSION_KEYS,
+  ADD_FIELD,
+  UPDATE_FIELD,
+  REMOVE_FIELD,
   ADD_VERSION,
+  EDIT_VERSION_KEYS,
   REMOVE_VERSION,
   LOAD_STATE,
   RESET_STATE,
-  SWAP_SEGMENT_FIELDS,
+  SWAP_FIELDS,
   RESTORE_FIELDS,
+
 } from "./reducer";
-import { SegmentsContext } from "./store";
+import { VideoTemplateContext } from "./store";
 
 export default function useActions() {
-  const [state, dispatch] = React.useContext(SegmentsContext);
+  const [state, dispatch] = React.useContext(VideoTemplateContext);
 
   return {
-    restoreFieldsFromPreviousVersion: function (
-      activeVersionIndex,
-      currentCompositionFields
-    ) {
-      dispatch({
-        type: RESTORE_FIELDS,
-        payload: { activeVersionIndex, currentCompositionFields },
-      });
-    },
+    // restoreFieldsFromPreviousVersion: function (
+    //   activeVersionIndex,
+    //   currentCompositionFields
+    // ) {
+    //   dispatch({
+    //     type: RESTORE_FIELDS,
+    //     payload: { activeVersionIndex, currentCompositionFields },
+    //   });
+    // },
     editVideoKeys: function (value) {
       // value = : { title: "Video Title" }
       dispatch({
@@ -37,7 +37,7 @@ export default function useActions() {
       });
     },
     addVersion: function (value) {
-      // value = { comp_name: "main" }
+      // value = { composition: "main" }
       dispatch({ type: ADD_VERSION, payload: value });
     },
     editversionKeys: function (activeVersionIndex, value) {
@@ -58,94 +58,59 @@ export default function useActions() {
         },
       });
     },
-    addSegment: function (activeVersionIndex) {
-      dispatch({ type: ADD_SEGMENT, payload: { activeVersionIndex } });
-    },
 
     resetVideo: function () {
       dispatch({ type: RESET_STATE });
     },
 
-    setSegmentKeys: function (activeVersionIndex, activeIndex, value) {
-      //value: {title:"sometitle"}
-      dispatch({
-        type: EDIT_SEGMENT_KEYS,
-        payload: { activeVersionIndex, activeIndex, value },
-      });
-    },
-
-    addSegmentField: function (activeVersionIndex, activeIndex, value) {
+    addField: function (activeVersionIndex, value) {
       //value  is fieldObject= {name:"",label:"",maxLength:""...}
       dispatch({
-        type: EDIT_SEGMENT_KEYS,
+        type: ADD_FIELD,
         payload: {
-          activeIndex,
+
           activeVersionIndex,
-          value: {
-            fields: [
-              ...state.versions[activeVersionIndex].form.segments[activeIndex]
-                .fields,
-              value,
-            ],
-          },
+          value
         },
       });
     },
-    removeSegment: function (activeVersionIndex, activeIndex) {
-      dispatch({
-        type: REMOVE_SEGMENT,
-        payload: { activeVersionIndex, segmentIndex: activeIndex },
-      });
-    },
 
-    removeField: function (activeVersionIndex, activeIndex, fieldIndex) {
+    removeField: function (activeVersionIndex, fieldIndex) {
       dispatch({
         type: REMOVE_FIELD,
         payload: {
           activeVersionIndex,
-          activeIndex,
           fieldIndex,
         },
       });
     },
-    editSegmentField: function (
+    updateField: function (
       activeVersionIndex,
-      activeIndex,
-      editIndex,
+      fieldIndex,
       value
     ) {
       // value is field object
       dispatch({
-        type: EDIT_SEGMENT_KEYS,
+        type: UPDATE_FIELD,
         payload: {
-          activeVersionIndex,
-          activeIndex,
-          value: {
-            fields: state.versions[activeVersionIndex].form.segments[
-              activeIndex
-            ].fields.map((item, index) => {
-              if (index === editIndex) {
-                return value;
-              } else return item;
-            }),
-          },
+          activeVersionIndex, fieldIndex,
+          value
         },
       });
     },
+
     loadVideo: function (video) {
       dispatch({ type: LOAD_STATE, payload: video });
     },
     swapFields: function (
       activeVersionIndex,
-      activeIndex,
       swapIndex,
       targetSwapIndex
     ) {
       dispatch({
-        type: SWAP_SEGMENT_FIELDS,
+        type: SWAP_FIELDS,
         payload: {
           activeVersionIndex,
-          activeIndex,
           swapIndex,
           targetSwapIndex,
         },

@@ -3,7 +3,7 @@ import { Button, Radio, FormControlLabel, FormControl } from '@material-ui/core'
 import AssetUploader from "./AssetUploader";
 import { makeStyles } from '@material-ui/core/styles'
 import useActions from "contextStore/actions";
-import { SegmentsContext } from "contextStore/store";
+import { VideoTemplateContext } from "contextStore/store";
 import { zipMaker } from "services/helper";
 
 
@@ -28,7 +28,7 @@ export default function AssetUpload({
   handleSubmitForm,
 }) {
   const classes = useStyles()
-  const [videoObj] = useContext(SegmentsContext);
+  const [videoObj] = useContext(VideoTemplateContext);
   const [uploadType, setUploadType] = useState(
     Boolean(videoObj.assetsUri) ? "file" : ""
   );

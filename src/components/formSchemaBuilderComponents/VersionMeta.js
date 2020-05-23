@@ -1,12 +1,12 @@
 import React, { useContext, useState, useEffect } from "react";
 import useActions from "contextStore/actions";
-import { SegmentsContext } from "contextStore/store";
+import { VideoTemplateContext } from "contextStore/store";
 import { Button, TextField } from "@material-ui/core";
 
 export default ({ activeVersionIndex, openSegmentBuilder }) => {
   const { editversionKeys } = useActions();
 
-  const [videoObj] = useContext(SegmentsContext);
+  const [videoObj] = useContext(VideoTemplateContext);
   const [value, setValue] = useState(0);
 
   useEffect(() => { }, [value]);
@@ -50,21 +50,7 @@ export default ({ activeVersionIndex, openSegmentBuilder }) => {
         type="text"
         value={videoObj.versions[activeVersionIndex].description}
       />
-      <TextField
-        variant="outlined"
-        fulWidth={true}
-        margin="dense"
-        label="Version Price"
-        onChange={(e) => {
-          setValue(Math.random());
-          editversionKeys(activeVersionIndex, {
-            price: e.target.value,
-          });
-        }}
-        placeholder="Enter Version Price"
-        type="number"
-        value={videoObj.versions[activeVersionIndex].price}
-      />
+
 
       <Button
         style={{ width: 'fit-content', marginTop: 10 }}
@@ -72,8 +58,7 @@ export default ({ activeVersionIndex, openSegmentBuilder }) => {
         variant="contained"
         onClick={openSegmentBuilder}
         disabled={
-          !videoObj.versions[activeVersionIndex].title &&
-          !videoObj.versions[activeVersionIndex].price
+          !videoObj.versions[activeVersionIndex].title
         }
         children="Next"
       />

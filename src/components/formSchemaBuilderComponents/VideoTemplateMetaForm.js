@@ -47,6 +47,7 @@ export default ({ restoredValues, onSubmit }) => {
             as={ProjectFilePicker}
             onData={(f) => setFieldValue("projectFile", f)}
             //to restore value={values.fileUrl}
+
             value={values.projectFile}
             name={"projectFile"}
             placeholder="Pick or drop project file"
@@ -70,7 +71,7 @@ export default ({ restoredValues, onSubmit }) => {
           helperText={
             touched.title
               ? errors?.title ??
-                "Do not include generic terms like 'video', 'template' etc. in your title"
+              "Do not include generic terms like 'video', 'template' etc. in your title"
               : "Do not include generic terms like 'video', 'template' etc. in your title"
           }
         />

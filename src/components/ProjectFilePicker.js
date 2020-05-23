@@ -4,10 +4,9 @@ import { extractStructureFromFile } from "services/ae";
 import { getLayersFromComposition, s3FileReader } from "services/helper";
 import styled from "styled-components";
 
-export default ({ value, onData, name, onError, onTouched }) => {
+export default ({ value, onData, name }) => {
   const [hasPickedFile, setHasPickedFile] = useState(false);
   const [hasExtractedData, setHasExtractedData] = useState(false);
-  const [error, setError] = useState(null);
   const [compositions, setCompositions] = useState(null);
   //handle extract layers on mount
   useEffect(() => {
@@ -29,10 +28,11 @@ export default ({ value, onData, name, onError, onTouched }) => {
       setCompositions(await extractStructureFromFile(file));
 
       setHasExtractedData(true);
-      onTouched(true);
+      //onTouched(true);
     } catch (error) {
+
       setHasPickedFile(false);
-      setError(error);
+      //onError(error);
     }
   };
   useEffect(() => {
@@ -50,7 +50,6 @@ export default ({ value, onData, name, onError, onTouched }) => {
   }
   return (
     <Container
-      className="text-muted p-4 bg-white"
       onDragOver={(e) => e.preventDefault()}
       onDrop={hasPickedFile ? null : handlePickFile}
       onChange={hasPickedFile ? null : handlePickFile}
@@ -76,7 +75,7 @@ export default ({ value, onData, name, onError, onTouched }) => {
             <>
               <p className={"text-success"}>{`${
                 Object.keys(compositions.data).length
-              } compositions and ${getTotalLayers()} layers extracted.`}</p>
+                } compositions and ${getTotalLayers()} layers extracted.`}</p>
               <Button
                 color="primary"
                 variant="contained"
@@ -88,8 +87,8 @@ export default ({ value, onData, name, onError, onTouched }) => {
               />
             </>
           ) : (
-            <p>Extracting Layer and compositions ...</p>
-          ))}
+              <p>Extracting Layer and compositions ...</p>
+            ))}
       </LabelContent>
     </Container>
   );
