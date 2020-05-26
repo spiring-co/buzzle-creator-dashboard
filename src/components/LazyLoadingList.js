@@ -47,26 +47,49 @@ export default ({ url, listHeader, listKeys }) => {
   let { data, hasMore, loading, error } = usePaginatedFetch(url, page, 10);
   const observer = useRef();
 
-  const renderTestJob = (data) => {
-    var job = {
-      idVideoTemplate: data.id,
-      idVersion: data.versions[0].id,
-      assets: data.versions[0].editableLayers.map(layer => ({ ...layer, value: layer.label })),
-      actions: {
-        postender: [{
+  const renderTestJob = async (data) => {
+    try {
+      var job = {
+        idVideoTemplate: data.id,
+        idVersion: data.versions[0].id,
+        assets: data.versions[0].editableLayers.map(layer => ({
+          type: layer.type,
+          value: layer.label,
+          layerName: layer.layerName,
+          property: 'Source Text',
+        })
+        ),
+        actions: {
+          postrender: [{
 
-          "module": "@nexrender/action-encode",
-          "preset": "mp4",
-          "output": "encoded.mp4"
+            "module": "@nexrender/action-encode",
+            "preset": "mp4",
+            "output": "encoded.mp4"
 
-        }],
+          }],
 
-      },
+        },
+      }
+      var myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+      var raw = JSON.stringify(job);
+      var requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow'
+      };
+      fetch("http://localhost:5000/jobs", requestOptions)
+        .then(response => response.json())
+        .then(result => {
+          console.log(result)
+          history.push('/home/jobs')
+        })
+        .catch(error => console.log('error', error));
+
+    } catch (err) {
+      console.log(err)
     }
-    console.log(job)
-    history.push({
-      pathname: `/home/jobs`,
-    })
 
   }
   const lastElement = useCallback(

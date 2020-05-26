@@ -37,7 +37,7 @@ const JobsTable = () => {
     let history = useHistory();
     const classes = useStyles();
     let { path } = useRouteMatch();
-    const uri = `${process.env.REACT_APP_API_URL}/${localStorage.getItem('creatorId')}/jobs`;
+    const uri = `${process.env.REACT_APP_API_URL}/creators/${localStorage.getItem('creatorId')}/jobs`;
 
     useEffect(() => {
         // make fetch call to fetch Jobs
@@ -48,7 +48,7 @@ const JobsTable = () => {
             const result = await fetch(uri);
             var response = await result.json();
 
-            setData([response]);
+            setData(response);
             setLoading(false);
         } catch (err) {
             setLoading(false);
