@@ -7,7 +7,6 @@ import styled from "styled-components";
 export default ({ value, onData, name, onError, onTouched }) => {
   const [hasPickedFile, setHasPickedFile] = useState(false);
   const [hasExtractedData, setHasExtractedData] = useState(false);
-  const [error, setError] = useState(null);
   const [compositions, setCompositions] = useState(null);
   //handle extract layers on mount
   useEffect(() => {
@@ -25,28 +24,38 @@ export default ({ value, onData, name, onError, onTouched }) => {
         (e?.target?.files ?? [null])[0] ||
         (e?.dataTransfer?.files ?? [null])[0];
       if (!file) return;
-      setHasPickedFile(true);
-      setCompositions(await extractStructureFromFile(file));
 
+      setHasPickedFile(true);
+
+      const { data } = await extractStructureFromFile(file);
+      console.log(data);
+      setCompositions(data);
       setHasExtractedData(true);
+
+      onData(data);
       onTouched(true);
     } catch (error) {
+      console.error(error.message);
       setHasPickedFile(false);
-      setError(error);
+      onError(error);
     }
   };
   useEffect(() => {
-    onData(compositions);
+    console.log(compositions);
   }, [compositions]);
-  function getTotalLayers() {
-    var length = 0;
-    const allLayers = Object.values(compositions.data)
-      .map((c) => {
-        var { textLayers, imageLayers } = getLayersFromComposition(c);
-        return [...textLayers, ...imageLayers];
-      })
-      .flat();
-    return allLayers.length;
+
+  function getTotalLayers(c) {
+    try {
+      const allLayers = Object.values(c)
+        .map((c) => {
+          var { textLayers, imageLayers } = getLayersFromComposition(c);
+          return [...textLayers, ...imageLayers];
+        })
+        .flat();
+      return allLayers.length;
+    } catch (err) {
+      onError(err);
+    }
   }
   return (
     <Container
@@ -74,9 +83,9 @@ export default ({ value, onData, name, onError, onTouched }) => {
         {hasPickedFile &&
           (hasExtractedData ? (
             <>
-              <p className={"text-success"}>{`${
-                Object.keys(compositions.data).length
-              } compositions and ${getTotalLayers()} layers extracted.`}</p>
+              <p className={"text-success"}>{`
+              ${Object.keys(compositions || {}).length} compositions &
+              ${getTotalLayers(compositions)} layers extracted.`}</p>
               <Button
                 color="primary"
                 variant="contained"

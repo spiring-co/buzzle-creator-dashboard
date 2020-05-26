@@ -12,6 +12,8 @@ export default ({ restoredValues, onSubmit }) => {
     handleSubmit,
     isSubmitting,
     setFieldValue,
+    setFieldError,
+    setFieldTouched,
     values,
     errors,
     touched,
@@ -46,6 +48,8 @@ export default ({ restoredValues, onSubmit }) => {
           <Form.Control
             as={ProjectFilePicker}
             onData={(f) => setFieldValue("projectFile", f)}
+            onError={(e) => setFieldError(e.message)}
+            onTouched={setFieldTouched}
             //to restore value={values.fileUrl}
             value={values.projectFile}
             name={"projectFile"}

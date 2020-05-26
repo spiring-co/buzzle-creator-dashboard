@@ -2,16 +2,18 @@ import { createStyles, makeStyles } from "@material-ui/core/styles";
 import {
   AssignmentInd,
   MonetizationOn,
-  VideoLibrary, Work
+  VideoLibrary,
+  Work,
 } from "@material-ui/icons";
 import Dashboard from "pages/Dashboard";
+import Jobs from "pages/Jobs";
 import Orders from "pages/Orders";
 import Profile from "pages/Profile";
 import VideoTemplates from "pages/VideoTemplates";
 import React from "react";
 import { Route, Switch, useRouteMatch } from "react-router-dom";
-import Jobs from 'pages/Jobs'
-import NavBar from "../components/NavBar";
+
+import Navbar from "../components/Navbar";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -52,15 +54,16 @@ export default () => {
       text: "Orders",
       icon: <MonetizationOn />,
       to: `${url}/orders`,
-    }, {
-      text: "Orders",
+    },
+    {
+      text: "Jobs",
       icon: <Work />,
       to: `${url}/jobs`,
     },
   ];
   return (
     <div className={classes.root}>
-      <NavBar items={links} />
+      <Navbar items={links} />
       <main className={classes.content}>
         <div className={classes.toolbar} />
         <Switch>

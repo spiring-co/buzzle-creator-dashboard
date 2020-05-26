@@ -1,4 +1,5 @@
 import FormBuilder from "components/formSchemaBuilderComponents/FormBuilder";
+import { StateProvider } from "contextStore/store";
 import React from "react";
 import { Prompt, useHistory } from "react-router-dom";
 
@@ -72,7 +73,7 @@ export default (props) => {
     return <p>{isEditing ? "Editing" : "Submitting"} your template...</p>;
 
   return (
-    <div>
+    <StateProvider>
       <Prompt when={isBlocking} message={`You will lose all your data.`} />
       <h3 className="text-center mb-4">
         {isEdit ? "Edit Your " : "Add"} Video Template
@@ -82,6 +83,6 @@ export default (props) => {
         video={video}
         submitForm={isEdit ? handleEditForm : handleSubmitForm}
       />
-    </div>
+    </StateProvider>
   );
 };

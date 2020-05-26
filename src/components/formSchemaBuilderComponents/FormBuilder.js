@@ -1,5 +1,5 @@
 import useActions from "contextStore/actions";
-import { SegmentsContext, StateProvider } from "contextStore/store";
+import { SegmentsContext } from "contextStore/store";
 import React, { useContext, useEffect, useState } from "react";
 
 import AssetUpload from "./AssetUpload";
@@ -73,9 +73,9 @@ export default ({ submitForm, isEdit, video }) => {
   if (loading) return <p>Loading...</p>;
 
   return (
-    <StateProvider>
+    <>
       <FormStepper activeDisplayIndex={activeDisplayIndex} />
       {Steps[Object.keys(Steps)[activeDisplayIndex]]}
-    </StateProvider>
+    </>
   );
 };
