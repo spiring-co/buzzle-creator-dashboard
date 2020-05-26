@@ -14,6 +14,7 @@ import { Link, useHistory, useRouteMatch } from "react-router-dom";
 
 import usePaginatedFetch from "../services/usePaginatedFetch";
 
+
 const useStyles = makeStyles({
   table: {
     minWidth: 700,
@@ -46,6 +47,28 @@ export default ({ url, listHeader, listKeys }) => {
   let { data, hasMore, loading, error } = usePaginatedFetch(url, page, 10);
   const observer = useRef();
 
+  const renderTestJob = (data) => {
+    var job = {
+      idVideoTemplate: data.id,
+      idVersion: data.versions[0].id,
+      assets: data.versions[0].editableLayers.map(layer => ({ ...layer, value: layer.label })),
+      actions: {
+        postender: [{
+
+          "module": "@nexrender/action-encode",
+          "preset": "mp4",
+          "output": "encoded.mp4"
+
+        }],
+
+      },
+    }
+    console.log(job)
+    history.push({
+      pathname: `/home/jobs`,
+    })
+
+  }
   const lastElement = useCallback(
     (node) => {
       if (loading) return;
@@ -94,12 +117,8 @@ export default ({ url, listHeader, listKeys }) => {
                       color="primary"
                       variant="contained"
                       style={{ marginLeft: 10 }}
-                      onClick={() =>
-                        history.push({
-                          pathname: `/createOrder/${item.videoTemplateId}`,
-                        })
-                      }
-                      children={"Render Form"}
+                      onClick={() => renderTestJob(item)}
+                      children={"Render Test Job"}
                     />
                   )}
                 </StyledTableCell>

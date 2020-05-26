@@ -113,12 +113,12 @@ export default (state, action) => {
     case RESET_STATE:
       return {
         title: "",
-        idCreator: "sjjsjjjkaaaa",   //fetch from localStorage
+        idCreator: localStorage.getItem('creatorId'),   //fetch from localStorage
         src: "",
         versions: [],
         description: '',
         tags: [],
-        staticAssets: "",
+        staticAssets: [],
         idFontsUsed: [],
         thumbnail: '',
         isDeleted: false,

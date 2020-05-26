@@ -7,12 +7,12 @@ const VideoTemplateContext = createContext();
 const StateProvider = ({ children }) => {
   const [state, dispatch] = useReducer(segmentReducer, {
     title: "",
-    idCreator: "sjjsjjjkaaaa",   //fetch from localStorage
+    idCreator: localStorage.getItem('creatorId'),   //fetch from localStorage
     src: "",
     versions: [],
     description: '',
     tags: [],
-    staticAssets: "",
+    staticAssets: [],
     idFontsUsed: [],
     thumbnail: '',
     isDeleted: false,

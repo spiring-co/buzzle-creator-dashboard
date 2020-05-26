@@ -1,8 +1,9 @@
 import { useState } from "react";
-
+import { useHistory } from "react-router-dom";
 const baseUrl = process.env.REACT_APP_API_URL;
 
 export default () => {
+  const history = useHistory()
   const [isAuthenticated, setIsAuthenticated] = useState(
     localStorage.getItem("jwtoken") !== null
   );
@@ -23,14 +24,15 @@ export default () => {
     }
     const { jwtoken, creatorDetails } = await response.json();
     localStorage.setItem("jwtoken", jwtoken[0]);
-    localStorage.setItem("creatorDetails", creatorDetails[0]);
+
+    localStorage.setItem("creatorId", creatorDetails.creatorId);
     setIsAuthenticated(true);
     return jwtoken;
   };
 
   const logout = async () => {
     localStorage.removeItem("jwtoken");
-    window.location = "/login"  // done this because isAuthenticated ,is not rendering in private route after setIsAuthenticated(false)
+    history.push("/login")  // done this because isAuthenticated ,is not rendering in private route after setIsAuthenticated(false)
     setIsAuthenticated(false);
     return true;
   };

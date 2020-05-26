@@ -178,7 +178,7 @@ export default (props) => {
               return false;
             }
             return (
-              <MenuItem key={index} value={item.name}>
+              <MenuItem key={index} value={item.name} >
                 {item.name}
               </MenuItem>
             );
@@ -252,7 +252,14 @@ export default (props) => {
           <Select
             labelId="demo-simple-select-outlined-label"
             id="demo-simple-select-outlined"
-            onChange={({ target: { value } }) => setLayerName(value)}
+            onChange={({ target: { value } }) => {
+              setLayerName(value)
+              // if (type === 'image') {
+              //   setHeight(value.height)
+              //   setWidth(value.width)
+              // }
+
+            }}
             value={layerName}
             placeholder="Select Layer"
             label="Select Layer"

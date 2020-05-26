@@ -32,6 +32,7 @@ export default ({
       />
 
       <Button
+        disabled={usedFields.length === 0}
         style={{ marginTop: 10 }}
         color="primary"
         variant="contained"

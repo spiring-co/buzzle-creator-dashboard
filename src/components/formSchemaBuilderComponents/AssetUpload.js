@@ -72,8 +72,8 @@ export default function AssetUpload({
         "You can edit your template any time after submit, Submit Template ?"
       )
     ) {
-      alert("form submitted");
-      // call it to submit handleSubmitForm()
+
+      handleSubmitForm()
     }
   };
 

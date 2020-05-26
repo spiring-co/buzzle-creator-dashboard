@@ -1,4 +1,4 @@
-import { Button } from "@material-ui/core";
+import { Button, CircularProgress } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { extractStructureFromFile } from "services/ae";
 import { getLayersFromComposition, s3FileReader } from "services/helper";
@@ -86,8 +86,9 @@ export default ({ value, onData, name }) => {
                 }}
               />
             </>
-          ) : (
-              <p>Extracting Layer and compositions ...</p>
+          ) : (<><CircularProgress style={{ margin: 10 }} size={28} />
+            <p>Extracting Layer and compositions ...</p>
+          </>
             ))}
       </LabelContent>
     </Container>
@@ -95,12 +96,13 @@ export default ({ value, onData, name }) => {
 };
 
 const Container = styled.label`
-  border: dashed #ccc;
-  display: block;
-  height: 10rem;
-  border-radius: 0.2rem;
-  text-align: center;
-  position: relative;
+border: dashed #ccc;
+display: flex;
+height: 10rem;
+border-radius: 0.2rem;
+text-align: center;
+
+justify-content: center;
 `;
 const LabelContent = styled.div`
   display: flex;

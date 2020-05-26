@@ -20,7 +20,7 @@ export default (props) => {
       try {
         setIsEditing(true);
         const response = await fetch(
-          process.env.REACT_APP_API_URL + `/video/${videoTemplateId}`,
+          process.env.REACT_APP_API_URL + `/videoTemplates/${data.id}`,
           {
             method: "PUT",
             body: JSON.stringify(data),
@@ -46,9 +46,11 @@ export default (props) => {
     }
   };
   const handleSubmitForm = async (data) => {
+    alert("saving...")
+    console.log(data)
     try {
       setLoading(true);
-      const response = await fetch(process.env.REACT_APP_API_URL + `/video`, {
+      const response = await fetch(process.env.REACT_APP_API_URL + `/videoTemplates`, {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -62,7 +64,8 @@ export default (props) => {
         history.push("/home/videoTemplates");
       }
     } catch (err) {
-      alert(JSON.stringify(err));
+      setLoading(false);
+
       setError(err);
     }
   };

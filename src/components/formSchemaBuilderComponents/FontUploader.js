@@ -4,11 +4,10 @@ import useActions from "contextStore/actions";
 
 export default function FontUploader({ fontName, fontStatus }) {
   const [videoObj] = useContext(VideoTemplateContext);
-
   const { editVideoKeys } = useActions();
   const [loading, setLoading] = useState(true);
   const [result, setResult] = useState(
-    fontStatus ? true : videoObj.fonts.map((f) => f.name).includes(fontName)
+    fontStatus ? true : videoObj?.fonts?.map((f) => f?.name).includes(fontName)
   );
 
   const [error, setError] = useState(null);
@@ -17,7 +16,7 @@ export default function FontUploader({ fontName, fontStatus }) {
   useEffect(() => {
     setLoading(false);
     setResult(
-      fontStatus ? true : videoObj.fonts.map((f) => f.name).includes(fontName)
+      fontStatus ? true : videoObj?.fonts?.map((f) => f?.name).includes(fontName)
     );
   }, [fontStatus]);
 

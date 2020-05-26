@@ -132,8 +132,32 @@ export default ({
         _deleteField={() => _deleteField(item, index)}
         _onDrop={(e) => _onDrop(e, index)}
         index={index}
-        children={<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          {item.type === 'data' ? <TextFields fontSize={70} /> : <Wallpaper />}
+        children={<div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
+          {item.type === 'data' ? <><TextFields style={{
+            fontSize: 40,
+            margin: 10,
+            padding: 5,
+            border: '1px solid grey'
+          }} />
+            <Typography><strong>Max Length:</strong> {item.maxLength},
+            <strong>Label:</strong> {item.label},
+            <strong>Layer name:</strong> {item.layerName},
+            <strong>Required:</strong> {item.required ? 'true' : 'false'}
+            </Typography>
+          </> :
+            <>
+              <Wallpaper style={{
+                fontSize: 40,
+                margin: 10,
+                padding: 5,
+                border: '1px solid grey'
+              }} />
+              <Typography><strong>Width:</strong> {item.width},
+            <strong>Height:</strong> {item.height},
+            <strong>Layer name:</strong> {item.layerName},
+            <strong>Required:</strong> {item.required ? 'true' : 'false'}
+              </Typography>
+            </>}
         </div>}
       />
     );

@@ -7,8 +7,6 @@ export default (props) => {
 
   const id = props.location.state.video.id;
 
-  //fetch creator id from localstorage
-  const creatorId = "sjjsjjjkaaaa";
   const [isDeleting, setIsDeleting] = React.useState(false);
 
   const history = useHistory();
@@ -31,7 +29,7 @@ export default (props) => {
         setIsDeleting(true);
         const response = await fetch(
           process.env.REACT_APP_API_URL +
-          `/video/creator/${creatorId}/${id}`,
+          `/video/creator/${localStorage.getItem('creatorId')}/${id}`,
           {
             method: "DELETE",
             headers: {
