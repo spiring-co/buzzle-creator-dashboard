@@ -54,7 +54,7 @@ export default (props) => {
     }
   }, [loading, data, error]);
 
-  useEffect(() => {}, [activeSegment]);
+  useEffect(() => { }, [activeSegment]);
 
   const handleChange = (label, name, value, required) => {
     if (required) {
@@ -84,7 +84,7 @@ export default (props) => {
         assets: deserializeAssets(formData),
         form_data: formData,
         user,
-        composition: video.versions[versionIndex].comp_name,
+        composition: video.versions[versionIndex].composition,
         template: video._id,
         edit,
         uid: video._id,

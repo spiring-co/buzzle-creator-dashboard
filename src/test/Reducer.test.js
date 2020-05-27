@@ -22,7 +22,7 @@ const BLANK_FIELD = {
 
 const initalState = {
   //fetch from localStorage
-  creatorId: "sjjsjjjkaaaa",
+  creatorId: localStorage.getItem('creatorId'),
   tags: [],
   versions: [],
   isDeleted: false,
@@ -45,8 +45,8 @@ test("Add Version 0 Correctly", () => {
   expect(
     segmentReducer(initalState, {
       type: ADD_VERSION,
-      payload: { comp_name: "main" }
-    }).versions[0].comp_name
+      payload: { composition: "main" }
+    }).versions[0].composition
   ).toBe("main");
 });
 //add version 1
@@ -54,8 +54,8 @@ test("Add Version 1 Correctly", () => {
   expect(
     segmentReducer(initalState, {
       type: ADD_VERSION,
-      payload: { comp_name: "second" }
-    }).versions[1].comp_name
+      payload: { composition: "second" }
+    }).versions[1].composition
   ).toBe("second");
 });
 

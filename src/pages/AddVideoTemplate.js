@@ -2,7 +2,6 @@ import FormBuilder from "components/formSchemaBuilderComponents/FormBuilder";
 import { StateProvider } from "contextStore/store";
 import React from "react";
 import { Prompt, useHistory } from "react-router-dom";
-
 export default (props) => {
   const [isBlocking, setIsBlocking] = React.useState(true);
   const [isEditing, setIsEditing] = React.useState(false);
@@ -21,7 +20,7 @@ export default (props) => {
       try {
         setIsEditing(true);
         const response = await fetch(
-          process.env.REACT_APP_API_URL + `/video/${videoTemplateId}`,
+          process.env.REACT_APP_API_URL + `/videoTemplates/${data.id}`,
           {
             method: "PUT",
             body: JSON.stringify(data),
@@ -47,23 +46,29 @@ export default (props) => {
     }
   };
   const handleSubmitForm = async (data) => {
+    alert("saving...");
+    console.log(data);
     try {
       setLoading(true);
-      const response = await fetch(process.env.REACT_APP_API_URL + `/video`, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      const response = await fetch(
+        process.env.REACT_APP_API_URL + `/videoTemplates`,
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        }
+      );
       setLoading(false);
       if (response.ok) {
         setIsBlocking(false);
         history.push("/home/videoTemplates");
       }
     } catch (err) {
-      alert(JSON.stringify(err));
+      setLoading(false);
+
       setError(err);
     }
   };

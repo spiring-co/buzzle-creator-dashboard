@@ -1,10 +1,11 @@
 /* eslint-disable default-case */
 import useActions from "contextStore/actions";
-import { SegmentsContext } from "contextStore/store";
+import { VideoTemplateContext } from "contextStore/store";
 import React, { useContext, useEffect, useState } from "react";
 import { getLayersFromComposition } from "services/helper";
 import AddFields from "./AddFieldDialog";
-
+import { Button, Paper, Typography } from '@material-ui/core'
+import { Wallpaper, TextFields } from '@material-ui/icons'
 export default ({
   compositions,
   activeIndex,
@@ -13,15 +14,15 @@ export default ({
   activeVersionIndex,
   setUsedFields,
 }) => {
-  const [videoObj] = useContext(SegmentsContext);
+  const [videoObj] = useContext(VideoTemplateContext);
 
   const {
-    editSegmentField,
-    addSegmentField,
+    updateField,
+    addField,
     removeField,
     swapFields,
-    restoreFieldsFromPreviousVersion,
-    setSegmentKeys,
+    // restoreFieldsFromPreviousVersion,
+
   } = useActions();
   const [currentCompositionFields, setCurrentCompositionFields] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
@@ -34,15 +35,15 @@ export default ({
     setCurrentCompositionFields([
       ...currentCompositionFields,
       ...getLayersFromComposition(
-        compositions[videoObj?.versions[activeVersionIndex]?.comp_name],
+        compositions[videoObj?.versions[activeVersionIndex]?.composition],
         "textLayers"
       ).map((i) => i.name),
       ...getLayersFromComposition(
-        compositions[videoObj?.versions[activeVersionIndex]?.comp_name],
+        compositions[videoObj?.versions[activeVersionIndex]?.composition],
         "imageLayers"
       ).map((i) => i.name),
       ...getLayersFromComposition(
-        compositions[videoObj?.versions[activeVersionIndex]?.comp_name],
+        compositions[videoObj?.versions[activeVersionIndex]?.composition],
         "pickerLayers"
       ).map((i) => i.name),
     ]);
@@ -54,32 +55,31 @@ export default ({
       !editVersion &&
       videoObj.versions[0].title !== "" &&
       activeVersionIndex !== 0 &&
-      videoObj.versions[activeVersionIndex].form.segments[activeIndex].fields
-        .length === 0
+      videoObj.versions[activeVersionIndex].editableLayers.length === 0
     ) {
       if (
         window.confirm("Do you want to restore fields from previous version")
       ) {
         // make array of current comp fields
 
-        restoreFieldsFromPreviousVersion(
-          activeVersionIndex,
-          currentCompositionFields
-        );
-        // TODO proper rerender after restore
-        setRestoreStatus(true);
-        setValue(Math.random());
+        // restoreFieldsFromPreviousVersion(
+        //   activeVersionIndex,
+        //   currentCompositionFields
+        // );
+        // // TODO proper rerender after restore
+        // setRestoreStatus(true);
+        // setValue(Math.random());
       }
     }
   }, []);
 
-  useEffect(() => {}, [value]);
+  useEffect(() => { }, [value]);
   //  function to extract layers from compositions, c is composition object and type is textLayer or imageLayer
 
-  const addField = (value) => {
-    setUsedFields([...usedFields, value.name]);
-    console.log(usedFields.length);
-    addSegmentField(activeVersionIndex, activeIndex, value);
+  const handleAddField = (value) => {
+
+    setUsedFields([...usedFields, value.layerName]);
+    addField(activeVersionIndex, value);
   };
 
   const _editField = (index) => {
@@ -88,7 +88,7 @@ export default ({
   };
 
   const _deleteField = (item, index) => {
-    setUsedFields(usedFields.filter((i) => i !== item.name));
+    setUsedFields(usedFields.filter((i) => i !== item.layerName));
     removeField(activeVersionIndex, activeIndex, index);
   };
 
@@ -105,32 +105,25 @@ export default ({
   const editFieldValue = (value) => {
     //if user changed field name
     if (
-      videoObj.versions[activeVersionIndex].form.segments[activeIndex].fields[
+      videoObj.versions[activeVersionIndex].editableLayers[
         editIndex
-      ].name !== value.name
+      ].layerName !== value.layerName
     ) {
       setUsedFields(
         usedFields.map((item) => {
           if (
             item ===
-            videoObj.versions[activeVersionIndex].form.segments[activeIndex]
-              .fields[editIndex].name
+            videoObj.versions[activeVersionIndex].editableLayers[editIndex].layerName
           ) {
-            return value.name;
+            return value.layerName;
           } else return item;
         })
       );
     }
-    editSegmentField(activeVersionIndex, activeIndex, editIndex, value);
+    updateField(activeVersionIndex, editIndex, value);
     setEditIndex(null);
   };
 
-  if (
-    activeIndex < 0 ||
-    videoObj.versions[activeVersionIndex].form.segments[activeIndex] == null
-  ) {
-    return "Add a segment to continue";
-  }
 
   const renderFieldPreview = (item, index) => {
     return (
@@ -139,35 +132,49 @@ export default ({
         _deleteField={() => _deleteField(item, index)}
         _onDrop={(e) => _onDrop(e, index)}
         index={index}
-        children={<p>{JSON.stringify(item)}</p>}
+        children={<div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
+          {item.type === 'data' ? <><TextFields style={{
+            fontSize: 40,
+            margin: 10,
+            padding: 5,
+            border: '1px solid grey'
+          }} />
+            <Typography><strong>Max Length:</strong> {item.maxLength},
+            <strong>Label:</strong> {item.label},
+            <strong>Layer name:</strong> {item.layerName},
+            <strong>Required:</strong> {item.required ? 'true' : 'false'}
+            </Typography>
+          </> :
+            <>
+              <Wallpaper style={{
+                fontSize: 40,
+                margin: 10,
+                padding: 5,
+                border: '1px solid grey'
+              }} />
+              <Typography><strong>Width:</strong> {item.width},
+            <strong>Height:</strong> {item.height},
+            <strong>Layer name:</strong> {item.layerName},
+            <strong>Required:</strong> {item.required ? 'true' : 'false'}
+              </Typography>
+            </>}
+        </div>}
       />
     );
   };
 
   return (
-    <div style={styles.container}>
-      <input
-        style={styles.input}
-        value={
-          videoObj.versions[activeVersionIndex].form.segments[activeIndex].title
-        }
-        type="text"
-        placeholder="Enter Section Title"
-        onChange={(e) => {
-          setValue(Math.random());
-          setSegmentKeys(activeVersionIndex, activeIndex, {
-            title: e.target.value,
-          });
-        }}
-      />
-      {videoObj.versions[activeVersionIndex].form.segments[
-        activeIndex
-      ].fields.map(renderFieldPreview)}
-      <button
+    <Paper style={styles.container}>
+
+      {videoObj.versions[activeVersionIndex].editableLayers.map(renderFieldPreview)}
+      <Button
+        variant="outlined"
+        color="primary"
         onClick={() => {
+          setEditIndex(null);
           usedFields.length !== currentCompositionFields.length
             ? setIsDialogVisible(true)
-            : alert("All Fields in this version are used up");
+            : alert("No layers in the composition");
         }}
         children="Add Field"
       />
@@ -175,29 +182,25 @@ export default ({
         usedFields.length !== currentCompositionFields.length && (
           <AddFields
             textLayers={getLayersFromComposition(
-              compositions[videoObj?.versions[activeVersionIndex]?.comp_name],
+              compositions[videoObj?.versions[activeVersionIndex]?.composition],
               "textLayers"
             )}
             imageLayers={getLayersFromComposition(
-              compositions[videoObj?.versions[activeVersionIndex]?.comp_name],
+              compositions[videoObj?.versions[activeVersionIndex]?.composition],
               "imageLayers"
             )}
             usedFields={usedFields}
             field={
-              videoObj.versions[activeVersionIndex].form.segments[activeIndex]
-                .fields[editIndex]
+              videoObj.versions[activeVersionIndex].editableLayers[editIndex]
             }
             editField={editIndex !== null}
             toggleDialog={setIsDialogVisible}
             editFieldValue={editFieldValue}
-            addField={addField}
-            name={
-              videoObj.versions[activeVersionIndex].form.segments[activeIndex]
-                .title
-            }
+            addField={handleAddField}
+
           />
         )}
-    </div>
+    </Paper>
   );
 };
 
@@ -210,7 +213,7 @@ const FieldPreviewContainer = ({
   ...props
 }) => {
   return (
-    <div
+    <Paper
       style={styles.fieldPreview}
       draggable={true}
       onDrop={_onDrop}
@@ -219,17 +222,25 @@ const FieldPreviewContainer = ({
       {...props}
     >
       {children}
-      <button onClick={_editField}>Edit</button>
-      <button onClick={_deleteField}>Delete</button>
-    </div>
+      <Button
+        style={{ margin: 10, marginBottom: 0 }}
+        variant="contained"
+        color="primary"
+        onClick={_editField}>Edit</Button>
+      <Button
+        style={{ margin: 10, marginBottom: 0 }}
+        variant="outlined"
+        color="secondary"
+        onClick={_deleteField}>Delete</Button>
+    </Paper>
   );
 };
 
 const styles = {
   container: {
-    border: "1px solid black",
-    margin: "auto",
+
+    marginTop: 10, marginBottom: 10,
     padding: 15,
   },
-  fieldPreview: { border: " black solid 1px", padding: 20, margin: 10 },
+  fieldPreview: { padding: 20, margin: 10 },
 };

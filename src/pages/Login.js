@@ -18,7 +18,7 @@ import clsx from "clsx";
 import { useFormik } from "formik";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import useAuth from "services/auth";
 import * as Yup from "yup";
 
@@ -43,6 +43,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 export default () => {
+  const history = useHistory()
   const classes = useStyles();
   const [showPassword, setShowPassword] = useState(false);
   const { t, i18n } = useTranslation();
@@ -69,7 +70,7 @@ export default () => {
       try {
         setLoading(true);
         await login(email, password);
-        window.location = "/home"; // should we change getcreator in backend to search for isVeirified is true also
+        history.push("/home"); // should we change getcreator in backend to search for isVeirified is true also
       } catch (e) {
         setError(e);
       } finally {

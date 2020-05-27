@@ -1,10 +1,10 @@
-import { Button } from "@material-ui/core";
+import { Button, CircularProgress } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { extractStructureFromFile } from "services/ae";
 import { getLayersFromComposition, s3FileReader } from "services/helper";
 import styled from "styled-components";
 
-export default ({ value, onData, name, onError, onTouched }) => {
+export default ({ value, onData, name, onTouched, onError }) => {
   const [hasPickedFile, setHasPickedFile] = useState(false);
   const [hasExtractedData, setHasExtractedData] = useState(false);
   const [compositions, setCompositions] = useState(null);
@@ -27,9 +27,9 @@ export default ({ value, onData, name, onError, onTouched }) => {
 
       setHasPickedFile(true);
 
-      const { data } = await extractStructureFromFile(file);
+      const data = await extractStructureFromFile(file);
       console.log(data);
-      setCompositions(data);
+      setCompositions(data.data);
       setHasExtractedData(true);
 
       onData(data);
@@ -59,7 +59,6 @@ export default ({ value, onData, name, onError, onTouched }) => {
   }
   return (
     <Container
-      className="text-muted p-4 bg-white"
       onDragOver={(e) => e.preventDefault()}
       onDrop={hasPickedFile ? null : handlePickFile}
       onChange={hasPickedFile ? null : handlePickFile}
@@ -97,7 +96,10 @@ export default ({ value, onData, name, onError, onTouched }) => {
               />
             </>
           ) : (
-            <p>Extracting Layer and compositions ...</p>
+            <>
+              <CircularProgress style={{ margin: 10 }} size={28} />
+              <p>Extracting Layer and compositions ...</p>
+            </>
           ))}
       </LabelContent>
     </Container>
@@ -106,11 +108,12 @@ export default ({ value, onData, name, onError, onTouched }) => {
 
 const Container = styled.label`
   border: dashed #ccc;
-  display: block;
+  display: flex;
   height: 10rem;
   border-radius: 0.2rem;
   text-align: center;
-  position: relative;
+
+  justify-content: center;
 `;
 const LabelContent = styled.div`
   display: flex;

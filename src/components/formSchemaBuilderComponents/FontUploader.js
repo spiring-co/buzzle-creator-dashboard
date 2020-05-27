@@ -1,14 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
-import { SegmentsContext } from "contextStore/store";
+import { VideoTemplateContext } from "contextStore/store";
 import useActions from "contextStore/actions";
 
 export default function FontUploader({ fontName, fontStatus }) {
-  const [videoObj] = useContext(SegmentsContext);
-
+  const [videoObj] = useContext(VideoTemplateContext);
   const { editVideoKeys } = useActions();
   const [loading, setLoading] = useState(true);
   const [result, setResult] = useState(
-    fontStatus ? true : videoObj.fonts.map((f) => f.name).includes(fontName)
+    fontStatus ? true : videoObj?.fonts?.map((f) => f?.name).includes(fontName)
   );
 
   const [error, setError] = useState(null);
@@ -17,7 +16,7 @@ export default function FontUploader({ fontName, fontStatus }) {
   useEffect(() => {
     setLoading(false);
     setResult(
-      fontStatus ? true : videoObj.fonts.map((f) => f.name).includes(fontName)
+      fontStatus ? true : videoObj?.fonts?.map((f) => f?.name).includes(fontName)
     );
   }, [fontStatus]);
 
@@ -67,20 +66,20 @@ export default function FontUploader({ fontName, fontStatus }) {
       ) : result ? (
         <p style={{ color: "green" }}>Success</p>
       ) : (
-        <label
-          style={{ padding: 5, border: "1px solid black", borderRadius: 10 }}
-        >
-          Upload Font
-          <input
-            id={fontName}
-            style={{ display: "none" }}
-            type="file"
-            name={fontName}
-            accept={[".ttf", ".otf"]}
-            onChange={handleFontUpload}
-          />
-        </label>
-      )}
+            <label
+              style={{ padding: 5, border: "1px solid black", borderRadius: 10 }}
+            >
+              Upload Font
+              <input
+                id={fontName}
+                style={{ display: "none" }}
+                type="file"
+                name={fontName}
+                accept={[".ttf", ".otf"]}
+                onChange={handleFontUpload}
+              />
+            </label>
+          )}
     </div>
   );
 }

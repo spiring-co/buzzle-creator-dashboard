@@ -1,5 +1,5 @@
 import useActions from "contextStore/actions";
-import { SegmentsContext } from "contextStore/store";
+import { StateProvider, VideoTemplateContext } from "contextStore/store";
 import React, { useContext, useEffect, useState } from "react";
 
 import AssetUpload from "./AssetUpload";
@@ -9,7 +9,7 @@ import VersionDisplay from "./VersionDisplay";
 import VideoTemplateMetaForm from "./VideoTemplateMetaForm";
 
 export default ({ submitForm, isEdit, video }) => {
-  const [videoObj] = useContext(SegmentsContext);
+  const [videoObj] = useContext(VideoTemplateContext);
   const { resetVideo, editVideoKeys, loadVideo } = useActions();
   const [loading, setLoading] = useState(true);
   const [activeDisplayIndex, setActiveDisplayIndex] = useState(0);
@@ -35,7 +35,7 @@ export default ({ submitForm, isEdit, video }) => {
 
     setCompositions(projectFile?.data ?? []);
 
-    editVideoKeys({ tags, title, description, fileUrl: projectFile.fileUrl });
+    editVideoKeys({ tags, title, description, src: projectFile.fileUrl });
     setActiveDisplayIndex(1);
   };
 

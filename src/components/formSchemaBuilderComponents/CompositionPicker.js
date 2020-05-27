@@ -6,7 +6,13 @@ import {
   Select,
 } from "@material-ui/core";
 import React from "react";
-export default ({ comp_name, setComp_name, compositions, openVersionMeta }) => {
+
+export default ({
+  composition,
+  setCompoisition,
+  compositions,
+  openVersionMeta,
+}) => {
   return (
     <form
       style={{
@@ -25,8 +31,8 @@ export default ({ comp_name, setComp_name, compositions, openVersionMeta }) => {
         <Select
           labelId="demo-simple-select-outlined-label"
           id="demo-simple-select-outlined"
-          onChange={(e) => setComp_name(e.target.value)}
-          value={comp_name}
+          onChange={(e) => setCompoisition(e.target.value)}
+          value={composition}
           placeholder="Select Composition"
           label="Select Composition"
         >
@@ -47,7 +53,7 @@ export default ({ comp_name, setComp_name, compositions, openVersionMeta }) => {
         color={"primary"}
         variant="outlined"
         onClick={() => openVersionMeta()}
-        disabled={comp_name === ""}
+        disabled={composition === ""}
         children="Add"
       />
     </form>

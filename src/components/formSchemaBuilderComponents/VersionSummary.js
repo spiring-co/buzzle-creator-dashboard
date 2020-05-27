@@ -6,9 +6,9 @@ export default ({
   videoObj,
   openSegmentsBuilder,
   removeVersion,
-  setComp_name,
+  setCompoisition,
   compositions,
-  comp_name,
+  composition,
   segmentDisplay,
   handleSubmitForm,
   setSegmentDisplay,
@@ -38,7 +38,7 @@ export default ({
               <Form.Control
                 as="select"
                 value="Choose..."
-                onChange={(e) => setComp_name(e.target.value)}
+                onChange={(e) => setCompoisition(e.target.value)}
               >
                 <option disabled selected value="">
                   Select Composition
@@ -57,7 +57,7 @@ export default ({
                 // style={{ float: "right" }}
                 variant="outline-primary"
                 onClick={() => openSegmentsBuilder()}
-                disabled={comp_name === ""}
+                disabled={composition === ""}
               >
                 Add
               </Button>

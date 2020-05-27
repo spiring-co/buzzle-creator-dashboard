@@ -8,7 +8,7 @@ export default ({ activeStep, editVersion, renderStep }) => {
   const steps = [
     `${editVersion ? "Edit" : "Add"} Version`,
     `${editVersion ? "Edit" : "Add"} Version Meta`,
-    `${editVersion ? "Edit" : "Add"} Segment`,
+    `${editVersion ? "Edit" : "Add"} Fields`,
   ];
   return (
     <Stepper activeStep={activeStep} orientation="vertical">

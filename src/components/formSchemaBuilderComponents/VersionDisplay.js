@@ -1,10 +1,10 @@
 import { Button, } from "@material-ui/core";
 import useActions from "contextStore/actions";
-import { SegmentsContext } from "contextStore/store";
+import { VideoTemplateContext } from "contextStore/store";
 import React, { useContext, useEffect, useState } from "react";
 
 import CompositionPicker from "./CompositionPicker";
-import SegmentDisplay from "./SegmentDisplay";
+import LayerAdder from "./LayerAdder";
 import VersionMeta from "./VersionMeta";
 import VersionStepper from "./VersionStepper";
 
@@ -12,16 +12,15 @@ export default ({
   isEdit,
   compositions,
   activeDisplayIndex,
-
   setActiveDisplayIndex,
 }) => {
-  const [videoObj] = useContext(SegmentsContext);
+  const [videoObj] = useContext(VideoTemplateContext);
   const [activeVersionIndex, setActiveVersionIndex] = useState(0);
   const [editIndex, setEditIndex] = useState(null);
   const [editVersion, setEditVersion] = useState(false);
   const { addVersion, removeVersion } = useActions();
   const [activeStep, setActiveStep] = useState(0);
-  const [comp_name, setComp_name] = useState("");
+  const [composition, setCompoisition] = useState("");
 
   useEffect(() => {
     if (isEdit) {
@@ -35,7 +34,7 @@ export default ({
       setEditIndex(index);
       setEditVersion(true);
     } else {
-      addVersion({ comp_name });
+      addVersion({ composition });
     }
     setActiveStep(activeStep + 1);
   };
@@ -49,7 +48,7 @@ export default ({
     setEditVersion(false);
     setEditIndex(null);
     setActiveStep(0);
-    setComp_name("");
+    setCompoisition("");
   };
 
   const renderStep = (activeStep) => {
@@ -57,8 +56,8 @@ export default ({
       case 0:
         return (
           <CompositionPicker
-            comp_name={comp_name}
-            setComp_name={setComp_name}
+            composition={composition}
+            setCompoisition={setCompoisition}
             compositions={compositions}
             openVersionMeta={openVersionMeta}
           />
@@ -72,7 +71,7 @@ export default ({
         );
       case 2:
         return (
-          <SegmentDisplay
+          <LayerAdder
             isEdit={isEdit}
             editVersion={editVersion}
             compositions={compositions}
@@ -101,7 +100,10 @@ export default ({
             <p style={{ fontSize: 15 }}>{JSON.stringify(item)}</p>
             <button onClick={() => openVersionMeta(index, true)}>isEdit</button>
             <span> </span>
-            <button onClick={() => removeVersion(index)}>Delete</button>
+            <button onClick={() => {
+              setActiveVersionIndex(activeVersionIndex - 1)
+              removeVersion(index)
+            }}>Delete</button>
           </div>
         );
       })}
@@ -134,63 +136,3 @@ export default ({
     </div>
   );
 };
-
-{
-  /* <div style={{ textAlign: "center" }}>
-      <p>{isEdit ? "View Versions" : "Create Versions"}</p>
-
-      {videoObj?.versions.map((item, index) => {
-        return (
-          <div style={{ border: "1px solid black", padding: 10, margin: 10 }}>
-            <p style={{ fontSize: 15 }}>{JSON.stringify(item)}</p>
-            <button onClick={() => openVersionMeta(index, true)}>
-              isEdit
-            </button>
-            <span> </span>
-            <button onClick={() => removeVersion(index)}>Delete</button>
-          </div>
-        );
-      })}
-      {!isEdit && (
-        <div style={{ margin: 10 }}>
-          <select onChange={(e) => setComp_name(e.target.value)}>
-            <option disabled selected value="">
-              Select Composition
-            </option>
-            {Object.keys(compositions).map((item, index) => {
-              return (
-                <option key={index} id={index} value={item}>
-                  {item}
-                </option>
-              );
-            })}
-          </select>
-          <button
-            onClick={() => openVersionMeta()}
-            disabled={comp_name === ""}
-          >
-            Add
-          </button>
-        </div>
-      )}
-      <br />
-      <button
-        onClick={() =>
-          activeDisplayIndex === 2
-            ? setActiveDisplayIndex(1)
-            : setActiveDisplayIndex(0)
-        }
-        disabled={!activeDisplayIndex === 2 && !activeDisplayIndex === 1}
-      >
-        Back
-      </Button>
-      <Button
-        style={{ float: "left" }}
-        variant="outline-primary"
-        disabled={videoTemplate.versions.length === 0}
-        onClick={handleSubmitForm}
-      >
-        {isEdit ? "Save Edits" : "Submit Form"}
-      </button>
-    </div> */
-}
