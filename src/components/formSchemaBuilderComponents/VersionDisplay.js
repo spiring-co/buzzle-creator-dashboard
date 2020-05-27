@@ -14,11 +14,12 @@ export default ({
   activeDisplayIndex,
   setActiveDisplayIndex,
 }) => {
+
   const [videoObj] = useContext(VideoTemplateContext);
   const [activeVersionIndex, setActiveVersionIndex] = useState(0);
   const [editIndex, setEditIndex] = useState(null);
   const [editVersion, setEditVersion] = useState(false);
-  const { addVersion, removeVersion } = useActions();
+  const { addVersion, removeVersion, editversionKeys } = useActions();
   const [activeStep, setActiveStep] = useState(0);
   const [composition, setCompoisition] = useState("");
 
@@ -65,8 +66,19 @@ export default ({
       case 1:
         return (
           <VersionMeta
-            activeVersionIndex={editVersion ? editIndex : activeVersionIndex}
-            openSegmentBuilder={openSegmentBuilder}
+            onSubmit={(data) => {
+              editversionKeys(editVersion ? editIndex : activeVersionIndex, {
+                title: data.title,
+                description: data.description
+              });
+              openSegmentBuilder()
+            }
+            }
+            initialValue={editVersion &&
+            {
+              title: videoObj?.versions[editIndex]?.title,
+              description: videoObj?.versions[editIndex]?.description
+            }}
           />
         );
       case 2:

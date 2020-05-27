@@ -59,8 +59,8 @@ export default () => {
     touched,
   } = useFormik({
     initialValues: {
-      email: "shivam.sasalol@yahoo.com",
-      password: "password",
+      email: "harshb.work@gmail.com",
+      password: "butter",
     },
     validationSchema: Yup.object({
       email: Yup.string().email(t("enterEmail")).required(t("required")),

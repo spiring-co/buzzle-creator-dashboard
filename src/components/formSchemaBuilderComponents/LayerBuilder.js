@@ -190,9 +190,16 @@ export default ({
               "imageLayers"
             )}
             usedFields={usedFields}
-            field={
-              videoObj.versions[activeVersionIndex].editableLayers[editIndex]
-            }
+
+            initialValue={{
+              type: videoObj.versions[activeVersionIndex].editableLayers[editIndex]?.type ?? "",
+              layerName: videoObj.versions[activeVersionIndex].editableLayers[editIndex]?.layerName ?? "",
+              label: videoObj.versions[activeVersionIndex].editableLayers[editIndex]?.label ?? "",
+              required: videoObj.versions[activeVersionIndex].editableLayers[editIndex]?.required ?? false,
+              width: videoObj.versions[activeVersionIndex].editableLayers[editIndex]?.width ?? 0,
+              height: videoObj.versions[activeVersionIndex].editableLayers[editIndex]?.height ?? 0,
+              maxLength: videoObj.versions[activeVersionIndex].editableLayers[editIndex]?.maxLength ?? 0
+            }}
             editField={editIndex !== null}
             toggleDialog={setIsDialogVisible}
             editFieldValue={editFieldValue}

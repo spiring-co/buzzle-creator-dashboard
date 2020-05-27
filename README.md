@@ -13,13 +13,14 @@
 ### Run
 
 1. `git clone https://github.com/HarshBhatia/pharaoh.git && cd pharaoh`
-2.  `yarn`
-3.  `npm start`
+2. `yarn`
+3. `npm start`
 
 ### Build
 
 `npm run build`
 
 ### Valid Credentials
-email = shivam.sasalol@yahoo.com
-password = password
+
+email = harshb.work@gmail.com
+password = butter
