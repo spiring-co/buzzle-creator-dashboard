@@ -59,10 +59,10 @@ export default (state, action) => {
     //payload: action.payload.activeVersionIndex,
     //action.payload.value={title:action.payload.value}
     case EDIT_VERSION_KEYS:
-      state.versions[action.payload.activeVersionIndex][
-        Object.keys(action.payload.value)
-      ] = Object.values(action.payload.value)[0];
-      return state;
+      state.versions[action.payload.activeVersionIndex] = {
+        ...state.versions[action.payload.activeVersionIndex], ...action.payload.value
+      }
+      return Object.assign({}, state);
 
     //payload:{action.payload.activeVersionIndex, action.payload.fieldIndex}
     //TODO could be implemented more efficiently using array indices
