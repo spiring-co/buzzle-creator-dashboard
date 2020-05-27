@@ -11,12 +11,12 @@ const validationSchema = Yup.object().shape({
     .required("Version title is required!"),
   description: Yup.string()
     .min(3, "Lenght Too Short!")
-    .max(200, "Lenght Too Long!")
+    .max(200, "Lenght Too Long!"),
+
 
 })
 
 export default ({ onSubmit, initialValue }) => {
-  console.log(initialValue)
   const {
     values,
     errors,
@@ -32,9 +32,6 @@ export default ({ onSubmit, initialValue }) => {
     validationSchema,
     onSubmit,
   });
-
-
-
 
   return (
     <form onSubmit={handleSubmit}

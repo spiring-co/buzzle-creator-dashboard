@@ -6,6 +6,7 @@ import {
   DialogTitle,
   Button,
   FormControl,
+  FormHelperText,
   InputLabel,
   FormControlLabel,
   Switch,
@@ -13,38 +14,40 @@ import {
   Select,
   TextField
 } from '@material-ui/core';
+import { useFormik } from "formik";
+import * as Yup from "yup";
+
+const validationSchema = Yup.object().shape({
+  type: Yup.string().required('Layer type is required!'),
+  layerName: Yup.string().required('Layer name is required!'),
+  label: Yup.string().required('Field Label is required!'),
+  maxLength: Yup.number().when("type", {
+    is: "data", // alternatively: (val) => val == true
+    then: Yup.number().required('Max Length is required'),
+    otherwise: Yup.number()
+
+  }),
+  width: Yup.number().when("type", {
+    is: "image", // alternatively: (val) => val == true
+    then: Yup.number().required('Width of image is required'),
+    otherwise: Yup.number()
+
+  }),
+  height: Yup.number().when("type", {
+    is: "image", // alternatively: (val) => val == true
+    then: Yup.number().required('Height of image is required'),
+    otherwise: Yup.number()
+
+  })
+})
 
 
 export default (props) => {
   const { textLayers = [], imageLayers = [] } = props;
 
-  // layers coming may comes as array of object ,
-  //currently all layers are configured as they are array of strings,
-  //except textLayers which is configured as {layerName:string,value:string}
-  const [type, setType] = React.useState(props?.field?.type ?? null);
-  const [layerName, setLayerName] = React.useState(props?.field?.layerName ?? null);
-  const [required, setRequired] = React.useState(
-    props?.field?.required ?? false
-  );
-  const [label, setLabel] = React.useState(props?.field?.label ?? "");
-  const [maxLength, setMaxLength] = React.useState(
-    props?.field?.maxLength ?? null
-  );
+  const onSubmit = (data) => {
 
-  const [width, setWidth] = React.useState(props?.field?.width ?? 0);
-  const [height, setHeight] = React.useState(props?.field?.height ?? 0);
-
-  const inputTypes = [
-    { label: "Text", value: "data" },
-    // { label: "Picker", value: "custom_picker" },
-    { label: "Image", value: "image" },
-  ];
-
-  const toggleDialog = (state) => {
-    props.toggleDialog(state);
-  };
-
-  const handleFieldSubmit = () => {
+    var { type, label, required, maxLength, layerName, width, height, } = data
     switch (type) {
       case "data":
         props.editField
@@ -62,39 +65,77 @@ export default (props) => {
     }
     toggleDialog(false);
   };
+  const {
+    values,
+    errors,
+    touched,
+    handleBlur,
+    handleSubmit,
+    handleChange,
+  } = useFormik({
+    initialValues: props.initialValue ? props.initialValue : {
+      type: "",
+      layerName: "",
+      label: "",
+      required: false,
+      width: 0,
+      height: 0,
+      maxLength: 0
+    },
+    validationSchema,
+    onSubmit,
+  });
+
+  const inputTypes = [
+    { label: "Text", value: "data" },
+    // { label: "Picker", value: "custom_picker" },
+    { label: "Image", value: "image" },
+  ];
+
+  const toggleDialog = (state) => {
+    props.toggleDialog(state);
+  };
+
 
   const renderTextInputCreator = () => (
     <div>
       <TextField
-        style={{ width: 400 }}
+        fullWidth
         variant="outlined"
         margin="dense"
-        label="Layer Lable"
-        placeholder="Layer Lable"
+        value={values.label}
+        name="label"
+        onBlur={handleBlur}
+        onChange={handleChange}
+        error={touched.label && errors.label}
+        helperText={touched.label && errors.label}
         type="text"
-        value={label}
-        onChange={(e) => setLabel(e.target.value)}
+        label="Layer Label"
+        placeholder="Layer Label"
       />
 
       <TextField
-        style={{ width: 400 }}
+        fullWidth
         variant="outlined"
         margin="dense"
+        onBlur={handleBlur}
+        onChange={handleChange}
+        value={values.maxLength}
+        error={touched.maxLength && errors.maxLength}
+        helperText={touched.maxLength && errors.maxLength}
+        type="number"
+        name="maxLength"
         label="Max length"
         placeholder="Max length"
-        type="number"
-        value={maxLength}
-        onChange={(e) => setMaxLength(e.target.value)}
       />
       <br />
 
       <FormControlLabel
         control={<Switch
-          checked={required}
+          checked={values.required}
+          onBlur={handleBlur}
           name="required"
-          onChange={(e) => {
-            setRequired(e.target.checked);
-          }}
+          onChange={handleChange}
           color="primary"
         />}
         label="Required"
@@ -107,57 +148,64 @@ export default (props) => {
   const renderImageCreator = () => (
     <div>
       <TextField
-        style={{ width: 400 }}
+        fullWidth
         variant="outlined"
         margin="dense"
-        label="Layer Lable"
-        placeholder="Layer Lable"
+        value={values.label}
+        name="label"
+        onBlur={handleBlur}
+        onChange={handleChange}
+        error={touched.label && errors.label}
+        helperText={touched.label && errors.label}
         type="text"
-        value={label}
-        onChange={(e) => setLabel(e.target.value)}
+        label="Layer Label"
+        placeholder="Layer Label"
       />
+
       <TextField
-        style={{ width: 400 }}
+        fullWidth
         variant="outlined"
         margin="dense"
+        value={values.width}
+        name="width"
+        onBlur={handleBlur}
+        onChange={handleChange}
+        error={touched.width && errors.width}
+        helperText={touched.width && errors.width}
+        type="number"
         label="Image Width"
         placeholder="Enter Width"
-        type="number"
-        value={width}
-        onChange={(e) => {
-          setWidth(e.target.value);
-        }}
       />
       <TextField
-        style={{ width: 400 }}
+        fullWidth
         variant="outlined"
         margin="dense"
+        value={values.height}
+        name="height"
+        onBlur={handleBlur}
+        onChange={handleChange}
+        error={touched.height && errors.height}
+        helperText={touched.height && errors.height}
+        type="number"
         label="Image Height"
         placeholder="Enter Height"
-        type="number"
-        value={height}
-        onChange={(e) => {
-          setHeight(e.target.value);
-        }}
       />
 
       <br />
       <FormControlLabel
         control={<Switch
-          checked={required}
+          checked={values.required}
+          onBlur={handleBlur}
           name="required"
-          onChange={(e) => {
-            setRequired(e.target.checked);
-          }}
+          onChange={handleChange}
           color="primary"
         />}
         label="Required"
       />
-
     </div>
   );
   const renderInputForm = () => {
-    switch (type) {
+    switch (values.type) {
       case "data":
         return renderTextInputCreator();
 
@@ -169,12 +217,12 @@ export default (props) => {
     }
   };
   const fieldsSelector = () => {
-    switch (type) {
+    switch (values.type) {
       case "data":
         if (textLayers.length) {
           return textLayers.map((item, index) => {
 
-            if (props.usedFields.includes(item.name) && layerName !== item.name) {
+            if (props.usedFields.includes(item.name) && values.layerName !== item.name) {
               return false;
             }
             return (
@@ -192,7 +240,7 @@ export default (props) => {
       case "image":
         if (imageLayers.length) {
           return imageLayers.map((item, index) => {
-            if (props.usedFields.includes(item.name)) {
+            if (props.usedFields.includes(item.name) && values.layerName !== item.name) {
               return false;
             }
             return (
@@ -212,72 +260,79 @@ export default (props) => {
   };
 
   return (
-    <Dialog open onClose={() => toggleDialog(false)} aria-labelledby="form-dialog-title">
-      <DialogTitle id="form-dialog-title">Add Field</DialogTitle>
-      <DialogContent>
-        <FormControl
-          style={{ width: 400 }}
-          margin="dense"
-          variant="outlined"
-        >
-          <InputLabel id="demo-simple-select-outlined-label">Layer Type</InputLabel>
-          <Select
-            labelId="demo-simple-select-outlined-label"
-            id="demo-simple-select-outlined"
-            onChange={({ target: { value } }) => setType(value)}
-            value={type}
-            placeholder="Select Layer Type"
-            label="Layer Type"
+
+    <Dialog fullWidth open onClose={() => toggleDialog(false)} aria-labelledby="form-dialog-title">
+      <form onSubmit={handleSubmit}>
+        <DialogTitle id="form-dialog-title">Add Field</DialogTitle>
+        <DialogContent>
+          <FormControl
+            fullWidth
+            margin="dense"
+            variant="outlined"
+            error={touched.type && errors.type}
           >
+            <InputLabel id="demo-simple-select-outlined-label">Layer Type</InputLabel>
+            <Select
+              labelId="demo-simple-select-outlined-label"
+              id="demo-simple-select-outlined"
+              onBlur={handleBlur}
+              onChange={handleChange}
+              name="type"
+              value={values.type}
+              placeholder="Select Layer Type"
+              label="Layer Type"
+            >
+              {inputTypes.map((item, index) => {
+                return (
+                  <MenuItem key={index}
+                    id={index}
+                    disabled={values.type === item.value}
+                    value={item.value}
+                    children={item.label}
+                    selected={values.type === item.value} />
 
-            {inputTypes.map((item, index) => {
-              return (
-                <MenuItem key={index}
-                  id={index}
-                  disabled={type === item.value}
-                  value={item.value}
-                  children={item.label}
-                  selected={type === item.value} />
+                );
+              })}
+            </Select>
+            <FormHelperText>{touched.type && errors.type}</FormHelperText>
 
-              );
-            })}
-          </Select>
-        </FormControl>
-        <FormControl
-          style={{ width: 400 }}
-          margin="dense"
-          variant="outlined"
-        >
-          <InputLabel id="demo-simple-select-outlined-label">Select Layer</InputLabel>
-          <Select
-            labelId="demo-simple-select-outlined-label"
-            id="demo-simple-select-outlined"
-            onChange={({ target: { value } }) => {
-              setLayerName(value)
-              // if (type === 'image') {
-              //   setHeight(value.height)
-              //   setWidth(value.width)
-              // }
+          </FormControl>
+          <FormControl
+            fullWidth
+            margin="dense"
+            variant="outlined"
+            error={touched.layerName && errors.layerName}>
+            <InputLabel id="demo-simple-select-outlined-label">Select Layer</InputLabel>
+            <Select
+              labelId="demo-simple-select-outlined-label"
+              id="demo-simple-select-outlined"
+              onBlur={handleBlur}
+              onChange={handleChange}
+              name="layerName"
+              value={values.layerName}
+              placeholder="Select Layer"
+              label="Select Layer"
+            >
 
-            }}
-            value={layerName}
-            placeholder="Select Layer"
-            label="Select Layer"
-          >
+              {fieldsSelector()}
+            </Select>
+            <FormHelperText>{touched.layerName && errors.layerName}</FormHelperText>
+          </FormControl>
 
-            {fieldsSelector()}
-          </Select>
-        </FormControl>
-
-        {renderInputForm(type)}
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={() => toggleDialog(false)} color="primary">
-          Cancel
+          {renderInputForm(values.type)}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => toggleDialog(false)} color="primary">
+            Cancel
       </Button>
-        <Button onClick={handleFieldSubmit} color="primary" children={props.editField ? "Edit" : "Add Field"} />
-      </DialogActions>
-    </Dialog >
+          <Button
+            variant="contained"
+            type="submit"
+            color="primary"
+            children={props.editField ? "Edit" : "Add Field"} />
+        </DialogActions>
+      </form>
 
+    </Dialog>
   );
 };

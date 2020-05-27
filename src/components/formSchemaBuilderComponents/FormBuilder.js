@@ -12,7 +12,7 @@ export default ({ submitForm, isEdit, video }) => {
   const [videoObj] = useContext(VideoTemplateContext);
   const { resetVideo, editVideoKeys, loadVideo } = useActions();
   const [loading, setLoading] = useState(true);
-  const [activeDisplayIndex, setActiveDisplayIndex] = useState(1);
+  const [activeDisplayIndex, setActiveDisplayIndex] = useState(0);
   const [compositions, setCompositions] = useState([]);
 
   useEffect(() => {
@@ -25,97 +25,7 @@ export default ({ submitForm, isEdit, video }) => {
   }, []);
 
   useEffect(() => { }, [activeDisplayIndex]);
-  useEffect(() => {
-    setCompositions({
-      mycomp2: {
-        textLayers: [],
-        imageLayers: [
-          {
-            name: "spiring banner.png",
-            height: 427,
-            width: 1103,
-          },
-        ],
-        comps: {},
-      },
-      main: {
-        textLayers: [
-          {
-            name: "textLayer1",
-            text: "Hello I am the text layer!",
-            font: "Helvetica",
-          },
-        ],
-        imageLayers: [
-          {
-            name: "myImageLayer",
-            height: 427,
-            width: 1103,
-          },
-        ],
-        comps: {
-          hello: {
-            textLayers: [
-              {
-                name: "<empty text layer>",
-                text: "",
-                font: "Helvetica",
-              },
-            ],
-            imageLayers: [
-              {
-                name: "spiring banner.png",
-                height: 427,
-                width: 1103,
-              },
-            ],
-            comps: {
-              mycomp2: {
-                textLayers: [],
-                imageLayers: [
-                  {
-                    name: "spiring banner.png",
-                    height: 427,
-                    width: 1103,
-                  },
-                ],
-                comps: {},
-              },
-            },
-          },
-        },
-      },
-      hello: {
-        textLayers: [
-          {
-            name: "<empty text layer>",
-            text: "",
-            font: "Helvetica",
-          },
-        ],
-        imageLayers: [
-          {
-            name: "spiring banner.png",
-            height: 427,
-            width: 1103,
-          },
-        ],
-        comps: {
-          mycomp2: {
-            textLayers: [],
-            imageLayers: [
-              {
-                name: "spiring banner.png",
-                height: 427,
-                width: 1103,
-              },
-            ],
-            comps: {},
-          },
-        },
-      },
-    });
-  }, []);
+
   const handleSubmitForm = async () => {
     submitForm(videoObj);
   };
