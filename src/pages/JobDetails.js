@@ -11,6 +11,7 @@ const useStyles = makeStyles(theme => ({
 
 export default (props) => {
     var { jobDetails } = props?.location?.state
+    console.log(jobDetails.assets)
     var { output, state, assets } = jobDetails
     const classes = useStyles()
     return (

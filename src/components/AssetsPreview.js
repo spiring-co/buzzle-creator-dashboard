@@ -18,9 +18,9 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
-const RenderAsset = ({ assetType, layerName, property, value, src }) => {
+const RenderAsset = ({ type, layerName, property, value, src }) => {
     const classes = useStyles()
-    switch (assetType) {
+    switch (type) {
         case 'data':
             return (<>
                 <div className={classes.asset}>
