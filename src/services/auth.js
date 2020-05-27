@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
 const baseUrl = process.env.REACT_APP_API_URL;
-
+var jwtDecode = require('jwt-decode');
 export default () => {
   const history = useHistory()
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -22,12 +22,14 @@ export default () => {
       throw new Error((await response.json()).message); //Help
       //      throw new Error("password is incorrect");
     }
-    const { jwtoken, creatorDetails } = await response.json();
-    localStorage.setItem("jwtoken", jwtoken[0]);
-
-    localStorage.setItem("creatorId", creatorDetails.creatorId);
+    const { token } = await response.json();
+    localStorage.setItem("jwtoken", token);
+    var user = jwtDecode(token)
+    // set here decoded info 
+    localStorage.setItem("creatorId", user.id);
+    localStorage.setItem('email', user.email)
     setIsAuthenticated(true);
-    return jwtoken;
+    return token;
   };
 
   const logout = async () => {
