@@ -47,15 +47,11 @@ const RenderAsset = ({ type, layerName, property, value, src }) => {
           </div>
           <div className={classes.asset}>
             <Typography className={classes.layerName}>Property</Typography>
-            <img
-              alt={"Property"}
-              style={{ height: 100, width: 100 }}
-              src={src}
-            />
+            <img style={{ height: 100, width: 100 }} src={src} />
           </div>
           <div className={classes.asset}>
             <Typography className={classes.layerName}>Value</Typography>
-            <img alt={"Value"} style={{ height: 100, width: 100 }} src={src} />
+            <img style={{ height: 100, width: 100 }} src={src} />
           </div>
         </>
       );
