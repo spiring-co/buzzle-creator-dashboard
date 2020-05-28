@@ -1,44 +1,21 @@
 import { useFormik } from "formik";
 import React, { useState } from "react";
 import Confetti from "react-dom-confetti";
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import * as Yup from "yup";
 import { useTranslation } from "react-i18next";
-import { Button, TextField, Typography } from '@material-ui/core'
-import { Alert } from '@material-ui/lab'
-import { makeStyles } from '@material-ui/core/styles'
+import {
+  Button,
+  TextField,
+  Typography,
+  Container,
+  Box,
+  Link,
+} from "@material-ui/core";
+import { Alert } from "@material-ui/lab";
 
-const config = {
-  angle: 45,
-  spread: 45,
-  startVelocity: 45,
-  elementCount: 50,
-  dragFriction: 0.1,
-  duration: 3000,
-  stagger: 0,
-  width: "10px",
-  height: "10px",
-  colors: ["#a864fd", "#29cdff", "#78ff44", "#ff718d", "#fdff6a"],
-};
-
-const useStyles = makeStyles((theme) => ({
-  alert: {
-    margin: 15
-  }, container: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    textAlign: 'center',
-    marginTop: 50,
-    margin: 'auto',
-    width: 400
-  },
-
-}))
 export default () => {
-  const classes = useStyles()
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [error, setError] = useState(null);
   const [otpEmailSent, setOtpEmailSent] = useState(false);
   const [passwordResetSuccess, setPasswordResetSuccess] = useState(false);
@@ -57,19 +34,19 @@ export default () => {
       password: "",
     },
     validationSchema: Yup.object({
-      email: Yup.string()
-        .email(t('enterEmail'))
-        .required(t('required')),
+      email: Yup.string().email(t("enterEmail")).required(t("required")),
     }),
     onSubmit: async ({ email, newPassword, otp }) => {
-      otpEmailSent ? resetPassword(email, newPassword, otp) : sendPasswordResetOtp(email);
+      otpEmailSent
+        ? resetPassword(email, newPassword, otp)
+        : sendPasswordResetOtp(email);
     },
   });
 
   const resetPassword = async (email, newPassword, otp) => {
     try {
       const response = await fetch(
-        process.env.REACT_APP_API_URL + "/creator/resetPassword",
+        process.env.REACT_APP_API_URL + "/auth/resetPassword",
         {
           method: "POST",
           headers: {
@@ -80,19 +57,19 @@ export default () => {
         }
       );
       console.log(await response.json());
-      setPasswordResetSuccess(true)
+      setPasswordResetSuccess(true);
+    } catch (e) {
+      console.log(e);
+      setError(e);
     }
-    catch (e) {
-      console.log(e)
-      setError(e)
-    }
-
-  }
+  };
 
   const sendPasswordResetOtp = async (email) => {
+    // TODO move to api
+
     try {
       const response = await fetch(
-        process.env.REACT_APP_API_URL + "/creator/resetPasswordEmail",
+        process.env.REACT_APP_API_URL + "/auth/resetPasswordEmail",
         {
           method: "POST",
           headers: {
@@ -103,50 +80,43 @@ export default () => {
         }
       );
       console.log(await response.json());
-      setOtpEmailSent(true)
+      setOtpEmailSent(true);
     } catch (e) {
       console.log(e);
       setError(e);
     }
-  }
+  };
   return (
-    <div className={classes.container}>
-      <Confetti active={passwordResetSuccess} config={config} />
-      {passwordResetSuccess ? (
-        <>
-          <h3 className="text-center mb-4 mt-5">
-            {t('passwordSuccess')}{" "}
-          </h3>
-
-          <p className="text-muted text-center mb-4">
-            {t('woohoo')}
-          </p>
-          <Confetti active={passwordResetSuccess} config={config} />
-          <Button
-            onClick={() => window.location = "/login"}
-            variant="contained"
-            color="primary"
-            children="Login"
-
-          />
-        </>
-      ) : (
+    <Box mt={4}>
+      <Container maxWidth={"sm"}>
+        <Confetti active={passwordResetSuccess} config={confettiConfig} />
+        {passwordResetSuccess ? (
           <>
-            <form onSubmit={handleSubmit} noValidate >
-              <Typography variant="h4" >Forgot Password</Typography>
-              <p style={{ margin: 10, marginBottom: 20 }}>
-                {t('noWorries')}
-              </p>
+            <Typography variant="h3">{t("passwordSuccess")} </Typography>
+            <Typography>{t("woohoo")} </Typography>
+
+            <Button
+              component={RouterLink}
+              to={"/login"}
+              //TODO implement with redirect
+              onClick={() => (window.location = "/login")}
+              variant="contained"
+              color="primary"
+              children="Login"
+            />
+            <Confetti active={passwordResetSuccess} config={confettiConfig} />
+          </>
+        ) : (
+          <>
+            <Box component="form" onSubmit={handleSubmit} noValidate>
+              <Typography variant="h4">Forgot Password</Typography>
+              <Typography>{t("noWorries")}</Typography>
               {error && <Alert severity="error" children={error.message} />}
-              {otpEmailSent && (
-                <Alert severity="info">
-                  {t('checkEmail')}
-                </Alert>
-              )}
+              {otpEmailSent && <Alert severity="info">{t("checkEmail")}</Alert>}
               <TextField
                 fullWidth
-                margin={'dense'}
-                variant={'outlined'}
+                margin={"dense"}
+                variant={"outlined"}
                 disabled={otpEmailSent}
                 onChange={handleChange}
                 onBlur={handleBlur}
@@ -156,18 +126,17 @@ export default () => {
                 readOnly={otpEmailSent}
                 plaintext={otpEmailSent}
                 placeholder="Enter email"
-                label="Email Adresss"
+                label="Email Address"
                 error={touched.email && !!errors.email}
                 helperText={touched.email && errors?.email}
               />
-
 
               {otpEmailSent && (
                 <>
                   <TextField
                     fullWidth
-                    margin={'dense'}
-                    variant={'outlined'}
+                    margin={"dense"}
+                    variant={"outlined"}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.OTP}
@@ -177,10 +146,11 @@ export default () => {
                     label="OTP"
                     error={touched.otp && !!errors.otp}
                     helperText={errors?.otp}
-                  /> <TextField
+                  />{" "}
+                  <TextField
                     fullWidth
-                    margin={'dense'}
-                    variant={'outlined'}
+                    margin={"dense"}
+                    variant={"outlined"}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.password}
@@ -191,11 +161,9 @@ export default () => {
                     error={touched.password && !!errors.password}
                     helperText={errors.password}
                   />
-
                 </>
               )}
               <Button
-                style={{ marginTop: 10 }}
                 variant="contained"
                 color="primary"
                 type="submit"
@@ -205,17 +173,34 @@ export default () => {
                       ? "Resetting password..."
                       : "Reset"
                     : isSubmitting
-                      ? "Sending OTP..."
-                      : "Proceed"
+                    ? "Sending OTP..."
+                    : "Proceed"
                 }
                 disabled={isSubmitting}
               />
-            </form>
-            <Typography style={{ marginTop: 15 }}>
-              {t('dontHave')} <Link to="/register">Sign up.</Link>
-            </Typography>
+              <Typography>
+                {t("dontHave")}{" "}
+                <Link component={RouterLink} to="/register">
+                  Sign up.
+                </Link>
+              </Typography>
+            </Box>
           </>
         )}
-    </div>
+      </Container>
+    </Box>
   );
-}
+};
+
+const confettiConfig = {
+  angle: 45,
+  spread: 45,
+  startVelocity: 45,
+  elementCount: 50,
+  dragFriction: 0.1,
+  duration: 3000,
+  stagger: 0,
+  width: "10px",
+  height: "10px",
+  colors: ["#a864fd", "#29cdff", "#78ff44", "#ff718d", "#fdff6a"],
+};

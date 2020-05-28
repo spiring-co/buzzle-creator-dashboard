@@ -6,14 +6,13 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TableRow
-} from '@material-ui/core';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+  TableRow,
+} from "@material-ui/core";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 import React, { useCallback, useRef, useState } from "react";
 import { Link, useHistory, useRouteMatch } from "react-router-dom";
 
 import usePaginatedFetch from "../services/usePaginatedFetch";
-
 
 const useStyles = makeStyles({
   table: {
@@ -32,7 +31,7 @@ const StyledTableCell = withStyles((theme) => ({
 
 const StyledTableRow = withStyles((theme) => ({
   root: {
-    '&:nth-of-type(odd)': {
+    "&:nth-of-type(odd)": {
       backgroundColor: theme.palette.action.hover,
     },
   },
@@ -52,46 +51,56 @@ export default ({ url, listHeader, listKeys }) => {
       var job = {
         idVideoTemplate: data.id,
         idVersion: data.versions[0].id,
-        assets: data.versions[0].editableLayers.map(layer => ({
-          type: layer.type,
-          value: layer.label,
-          layerName: layer.layerName,
-          property: 'Source Text',
-        })
-        ),
+        assets: data.versions[0].editableLayers.map((layer) => {
+          switch (layer.type) {
+            case "image":
+              return {
+                type: layer.type,
+                layerName: layer.layerName,
+                src: `https://dummyimage.com/${layer.width}x${layer.height}/0011ff/fff`,
+                extension: "png",
+              };
+            case "data":
+              return {
+                type: layer.type,
+                value: layer.label,
+                layerName: layer.layerName,
+                property: "Source Text",
+              };
+            default:
+              return;
+          }
+        }),
         actions: {
-          postrender: [{
-
-            "module": "@nexrender/action-encode",
-            "preset": "mp4",
-            "output": "encoded.mp4"
-
-          }],
-
+          postrender: [
+            {
+              module: "@nexrender/action-encode",
+              preset: "mp4",
+              output: "encoded.mp4",
+            },
+          ],
         },
-      }
+      };
       var myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
       var raw = JSON.stringify(job);
       var requestOptions = {
-        method: 'POST',
+        method: "POST",
         headers: myHeaders,
         body: raw,
-        redirect: 'follow'
+        redirect: "follow",
       };
       fetch("http://localhost:5000/jobs", requestOptions)
-        .then(response => response.json())
-        .then(result => {
-          console.log(result)
-          history.push('/home/jobs')
+        .then((response) => response.json())
+        .then((result) => {
+          console.log(result);
+          history.push("/home/jobs");
         })
-        .catch(error => console.log('error', error));
-
+        .catch((error) => console.log("error", error));
     } catch (err) {
-      console.log(err)
+      console.log(err);
     }
-
-  }
+  };
   const lastElement = useCallback(
     (node) => {
       if (loading) return;
@@ -120,8 +129,8 @@ export default ({ url, listHeader, listKeys }) => {
           {data.map((item, index) => (
             <StyledTableRow
               ref={data.length === index + 1 ? lastElement : null}
-              key={index}>
-
+              key={index}
+            >
               {listKeys.map((i, index) => (
                 <StyledTableCell component="th" scope="row">
                   {index === 0 && (

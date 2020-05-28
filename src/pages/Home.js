@@ -2,16 +2,18 @@ import { createStyles, makeStyles } from "@material-ui/core/styles";
 import {
   AssignmentInd,
   MonetizationOn,
-  VideoLibrary, Work
+  VideoLibrary,
+  Work,
 } from "@material-ui/icons";
 import Dashboard from "pages/Dashboard";
+import Jobs from "pages/Jobs";
 import Orders from "pages/Orders";
 import Profile from "pages/Profile";
 import VideoTemplates from "pages/VideoTemplates";
 import React from "react";
 import { Route, Switch, useRouteMatch } from "react-router-dom";
-import Jobs from 'pages/Jobs'
-import NavBar from "../components/NavBar";
+
+import Navbar from "../components/Navbar";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -21,10 +23,6 @@ const useStyles = makeStyles((theme) =>
 
     toolbar: {
       display: "flex",
-      alignItems: "center",
-      justifyContent: "flex-end",
-      padding: theme.spacing(0, 1),
-      // necessary for content to be below app bar
       ...theme.mixins.toolbar,
     },
     content: {
@@ -52,34 +50,25 @@ export default () => {
       text: "Orders",
       icon: <MonetizationOn />,
       to: `${url}/orders`,
-    }, {
-      text: "Orders",
+    },
+    {
+      text: "Jobs",
       icon: <Work />,
       to: `${url}/jobs`,
     },
   ];
+
   return (
     <div className={classes.root}>
-      <NavBar items={links} />
+      <Navbar items={links} />
       <main className={classes.content}>
         <div className={classes.toolbar} />
         <Switch>
-          <Route path={`${path}/`} exact>
-            <Dashboard />
-          </Route>
-
-          <Route path={`${path}/profile`}>
-            <Profile />
-          </Route>
-          <Route path={`${path}/videoTemplates`}>
-            <VideoTemplates />
-          </Route>
-          <Route path={`${path}/orders`}>
-            <Orders />
-          </Route>
-          <Route path={`${path}/jobs`}>
-            <Jobs />
-          </Route>
+          <Route path={`${path}/`} exact component={Dashboard} />
+          <Route path={`${path}/profile`} component={Profile} />
+          <Route path={`${path}/videoTemplates`} component={VideoTemplates} />
+          <Route path={`${path}/orders`} component={Orders} />
+          <Route path={`${path}/jobs`} component={Jobs} />
         </Switch>
       </main>
     </div>

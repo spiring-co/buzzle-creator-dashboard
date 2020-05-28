@@ -1,5 +1,5 @@
 import useActions from "contextStore/actions";
-import { VideoTemplateContext, StateProvider } from "contextStore/store";
+import { StateProvider, VideoTemplateContext } from "contextStore/store";
 import React, { useContext, useEffect, useState } from "react";
 
 import AssetUpload from "./AssetUpload";
@@ -24,7 +24,7 @@ export default ({ submitForm, isEdit, video }) => {
     setLoading(false);
   }, []);
 
-  useEffect(() => { }, [activeDisplayIndex]);
+  useEffect(() => {}, [activeDisplayIndex]);
 
   const handleSubmitForm = async () => {
     submitForm(videoObj);

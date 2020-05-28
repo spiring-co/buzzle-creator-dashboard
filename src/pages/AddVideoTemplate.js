@@ -1,7 +1,7 @@
 import FormBuilder from "components/formSchemaBuilderComponents/FormBuilder";
+import { StateProvider } from "contextStore/store";
 import React from "react";
 import { Prompt, useHistory } from "react-router-dom";
-import { StateProvider } from 'contextStore/store'
 export default (props) => {
   const [isBlocking, setIsBlocking] = React.useState(true);
   const [isEditing, setIsEditing] = React.useState(false);
@@ -46,18 +46,21 @@ export default (props) => {
     }
   };
   const handleSubmitForm = async (data) => {
-    alert("saving...")
-    console.log(data)
+    alert("saving...");
+    console.log(data);
     try {
       setLoading(true);
-      const response = await fetch(process.env.REACT_APP_API_URL + `/videoTemplates`, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      const response = await fetch(
+        process.env.REACT_APP_API_URL + `/videoTemplates`,
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        }
+      );
       setLoading(false);
       if (response.ok) {
         setIsBlocking(false);

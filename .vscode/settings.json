@@ -3,5 +3,8 @@
         "formik",
         "jwtoken",
         "register"
+    ],
+    "cSpell.words": [
+        "mixins"
     ]
 }

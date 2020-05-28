@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom";
 const baseUrl = process.env.REACT_APP_API_URL;
 var jwtDecode = require('jwt-decode');
 export default () => {
-  const history = useHistory()
+  const history = useHistory();
   const [isAuthenticated, setIsAuthenticated] = useState(
     localStorage.getItem("jwtoken") !== null
   );
@@ -34,7 +34,7 @@ export default () => {
 
   const logout = async () => {
     localStorage.removeItem("jwtoken");
-    history.push("/login")  // done this because isAuthenticated ,is not rendering in private route after setIsAuthenticated(false)
+    history.push("/login"); // done this because isAuthenticated ,is not rendering in private route after setIsAuthenticated(false)
     setIsAuthenticated(false);
     return true;
   };

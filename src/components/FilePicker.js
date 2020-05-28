@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Card from "react-bootstrap/Card";
 
 const FilePicker = ({ setCompositions, setTextLayers }) => {
@@ -23,7 +23,8 @@ const FilePicker = ({ setCompositions, setTextLayers }) => {
 
       if (response.ok) {
         const { data } = await response.json();
-        setCompositions(data.comps);
+        console.log(data);
+        setCompositions(data.comps || []);
         setTextLayers(data.textLayers);
 
         setFile(fileObj.name);

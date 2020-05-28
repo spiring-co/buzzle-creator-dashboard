@@ -1,11 +1,10 @@
 import React from "react";
-import Button from "react-bootstrap/Button";
-import { useHistory, useRouteMatch } from "react-router-dom";
+import { Button, Typography, Container } from "@material-ui/core";
+import { useHistory, useRouteMatch, useParams } from "react-router-dom";
 import useApi from "services/api";
 export default (props) => {
-  let { url } = useRouteMatch();
-
-  const id = props.location.state.video.id;
+  const { url } = useRouteMatch();
+  const { id } = useParams();
 
   const [isDeleting, setIsDeleting] = React.useState(false);
 
@@ -13,6 +12,7 @@ export default (props) => {
   const { data, loading, error } = useApi(`/videoTemplates/${id}`);
 
   const handleEdit = async () => {
+    // TODO handle with API
     history.push({
       pathname: `${url}/edit`,
       state: {
@@ -29,7 +29,7 @@ export default (props) => {
         setIsDeleting(true);
         const response = await fetch(
           process.env.REACT_APP_API_URL +
-          `/video/creator/${localStorage.getItem('creatorId')}/${id}`,
+            `/video/creator/${localStorage.getItem("creatorId")}/${id}`,
           {
             method: "DELETE",
             headers: {
@@ -54,10 +54,11 @@ export default (props) => {
   if (loading | isDeleting)
     return <p>{isDeleting ? "Deleting" : "Loading"} your template...</p>;
   if (error) return <p>Error: {error.message}</p>;
+
   return (
-    <div>
-      <h2>Your Video Template</h2>
-      <h3 for="sample">Sample Video</h3>
+    <Container maxWidth={"md"}>
+      <Typography variant="h3">Your Video Template</Typography>
+      <Typography>Sample Video</Typography>
       <video
         id="sample"
         controls={true}
@@ -65,22 +66,13 @@ export default (props) => {
         src={data.versions[0].sample}
       />
 
-      <h3 for="title">Title</h3>
-      <p style={{ color: "blue" }} id="title">
-        {data.title}
-      </p>
-      <h3 for="desc">Description</h3>
-      <p style={{ color: "blue" }} id="desc">
-        {data.description}
-      </p>
+      <Typography>Title</Typography>
+      <Typography>{data.title}</Typography>
+      <Typography>Description</Typography>
+      <Typography>{data.description}</Typography>
 
-      <Button variant="outline-primary" onClick={handleEdit}>
-        Edit
-      </Button>
-      <span> </span>
-      <Button variant="outline-primary" onClick={handleDelete}>
-        Delete
-      </Button>
-    </div>
+      <Button onClick={handleEdit}>Edit</Button>
+      <Button onClick={handleDelete}>Delete</Button>
+    </Container>
   );
 };

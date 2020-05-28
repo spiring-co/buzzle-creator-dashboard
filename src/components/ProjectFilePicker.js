@@ -4,101 +4,10 @@ import { extractStructureFromFile } from "services/ae";
 import { getLayersFromComposition, s3FileReader } from "services/helper";
 import styled from "styled-components";
 
-export default ({ value, onData, name }) => {
-  const [hasPickedFile, setHasPickedFile] = useState(true);
-  const [hasExtractedData, setHasExtractedData] = useState(true);
-  const [compositions, setCompositions] = useState({
-    data: {
-      mycomp2: {
-        textLayers: [],
-        imageLayers: [
-          {
-            name: "spiring banner.png",
-            height: 427,
-            width: 1103,
-          },
-        ],
-        comps: {},
-      },
-      main: {
-        textLayers: [
-          {
-            name: "textLayer1",
-            text: "Hello I am the text layer!",
-            font: "Helvetica",
-          },
-        ],
-        imageLayers: [
-          {
-            name: "myImageLayer",
-            height: 427,
-            width: 1103,
-          },
-        ],
-        comps: {
-          hello: {
-            textLayers: [
-              {
-                name: "<empty text layer>",
-                text: "",
-                font: "Helvetica",
-              },
-            ],
-            imageLayers: [
-              {
-                name: "spiring banner.png",
-                height: 427,
-                width: 1103,
-              },
-            ],
-            comps: {
-              mycomp2: {
-                textLayers: [],
-                imageLayers: [
-                  {
-                    name: "spiring banner.png",
-                    height: 427,
-                    width: 1103,
-                  },
-                ],
-                comps: {},
-              },
-            },
-          },
-        },
-      },
-      hello: {
-        textLayers: [
-          {
-            name: "<empty text layer>",
-            text: "",
-            font: "Helvetica",
-          },
-        ],
-        imageLayers: [
-          {
-            name: "spiring banner.png",
-            height: 427,
-            width: 1103,
-          },
-        ],
-        comps: {
-          mycomp2: {
-            textLayers: [],
-            imageLayers: [
-              {
-                name: "spiring banner.png",
-                height: 427,
-                width: 1103,
-              },
-            ],
-            comps: {},
-          },
-        },
-      },
-    }
-  });
-
+export default ({ value, onData, name, onTouched, onError }) => {
+  const [hasPickedFile, setHasPickedFile] = useState(false);
+  const [hasExtractedData, setHasExtractedData] = useState(false);
+  const [compositions, setCompositions] = useState(null);
   //handle extract layers on mount
   useEffect(() => {
     if (value) {
@@ -115,29 +24,38 @@ export default ({ value, onData, name }) => {
         (e?.target?.files ?? [null])[0] ||
         (e?.dataTransfer?.files ?? [null])[0];
       if (!file) return;
+
       setHasPickedFile(true);
-      setCompositions(await extractStructureFromFile(file));
 
+      const data = await extractStructureFromFile(file);
+      console.log(data);
+      setCompositions(data.data);
       setHasExtractedData(true);
-      //onTouched(true);
-    } catch (error) {
 
+      onData(data);
+      onTouched(true);
+    } catch (error) {
+      console.error(error.message);
       setHasPickedFile(false);
-      //onError(error);
+      onError(error);
     }
   };
   useEffect(() => {
-    onData(compositions);
+    console.log(compositions);
   }, [compositions]);
-  function getTotalLayers() {
-    var length = 0;
-    const allLayers = Object.values(compositions.data)
-      .map((c) => {
-        var { textLayers, imageLayers } = getLayersFromComposition(c);
-        return [...textLayers, ...imageLayers];
-      })
-      .flat();
-    return allLayers.length;
+
+  function getTotalLayers(c) {
+    try {
+      const allLayers = Object.values(c)
+        .map((c) => {
+          var { textLayers, imageLayers } = getLayersFromComposition(c);
+          return [...textLayers, ...imageLayers];
+        })
+        .flat();
+      return allLayers.length;
+    } catch (err) {
+      onError(err);
+    }
   }
   return (
     <Container
@@ -164,9 +82,9 @@ export default ({ value, onData, name }) => {
         {hasPickedFile &&
           (hasExtractedData ? (
             <>
-              <p className={"text-success"}>{`${
-                Object.keys(compositions.data).length
-                } compositions and ${getTotalLayers()} layers extracted.`}</p>
+              <p style={{ color: 'green' }}>{`
+              ${Object.keys(compositions || {}).length} compositions &
+              ${getTotalLayers(compositions)} layers extracted.`}</p>
               <Button
                 color="primary"
                 variant="contained"
@@ -177,9 +95,11 @@ export default ({ value, onData, name }) => {
                 }}
               />
             </>
-          ) : (<><CircularProgress style={{ margin: 10 }} size={28} />
-            <p>Extracting Layer and compositions ...</p>
-          </>
+          ) : (
+              <>
+                <CircularProgress style={{ margin: 10 }} size={28} />
+                <p>Extracting Layer and compositions ...</p>
+              </>
             ))}
       </LabelContent>
     </Container>
@@ -187,13 +107,13 @@ export default ({ value, onData, name }) => {
 };
 
 const Container = styled.label`
-border: dashed #ccc;
-display: flex;
-height: 10rem;
-border-radius: 0.2rem;
-text-align: center;
+  border: dashed #ccc;
+  display: flex;
+  height: 10rem;
+  border-radius: 0.2rem;
+  text-align: center;
 
-justify-content: center;
+  justify-content: center;
 `;
 const LabelContent = styled.div`
   display: flex;
