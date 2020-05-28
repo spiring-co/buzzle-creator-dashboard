@@ -23,10 +23,6 @@ const useStyles = makeStyles((theme) =>
 
     toolbar: {
       display: "flex",
-      alignItems: "center",
-      justifyContent: "flex-end",
-      padding: theme.spacing(0, 1),
-      // necessary for content to be below app bar
       ...theme.mixins.toolbar,
     },
     content: {
@@ -61,28 +57,18 @@ export default () => {
       to: `${url}/jobs`,
     },
   ];
+
   return (
     <div className={classes.root}>
       <Navbar items={links} />
       <main className={classes.content}>
         <div className={classes.toolbar} />
         <Switch>
-          <Route path={`${path}/`} exact>
-            <Dashboard />
-          </Route>
-
-          <Route path={`${path}/profile`}>
-            <Profile />
-          </Route>
-          <Route path={`${path}/videoTemplates`}>
-            <VideoTemplates />
-          </Route>
-          <Route path={`${path}/orders`}>
-            <Orders />
-          </Route>
-          <Route path={`${path}/jobs`}>
-            <Jobs />
-          </Route>
+          <Route path={`${path}/`} exact component={Dashboard} />
+          <Route path={`${path}/profile`} component={Profile} />
+          <Route path={`${path}/videoTemplates`} component={VideoTemplates} />
+          <Route path={`${path}/orders`} component={Orders} />
+          <Route path={`${path}/jobs`} component={Jobs} />
         </Switch>
       </main>
     </div>

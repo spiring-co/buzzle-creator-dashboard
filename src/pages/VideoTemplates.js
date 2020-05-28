@@ -8,14 +8,11 @@ export default () => {
   let { path } = useRouteMatch();
 
   return (
-    <div>
-      <br />
-      <Switch>
-        <Route path={`${path}/`} exact component={CreatorVideoTemplates} />
-        <Route path={`${path}/add`} component={AddVideoTemplate} />
-        <Route path={`${path}/:uid/edit`} component={AddVideoTemplate} />
-        <Route path={`${path}/:uid`} component={VideoTemplate} />
-      </Switch>
-    </div>
+    <Switch>
+      <Route path={`${path}/`} exact component={CreatorVideoTemplates} />
+      <Route path={`${path}/add`} component={AddVideoTemplate} />
+      <Route path={`${path}/:uid/edit`} component={AddVideoTemplate} />
+      <Route path={`${path}/:id`} component={VideoTemplate} />
+    </Switch>
   );
 };

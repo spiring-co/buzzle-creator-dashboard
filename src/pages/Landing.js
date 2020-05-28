@@ -1,46 +1,37 @@
 import React from "react";
-import { Button, Container, Typography } from '@material-ui/core'
+import { Button, Container, Typography, Box } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+
 function Landing() {
-  const { t, i18n } = useTranslation();
-
-  function handleClick(lang) {
-    i18n.changeLanguage(lang);
-  }
+  const { t } = useTranslation();
   return (
-    <div>
-      {/* <nav
-        style={{ width: "100%", padding: "2rem 0", backgroundColor: "gray" }}
-      > 
-        <button onClick={() => handleClick('en')}>English</button>
-
-      </nav> */}
-      <Container style={{ margin: 50 }}>
+    <Box mt={4}>
+      <Container maxWidth={"sm"}>
         <Typography variant="h3">Pharaoh</Typography>
-        <p style={{ marginTop: 5 }}>
-          {t('welcome')}{" "}
-        </p>
-        <Button
-          style={{ margin: 10 }}
-          color={'primary'}
-          variant="contained"
-        >
-          <Link style={{
-            textDecoration: 'none',
-            color: 'white',
-          }} to={"/login"}>Login</Link>
-        </Button>
-        <Button
-          color={'primary'}
-          variant="outlined"  >
-          <Link style={{
-            textDecoration: 'none',
-            color: '#3f51b5',
-          }} to="/register">Register</Link>
-        </Button>
+        <Typography>{t("welcome")} </Typography>
+        <Box display="inline-block" m={1}>
+          <Button
+            component={Link}
+            to="/login"
+            color="primary"
+            variant="contained"
+          >
+            Login
+          </Button>
+        </Box>
+        <Box display="inline-block" m={1}>
+          <Button
+            component={Link}
+            to="/register"
+            color="primary"
+            variant="outlined"
+          >
+            Register
+          </Button>
+        </Box>
       </Container>
-    </div>
+    </Box>
   );
 }
 export default Landing;

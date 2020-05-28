@@ -1,8 +1,7 @@
 import { Button, Paper, TextField } from "@material-ui/core";
-import ProjectFilePicker from "components/ProjectFilePicker";
+// import ProjectFilePicker from "components/ProjectFilePicker";
 import { useFormik } from "formik";
 import React from "react";
-import Form from "react-bootstrap/Form";
 import * as Yup from "yup";
 
 export default ({ restoredValues, onSubmit }) => {
@@ -43,7 +42,7 @@ export default ({ restoredValues, onSubmit }) => {
         noValidate
         style={{ background: "#fff", marginTop: 20, padding: 20 }}
       >
-        <Form.Group>
+        {/* <Form.Group>
           <Form.Label>Project File</Form.Label>
           <Form.Control
             as={ProjectFilePicker}
@@ -59,7 +58,7 @@ export default ({ restoredValues, onSubmit }) => {
           <Form.Control.Feedback type="invalid">
             {errors.projectFile}
           </Form.Control.Feedback>
-        </Form.Group>
+        </Form.Group> */}
         <TextField
           fullWidth
           margin={"dense"}
@@ -75,7 +74,7 @@ export default ({ restoredValues, onSubmit }) => {
           helperText={
             touched.title
               ? errors?.title ??
-              "Do not include generic terms like 'video', 'template' etc. in your title"
+                "Do not include generic terms like 'video', 'template' etc. in your title"
               : "Do not include generic terms like 'video', 'template' etc. in your title"
           }
         />
