@@ -24,7 +24,7 @@ export default ({ submitForm, isEdit, video }) => {
     setLoading(false);
   }, []);
 
-  useEffect(() => {}, [activeDisplayIndex]);
+  useEffect(() => { }, [activeDisplayIndex]);
 
   const handleSubmitForm = async () => {
     submitForm(videoObj);

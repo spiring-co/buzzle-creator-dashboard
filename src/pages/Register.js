@@ -298,7 +298,6 @@ const validationSchema = Yup.object({
     .matches(/^\d{10}$/, "Phone number isn't valid")
     .required("Phone number is required"),
 
-  //TODO age check
   birthDate: Yup.date().required("Birth date is required"),
   country: Yup.string().required("Country name is required"),
   gender: Yup.string().required("Gender field is required"),

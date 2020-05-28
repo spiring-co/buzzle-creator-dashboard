@@ -54,16 +54,9 @@ const JobsTable = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <Paper style={{ height: 400 }}>
-        <CustomProgress />
-      </Paper>
-    );
-  }
-
   return (
     <MaterialTable
+      isLoading={loading}
       title="Your Jobs"
       columns={[
         { title: "Job Id", field: "id" },
@@ -83,7 +76,7 @@ const JobsTable = () => {
       ]}
       data={data}
       onRowClick={(e, rowData) => {
-        //TODO implement with react router
+
         history.push(`${path}${rowData.id}`, {
           jobDetails: rowData,
         });

@@ -15,6 +15,7 @@ export default (props) => {
   const history = useHistory();
 
   const handleEditForm = async (data) => {
+    console.log(data)
     var action = window.confirm("Are you sure, you want to save changes");
     if (action) {
       try {
@@ -35,8 +36,8 @@ export default (props) => {
         if (response.ok) {
           setIsBlocking(false);
           history.push({
-            pathname: `/home/videoTemplates/${data.videoTemplateId}`,
-            state: { video: data },
+            pathname: `/home/videoTemplates/${data.id}`,
+
           });
         }
       } catch (err) {
@@ -46,7 +47,7 @@ export default (props) => {
     }
   };
   const handleSubmitForm = async (data) => {
-    alert("saving...");
+
     console.log(data);
     try {
       setLoading(true);

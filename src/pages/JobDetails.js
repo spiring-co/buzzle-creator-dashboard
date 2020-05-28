@@ -20,7 +20,7 @@ export default (props) => {
     <Paper className={classes.container}>
       <Typography variant="h4">Job Details</Typography>
       <Typography variant="h5">Status</Typography>
-      {/* TODO display as chip */}
+
       <Typography
         style={{
           color: state === "finished" ? "green" : "orange",

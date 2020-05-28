@@ -6,7 +6,7 @@ import Form from "react-bootstrap/Form";
 import * as Yup from "yup";
 export default ({ restoredValues, onSubmit }) => {
   const [tagInput, setTagInput] = useState("")
-  const [tags, setTags] = useState([])
+  const [tags, setTags] = useState(restoredValues?.tags ?? [])
   const {
     handleChange,
     handleBlur,

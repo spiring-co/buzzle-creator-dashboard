@@ -34,3 +34,24 @@ export default (url, fetchOptions = {}, type = "json") => {
 
   return { data, loading, error };
 };
+
+export const deleteTemplate = async (id) => {
+  try {
+    const response = await fetch(
+      process.env.REACT_APP_API_URL +
+      `/videoTemplates/${id}`,
+      {
+        method: "DELETE",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `bearer ${localStorage.getItem("jwtoken")}`,
+        },
+      }
+    );
+    return response
+  }
+  catch (err) {
+    throw new Error(err)
+  }
+}

@@ -71,7 +71,7 @@ export default ({ value, onData, name, onTouched, onError }) => {
             <PickerButton>Pick File</PickerButton>
             <br />
             <input
-              className="invisible"
+              style={{ display: 'none' }}
               id={name}
               name={name}
               type="file"

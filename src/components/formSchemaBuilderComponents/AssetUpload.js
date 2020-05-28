@@ -66,17 +66,6 @@ export default function AssetUpload({
     setAssets([]);
   }, [uploadType]);
 
-  const handleSubmit = () => {
-    if (
-      window.confirm(
-        "You can edit your template any time after submit, Submit Template ?"
-      )
-    ) {
-
-      handleSubmitForm()
-    }
-  };
-
   const handleChange = (e) => {
     setUploadType(e.target.value);
   };
@@ -213,7 +202,7 @@ export default function AssetUpload({
       <Button
         variant="contained"
         color="primary"
-        children={"Submit"} onClick={handleSubmit} />
+        children={"Submit"} onClick={() => handleSubmitForm(videoObj)} />
     </div>
   );
 }
