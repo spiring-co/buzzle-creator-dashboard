@@ -5,9 +5,100 @@ import { getLayersFromComposition, s3FileReader } from "services/helper";
 import styled from "styled-components";
 
 export default ({ value, onData, name }) => {
-  const [hasPickedFile, setHasPickedFile] = useState(false);
-  const [hasExtractedData, setHasExtractedData] = useState(false);
-  const [compositions, setCompositions] = useState(null);
+  const [hasPickedFile, setHasPickedFile] = useState(true);
+  const [hasExtractedData, setHasExtractedData] = useState(true);
+  const [compositions, setCompositions] = useState({
+    data: {
+      mycomp2: {
+        textLayers: [],
+        imageLayers: [
+          {
+            name: "spiring banner.png",
+            height: 427,
+            width: 1103,
+          },
+        ],
+        comps: {},
+      },
+      main: {
+        textLayers: [
+          {
+            name: "textLayer1",
+            text: "Hello I am the text layer!",
+            font: "Helvetica",
+          },
+        ],
+        imageLayers: [
+          {
+            name: "myImageLayer",
+            height: 427,
+            width: 1103,
+          },
+        ],
+        comps: {
+          hello: {
+            textLayers: [
+              {
+                name: "<empty text layer>",
+                text: "",
+                font: "Helvetica",
+              },
+            ],
+            imageLayers: [
+              {
+                name: "spiring banner.png",
+                height: 427,
+                width: 1103,
+              },
+            ],
+            comps: {
+              mycomp2: {
+                textLayers: [],
+                imageLayers: [
+                  {
+                    name: "spiring banner.png",
+                    height: 427,
+                    width: 1103,
+                  },
+                ],
+                comps: {},
+              },
+            },
+          },
+        },
+      },
+      hello: {
+        textLayers: [
+          {
+            name: "<empty text layer>",
+            text: "",
+            font: "Helvetica",
+          },
+        ],
+        imageLayers: [
+          {
+            name: "spiring banner.png",
+            height: 427,
+            width: 1103,
+          },
+        ],
+        comps: {
+          mycomp2: {
+            textLayers: [],
+            imageLayers: [
+              {
+                name: "spiring banner.png",
+                height: 427,
+                width: 1103,
+              },
+            ],
+            comps: {},
+          },
+        },
+      },
+    }
+  });
+
   //handle extract layers on mount
   useEffect(() => {
     if (value) {
