@@ -14,8 +14,13 @@ export default ({
 }) => {
 
   const [videoObj] = useContext(VideoTemplateContext);
-  const [activeIndex, setActiveIndex] = useState(0);
+
   const [usedFields, setUsedFields] = useState([]);
+  useEffect(() => {
+    if (isEdit) {
+      setUsedFields(videoObj.versions[activeVersionIndex].editableLayers.map(layer => layer.layerName))
+    }
+  }, [isEdit])
   return (
     <form
       onSubmit={(e) => {
@@ -28,7 +33,7 @@ export default ({
         usedFields={usedFields}
         setUsedFields={setUsedFields}
         activeVersionIndex={activeVersionIndex}
-        activeIndex={activeIndex}
+
       />
 
       <Button

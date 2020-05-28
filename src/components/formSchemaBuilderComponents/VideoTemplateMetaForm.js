@@ -1,9 +1,14 @@
 import { Button, Paper, TextField, Chip } from "@material-ui/core";
 import ProjectFilePicker from "components/ProjectFilePicker";
+
+import { ArrowForward, } from "@material-ui/icons";
 import { useFormik } from "formik";
 import React, { useState } from "react";
 import Form from "react-bootstrap/Form";
 import * as Yup from "yup";
+
+
+
 export default ({ restoredValues, onSubmit }) => {
   const [tagInput, setTagInput] = useState("")
   const [tags, setTags] = useState(restoredValues?.tags ?? [])
@@ -144,6 +149,7 @@ export default ({ restoredValues, onSubmit }) => {
         />
 
         <Button
+          endIcon={<ArrowForward />}
           style={{ marginTop: 20 }}
           color="primary"
           variant="contained"

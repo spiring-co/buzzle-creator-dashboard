@@ -1,7 +1,7 @@
 import { Button, Container, Typography } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { getLayersFromComposition } from "services/helper";
-
+import { ArrowForward, ArrowBack } from "@material-ui/icons";
 import FontUploader from "./FontUploader";
 
 export default function FontUpload({
@@ -60,19 +60,27 @@ export default function FontUpload({
           <FontUploader fontName={font.name} fontStatus={font.resolved} />
         ))}
       </Container>
-      <Button
-        color="primary"
-        variant="contained"
-        children={"back"}
-        onClick={() => setActiveDisplayIndex(activeDisplayIndex - 1)}
-      />
-      <br />
-      <Button
-        variant="contained"
-        color="primary"
-        children={"Next"}
-        onClick={() => setActiveDisplayIndex(activeDisplayIndex + 1)}
-      />
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <Button
+          startIcon={<ArrowBack />}
+          style={{ margin: 10 }}
+          color="primary"
+          variant="outlined"
+          onClick={() => setActiveDisplayIndex(activeDisplayIndex - 1)}
+        >
+          Back
+        </Button>
+
+        <Button
+          endIcon={<ArrowForward />}
+          style={{ margin: 10 }}
+          color="primary"
+          variant="contained"
+          onClick={() => setActiveDisplayIndex(activeDisplayIndex + 1)}
+        >
+          Next
+      </Button></div>
+
     </Container>
   );
 }

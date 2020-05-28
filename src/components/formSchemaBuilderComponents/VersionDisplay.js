@@ -6,7 +6,7 @@ import {
 import useActions from "contextStore/actions";
 import { VideoTemplateContext } from "contextStore/store";
 import React, { useContext, useEffect, useState } from "react";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import { ExpandMore, ArrowForward, ArrowBack } from "@material-ui/icons";
 import CompositionPicker from "./CompositionPicker";
 import LayerAdder from "./LayerAdder";
 import VersionMeta from "./VersionMeta";
@@ -109,7 +109,7 @@ export default ({
       >
         <ExpansionPanelSummary
 
-          expandIcon={<ExpandMoreIcon />}
+          expandIcon={<ExpandMore />}
           aria-controls="panel1c-content"
           id="panel1c-header"
         >
@@ -157,12 +157,13 @@ export default ({
       </ExpansionPanel>
 
       <Paper><VersionStepper activeStep={activeStep} renderStep={renderStep} /></Paper>
-      <br />
-      {isEdit && (
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
         <Button
+          startIcon={<ArrowBack />}
+          style={{ margin: 10 }}
           color="primary"
           variant="outlined"
-          style={{ float: "left", marginRight: "2%" }}
+
           onClick={() =>
             activeDisplayIndex === 2
               ? setActiveDisplayIndex(1)
@@ -172,16 +173,17 @@ export default ({
         >
           Back
         </Button>
-      )}
-      <Button
 
-        color="primary"
-        variant="outlined"
-        disabled={videoObj.versions.length === 0}
-        onClick={() => setActiveDisplayIndex(activeDisplayIndex + 1)}
-      >
-        Next
-      </Button>
+        <Button
+          endIcon={<ArrowForward />}
+          style={{ margin: 10 }}
+          color="primary"
+          variant="contained"
+          disabled={videoObj.versions.length === 0}
+          onClick={() => setActiveDisplayIndex(activeDisplayIndex + 1)}
+        >
+          Next
+      </Button></div>
     </div>
   );
 };

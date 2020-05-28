@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import useActions from "contextStore/actions";
 import { VideoTemplateContext } from "contextStore/store";
 import { zipMaker } from "services/helper";
-
+import { ArrowForward, ArrowBack } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -192,17 +192,22 @@ export default function AssetUpload({
         />
       </FormControl>
       {renderAssetUploader(uploadType)}
-      <Button
-        variant="contained"
-        color="primary"
-        children={"back"}
-        onClick={() => setActiveDisplayIndex(activeDisplayIndex - 1)}
-      />
-      <br />
-      <Button
-        variant="contained"
-        color="primary"
-        children={"Submit"} onClick={() => handleSubmitForm(videoObj)} />
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <Button
+          startIcon={<ArrowBack />}
+          style={{ margin: 10 }}
+          color="primary"
+          variant="outlined"
+          children={"Back"}
+          onClick={() => setActiveDisplayIndex(activeDisplayIndex - 1)}
+        />
+        <Button
+          endIcon={<ArrowForward />}
+          style={{ margin: 10 }}
+          color="primary"
+          variant="contained"
+          children={"Submit"} onClick={() => handleSubmitForm(videoObj)} />
+      </div>
     </div>
   );
 }
