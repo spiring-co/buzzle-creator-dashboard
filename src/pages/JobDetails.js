@@ -1,7 +1,24 @@
-import React from "react";
-import { Typography, Paper } from "@material-ui/core";
+import React, { useEffect, useState } from "react";
+import {
+  Typography,
+  Paper,
+  LinearProgress,
+  withStyles,
+} from "@material-ui/core";
 import AssetsPreview from "components/AssetsPreview";
 import { makeStyles } from "@material-ui/core/styles";
+import useApi from "services/api";
+import { useParams } from "react-router-dom";
+import ErrorHandler from "components/ErrorHandler";
+
+const CustomProgress = withStyles({
+  colorPrimary: {
+    backgroundColor: "#b2dfdb",
+  },
+  barColorPrimary: {
+    backgroundColor: "#00695c",
+  },
+})(LinearProgress);
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -11,24 +28,59 @@ const useStyles = makeStyles((theme) => ({
 
 export default (props) => {
   const classes = useStyles();
+  const [jobDetails, setJobDetails] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const { jobId } = useParams();
 
-  //TODO fetch from /job/:jobID
-  const { jobDetails } = props?.location?.state;
-  const { output, state, assets } = jobDetails;
+  useEffect(() => {
+    fetchJobDetails();
+  }, []);
 
+  const fetchJobDetails = async () => {
+    try {
+      setLoading(true);
+      const result = await fetch(
+        `${process.env.REACT_APP_API_URL}/jobs/${jobId}`
+      );
+      if (result.ok) {
+        setJobDetails(await result.json());
+      }
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+      console.log(err);
+      setError(err);
+    }
+  };
+
+  if (error)
+    return (
+      <ErrorHandler
+        message={error?.message ?? "Oop's, Somethings went wrong!"}
+        showRetry={true}
+        onRetry={() => fetchJobDetails()}
+      />
+    );
+
+  var { output, state, assets } = jobDetails;
   return (
     <Paper className={classes.container}>
+      {loading ? <CustomProgress /> : ""}
       <Typography variant="h4">Job Details</Typography>
-      <Typography variant="h5">Status</Typography>
-      {/* TODO display as chip */}
+      <Typography variant="h5" style={{ marginTop: 10, fontWeight: "bold" }}>
+        Status
+      </Typography>
       <Typography
         style={{
-          color: state === "finished" ? "green" : "orange",
+          color: getColorFromState(state),
         }}>
         {state}
       </Typography>
 
-      <Typography variant="h5">Output</Typography>
+      <Typography variant="h5" style={{ marginTop: 10, fontWeight: "bold" }}>
+        Output
+      </Typography>
       {state === "finished" ? (
         <video
           style={{
@@ -43,11 +95,25 @@ export default (props) => {
         <Typography style={{ color: "grey" }}>No Output Yet</Typography>
       )}
 
-      <Typography variant="h5">Assets</Typography>
+      <Typography variant="h5" style={{ marginTop: 10, fontWeight: "bold" }}>
+        Assets
+      </Typography>
 
-      {assets.map((props, index) => {
+      {assets?.map((props, index) => {
         return <AssetsPreview key={index} {...props} />;
       })}
     </Paper>
   );
+};
+
+const getColorFromState = (state) => {
+  console.log(state);
+  switch (state) {
+    case "finished":
+      return "#4caf50";
+    case "error":
+      return "#f44336";
+    default:
+      return "grey";
+  }
 };

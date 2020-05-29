@@ -8,7 +8,7 @@ import { Button, Paper, Typography } from '@material-ui/core'
 import { Wallpaper, TextFields } from '@material-ui/icons'
 export default ({
   compositions,
-  activeIndex,
+
   usedFields,
   editVersion,
   activeVersionIndex,
@@ -89,15 +89,14 @@ export default ({
 
   const _deleteField = (item, index) => {
     setUsedFields(usedFields.filter((i) => i !== item.layerName));
-    removeField(activeVersionIndex, activeIndex, index);
+    removeField(activeVersionIndex, index);
   };
 
   const _onDrop = (e, index) => {
     swapFields(
       activeVersionIndex,
-      activeIndex,
-      e.dataTransfer.getData("text/plain"),
-      index
+      index,
+
     );
     setValue(Math.random());
   };

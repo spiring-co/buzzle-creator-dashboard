@@ -1,7 +1,18 @@
 import React from "react";
-import { Button, Typography, Container } from "@material-ui/core";
+import { Button, Typography, Paper, LinearProgress, withStyles } from "@material-ui/core";
 import { useHistory, useRouteMatch, useParams } from "react-router-dom";
-import useApi from "services/api";
+import useApi, { deleteTemplate } from "services/api";
+import ErrorHandler from 'components/ErrorHandler'
+
+const CustomProgress = withStyles({
+  colorPrimary: {
+    backgroundColor: "#b2dfdb",
+  },
+  barColorPrimary: {
+    backgroundColor: "#00695c",
+  },
+})(LinearProgress);
+
 export default (props) => {
   const { url } = useRouteMatch();
   const { id } = useParams();
@@ -12,12 +23,12 @@ export default (props) => {
   const { data, loading, error } = useApi(`/videoTemplates/${id}`);
 
   const handleEdit = async () => {
-    // TODO handle with API
+
     history.push({
       pathname: `${url}/edit`,
       state: {
         isEdit: true,
-        video: props.location.state.video,
+        video: data,
       },
     });
   };
@@ -27,18 +38,7 @@ export default (props) => {
     if (action) {
       try {
         setIsDeleting(true);
-        const response = await fetch(
-          process.env.REACT_APP_API_URL +
-            `/video/creator/${localStorage.getItem("creatorId")}/${id}`,
-          {
-            method: "DELETE",
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-              Authorization: `bearer ${localStorage.getItem("jwtoken")}`,
-            },
-          }
-        );
+        const response = await deleteTemplate(id)
         setIsDeleting(false);
         if (response.ok) {
           console.log(await response.json());
@@ -46,33 +46,40 @@ export default (props) => {
         }
       } catch (err) {
         setIsDeleting(false);
-        console.log(err);
         alert(err.message);
       }
     }
   };
-  if (loading | isDeleting)
-    return <p>{isDeleting ? "Deleting" : "Loading"} your template...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+
+  if (error) return <ErrorHandler
+    message={error?.message ?? "Oop's, Somethings went wrong!"}
+    showRetry={true}
+    onRetry={() => alert("retrying")} />
 
   return (
-    <Container maxWidth={"md"}>
-      <Typography variant="h3">Your Video Template</Typography>
-      <Typography>Sample Video</Typography>
-      <video
-        id="sample"
-        controls={true}
-        style={{ width: 300, height: 200 }}
-        src={data.versions[0].sample}
-      />
+    <div>
+      {(loading | isDeleting) ? <CustomProgress /> : ""}
+      <Paper style={{ padding: 20, }}>
+        <Typography variant="h4" style={{ marginTop: 10 }}>Your Video Template</Typography>
+        <Typography style={{ marginTop: 10 }}><strong>Sample Video</strong></Typography>
+        <video
+          id="sample"
+          controls={true}
+          style={{ width: 300, height: 200, marginTop: 10 }}
+          src={data?.versions[0]?.sample}
+        />
 
-      <Typography>Title</Typography>
-      <Typography>{data.title}</Typography>
-      <Typography>Description</Typography>
-      <Typography>{data.description}</Typography>
+        <Typography style={{ marginTop: 10 }}><strong>Title</strong></Typography>
+        <Typography>{data?.title}</Typography>
+        <Typography style={{ marginTop: 10 }}><strong>Description</strong></Typography>
+        <Typography>{data?.description}</Typography>
 
-      <Button onClick={handleEdit}>Edit</Button>
-      <Button onClick={handleDelete}>Delete</Button>
-    </Container>
+        <Button style={{ margin: 10, marginLeft: 0 }} variant="contained" color="primary" onClick={handleEdit}>Edit</Button>
+        <Button style={{ margin: 10, }}
+          disabled={isDeleting}
+          variant="outlined"
+          color="secondary" onClick={handleDelete}>{isDeleting ? 'Deleting...' : 'Delete'}</Button>
+      </Paper ></div>
+
   );
 };

@@ -1,10 +1,14 @@
-import { Button, Paper, TextField } from "@material-ui/core";
+import { Button, Paper, TextField, Chip } from "@material-ui/core";
 import ProjectFilePicker from "components/ProjectFilePicker";
+
+import { ArrowForward } from "@material-ui/icons";
 import { useFormik } from "formik";
-import React from "react";
+import React, { useState } from "react";
 import * as Yup from "yup";
 
 export default ({ restoredValues, onSubmit }) => {
+  const [tagInput, setTagInput] = useState("");
+  const [tags, setTags] = useState(restoredValues?.tags ?? []);
   const {
     handleChange,
     handleBlur,
@@ -19,7 +23,6 @@ export default ({ restoredValues, onSubmit }) => {
   } = useFormik({
     initialValues: restoredValues || {
       title: "",
-      tags: [],
       description: "",
       projectFile: "",
     },
@@ -29,9 +32,27 @@ export default ({ restoredValues, onSubmit }) => {
         ? Yup.object().required("Project File is required")
         : Yup.object().required("Project File is required"),
     }),
-    onSubmit,
+    onSubmit: (values) => {
+      onSubmit({ ...values, tags });
+    },
   });
+  const handleTagInput = (value) => {
+    if (
+      (value.substr(-1) === "," || value.substr(-1) === " ") &&
+      value.substr(0, 1) !== " " &&
+      value.substr(0, 1) !== ","
+    ) {
+      setTags([...tags, value.substr(0, value.length - 1)]);
+      setTagInput("");
+    } else {
+      setTagInput(value);
+    }
+  };
 
+  const handleDelete = (tagValue) => {
+    // delete the tag
+    setTags(tags.filter((tag) => tag !== tagValue));
+  };
   return (
     <Paper elevation={2}>
       <form
@@ -40,8 +61,7 @@ export default ({ restoredValues, onSubmit }) => {
           handleSubmit();
         }}
         noValidate
-        style={{ background: "#fff", marginTop: 20, padding: 20 }}
-      >
+        style={{ background: "#fff", marginTop: 20, padding: 20 }}>
         <ProjectFilePicker
           as={ProjectFilePicker}
           onData={(f) => setFieldValue("projectFile", f)}
@@ -96,19 +116,40 @@ export default ({ restoredValues, onSubmit }) => {
         <TextField
           fullWidth
           margin={"dense"}
+          disabled={tags.length >= 5}
           variant={"outlined"}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          value={values.tags}
-          name={"tags"}
+          onChange={({ target: { value } }) => handleTagInput(value)}
+          value={tagInput}
           type="text"
           placeholder="Enter tags"
           label="Tags"
-          error={touched.tags && !!errors.tags}
-          helperText={touched.tags && errors?.tags}
+          error={
+            tags.length > 5 ||
+            tagInput.substr(0, 1) === " " ||
+            tagInput.substr(0, 1) === ","
+          }
+          helperText={
+            tagInput.substr(0, 1) === " " || tagInput.substr(0, 1) === ","
+              ? "Invalid Tag Value"
+              : "You can add maximum of 5 tags"
+          }
+          InputProps={{
+            startAdornment: tags.map((tag, index) => {
+              return (
+                <Chip
+                  key={index}
+                  style={{ margin: 6 }}
+                  size="small"
+                  label={tag}
+                  onDelete={() => handleDelete(tag)}
+                />
+              );
+            }),
+          }}
         />
 
         <Button
+          endIcon={<ArrowForward />}
           style={{ marginTop: 20 }}
           color="primary"
           variant="contained"

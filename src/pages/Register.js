@@ -5,7 +5,7 @@ import * as Yup from "yup";
 import { useTranslation } from "react-i18next";
 import { Alert } from "@material-ui/lab";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
-
+import { registerUser } from 'services/api'
 import {
   TextField,
   Button,
@@ -68,18 +68,7 @@ export default () => {
     onSubmit: async (s) => {
       console.log(s);
       try {
-        // TODO abstract in api as addCreator
-        const response = await fetch(
-          process.env.REACT_APP_API_URL + "/creator",
-          {
-            method: "POST",
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(s),
-          }
-        );
+        const response = await registerUser(s)
         if (response.ok) {
           return window.location.assign("/");
         } else {
@@ -298,7 +287,6 @@ const validationSchema = Yup.object({
     .matches(/^\d{10}$/, "Phone number isn't valid")
     .required("Phone number is required"),
 
-  //TODO age check
   birthDate: Yup.date().required("Birth date is required"),
   country: Yup.string().required("Country name is required"),
   gender: Yup.string().required("Gender field is required"),

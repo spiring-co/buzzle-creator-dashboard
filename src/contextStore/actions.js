@@ -15,7 +15,7 @@ import {
 import { VideoTemplateContext } from "./store";
 
 export default function useActions() {
-  const [dispatch] = React.useContext(VideoTemplateContext);
+  const [state, dispatch] = React.useContext(VideoTemplateContext);
 
   return {
     // restoreFieldsFromPreviousVersion: function (

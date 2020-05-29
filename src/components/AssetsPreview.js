@@ -47,10 +47,6 @@ function RenderAsset({ type, layerName, property, value, src }) {
             <p>{layerName}</p>
           </div>
           <div className={classes.asset}>
-            <Typography className={classes.layerName}>Property</Typography>
-            <img alt="property" style={{ height: 100, width: 100 }} src={src} />
-          </div>
-          <div className={classes.asset}>
             <Typography className={classes.layerName}>Value</Typography>
             <img alt="value" style={{ height: 100, width: 100 }} src={src} />
           </div>
@@ -63,12 +59,7 @@ function RenderAsset({ type, layerName, property, value, src }) {
             <Typography className={classes.layerName}>Layer Name</Typography>
             <p>{layerName}</p>
           </div>
-          <div className={classes.asset}>
-            <Typography className={classes.layerName}>Property</Typography>
-            <audio controls>
-              <source src={src} />
-            </audio>
-          </div>
+
           <div className={classes.asset}>
             <Typography className={classes.layerName}>Value</Typography>
 

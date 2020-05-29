@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { extractStructureFromFile } from "services/ae";
 import { getLayersFromComposition } from "services/helper";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
-
+import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 const useStyles = makeStyles((theme) =>
   createStyles({
     content: {
@@ -13,6 +13,7 @@ const useStyles = makeStyles((theme) =>
       borderRadius: "0.2rem",
       textAlign: "center",
       justifyContent: "center",
+      marginBottom: theme.spacing(4),
     },
     label: {
       display: "flex",
@@ -70,9 +71,6 @@ export default ({ value, onData, name, onTouched, onError }) => {
       onError(error);
     }
   };
-  useEffect(() => {
-    console.log(compositions);
-  }, [compositions]);
 
   function getTotalLayers(c) {
     try {
@@ -93,31 +91,29 @@ export default ({ value, onData, name, onTouched, onError }) => {
       onDrop={hasPickedFile ? null : handlePickFile}
       onChange={hasPickedFile ? null : handlePickFile}
       for={name}
-      className={classes.content}
-    >
+      className={classes.content}>
       <div>
         {!hasPickedFile && (
-          <div as="label" htmlFor={name} className={classes.label}>
-            <p>Drag Your File Here OR</p>
-            <Button variant="contained" onClick={(e) => e.preventDefault()}>
-              Pick File
-              <Input
-                className={classes.invisible}
-                id={name}
-                name={name}
-                type="file"
-                accept={[".aepx", ".aep"]}
-              />
-            </Button>
-            <br />
-          </div>
+          <label className={classes.label}>
+            <p>
+              Drag Your File Here
+              <br /> OR
+            </p>
+            <CloudUploadIcon fontSize={"large"} />
+            Pick File
+            <input
+              className={classes.invisible}
+              id={name}
+              name={name}
+              type="file"
+              accept={[".aepx", ".aep"]}
+            />
+            {/* </Button> */}
+          </label>
         )}
         {hasPickedFile &&
           (hasExtractedData ? (
             <>
-              <p className={"text-success"}>{`
-              ${Object.keys(compositions || {}).length} compositions &
-              ${getTotalLayers(compositions)} layers extracted.`}</p>
               <Button
                 color="primary"
                 variant="contained"
@@ -127,6 +123,9 @@ export default ({ value, onData, name, onTouched, onError }) => {
                   setHasExtractedData(false);
                 }}
               />
+              <p style={{ color: "green" }}>{`
+                ${Object.keys(compositions || {}).length} compositions &
+                ${getTotalLayers(compositions)} layers extracted.`}</p>
             </>
           ) : (
             <>

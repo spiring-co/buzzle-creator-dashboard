@@ -11,20 +11,18 @@ import VideoTemplateMetaForm from "./VideoTemplateMetaForm";
 export default ({ submitForm, isEdit, video }) => {
   const [videoObj] = useContext(VideoTemplateContext);
   const { resetVideo, editVideoKeys, loadVideo } = useActions();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [activeDisplayIndex, setActiveDisplayIndex] = useState(0);
   const [compositions, setCompositions] = useState([]);
 
-  useEffect(() => {
-    if (isEdit) {
-      loadVideo(video);
-    } else {
-      resetVideo();
-    }
-    setLoading(false);
-  }, [isEdit, loadVideo, resetVideo, video]);
-
-  useEffect(() => {}, [activeDisplayIndex]);
+  // useEffect(() => {
+  //   if (isEdit) {
+  //     loadVideo(video);
+  //   } else {
+  //     resetVideo();
+  //   }
+  //   setLoading(false);
+  // }, []);
 
   const handleSubmitForm = async () => {
     submitForm(videoObj);

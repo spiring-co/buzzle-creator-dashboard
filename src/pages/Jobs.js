@@ -1,18 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { LinearProgress, Paper, Chip } from "@material-ui/core";
-import { withStyles } from "@material-ui/core/styles";
-import MaterialTable from "material-table";
 import JobDetails from "./JobDetails";
 import { Route, Switch, useRouteMatch, useHistory } from "react-router-dom";
-
-const CustomProgress = withStyles({
-  colorPrimary: {
-    backgroundColor: "#b2dfdb",
-  },
-  barColorPrimary: {
-    backgroundColor: "#00695c",
-  },
-})(LinearProgress);
+import JobsTable from "./JobsTable";
 
 export default () => {
   let { path } = useRouteMatch();
@@ -22,88 +11,4 @@ export default () => {
       <Route path={`${path}/:jobId`} component={JobDetails} />
     </Switch>
   );
-};
-
-// TODO abstract to separate file
-const JobsTable = () => {
-  const [loading, setLoading] = useState(true);
-  const [data, setData] = useState([]);
-  let history = useHistory();
-  let { path } = useRouteMatch();
-
-  // TODO Abstract to api
-  const uri = `${process.env.REACT_APP_API_URL}/creators/${localStorage.getItem(
-    "creatorId"
-  )}/jobs`;
-
-  useEffect(() => {
-    // make fetch call to fetch Jobs
-    getJobs();
-  }, []);
-
-  const getJobs = async () => {
-    try {
-      const result = await fetch(uri, {
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("jwtoken"),
-        },
-      });
-      const response = await result.json();
-      console.log(response);
-      setData(response.jobs);
-      setLoading(false);
-    } catch (err) {
-      setLoading(false);
-      console.log(err);
-    }
-  };
-
-  if (loading) {
-    return (
-      <Paper style={{ height: 400 }}>
-        <CustomProgress />
-      </Paper>
-    );
-  }
-
-  return (
-    <MaterialTable
-      title="Your Jobs"
-      columns={[
-        { title: "Job Id", field: "id" },
-        { title: "Video Template Id", field: "idVideoTemplate" },
-        { title: "Version Id", field: "idVersion" },
-        {
-          title: "State",
-          field: "state",
-          render: ({ state }) => (
-            <Chip
-              size="small"
-              label={state}
-              style={{ background: getColorFromState(state), color: "white" }}
-            />
-          ),
-        },
-      ]}
-      data={data}
-      onRowClick={(e, rowData) => {
-        //TODO implement with react router
-        history.push(`${path}${rowData.id}`, {
-          jobDetails: rowData,
-        });
-      }}
-    />
-  );
-};
-
-const getColorFromState = (state) => {
-  console.log(state);
-  switch (state) {
-    case "finished":
-      return "#4caf50";
-    case "error":
-      return "#f44336";
-    default:
-      return "grey";
-  }
 };

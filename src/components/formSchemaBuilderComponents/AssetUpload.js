@@ -1,11 +1,16 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Button, Radio, FormControlLabel, FormControl } from '@material-ui/core'
+import {
+  Button,
+  Radio,
+  FormControlLabel,
+  FormControl,
+} from "@material-ui/core";
 import AssetUploader from "./AssetUploader";
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from "@material-ui/core/styles";
 import useActions from "contextStore/actions";
 import { VideoTemplateContext } from "contextStore/store";
 import { zipMaker } from "services/helper";
-
+import { ArrowForward, ArrowBack } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -18,19 +23,21 @@ const useStyles = makeStyles((theme) => ({
     padding: 50,
   },
   rowWrapped: {
-    display: "flex", flexWrap: "wrap", justifyContent: "center"
-  }
-}))
+    display: "flex",
+    flexWrap: "wrap",
+    justifyContent: "center",
+  },
+}));
 
 export default function AssetUpload({
   setActiveDisplayIndex,
   activeDisplayIndex,
   handleSubmitForm,
 }) {
-  const classes = useStyles()
+  const classes = useStyles();
   const [videoObj] = useContext(VideoTemplateContext);
   const [uploadType, setUploadType] = useState(
-    Boolean(videoObj.assetsUri) ? "file" : ""
+    videoObj.assetsUri ? "file" : ""
   );
   const [assetsArray, setAssetsArray] = useState([]);
   const [assets, setAssets] = useState([]);
@@ -66,28 +73,16 @@ export default function AssetUpload({
     setAssets([]);
   }, [uploadType]);
 
-  const handleSubmit = () => {
-    if (
-      window.confirm(
-        "You can edit your template any time after submit, Submit Template ?"
-      )
-    ) {
-
-      handleSubmitForm()
-    }
-  };
-
   const handleChange = (e) => {
     setUploadType(e.target.value);
   };
 
   const renderAssetFileUploader = () => {
     return (
-      <div
-        className={classes.rowWrapped}
-      >
-        {assetsArray.map((asset) => (
+      <div className={classes.rowWrapped}>
+        {assetsArray.map((asset, index) => (
           <AssetUploader
+            key={index}
             assetsUri={videoObj.assetsUri}
             setAssets={setAssets}
             assets={assets}
@@ -177,7 +172,6 @@ export default function AssetUpload({
           <b>Choose Asset Upload Structure</b>
         </p>
         <FormControlLabel
-
           value="folder"
           control={
             <Radio
@@ -203,17 +197,24 @@ export default function AssetUpload({
         />
       </FormControl>
       {renderAssetUploader(uploadType)}
-      <Button
-        variant="contained"
-        color="primary"
-        children={"back"}
-        onClick={() => setActiveDisplayIndex(activeDisplayIndex - 1)}
-      />
-      <br />
-      <Button
-        variant="contained"
-        color="primary"
-        children={"Submit"} onClick={handleSubmit} />
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <Button
+          startIcon={<ArrowBack />}
+          style={{ margin: 10 }}
+          color="primary"
+          variant="outlined"
+          children={"Back"}
+          onClick={() => setActiveDisplayIndex(activeDisplayIndex - 1)}
+        />
+        <Button
+          endIcon={<ArrowForward />}
+          style={{ margin: 10 }}
+          color="primary"
+          variant="contained"
+          children={"Submit"}
+          onClick={() => handleSubmitForm(videoObj)}
+        />
+      </div>
     </div>
   );
 }

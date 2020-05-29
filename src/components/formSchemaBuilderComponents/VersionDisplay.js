@@ -1,8 +1,15 @@
-import { Button, } from "@material-ui/core";
+import {
+  Button,
+  ExpansionPanel,
+  ExpansionPanelDetails,
+  ExpansionPanelSummary,
+  Typography,
+  Paper,
+} from "@material-ui/core";
 import useActions from "contextStore/actions";
 import { VideoTemplateContext } from "contextStore/store";
 import React, { useContext, useEffect, useState } from "react";
-
+import { ExpandMore, ArrowForward, ArrowBack } from "@material-ui/icons";
 import CompositionPicker from "./CompositionPicker";
 import LayerAdder from "./LayerAdder";
 import VersionMeta from "./VersionMeta";
@@ -14,21 +21,17 @@ export default ({
   activeDisplayIndex,
   setActiveDisplayIndex,
 }) => {
-
   const [videoObj] = useContext(VideoTemplateContext);
   const [activeVersionIndex, setActiveVersionIndex] = useState(0);
   const [editIndex, setEditIndex] = useState(null);
   const [editVersion, setEditVersion] = useState(false);
   const { addVersion, removeVersion, editversionKeys } = useActions();
   const [activeStep, setActiveStep] = useState(0);
-  const [composition, setCompoisition] = useState("");
+  const [composition, setComposition] = useState("");
 
   useEffect(() => {
-    if (isEdit) {
-      setActiveVersionIndex(videoObj.versions.length);
-    }
+    setActiveVersionIndex(videoObj.versions.length);
   }, []);
-  useEffect(() => { }, [activeStep]);
 
   const openVersionMeta = (index, fromEdit = false) => {
     if (fromEdit) {
@@ -45,11 +48,10 @@ export default ({
   };
 
   const openVersionDisplay = () => {
-    console.log(videoObj);
     setEditVersion(false);
     setEditIndex(null);
     setActiveStep(0);
-    setCompoisition("");
+    setComposition("");
   };
 
   const renderStep = (activeStep) => {
@@ -58,7 +60,7 @@ export default ({
         return (
           <CompositionPicker
             composition={composition}
-            setCompoisition={setCompoisition}
+            setComposition={setComposition}
             compositions={compositions}
             openVersionMeta={openVersionMeta}
           />
@@ -69,16 +71,16 @@ export default ({
             onSubmit={(data) => {
               editversionKeys(editVersion ? editIndex : activeVersionIndex, {
                 title: data.title,
-                description: data.description
+                description: data.description,
               });
-              openSegmentBuilder()
-            }
-            }
-            initialValue={editVersion &&
-            {
-              title: videoObj?.versions[editIndex]?.title,
-              description: videoObj?.versions[editIndex]?.description
+              openSegmentBuilder();
             }}
+            initialValue={
+              editVersion && {
+                title: videoObj?.versions[editIndex]?.title,
+                description: videoObj?.versions[editIndex]?.description,
+              }
+            }
           />
         );
       case 2:
@@ -98,53 +100,102 @@ export default ({
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", margin: 50 }}>
-      {videoObj?.versions.map((item, index) => {
-        if (index === activeVersionIndex) {
-          return <div></div>;
-        }
+    <div style={{ display: "flex", flexDirection: "column", marginTop: 30 }}>
+      <ExpansionPanel defaultExpanded={true} style={{ marginBottom: 20 }}>
+        <ExpansionPanelSummary
+          expandIcon={<ExpandMore />}
+          aria-controls="panel1c-content"
+          id="panel1c-header">
+          <Typography>
+            <strong>Versions</strong>
+          </Typography>
+        </ExpansionPanelSummary>
 
-        if (index === editIndex) {
-          return <div></div>;
-        }
-        return (
-          <div style={{ border: "1px solid black", padding: 10, margin: 10 }}>
-            <p style={{ fontSize: 15 }}>{JSON.stringify(item)}</p>
-            <button onClick={() => openVersionMeta(index, true)}>isEdit</button>
-            <span> </span>
-            <button onClick={() => {
-              setActiveVersionIndex(activeVersionIndex - 1)
-              removeVersion(index)
-            }}>Delete</button>
-          </div>
-        );
-      })}
-      <VersionStepper activeStep={activeStep} renderStep={renderStep} />
-      <br />
-      {isEdit && (
+        <ExpansionPanelDetails style={{ flexWrap: "wrap" }}>
+          {videoObj.versions.length === 0 ? (
+            <div>
+              <Typography style={{ color: "grey" }}>
+                No Version Added.
+              </Typography>
+            </div>
+          ) : (
+            videoObj?.versions?.map((item, index) => {
+              if (index === activeVersionIndex) {
+                return <div></div>;
+              }
+
+              if (index === editIndex) {
+                return <div></div>;
+              }
+              return (
+                <Paper key={index} style={{ padding: 10, margin: 10 }}>
+                  <Typography>
+                    <strong>Title: </strong>
+                    {item.title}
+                  </Typography>
+                  <Typography>
+                    <strong>Description: </strong>
+                    {item.description}
+                  </Typography>
+                  <Typography>
+                    <strong>No of fields: </strong>
+                    {item.editableLayers.length}
+                  </Typography>
+                  <Button
+                    size="small"
+                    style={{ margin: 8 }}
+                    variant="contained"
+                    color="primary"
+                    onClick={() => openVersionMeta(index, true)}
+                    children="Edit"
+                  />
+
+                  <Button
+                    size="small"
+                    style={{ margin: 8 }}
+                    variant="outlined"
+                    color="secondary"
+                    onClick={() => {
+                      setActiveVersionIndex(activeVersionIndex - 1);
+                      removeVersion(index);
+                    }}
+                    children="Delete"
+                  />
+                </Paper>
+              );
+            })
+          )}
+        </ExpansionPanelDetails>
+      </ExpansionPanel>
+
+      <Paper>
+        <VersionStepper activeStep={activeStep} renderStep={renderStep} />
+      </Paper>
+      <div style={{ display: "flex", justifyContent: "center" }}>
         <Button
+          startIcon={<ArrowBack />}
+          style={{ margin: 10 }}
           color="primary"
           variant="outlined"
-          style={{ float: "left", marginRight: "2%" }}
           onClick={() =>
             activeDisplayIndex === 2
               ? setActiveDisplayIndex(1)
               : setActiveDisplayIndex(0)
           }
-          disabled={!activeDisplayIndex === 2 && !activeDisplayIndex === 1}
-        >
+          disabled={!activeDisplayIndex === 2 && !activeDisplayIndex === 1}>
           Back
         </Button>
-      )}
-      <Button
 
-        color="primary"
-        variant="outlined"
-        disabled={videoObj.versions.length === 0}
-        onClick={() => setActiveDisplayIndex(activeDisplayIndex + 1)}
-      >
-        Next
-      </Button>
+        <Button
+          endIcon={<ArrowForward />}
+          style={{ margin: 10 }}
+          color="primary"
+          variant="contained"
+          disabled={videoObj.versions.length === 0}
+          onClick={() => setActiveDisplayIndex(activeDisplayIndex + 1)}>
+          Next
+        </Button>
+      </div>
     </div>
   );
 };
