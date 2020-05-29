@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Typography, Paper, LinearProgress, withStyles } from "@material-ui/core";
 import { useHistory, useRouteMatch, useParams } from "react-router-dom";
 import useApi, { deleteTemplate } from "services/api";
 import ErrorHandler from 'components/ErrorHandler'
-
+import SnackAlert from 'components/SnackAlert'
 const CustomProgress = withStyles({
   colorPrimary: {
     backgroundColor: "#b2dfdb",
@@ -18,9 +18,12 @@ export default (props) => {
   const { id } = useParams();
 
   const [isDeleting, setIsDeleting] = React.useState(false);
-
+  const [statusObj, setStatusObj] = useState(props?.location?.state?.editStatus ?? {
+    status: false,
+    err: false
+  })
   const history = useHistory();
-  const { data, loading, error } = useApi(`/videoTemplates/${id}`);
+  const { data, loading, error, onReferesh } = useApi(`/videoTemplates/${id}`);
 
   const handleEdit = async () => {
 
@@ -41,12 +44,18 @@ export default (props) => {
         const response = await deleteTemplate(id)
         setIsDeleting(false);
         if (response.ok) {
-          console.log(await response.json());
-          history.goBack();
+          setStatusObj({ err: false, status: true })
+
+          history.push({
+            pathname: `/home/videoTemplates`,
+            state: {
+              statusObj: { err: false, status: true }
+            }
+          })
         }
       } catch (err) {
         setIsDeleting(false);
-        alert(err.message);
+        setStatusObj({ ...statusObj, err })
       }
     }
   };
@@ -54,11 +63,17 @@ export default (props) => {
   if (error) return <ErrorHandler
     message={error?.message ?? "Oop's, Somethings went wrong!"}
     showRetry={true}
-    onRetry={() => alert("retrying")} />
-
+    onRetry={() => onReferesh()} />
+  var { status, err } = statusObj
   return (
     <div>
       {(loading | isDeleting) ? <CustomProgress /> : ""}
+      <SnackAlert
+        message={status ? status?.message : err?.message ?? "Oop's, something went wrong, action failed !"}
+        open={err || status}
+        onClose={() => setStatusObj({ status: false, err: false })}
+        type={status ? 'sucess' : "error"} />
+
       <Paper style={{ padding: 20, }}>
         <Typography variant="h4" style={{ marginTop: 10 }}>Your Video Template</Typography>
         <Typography style={{ marginTop: 10 }}><strong>Sample Video</strong></Typography>
@@ -78,7 +93,7 @@ export default (props) => {
         <Button style={{ margin: 10, }}
           disabled={isDeleting}
           variant="outlined"
-          color="secondary" onClick={handleDelete}>{isDeleting ? 'Deleting...' : 'Delete'}</Button>
+          color="secondary" onClick={handleDelete}>{isDeleting ? 'Deleting...' : err ? 'Retry?' : 'Delete'}</Button>
       </Paper ></div>
 
   );

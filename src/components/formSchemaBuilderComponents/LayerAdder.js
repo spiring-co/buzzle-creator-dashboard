@@ -11,15 +11,16 @@ export default ({
   compositions,
   setActiveVersionIndex,
   openVersionDisplay,
+  onBack,
+  onCancel
 }) => {
 
   const [videoObj] = useContext(VideoTemplateContext);
 
   const [usedFields, setUsedFields] = useState([]);
   useEffect(() => {
-    if (isEdit) {
-      setUsedFields(videoObj.versions[activeVersionIndex].editableLayers.map(layer => layer.layerName))
-    }
+
+    setUsedFields(videoObj.versions[activeVersionIndex].editableLayers.map(layer => layer.layerName))
   }, [isEdit])
   return (
     <form
@@ -35,22 +36,29 @@ export default ({
         activeVersionIndex={activeVersionIndex}
 
       />
-
-      <Button
-        disabled={usedFields.length === 0}
-        style={{ marginTop: 10 }}
-        color="primary"
-        variant="contained"
-        onClick={() => {
-          if (!editVersion) {
-            setActiveVersionIndex(activeVersionIndex + 1);
+      <div>
+        <Button
+          onClick={() => onBack()}
+          size="small"
+          style={{ width: 'fit-content', marginTop: 10 }}
+          children="back"
+        />
+        <Button
+          disabled={usedFields.length === 0}
+          style={{ marginTop: 10 }}
+          color="primary"
+          variant="contained"
+          onClick={() => {
+            if (!editVersion) {
+              setActiveVersionIndex(activeVersionIndex + 1);
+            }
+            openVersionDisplay();
+          }}
+          children={
+            isEdit ? "Save Edits" : editVersion ? "Save Edits" : "Create Version"
           }
-          openVersionDisplay();
-        }}
-        children={
-          isEdit ? "Save Edits" : editVersion ? "Save Edits" : "Create Version"
-        }
-      />
+        />
+      </div>
     </form>
   );
 };

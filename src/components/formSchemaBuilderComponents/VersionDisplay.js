@@ -43,10 +43,6 @@ export default ({
     setActiveStep(activeStep + 1);
   };
 
-  const openSegmentBuilder = () => {
-    setActiveStep(activeStep + 1);
-  };
-
   const openVersionDisplay = () => {
 
     setEditVersion(false);
@@ -69,12 +65,13 @@ export default ({
       case 1:
         return (
           <VersionMeta
+            onBack={() => setActiveStep(activeStep - 1)}
             onSubmit={(data) => {
               editversionKeys(editVersion ? editIndex : activeVersionIndex, {
                 title: data.title,
                 description: data.description
               });
-              openSegmentBuilder()
+              setActiveStep(activeStep + 1)
             }
             }
             initialValue={editVersion &&
@@ -87,6 +84,7 @@ export default ({
       case 2:
         return (
           <LayerAdder
+            onBack={() => setActiveStep(activeStep - 1)}
             isEdit={isEdit}
             editVersion={editVersion}
             compositions={compositions}
@@ -101,7 +99,7 @@ export default ({
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", marginTop: 30 }}>
+    <div style={{ display: "flex", flexDirection: "column", marginTop: 20 }}>
       <ExpansionPanel
         defaultExpanded={true}
         style={{ marginBottom: 20, }}
@@ -112,9 +110,8 @@ export default ({
           aria-controls="panel1c-content"
           id="panel1c-header"
         >
-          <Typography>
-            <strong>
-              Versions</strong>
+          <Typography variant="h5">
+            Versions
           </Typography>
 
         </ExpansionPanelSummary>
@@ -137,12 +134,14 @@ export default ({
                 <Typography><strong>No of fields: </strong>{item.editableLayers.length}</Typography>
                 <Button
                   size="small"
+                  disabled={activeStep !== 0}
                   style={{ margin: 8 }}
                   variant="contained"
                   color="primary"
                   onClick={() => openVersionMeta(index, true)} children="Edit" />
 
                 <Button
+                  disabled={activeStep !== 0}
                   size="small"
                   style={{ margin: 8 }}
                   variant="outlined"

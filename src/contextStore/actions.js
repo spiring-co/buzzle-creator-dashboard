@@ -102,19 +102,6 @@ export default function useActions() {
     loadVideo: function (video) {
       dispatch({ type: LOAD_STATE, payload: video });
     },
-    swapFields: function (
-      activeVersionIndex,
-      swapIndex,
-      targetSwapIndex
-    ) {
-      dispatch({
-        type: SWAP_FIELDS,
-        payload: {
-          activeVersionIndex,
-          swapIndex,
-          targetSwapIndex,
-        },
-      });
-    },
+
   };
 }

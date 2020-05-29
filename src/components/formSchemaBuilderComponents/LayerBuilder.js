@@ -4,8 +4,8 @@ import { VideoTemplateContext } from "contextStore/store";
 import React, { useContext, useEffect, useState } from "react";
 import { getLayersFromComposition } from "services/helper";
 import AddFields from "./AddFieldDialog";
-import { Button, Paper, Typography } from '@material-ui/core'
-import { Wallpaper, TextFields } from '@material-ui/icons'
+import { Button, Paper, Typography, Tooltip } from '@material-ui/core'
+import { Wallpaper, TextFields, Add } from '@material-ui/icons'
 export default ({
   compositions,
 
@@ -20,16 +20,13 @@ export default ({
     updateField,
     addField,
     removeField,
-    swapFields,
-    // restoreFieldsFromPreviousVersion,
+    restoreFieldsFromPreviousVersion,
 
   } = useActions();
   const [currentCompositionFields, setCurrentCompositionFields] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
   const [isDialogVisible, setIsDialogVisible] = useState(false);
-  const [value, setValue] = useState(null);
   const [restoreStatus, setRestoreStatus] = useState(false);
-  // TODO deepCompare
 
   useEffect(() => {
     setCurrentCompositionFields([
@@ -57,24 +54,18 @@ export default ({
       activeVersionIndex !== 0 &&
       videoObj.versions[activeVersionIndex].editableLayers.length === 0
     ) {
+
       if (
         window.confirm("Do you want to restore fields from previous version")
       ) {
-        // make array of current comp fields
-
-        // restoreFieldsFromPreviousVersion(
-        //   activeVersionIndex,
-        //   currentCompositionFields
-        // );
-        // // TODO proper rerender after restore
-        // setRestoreStatus(true);
-        // setValue(Math.random());
+        restoreFieldsFromPreviousVersion(
+          activeVersionIndex,
+          currentCompositionFields
+        );
+        setRestoreStatus(true);
       }
     }
   }, []);
-
-  useEffect(() => { }, [value]);
-  //  function to extract layers from compositions, c is composition object and type is textLayer or imageLayer
 
   const handleAddField = (value) => {
 
@@ -92,14 +83,6 @@ export default ({
     removeField(activeVersionIndex, index);
   };
 
-  const _onDrop = (e, index) => {
-    swapFields(
-      activeVersionIndex,
-      index,
-
-    );
-    setValue(Math.random());
-  };
 
   const editFieldValue = (value) => {
     //if user changed field name
@@ -129,54 +112,68 @@ export default ({
       <FieldPreviewContainer
         _editField={() => _editField(index)}
         _deleteField={() => _deleteField(item, index)}
-        _onDrop={(e) => _onDrop(e, index)}
+
         index={index}
-        children={<div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
-          {item.type === 'data' ? <><TextFields style={{
-            fontSize: 40,
-            margin: 10,
-            padding: 5,
-            border: '1px solid grey'
-          }} />
-            <Typography><strong>Max Length:</strong> {item.maxLength},
-            <strong>Label:</strong> {item.label},
-            <strong>Layer name:</strong> {item.layerName},
-            <strong>Required:</strong> {item.required ? 'true' : 'false'}
-            </Typography>
-          </> :
-            <>
-              <Wallpaper style={{
-                fontSize: 40,
-                margin: 10,
-                padding: 5,
-                border: '1px solid grey'
-              }} />
-              <Typography><strong>Width:</strong> {item.width},
-            <strong>Height:</strong> {item.height},
-            <strong>Layer name:</strong> {item.layerName},
-            <strong>Required:</strong> {item.required ? 'true' : 'false'}
-              </Typography>
-            </>}
-        </div>}
+        children={
+          <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
+            {item.type === 'data' ?
+              <>
+                <TextFields style={{
+                  fontSize: 40,
+                  margin: 10,
+                  padding: 5,
+                  border: '1px solid grey'
+                }} />
+                <Typography><strong>Max Length:</strong> {item.maxLength},
+          &nbsp; </Typography>
+                <Typography> <strong>Label:</strong> {item.label},
+          &nbsp; </Typography>
+                <Typography> <strong>Layer name:</strong> {item.layerName},&nbsp;
+           </Typography>
+                <Typography> <strong>Required:</strong> {item.required ? 'true' : 'false'}
+                </Typography>
+              </> :
+              <>
+                <Wallpaper style={{
+                  fontSize: 40,
+                  margin: 10,
+                  padding: 5,
+                  border: '1px solid grey'
+                }} />
+                <Typography><strong>Width:</strong> {item.width},
+           &nbsp; </Typography>
+                <Typography> <strong>Height:</strong> {item.height},
+           &nbsp; </Typography>
+                <Typography> <strong>Layer name:</strong> {item.layerName},
+           &nbsp; </Typography>
+                <Typography> <strong>Required:</strong> {item.required ? 'true' : 'false'}
+                </Typography>
+              </>}
+          </div>}
       />
     );
   };
 
   return (
     <Paper style={styles.container}>
-
+      <Tooltip title="Adds Field to version">
+        <Button
+          style={{ margin: 10 }}
+          endIcon={<Add />}
+          size="small"
+          variant="contained"
+          color="primary"
+          onClick={() => {
+            setEditIndex(null);
+            usedFields.length !== currentCompositionFields.length
+              ? setIsDialogVisible(true)
+              : alert("No layers in the composition");
+          }}
+          children="Add Field"
+        />
+      </Tooltip>
       {videoObj.versions[activeVersionIndex].editableLayers.map(renderFieldPreview)}
-      <Button
-        variant="outlined"
-        color="primary"
-        onClick={() => {
-          setEditIndex(null);
-          usedFields.length !== currentCompositionFields.length
-            ? setIsDialogVisible(true)
-            : alert("No layers in the composition");
-        }}
-        children="Add Field"
-      />
+
       {isDialogVisible &&
         usedFields.length !== currentCompositionFields.length && (
           <AddFields
@@ -213,7 +210,7 @@ export default ({
 const FieldPreviewContainer = ({
   _editField,
   _deleteField,
-  _onDrop,
+
   index,
   children,
   ...props
@@ -221,20 +218,19 @@ const FieldPreviewContainer = ({
   return (
     <Paper
       style={styles.fieldPreview}
-      draggable={true}
-      onDrop={_onDrop}
-      onDragOver={(e) => e.preventDefault()}
-      onDragStart={(ev) => ev.dataTransfer.setData("text/plain", index)}
+
       {...props}
     >
       {children}
       <Button
-        style={{ margin: 10, marginBottom: 0 }}
+        size="small"
+        style={{ margin: 5, marginBottom: 0 }}
         variant="contained"
         color="primary"
         onClick={_editField}>Edit</Button>
       <Button
-        style={{ margin: 10, marginBottom: 0 }}
+        size="small"
+        style={{ margin: 5, marginBottom: 0 }}
         variant="outlined"
         color="secondary"
         onClick={_deleteField}>Delete</Button>
