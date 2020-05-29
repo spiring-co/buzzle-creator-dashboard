@@ -1,5 +1,5 @@
 import useActions from "contextStore/actions";
-import { StateProvider, VideoTemplateContext } from "contextStore/store";
+import { VideoTemplateContext } from "contextStore/store";
 import React, { useContext, useEffect, useState } from "react";
 
 import AssetUpload from "./AssetUpload";
@@ -11,20 +11,18 @@ import VideoTemplateMetaForm from "./VideoTemplateMetaForm";
 export default ({ submitForm, isEdit, video }) => {
   const [videoObj] = useContext(VideoTemplateContext);
   const { resetVideo, editVideoKeys, loadVideo } = useActions();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [activeDisplayIndex, setActiveDisplayIndex] = useState(0);
   const [compositions, setCompositions] = useState([]);
 
-  useEffect(() => {
-    if (isEdit) {
-      loadVideo(video);
-    } else {
-      resetVideo();
-    }
-    setLoading(false);
-  }, []);
-
-  useEffect(() => { }, [activeDisplayIndex]);
+  // useEffect(() => {
+  //   if (isEdit) {
+  //     loadVideo(video);
+  //   } else {
+  //     resetVideo();
+  //   }
+  //   setLoading(false);
+  // }, []);
 
   const handleSubmitForm = async () => {
     submitForm(videoObj);

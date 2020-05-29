@@ -12,7 +12,6 @@ export default (props) => {
   const [error, setError] = React.useState(null);
   const [status, setStatus] = useState(false)
   const { video } = props?.location?.state ?? {};
-  const videoTemplateId = video?.videoTemplateId ?? null;
 
   const isEdit = props?.location?.state?.isEdit ?? false;
   const history = useHistory();

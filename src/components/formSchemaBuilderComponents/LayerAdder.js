@@ -1,8 +1,7 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import LayerBuilder from "components/formSchemaBuilderComponents/LayerBuilder";
-import useActions from "contextStore/actions";
+import { Button } from "@material-ui/core";
 import { VideoTemplateContext } from "contextStore/store";
-import { Button } from '@material-ui/core'
 
 export default ({
   isEdit,
@@ -14,7 +13,6 @@ export default ({
   onBack,
   onCancel
 }) => {
-
   const [videoObj] = useContext(VideoTemplateContext);
 
   const [usedFields, setUsedFields] = useState([]);
@@ -26,15 +24,13 @@ export default ({
     <form
       onSubmit={(e) => {
         e.preventDefault();
-      }}
-    >
+      }}>
       <LayerBuilder
         compositions={compositions}
         editVersion={editVersion}
         usedFields={usedFields}
         setUsedFields={setUsedFields}
         activeVersionIndex={activeVersionIndex}
-
       />
       <div>
         <Button

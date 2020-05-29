@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { jobSchemaConstructor } from './helper'
+import { jobSchemaConstructor } from "./helper";
 const baseUrl = process.env.REACT_APP_API_URL;
 
 /**
@@ -42,8 +42,7 @@ export default (url, fetchOptions = {}, type = "json") => {
 export const deleteTemplate = async (id) => {
   try {
     const response = await fetch(
-      process.env.REACT_APP_API_URL +
-      `/videoTemplates/${id}`,
+      process.env.REACT_APP_API_URL + `/videoTemplates/${id}`,
       {
         method: "DELETE",
         headers: {
@@ -53,13 +52,12 @@ export const deleteTemplate = async (id) => {
         },
       }
     );
-    return response
+    return response;
+  } catch (err) {
+    console.log(err);
+    throw new Error(err);
   }
-  catch (err) {
-    console.log(err)
-    throw new Error(err)
-  }
-}
+};
 
 export const renderTestJob = async (data) => {
   try {
@@ -90,7 +88,6 @@ export const renderTestJob = async (data) => {
   }
 };
 
-
 export const sendOtp = async (email) => {
   try {
     const response = await fetch(
@@ -104,28 +101,27 @@ export const sendOtp = async (email) => {
         body: JSON.stringify({ email }),
       }
     );
+  } catch (err) {
+    throw new Error(err);
   }
-  catch (err) {
-    throw new Error(err)
-  }
-}
+};
 
 export const registerUser = async (s) => {
   try {
-    const response = await fetch(
-      process.env.REACT_APP_API_URL + "/creator",
-      {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(s),
-      }
-    );
-    return response
+    const response = await fetch(process.env.REACT_APP_API_URL + "/creator", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(s),
+    });
+    return response;
+  } catch (err) {
+    throw new Error(err);
   }
-  catch (err) {
-    throw new Error(err)
-  }
-}
+};
+
+export const deleteJob = async () => {
+  return "ok";
+};

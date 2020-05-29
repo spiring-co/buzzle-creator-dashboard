@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Typography, Paper, LinearProgress, withStyles } from "@material-ui/core";
+import {
+  Typography,
+  Paper,
+  LinearProgress,
+  withStyles,
+} from "@material-ui/core";
 import AssetsPreview from "components/AssetsPreview";
 import { makeStyles } from "@material-ui/core/styles";
 import useApi from "services/api";
-import { useParams } from 'react-router-dom'
-import ErrorHandler from 'components/ErrorHandler'
+import { useParams } from "react-router-dom";
+import ErrorHandler from "components/ErrorHandler";
 
 const CustomProgress = withStyles({
   colorPrimary: {
@@ -15,7 +20,6 @@ const CustomProgress = withStyles({
   },
 })(LinearProgress);
 
-
 const useStyles = makeStyles((theme) => ({
   container: {
     padding: theme.spacing(2),
@@ -24,39 +28,43 @@ const useStyles = makeStyles((theme) => ({
 
 export default (props) => {
   const classes = useStyles();
-  const [jobDetails, setJobDetails] = useState({})
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(false)
-  const { jobId } = useParams()
-
+  const [jobDetails, setJobDetails] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const { jobId } = useParams();
 
   useEffect(() => {
-    fetchJobDetails()
-  }, [])
+    fetchJobDetails();
+  }, []);
 
   const fetchJobDetails = async () => {
     try {
       setError(false)
       setLoading(true)
       const result = await fetch(`${process.env.REACT_APP_API_URL}/jobs/${jobId}`)
+      setLoading(true);
+
       if (result.ok) {
-        setJobDetails(await result.json())
+        setJobDetails(await result.json());
       }
-      setLoading(false)
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+      console.log(err);
+      setError(err);
     }
-    catch (err) {
-      setLoading(false)
-      console.log(err)
-      setError(err)
-    }
-  }
+  };
 
-  if (error) return <ErrorHandler
-    message={error?.message ?? "Oop's, Somethings went wrong!"}
-    showRetry={true}
-    onRetry={() => fetchJobDetails()} />
+  if (error)
+    return (
+      <ErrorHandler
+        message={error?.message ?? "Oop's, Somethings went wrong!"}
+        showRetry={true}
+        onRetry={() => fetchJobDetails()}
+      />
+    );
 
-  var { output, state, assets } = jobDetails
+  var { output, state, assets } = jobDetails;
   return (
 
     <>

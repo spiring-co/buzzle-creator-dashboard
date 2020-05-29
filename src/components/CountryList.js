@@ -1,5 +1,3 @@
-import React from "react";
-
 export const countryList = [
   "Afghanistan",
   "Albania",
@@ -249,5 +247,5 @@ export const countryList = [
   "Yemen",
   "Zambia",
   "Zimbabwe",
-  "Åland Islands"
+  "Åland Islands",
 ];

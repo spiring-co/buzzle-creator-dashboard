@@ -23,7 +23,7 @@ export default function FontUpload({
       .then(setFontList)
       .catch(console.log)
       .finally(() => setLoading(false));
-  }, []);
+  }, [compositions]);
 
   const fetchFontStatus = async (fontArray) => {
     const response = await fetch(
@@ -54,20 +54,22 @@ export default function FontUpload({
         your Font File
       </Typography>
       <Container
-        style={{ display: "flex", justifyContent: "center", flexWrap: "wrap" }}
-      >
+        style={{ display: "flex", justifyContent: "center", flexWrap: "wrap" }}>
         {fontList.map((font, index) => (
-          <FontUploader fontName={font.name} fontStatus={font.resolved} />
+          <FontUploader
+            key={index}
+            fontName={font.name}
+            fontStatus={font.resolved}
+          />
         ))}
       </Container>
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
+      <div style={{ display: "flex", justifyContent: "center" }}>
         <Button
           startIcon={<ArrowBack />}
           style={{ margin: 10 }}
           color="primary"
           variant="outlined"
-          onClick={() => setActiveDisplayIndex(activeDisplayIndex - 1)}
-        >
+          onClick={() => setActiveDisplayIndex(activeDisplayIndex - 1)}>
           Back
         </Button>
 
@@ -76,11 +78,10 @@ export default function FontUpload({
           style={{ margin: 10 }}
           color="primary"
           variant="contained"
-          onClick={() => setActiveDisplayIndex(activeDisplayIndex + 1)}
-        >
+          onClick={() => setActiveDisplayIndex(activeDisplayIndex + 1)}>
           Next
-      </Button></div>
-
+        </Button>
+      </div>
     </Container>
   );
 }

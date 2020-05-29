@@ -21,7 +21,7 @@ export default () => {
             reader.readAsDataURL(file);
           }}
         />
-        <img src={image} />
+        <img alt="avatar" src={image} />
         <label>email</label>
         <input type="text" />
         <label>Phone Number</label>

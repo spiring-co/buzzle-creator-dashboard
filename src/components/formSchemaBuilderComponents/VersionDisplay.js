@@ -1,7 +1,10 @@
 import {
-  Button, ExpansionPanel,
+  Button,
+  ExpansionPanel,
   ExpansionPanelDetails,
-  ExpansionPanelSummary, Typography, Paper
+  ExpansionPanelSummary,
+  Typography,
+  Paper,
 } from "@material-ui/core";
 import useActions from "contextStore/actions";
 import { VideoTemplateContext } from "contextStore/store";
@@ -18,19 +21,16 @@ export default ({
   activeDisplayIndex,
   setActiveDisplayIndex,
 }) => {
-
   const [videoObj] = useContext(VideoTemplateContext);
   const [activeVersionIndex, setActiveVersionIndex] = useState(0);
   const [editIndex, setEditIndex] = useState(null);
   const [editVersion, setEditVersion] = useState(false);
   const { addVersion, removeVersion, editversionKeys } = useActions();
   const [activeStep, setActiveStep] = useState(0);
-  const [composition, setCompoisition] = useState("");
+  const [composition, setComposition] = useState("");
 
   useEffect(() => {
-
     setActiveVersionIndex(videoObj.versions.length);
-
   }, []);
 
   const openVersionMeta = (index, fromEdit = false) => {
@@ -44,11 +44,10 @@ export default ({
   };
 
   const openVersionDisplay = () => {
-
     setEditVersion(false);
     setEditIndex(null);
     setActiveStep(0);
-    setCompoisition("");
+    setComposition("");
   };
 
   const renderStep = (activeStep) => {
@@ -57,7 +56,7 @@ export default ({
         return (
           <CompositionPicker
             composition={composition}
-            setCompoisition={setCompoisition}
+            setComposition={setComposition}
             compositions={compositions}
             openVersionMeta={openVersionMeta}
           />
@@ -69,7 +68,7 @@ export default ({
             onSubmit={(data) => {
               editversionKeys(editVersion ? editIndex : activeVersionIndex, {
                 title: data.title,
-                description: data.description
+                description: data.description,
               });
               setActiveStep(activeStep + 1)
             }
@@ -79,6 +78,12 @@ export default ({
               title: videoObj?.versions[editIndex]?.title,
               description: videoObj?.versions[editIndex]?.description
             }}
+            initialValue={
+              editVersion && {
+                title: videoObj?.versions[editIndex]?.title,
+                description: videoObj?.versions[editIndex]?.description,
+              }
+            }
           />
         );
       case 2:
@@ -105,7 +110,6 @@ export default ({
         style={{ marginBottom: 20, }}
       >
         <ExpansionPanelSummary
-
           expandIcon={<ExpandMore />}
           aria-controls="panel1c-content"
           id="panel1c-header"
@@ -113,7 +117,6 @@ export default ({
           <Typography variant="h5">
             Versions
           </Typography>
-
         </ExpansionPanelSummary>
 
         <ExpansionPanelDetails style={{ flexWrap: 'wrap' }} >
@@ -156,21 +159,21 @@ export default ({
         </ExpansionPanelDetails>
       </ExpansionPanel>
 
-      <Paper><VersionStepper activeStep={activeStep} renderStep={renderStep} /></Paper>
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
+      <Paper>
+        <VersionStepper activeStep={activeStep} renderStep={renderStep} />
+      </Paper>
+      <div style={{ display: "flex", justifyContent: "center" }}>
         <Button
           startIcon={<ArrowBack />}
           style={{ margin: 10 }}
           color="primary"
           variant="outlined"
-
           onClick={() =>
             activeDisplayIndex === 2
               ? setActiveDisplayIndex(1)
               : setActiveDisplayIndex(0)
           }
-          disabled={!activeDisplayIndex === 2 && !activeDisplayIndex === 1}
-        >
+          disabled={!activeDisplayIndex === 2 && !activeDisplayIndex === 1}>
           Back
         </Button>
 
@@ -180,10 +183,10 @@ export default ({
           color="primary"
           variant="contained"
           disabled={videoObj.versions.length === 0}
-          onClick={() => setActiveDisplayIndex(activeDisplayIndex + 1)}
-        >
+          onClick={() => setActiveDisplayIndex(activeDisplayIndex + 1)}>
           Next
-      </Button></div>
+        </Button>
+      </div>
     </div>
   );
 };

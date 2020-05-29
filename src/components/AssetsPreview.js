@@ -1,8 +1,9 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
+import PropTypes from "prop-types";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   container: {
     padding: 20,
   },
@@ -18,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const RenderAsset = ({ type, layerName, property, value, src }) => {
+function RenderAsset({ type, layerName, property, value, src }) {
   const classes = useStyles();
   switch (type) {
     case "data":
@@ -45,10 +46,9 @@ const RenderAsset = ({ type, layerName, property, value, src }) => {
             <Typography className={classes.layerName}>Layer Name</Typography>
             <p>{layerName}</p>
           </div>
-
           <div className={classes.asset}>
             <Typography className={classes.layerName}>Value</Typography>
-            <img style={{ height: 100, width: 100 }} src={src} />
+            <img alt="value" style={{ height: 100, width: 100 }} src={src} />
           </div>
         </>
       );
@@ -72,8 +72,11 @@ const RenderAsset = ({ type, layerName, property, value, src }) => {
     default:
       return <div />;
   }
-};
+}
 
+RenderAsset.propTypes = {
+  type: PropTypes.any,
+};
 export default (props) => {
   const classes = useStyles();
   return (

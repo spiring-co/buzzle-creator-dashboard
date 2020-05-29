@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Link, CircularProgress } from "@material-ui/core";
-import { Delete } from '@material-ui/icons'
+import { Delete } from "@material-ui/icons";
 import {
   Link as RouterLink,
   useRouteMatch,
@@ -13,6 +13,7 @@ import SnackAlert from 'components/SnackAlert'
 const uri = `${process.env.REACT_APP_API_URL}/creators/${localStorage.getItem(
   "creatorId"
 )}/videoTemplates`;
+const x = 123;
 
 export default (props) => {
   let { url, path } = useRouteMatch();
@@ -24,6 +25,7 @@ export default (props) => {
     return <ErrorHandler message={error.message} showRetry={true} onRetry={() => setError(false)} />
   }
   let { status, err } = deleteStatus
+  var tableRef = useRef(null)
   return (
     <>
       <SnackAlert
@@ -33,6 +35,7 @@ export default (props) => {
         onClose={() => setDeleteStatus({ status: false, err: false })}
       />
       <MaterialTable
+        ref={tableRef}
         title="Your Video Templates"
         columns={[
           {
@@ -54,17 +57,18 @@ export default (props) => {
             title: "Description",
             field: "description",
           },
+          { title: "Created At", field: "dateCreated", type: "datetime" },
         ]}
         actions={[
           {
-            icon: "save",
+            icon: "alarm-on",
             tooltip: "Render Test Job",
             onClick: (event, rowData) => renderTestJob(rowData),
           },
           {
             icon: () => isDeleting ? <CircularProgress size={20} /> : <Delete />,
             tooltip: "Delete Template",
-
+            disabled: isDeleting,
             onClick: async (event, rowData) => {
               var action = window.confirm("Are you sure, you want to delete");
               if (action) {
@@ -73,7 +77,7 @@ export default (props) => {
                   const response = await deleteTemplate(rowData.id)
                   setIsDeleting(false);
                   if (response.ok) {
-
+                    tableRef.current && tableRef.current.onQueryChange();
                     setDeleteStatus({ status: true, err: true })
                   }
                 } catch (err) {
@@ -89,6 +93,12 @@ export default (props) => {
             isFreeAction: true,
             onClick: (event) => history.push(`${url}/add`),
           },
+          {
+            icon: "refresh",
+            tooltip: "Refresh Data",
+            isFreeAction: true,
+            onClick: () => tableRef.current && tableRef.current.onQueryChange(),
+          },
         ]}
         data={(query) =>
           fetch(`${uri}?page=${query.page + 1}&size=${query.pageSize}`)
@@ -102,6 +112,8 @@ export default (props) => {
             }).catch(err => setError(err))
         }
         options={{
+          headerStyle: { fontWeight: 700 },
+          minBodyHeight: 500,
           actionsColumnIndex: -1,
         }}
       />
