@@ -68,7 +68,7 @@ export default () => {
     onSubmit: async (s) => {
       console.log(s);
       try {
-        await registerUser(s)
+        const response = await registerUser(s)
         if (response.ok) {
           return window.location.assign("/");
         } else {

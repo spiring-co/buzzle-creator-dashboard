@@ -28,11 +28,10 @@ export default ({
   const [composition, setCompoisition] = useState("");
 
   useEffect(() => {
-    if (isEdit) {
-      setActiveVersionIndex(videoObj.versions.length);
-    }
+
+    setActiveVersionIndex(videoObj.versions.length);
+
   }, []);
-  useEffect(() => { }, [activeStep]);
 
   const openVersionMeta = (index, fromEdit = false) => {
     if (fromEdit) {
@@ -121,7 +120,9 @@ export default ({
         </ExpansionPanelSummary>
 
         <ExpansionPanelDetails style={{ flexWrap: 'wrap' }} >
-          {videoObj?.versions.map((item, index) => {
+          {videoObj.versions.length === 0 ? <div>
+            <Typography style={{ color: 'grey' }}>No Version Added.</Typography>
+          </div> : videoObj?.versions?.map((item, index) => {
             if (index === activeVersionIndex) {
               return <div></div>;
             }
