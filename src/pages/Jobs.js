@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core/styles";
 import MaterialTable from "material-table";
 import JobDetails from "./JobDetails";
 import { Route, Switch, useRouteMatch, useHistory } from "react-router-dom";
-
+const a..
 const CustomProgress = withStyles({
   colorPrimary: {
     backgroundColor: "#b2dfdb",
