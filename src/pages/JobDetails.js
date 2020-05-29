@@ -24,8 +24,7 @@ export default (props) => {
       <Typography
         style={{
           color: state === "finished" ? "green" : "orange",
-        }}
-      >
+        }}>
         {state}
       </Typography>
 
@@ -46,8 +45,8 @@ export default (props) => {
 
       <Typography variant="h5">Assets</Typography>
 
-      {assets.map((props) => {
-        return <AssetsPreview {...props} />;
+      {assets.map((props, index) => {
+        return <AssetsPreview key={index} {...props} />;
       })}
     </Paper>
   );

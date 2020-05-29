@@ -46,7 +46,7 @@ const FilePicker = ({ setCompositions, setTextLayers }) => {
 
   if (loading) {
     return (
-      <label class="file_input">
+      <label className="file_input">
         <h1 style={{ marginTop: 36, paddingBottom: 0, border: 0 }}>
           Please wait, While We Doing Our Magic ...
         </h1>

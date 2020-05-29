@@ -3,7 +3,7 @@ import { useState } from "react";
 export default () => {
   const [isVisible, setIsVisible] = useState(false);
 
-  const showModal = async (child) => {
+  const showModal = async () => {
     setIsVisible(true);
   };
 

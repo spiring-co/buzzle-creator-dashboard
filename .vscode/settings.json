@@ -6,5 +6,6 @@
     ],
     "cSpell.words": [
         "mixins"
-    ]
+    ],
+    "eslint.enable": true
 }

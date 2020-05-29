@@ -54,7 +54,7 @@ export default (props) => {
     }
   }, [loading, data, error]);
 
-  useEffect(() => { }, [activeSegment]);
+  useEffect(() => {}, [activeSegment]);
 
   const handleChange = (label, name, value, required) => {
     if (required) {
@@ -132,8 +132,7 @@ export default (props) => {
           marginTop: "15%",
           justifyContent: "center",
           alignItems: "center",
-        }}
-      >
+        }}>
         <h1>Submitting please wait...</h1>
       </div>
     );
@@ -170,12 +169,12 @@ export default (props) => {
           <Form noValidate={true} onSubmit={onSubmit} onChange={handleChange}>
             {segments.map((s, i) => (
               <FormSegment
+                key={i}
                 style={
                   activeSegment === i
                     ? { opacity: 1, zIndex: 99 }
                     : { opacity: 0, zIndex: 0, transform: "translate(10%,0)" }
-                }
-              >
+                }>
                 <HeaderText>{s.title}</HeaderText>
                 <Section>
                   {s.fields.map((f) =>
@@ -192,16 +191,14 @@ export default (props) => {
 
         {activeSegment < segments.length - 1 && (
           <RightFloatingButton
-            onClick={() => setActiveSegment(activeSegment + 1)}
-          >
+            onClick={() => setActiveSegment(activeSegment + 1)}>
             Next
           </RightFloatingButton>
         )}
 
         {activeSegment > 0 && (
           <LeftFloatingButton
-            onClick={() => setActiveSegment(activeSegment - 1)}
-          >
+            onClick={() => setActiveSegment(activeSegment - 1)}>
             Previous
           </LeftFloatingButton>
         )}
@@ -217,8 +214,7 @@ export default (props) => {
         justifyContent: "center",
         alignItems: "center",
       }}
-      onSubmit={(e) => e.preventDefault()}
-    >
+      onSubmit={(e) => e.preventDefault()}>
       <video
         style={{ height: 400, width: "100%" }}
         controls
@@ -229,15 +225,13 @@ export default (props) => {
           return false;
         }}
         alt="Card image"
-        controlsList="nodownload"
       />
       <TitleText> {video.title}</TitleText>
       <Picker
         onChange={(e) => {
           console.log(e.target.value);
           setVersionIndex(e.target.value);
-        }}
-      >
+        }}>
         <Option value="" disabled selected>
           Touch to Select a Version
         </Option>
@@ -301,8 +295,7 @@ export default (props) => {
           } else {
             setForm(true);
           }
-        }}
-      >
+        }}>
         TRY FOR FREE
       </BigButton>
     </form>

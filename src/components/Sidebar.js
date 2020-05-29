@@ -13,7 +13,7 @@ export default () => {
         <Nav.Link as={Link} to={`${path}/`}>
           <Row>
             <Col md="1">
-              <i class="material-icons">home</i>
+              <i className="material-icons">home</i>
             </Col>
             <Col sm="1">Home</Col>
           </Row>
@@ -23,7 +23,7 @@ export default () => {
         <Nav.Link as={Link} to={`${path}/profile`}>
           <Row>
             <Col md="1">
-              <i class="material-icons">settings</i>
+              <i className="material-icons">settings</i>
             </Col>
             <Col sm="1">Setting</Col>
           </Row>
@@ -33,7 +33,7 @@ export default () => {
         <Nav.Link as={Link} to={`${path}/videoTemplates`}>
           <Row>
             <Col sm="1">
-              <i class="material-icons">color_lens</i>
+              <i className="material-icons">color_lens</i>
             </Col>
             <Col sm="1">Templates</Col>
           </Row>
@@ -43,7 +43,7 @@ export default () => {
         <Nav.Link as={Link} to={`${path}/orders`}>
           <Row>
             <Col sm="1">
-              <i class="material-icons">receipt</i>
+              <i className="material-icons">receipt</i>
             </Col>
             <Col sm="1"> Orders</Col>
           </Row>

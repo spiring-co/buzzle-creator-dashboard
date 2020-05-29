@@ -6,9 +6,7 @@ export default ({ children, ...rest }) => {
   return (
     <Route
       {...rest}
-      render={({ location }) =>
-        isAuthenticated ? children : (window.location = "/login")
-      }
+      render={() => (isAuthenticated ? children : (window.location = "/login"))}
     />
   );
 };

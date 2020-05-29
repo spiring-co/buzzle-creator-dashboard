@@ -97,7 +97,7 @@ export default ({ value, onData, name, onTouched, onError }) => {
     >
       <div>
         {!hasPickedFile && (
-          <div as="label" for={name} className={classes.label}>
+          <div as="label" htmlFor={name} className={classes.label}>
             <p>Drag Your File Here OR</p>
             <Button variant="contained" onClick={(e) => e.preventDefault()}>
               Pick File

@@ -94,13 +94,12 @@ export default () => {
         component="form"
         onSubmit={handleSubmit}
         noValidate
-        maxWidth={"xs"}
-      >
+        maxWidth={"xs"}>
         <Paper className={classes.content}>
           <CssBaseline />
           <Typography variant="h4">Sign In</Typography>
           <Typography className={classes.spacedText}>
-            Welcome back fam, what's cooking?{" "}
+            Welcome back fam, what&apos;s cooking?{" "}
             <span aria-label="cool" role="img" children="😎" />
           </Typography>
 
@@ -143,8 +142,7 @@ export default () => {
                     aria-label="toggle password visibility"
                     onClick={handleClickShowPassword}
                     onMouseDown={handleMouseDownPassword}
-                    edge="end"
-                  >
+                    edge="end">
                     {showPassword ? <Visibility /> : <VisibilityOff />}
                   </IconButton>
                 </InputAdornment>
@@ -160,8 +158,7 @@ export default () => {
               color={"primary"}
               size={"small"}
               component={RouterLink}
-              to="/forgotPassword"
-            >
+              to="/forgotPassword">
               Forgot Password
             </Button>
           </Box>
@@ -174,7 +171,7 @@ export default () => {
             disabled={loading}
           />
           <Typography align="center" className={classes.spacedText}>
-            Don't have an account yet?{" "}
+            Don&apos;t have an account yet?{" "}
             <Link component={RouterLink} to="/register">
               Sign up.
             </Link>

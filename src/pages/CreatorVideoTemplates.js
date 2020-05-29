@@ -11,6 +11,7 @@ import { jobSchemaConstructor } from "services/helper";
 const uri = `${process.env.REACT_APP_API_URL}/creators/${localStorage.getItem(
   "creatorId"
 )}/videoTemplates`;
+const x = 123;
 
 export default () => {
   let { url, path } = useRouteMatch();
