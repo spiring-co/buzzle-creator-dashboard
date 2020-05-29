@@ -11,13 +11,11 @@ import {
   LOAD_STATE,
   RESET_STATE,
   SWAP_FIELDS,
-  RESTORE_FIELDS,
-
 } from "./reducer";
 import { VideoTemplateContext } from "./store";
 
 export default function useActions() {
-  const [state, dispatch] = React.useContext(VideoTemplateContext);
+  const [dispatch] = React.useContext(VideoTemplateContext);
 
   return {
     // restoreFieldsFromPreviousVersion: function (
@@ -68,9 +66,8 @@ export default function useActions() {
       dispatch({
         type: ADD_FIELD,
         payload: {
-
           activeVersionIndex,
-          value
+          value,
         },
       });
     },
@@ -84,17 +81,14 @@ export default function useActions() {
         },
       });
     },
-    updateField: function (
-      activeVersionIndex,
-      fieldIndex,
-      value
-    ) {
+    updateField: function (activeVersionIndex, fieldIndex, value) {
       // value is field object
       dispatch({
         type: UPDATE_FIELD,
         payload: {
-          activeVersionIndex, fieldIndex,
-          value
+          activeVersionIndex,
+          fieldIndex,
+          value,
         },
       });
     },
@@ -102,11 +96,7 @@ export default function useActions() {
     loadVideo: function (video) {
       dispatch({ type: LOAD_STATE, payload: video });
     },
-    swapFields: function (
-      activeVersionIndex,
-      swapIndex,
-      targetSwapIndex
-    ) {
+    swapFields: function (activeVersionIndex, swapIndex, targetSwapIndex) {
       dispatch({
         type: SWAP_FIELDS,
         payload: {

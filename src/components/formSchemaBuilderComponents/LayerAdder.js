@@ -1,8 +1,6 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useState } from "react";
 import LayerBuilder from "components/formSchemaBuilderComponents/LayerBuilder";
-import useActions from "contextStore/actions";
-import { VideoTemplateContext } from "contextStore/store";
-import { Button } from '@material-ui/core'
+import { Button } from "@material-ui/core";
 
 export default ({
   isEdit,
@@ -12,9 +10,7 @@ export default ({
   setActiveVersionIndex,
   openVersionDisplay,
 }) => {
-
-  const [videoObj] = useContext(VideoTemplateContext);
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeIndex] = useState(0);
   const [usedFields, setUsedFields] = useState([]);
   return (
     <form

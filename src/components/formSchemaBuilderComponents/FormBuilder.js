@@ -1,5 +1,5 @@
 import useActions from "contextStore/actions";
-import { StateProvider, VideoTemplateContext } from "contextStore/store";
+import { VideoTemplateContext } from "contextStore/store";
 import React, { useContext, useEffect, useState } from "react";
 
 import AssetUpload from "./AssetUpload";
@@ -22,7 +22,7 @@ export default ({ submitForm, isEdit, video }) => {
       resetVideo();
     }
     setLoading(false);
-  }, []);
+  }, [isEdit, loadVideo, resetVideo, video]);
 
   useEffect(() => {}, [activeDisplayIndex]);
 

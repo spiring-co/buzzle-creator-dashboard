@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   DialogActions,
   Dialog,
@@ -12,52 +12,60 @@ import {
   Switch,
   MenuItem,
   Select,
-  TextField
-} from '@material-ui/core';
+  TextField,
+} from "@material-ui/core";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
 const validationSchema = Yup.object().shape({
-  type: Yup.string().required('Layer type is required!'),
-  layerName: Yup.string().required('Layer name is required!'),
-  label: Yup.string().required('Field Label is required!'),
+  type: Yup.string().required("Layer type is required!"),
+  layerName: Yup.string().required("Layer name is required!"),
+  label: Yup.string().required("Field Label is required!"),
   maxLength: Yup.number().when("type", {
     is: "data", // alternatively: (val) => val == true
-    then: Yup.number().required('Max Length is required'),
-    otherwise: Yup.number()
-
+    then: Yup.number().required("Max Length is required"),
+    otherwise: Yup.number(),
   }),
   width: Yup.number().when("type", {
     is: "image", // alternatively: (val) => val == true
-    then: Yup.number().required('Width of image is required'),
-    otherwise: Yup.number()
-
+    then: Yup.number().required("Width of image is required"),
+    otherwise: Yup.number(),
   }),
   height: Yup.number().when("type", {
     is: "image", // alternatively: (val) => val == true
-    then: Yup.number().required('Height of image is required'),
-    otherwise: Yup.number()
-
-  })
-})
-
+    then: Yup.number().required("Height of image is required"),
+    otherwise: Yup.number(),
+  }),
+});
 
 export default (props) => {
   const { textLayers = [], imageLayers = [] } = props;
 
   const onSubmit = (data) => {
-
-    var { type, label, required, maxLength, layerName, width, height, } = data
+    var { type, label, required, maxLength, layerName, width, height } = data;
     switch (type) {
       case "data":
         props.editField
-          ? props.editFieldValue({ type, label, required, maxLength, layerName })
+          ? props.editFieldValue({
+              type,
+              label,
+              required,
+              maxLength,
+              layerName,
+            })
           : props.addField({ type, label, required, maxLength, layerName });
         break;
 
       case "image":
         props.editField
-          ? props.editFieldValue({ type, label, required, width, height, layerName })
+          ? props.editFieldValue({
+              type,
+              label,
+              required,
+              width,
+              height,
+              layerName,
+            })
           : props.addField({ type, label, required, width, height, layerName });
         break;
       default:
@@ -73,15 +81,17 @@ export default (props) => {
     handleSubmit,
     handleChange,
   } = useFormik({
-    initialValues: props.initialValue ? props.initialValue : {
-      type: "",
-      layerName: "",
-      label: "",
-      required: false,
-      width: 0,
-      height: 0,
-      maxLength: 0
-    },
+    initialValues: props.initialValue
+      ? props.initialValue
+      : {
+          type: "",
+          layerName: "",
+          label: "",
+          required: false,
+          width: 0,
+          height: 0,
+          maxLength: 0,
+        },
     validationSchema,
     onSubmit,
   });
@@ -95,7 +105,6 @@ export default (props) => {
   const toggleDialog = (state) => {
     props.toggleDialog(state);
   };
-
 
   const renderTextInputCreator = () => (
     <div>
@@ -131,19 +140,19 @@ export default (props) => {
       <br />
 
       <FormControlLabel
-        control={<Switch
-          checked={values.required}
-          onBlur={handleBlur}
-          name="required"
-          onChange={handleChange}
-          color="primary"
-        />}
+        control={
+          <Switch
+            checked={values.required}
+            onBlur={handleBlur}
+            name="required"
+            onChange={handleChange}
+            color="primary"
+          />
+        }
         label="Required"
       />
-
     </div>
   );
-
 
   const renderImageCreator = () => (
     <div>
@@ -193,13 +202,15 @@ export default (props) => {
 
       <br />
       <FormControlLabel
-        control={<Switch
-          checked={values.required}
-          onBlur={handleBlur}
-          name="required"
-          onChange={handleChange}
-          color="primary"
-        />}
+        control={
+          <Switch
+            checked={values.required}
+            onBlur={handleBlur}
+            name="required"
+            onChange={handleChange}
+            color="primary"
+          />
+        }
         label="Required"
       />
     </div>
@@ -221,26 +232,10 @@ export default (props) => {
       case "data":
         if (textLayers.length) {
           return textLayers.map((item, index) => {
-
-            if (props.usedFields.includes(item.name) && values.layerName !== item.name) {
-              return false;
-            }
-            return (
-              <MenuItem key={index} value={item.name} >
-                {item.name}
-              </MenuItem>
-            );
-          });
-        }
-        else {
-          return <MenuItem disabled={true} children="No Text layer" />
-        }
-
-
-      case "image":
-        if (imageLayers.length) {
-          return imageLayers.map((item, index) => {
-            if (props.usedFields.includes(item.name) && values.layerName !== item.name) {
+            if (
+              props.usedFields.includes(item.name) &&
+              values.layerName !== item.name
+            ) {
               return false;
             }
             return (
@@ -249,9 +244,27 @@ export default (props) => {
               </MenuItem>
             );
           });
+        } else {
+          return <MenuItem disabled={true} children="No Text layer" />;
         }
-        else {
-          return <MenuItem disabled={true} children="No Image layer" />
+
+      case "image":
+        if (imageLayers.length) {
+          return imageLayers.map((item, index) => {
+            if (
+              props.usedFields.includes(item.name) &&
+              values.layerName !== item.name
+            ) {
+              return false;
+            }
+            return (
+              <MenuItem key={index} value={item.name}>
+                {item.name}
+              </MenuItem>
+            );
+          });
+        } else {
+          return <MenuItem disabled={true} children="No Image layer" />;
         }
 
       default:
@@ -260,8 +273,12 @@ export default (props) => {
   };
 
   return (
-
-    <Dialog fullWidth open onClose={() => toggleDialog(false)} aria-labelledby="form-dialog-title">
+    <Dialog
+      fullWidth
+      open
+      onClose={() => toggleDialog(false)}
+      aria-labelledby="form-dialog-title"
+    >
       <form onSubmit={handleSubmit}>
         <DialogTitle id="form-dialog-title">Add Field</DialogTitle>
         <DialogContent>
@@ -271,7 +288,9 @@ export default (props) => {
             variant="outlined"
             error={touched.type && errors.type}
           >
-            <InputLabel id="demo-simple-select-outlined-label">Layer Type</InputLabel>
+            <InputLabel id="demo-simple-select-outlined-label">
+              Layer Type
+            </InputLabel>
             <Select
               labelId="demo-simple-select-outlined-label"
               id="demo-simple-select-outlined"
@@ -284,25 +303,28 @@ export default (props) => {
             >
               {inputTypes.map((item, index) => {
                 return (
-                  <MenuItem key={index}
+                  <MenuItem
+                    key={index}
                     id={index}
                     disabled={values.type === item.value}
                     value={item.value}
                     children={item.label}
-                    selected={values.type === item.value} />
-
+                    selected={values.type === item.value}
+                  />
                 );
               })}
             </Select>
             <FormHelperText>{touched.type && errors.type}</FormHelperText>
-
           </FormControl>
           <FormControl
             fullWidth
             margin="dense"
             variant="outlined"
-            error={touched.layerName && errors.layerName}>
-            <InputLabel id="demo-simple-select-outlined-label">Select Layer</InputLabel>
+            error={touched.layerName && errors.layerName}
+          >
+            <InputLabel id="demo-simple-select-outlined-label">
+              Select Layer
+            </InputLabel>
             <Select
               labelId="demo-simple-select-outlined-label"
               id="demo-simple-select-outlined"
@@ -313,10 +335,11 @@ export default (props) => {
               placeholder="Select Layer"
               label="Select Layer"
             >
-
               {fieldsSelector()}
             </Select>
-            <FormHelperText>{touched.layerName && errors.layerName}</FormHelperText>
+            <FormHelperText>
+              {touched.layerName && errors.layerName}
+            </FormHelperText>
           </FormControl>
 
           {renderInputForm(values.type)}
@@ -324,15 +347,15 @@ export default (props) => {
         <DialogActions>
           <Button onClick={() => toggleDialog(false)} color="primary">
             Cancel
-      </Button>
+          </Button>
           <Button
             variant="contained"
             type="submit"
             color="primary"
-            children={props.editField ? "Edit" : "Add Field"} />
+            children={props.editField ? "Edit" : "Add Field"}
+          />
         </DialogActions>
       </form>
-
     </Dialog>
   );
 };

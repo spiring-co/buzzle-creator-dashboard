@@ -1,5 +1,5 @@
 import { Button, Paper, TextField } from "@material-ui/core";
-// import ProjectFilePicker from "components/ProjectFilePicker";
+import ProjectFilePicker from "components/ProjectFilePicker";
 import { useFormik } from "formik";
 import React from "react";
 import * as Yup from "yup";
@@ -42,23 +42,18 @@ export default ({ restoredValues, onSubmit }) => {
         noValidate
         style={{ background: "#fff", marginTop: 20, padding: 20 }}
       >
-        {/* <Form.Group>
-          <Form.Label>Project File</Form.Label>
-          <Form.Control
-            as={ProjectFilePicker}
-            onData={(f) => setFieldValue("projectFile", f)}
-            onError={(e) => setFieldError(e.message)}
-            onTouched={setFieldTouched}
-            //to restore value={values.fileUrl}
+        <ProjectFilePicker
+          as={ProjectFilePicker}
+          onData={(f) => setFieldValue("projectFile", f)}
+          onError={(e) => setFieldError(e.message)}
+          onTouched={setFieldTouched}
+          //to restore value={values.fileUrl}
 
-            value={values.projectFile}
-            name={"projectFile"}
-            placeholder="Pick or drop project file"
-          />
-          <Form.Control.Feedback type="invalid">
-            {errors.projectFile}
-          </Form.Control.Feedback>
-        </Form.Group> */}
+          value={values.projectFile}
+          name={"projectFile"}
+          placeholder="Pick or drop project file"
+        />
+
         <TextField
           fullWidth
           margin={"dense"}

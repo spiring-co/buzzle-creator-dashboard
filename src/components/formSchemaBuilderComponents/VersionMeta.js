@@ -1,8 +1,7 @@
-import React, { useContext, useState, useEffect } from "react";
+import React from "react";
 import { Button, TextField } from "@material-ui/core";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-
 
 const validationSchema = Yup.object().shape({
   title: Yup.string()
@@ -12,9 +11,7 @@ const validationSchema = Yup.object().shape({
   description: Yup.string()
     .min(3, "Lenght Too Short!")
     .max(200, "Lenght Too Long!"),
-
-
-})
+});
 
 export default ({ onSubmit, initialValue }) => {
   const {
@@ -25,20 +22,25 @@ export default ({ onSubmit, initialValue }) => {
     handleSubmit,
     handleChange,
   } = useFormik({
-    initialValues: initialValue ? initialValue : {
-      title: "",
-      description: ""
-    },
+    initialValues: initialValue
+      ? initialValue
+      : {
+          title: "",
+          description: "",
+        },
     validationSchema,
     onSubmit,
   });
 
   return (
-    <form onSubmit={handleSubmit}
+    <form
+      onSubmit={handleSubmit}
       style={{
-        display: 'flex', flexDirection: 'column',
-        justifyContent: 'center'
-      }}>
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+      }}
+    >
       <TextField
         variant="outlined"
         name="title"
@@ -52,7 +54,6 @@ export default ({ onSubmit, initialValue }) => {
         placeholder="Enter Version Title"
         label="Version Title"
       />
-
 
       <TextField
         variant="outlined"
@@ -70,9 +71,8 @@ export default ({ onSubmit, initialValue }) => {
         label="Version Description"
       />
 
-
       <Button
-        style={{ width: 'fit-content', marginTop: 10 }}
+        style={{ width: "fit-content", marginTop: 10 }}
         color="primary"
         variant="contained"
         type="submit"

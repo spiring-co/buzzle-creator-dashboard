@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useFormik } from "formik";
 import { useTranslation } from "react-i18next";
 import { Link as RouterLink, Redirect } from "react-router-dom";
-import { createStyles, makeStyles } from "@material-ui/core/styles";
 
 import useAuth from "services/auth";
 import * as Yup from "yup";
@@ -26,6 +25,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import { Alert } from "@material-ui/lab";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
+import { createStyles, makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) =>
   createStyles({

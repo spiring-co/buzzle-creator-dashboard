@@ -32,7 +32,7 @@ export default () => {
             body: raw,
             redirect: "follow",
           };
-          fetch("http://localhost:5000/jobs", requestOptions)
+          return fetch("http://localhost:5000/jobs", requestOptions)
             .then((response) => response.json())
             .then((result) => {
               console.log(result);

@@ -23,7 +23,7 @@ export default function FontUpload({
       .then(setFontList)
       .catch(console.log)
       .finally(() => setLoading(false));
-  }, []);
+  }, [compositions]);
 
   const fetchFontStatus = async (fontArray) => {
     const response = await fetch(

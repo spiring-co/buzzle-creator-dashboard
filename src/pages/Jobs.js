@@ -43,10 +43,14 @@ const JobsTable = () => {
 
   const getJobs = async () => {
     try {
-      const result = await fetch(uri);
-      var response = await result.json();
-
-      setData(response);
+      const result = await fetch(uri, {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("jwtoken"),
+        },
+      });
+      const response = await result.json();
+      console.log(response);
+      setData(response.jobs);
       setLoading(false);
     } catch (err) {
       setLoading(false);
