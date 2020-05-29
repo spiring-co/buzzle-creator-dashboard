@@ -12,7 +12,7 @@ export default ({ submitForm, isEdit, video }) => {
   const [videoObj] = useContext(VideoTemplateContext);
   const { resetVideo, editVideoKeys, loadVideo } = useActions();
   const [loading, setLoading] = useState(true);
-  const [activeDisplayIndex, setActiveDisplayIndex] = useState(1);
+  const [activeDisplayIndex, setActiveDisplayIndex] = useState(0);
   const [compositions, setCompositions] = useState([]);
 
   useEffect(() => {

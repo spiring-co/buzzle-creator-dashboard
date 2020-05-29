@@ -20,15 +20,15 @@ export default function useActions() {
   const [state, dispatch] = React.useContext(VideoTemplateContext);
 
   return {
-    // restoreFieldsFromPreviousVersion: function (
-    //   activeVersionIndex,
-    //   currentCompositionFields
-    // ) {
-    //   dispatch({
-    //     type: RESTORE_FIELDS,
-    //     payload: { activeVersionIndex, currentCompositionFields },
-    //   });
-    // },
+    restoreFieldsFromPreviousVersion: function (
+      activeVersionIndex,
+      currentCompositionFields
+    ) {
+      dispatch({
+        type: RESTORE_FIELDS,
+        payload: { activeVersionIndex, currentCompositionFields },
+      });
+    },
     editVideoKeys: function (value) {
       // value = : { title: "Video Title" }
       dispatch({

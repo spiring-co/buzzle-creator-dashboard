@@ -29,21 +29,7 @@ export default ({
   const [restoreStatus, setRestoreStatus] = useState(false);
 
   useEffect(() => {
-    setCurrentCompositionFields([
-      ...currentCompositionFields,
-      ...getLayersFromComposition(
-        compositions[videoObj?.versions[activeVersionIndex]?.composition],
-        "textLayers"
-      ).map((i) => i.name),
-      ...getLayersFromComposition(
-        compositions[videoObj?.versions[activeVersionIndex]?.composition],
-        "imageLayers"
-      ).map((i) => i.name),
-      ...getLayersFromComposition(
-        compositions[videoObj?.versions[activeVersionIndex]?.composition],
-        "pickerLayers"
-      ).map((i) => i.name),
-    ]);
+
   }, []);
 
   useEffect(() => {
@@ -58,6 +44,9 @@ export default ({
       if (
         window.confirm("Do you want to restore fields from previous version")
       ) {
+
+        console.log(currentCompositionFields)
+
         restoreFieldsFromPreviousVersion(
           activeVersionIndex,
           currentCompositionFields
