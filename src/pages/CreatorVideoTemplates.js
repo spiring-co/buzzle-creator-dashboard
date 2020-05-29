@@ -1,12 +1,13 @@
-import React from "react";
-import { Link } from "@material-ui/core";
+import React, { useState } from "react";
+import { Link, CircularProgress } from "@material-ui/core";
+import { Delete } from '@material-ui/icons'
 import {
   Link as RouterLink,
   useRouteMatch,
   useHistory,
 } from "react-router-dom";
 import MaterialTable from "material-table";
-import { jobSchemaConstructor } from "services/helper";
+import { renderTestJob, deleteTemplate } from "services/api";
 
 const uri = `${process.env.REACT_APP_API_URL}/creators/${localStorage.getItem(
   "creatorId"
@@ -15,36 +16,7 @@ const uri = `${process.env.REACT_APP_API_URL}/creators/${localStorage.getItem(
 export default () => {
   let { url, path } = useRouteMatch();
   const history = useHistory();
-
-  // TODO abstract to API
-  const renderTestJob = async (data) => {
-    try {
-      var jobs = jobSchemaConstructor(data);
-      console.log(jobs);
-      await Promise.all(
-        jobs.map((job) => {
-          var myHeaders = new Headers();
-          myHeaders.append("Content-Type", "application/json");
-          var raw = JSON.stringify(job);
-          var requestOptions = {
-            method: "POST",
-            headers: myHeaders,
-            body: raw,
-            redirect: "follow",
-          };
-          fetch("http://localhost:5000/jobs", requestOptions)
-            .then((response) => response.json())
-            .then((result) => {
-              console.log(result);
-            })
-            .catch((error) => console.log("error", error));
-        })
-      );
-      history.push("/home/jobs");
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  const [isDeleting, setIsDeleting] = useState(false)
 
   return (
     <MaterialTable
@@ -77,11 +49,26 @@ export default () => {
           onClick: (event, rowData) => renderTestJob(rowData),
         },
         {
-          icon: "delete",
+          icon: () => isDeleting ? <CircularProgress size={20} /> : <Delete />,
           tooltip: "Delete Template",
-          // TODO implement this
-          onClick: (event, rowData) =>
-            alert("Are you sure you want to delete."),
+
+          onClick: async (event, rowData) => {
+            var action = window.confirm("Are you sure, you want to delete");
+            if (action) {
+              try {
+                setIsDeleting(true);
+                const response = await deleteTemplate(rowData.id)
+                setIsDeleting(false);
+                if (response.ok) {
+                  console.log(await response.json());
+                  window.location.reload()
+                }
+              } catch (err) {
+                setIsDeleting(false);
+                alert(err.message);
+              }
+            }
+          }
         },
         {
           icon: "add",
