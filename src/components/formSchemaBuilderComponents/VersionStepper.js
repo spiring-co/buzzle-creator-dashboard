@@ -12,7 +12,7 @@ export default ({ activeStep, editVersion, renderStep }) => {
   ];
   return (
     <Stepper activeStep={activeStep} orientation="vertical">
-      {steps.map((label, index) => (
+      {steps.map((label) => (
         <Step key={label}>
           <StepLabel>{label}</StepLabel>
           <StepContent>{renderStep(activeStep)}</StepContent>

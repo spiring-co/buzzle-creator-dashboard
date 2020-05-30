@@ -6,7 +6,10 @@ import StepLabel from "@material-ui/core/StepLabel";
 export default ({ activeDisplayIndex }) => {
   const steps = [`File Meta`, `Versions`, `Font Files`, `Assets Files`];
   return (
-    <Stepper activeStep={activeDisplayIndex} alternativeLabel>
+    <Stepper
+      style={{ background: "transparent" }}
+      activeStep={activeDisplayIndex}
+      alternativeLabel>
       {steps.map((label) => (
         <Step key={label}>
           <StepLabel>{label}</StepLabel>

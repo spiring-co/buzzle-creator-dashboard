@@ -11,6 +11,7 @@ const useStyles = makeStyles((theme) =>
       display: "flex",
       height: "10rem",
       borderRadius: "0.2rem",
+      padding: theme.spacing(2),
       textAlign: "center",
       justifyContent: "center",
       marginBottom: theme.spacing(4),
@@ -114,6 +115,9 @@ export default ({ value, onData, name, onTouched, onError }) => {
         {hasPickedFile &&
           (hasExtractedData ? (
             <>
+              <p style={{ color: "green" }}>{`
+                  ${Object.keys(compositions || {}).length} compositions &
+                  ${getTotalLayers(compositions)} layers extracted.`}</p>
               <Button
                 color="primary"
                 variant="contained"
@@ -123,9 +127,6 @@ export default ({ value, onData, name, onTouched, onError }) => {
                   setHasExtractedData(false);
                 }}
               />
-              <p style={{ color: "green" }}>{`
-                ${Object.keys(compositions || {}).length} compositions &
-                ${getTotalLayers(compositions)} layers extracted.`}</p>
             </>
           ) : (
             <>

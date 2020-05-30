@@ -9,7 +9,7 @@ import React from "react";
 
 export default ({
   composition,
-  setCompoisition,
+  setComposition,
   compositions,
   openVersionMeta,
 }) => {
@@ -22,8 +22,7 @@ export default ({
       }}
       onSubmit={(e) => {
         e.preventDefault();
-      }}
-    >
+      }}>
       <FormControl style={{ width: 400 }} margin="dense" variant="outlined">
         <InputLabel id="demo-simple-select-outlined-label">
           Select Composition
@@ -31,11 +30,10 @@ export default ({
         <Select
           labelId="demo-simple-select-outlined-label"
           id="demo-simple-select-outlined"
-          onChange={(e) => setCompoisition(e.target.value)}
+          onChange={(e) => setComposition(e.target.value)}
           value={composition}
           placeholder="Select Composition"
-          label="Select Composition"
-        >
+          label="Select Composition">
           {Object.keys(compositions).length === 0 && (
             <MenuItem disabled={true}>No Compositions Found:(</MenuItem>
           )}

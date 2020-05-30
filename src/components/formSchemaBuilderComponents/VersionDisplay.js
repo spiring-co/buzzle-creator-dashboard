@@ -104,11 +104,9 @@ export default ({
       <ExpansionPanel defaultExpanded={true} style={{ marginBottom: 20 }}>
         <ExpansionPanelSummary
           expandIcon={<ExpandMore />}
-          aria-controls="panel1c-content"
-          id="panel1c-header">
-          <Typography>
-            <strong>Versions</strong>
-          </Typography>
+          aria-controls="panel-content"
+          id="panel-header">
+          <Typography>Versions</Typography>
         </ExpansionPanelSummary>
 
         <ExpansionPanelDetails style={{ flexWrap: "wrap" }}>
@@ -168,9 +166,7 @@ export default ({
         </ExpansionPanelDetails>
       </ExpansionPanel>
 
-      <Paper>
-        <VersionStepper activeStep={activeStep} renderStep={renderStep} />
-      </Paper>
+      <VersionStepper activeStep={activeStep} renderStep={renderStep} />
       <div style={{ display: "flex", justifyContent: "center" }}>
         <Button
           startIcon={<ArrowBack />}

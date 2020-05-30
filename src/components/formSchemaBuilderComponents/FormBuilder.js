@@ -1,28 +1,29 @@
 import useActions from "contextStore/actions";
 import { VideoTemplateContext } from "contextStore/store";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 
 import AssetUpload from "./AssetUpload";
 import FontUpload from "./FontUpload";
 import FormStepper from "./FormStepper";
 import VersionDisplay from "./VersionDisplay";
 import VideoTemplateMetaForm from "./VideoTemplateMetaForm";
+import { Paper } from "@material-ui/core";
 
 export default ({ submitForm, isEdit, video }) => {
   const [videoObj] = useContext(VideoTemplateContext);
   const { resetVideo, editVideoKeys, loadVideo } = useActions();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [activeDisplayIndex, setActiveDisplayIndex] = useState(0);
   const [compositions, setCompositions] = useState([]);
 
-  // useEffect(() => {
-  //   if (isEdit) {
-  //     loadVideo(video);
-  //   } else {
-  //     resetVideo();
-  //   }
-  //   setLoading(false);
-  // }, []);
+  useEffect(() => {
+    if (isEdit) {
+      loadVideo(video);
+    } else {
+      resetVideo();
+    }
+    setLoading(false);
+  }, []);
 
   const handleSubmitForm = async () => {
     submitForm(videoObj);
@@ -40,7 +41,7 @@ export default ({ submitForm, isEdit, video }) => {
   const Steps = {
     VideoTemplateMetaForm: (
       <VideoTemplateMetaForm
-        restoredValues={isEdit ? videoObj : null}
+        initialValues={isEdit ? videoObj : null}
         onSubmit={handleVideoTemplateMetaSubmit}
       />
     ),
@@ -73,7 +74,9 @@ export default ({ submitForm, isEdit, video }) => {
   return (
     <>
       <FormStepper activeDisplayIndex={activeDisplayIndex} />
-      {Steps[Object.keys(Steps)[activeDisplayIndex]]}
+      <Paper elevation={2} style={{ padding: 32 }}>
+        {Steps[Object.keys(Steps)[activeDisplayIndex]]}
+      </Paper>
     </>
   );
 };

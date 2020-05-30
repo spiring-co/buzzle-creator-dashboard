@@ -1,8 +1,9 @@
+import React from "react";
+import { Route, Switch, useRouteMatch } from "react-router-dom";
+
 import AddVideoTemplate from "pages/AddVideoTemplate";
 import CreatorVideoTemplates from "pages/CreatorVideoTemplates";
 import VideoTemplate from "pages/VideoTemplate";
-import React from "react";
-import { Route, Switch, useRouteMatch } from "react-router-dom";
 
 export default () => {
   let { path } = useRouteMatch();

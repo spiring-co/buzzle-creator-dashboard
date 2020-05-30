@@ -13,17 +13,38 @@ import { Alert } from "@material-ui/lab";
 const uri = `${process.env.REACT_APP_API_URL}/creators/${localStorage.getItem(
   "creatorId"
 )}/videoTemplates`;
-const x = 123;
 
 export default () => {
   let { url, path } = useRouteMatch();
   const history = useHistory();
+
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState(null);
+
   const tableRef = useRef(null);
+
+  const handleDelete = async (id) => {
+    const action = window.confirm("Are you sure, you want to delete");
+    if (!action) return;
+
+    try {
+      setIsDeleting(true);
+      const response = await deleteTemplate(id);
+      if (!response.status === 200) {
+        throw new Error((await response.json()).message);
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      tableRef.current && tableRef.current.onQueryChange();
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <>
       {error && <Alert severity="error" children={`${error.message}`} />}
+      {/* TODO maybe add info and success alerts */}
       <MaterialTable
         tableRef={tableRef}
         title="Your Video Templates"
@@ -31,12 +52,8 @@ export default () => {
           {
             title: "Id",
             field: "id",
-            render: (rowData) => (
-              <Link
-                component={RouterLink}
-                to={`${path}${rowData.id}`}
-                children={rowData.id}
-              />
+            render: ({ id }) => (
+              <Link component={RouterLink} to={`${path}${id}`} children={id} />
             ),
           },
           {
@@ -60,29 +77,13 @@ export default () => {
               isDeleting ? <CircularProgress size={20} /> : <Delete />,
             tooltip: "Delete Template",
             disabled: isDeleting,
-            onClick: async (event, rowData) => {
-              const action = window.confirm("Are you sure, you want to delete");
-              if (!action) return;
-              try {
-                setIsDeleting(true);
-                const response = await deleteTemplate(rowData.id);
-                setIsDeleting(false);
-                if (response.ok) {
-                  tableRef.current && tableRef.current.onQueryChange();
-                } else {
-                  setError(new Error((await response.json()).message));
-                }
-              } catch (err) {
-                setIsDeleting(false);
-                alert(err.message);
-              }
-            },
+            onClick: async (event, { id }) => handleDelete(id),
           },
           {
             icon: "add",
             tooltip: "Add Video Template",
             isFreeAction: true,
-            onClick: (event) => history.push(`${url}/add`),
+            onClick: () => history.push(`${url}/add`),
           },
           {
             icon: "refresh",

@@ -14,7 +14,7 @@ export default (props) => {
   const history = useHistory();
 
   const handleEditForm = async (data) => {
-    console.log(data)
+    console.log(data);
     var action = window.confirm("Are you sure, you want to save changes");
     if (action) {
       try {
@@ -36,7 +36,6 @@ export default (props) => {
           setIsBlocking(false);
           history.push({
             pathname: `/home/videoTemplates/${data.id}`,
-
           });
         }
       } catch (err) {
@@ -46,7 +45,6 @@ export default (props) => {
     }
   };
   const handleSubmitForm = async (data) => {
-
     console.log(data);
     try {
       setLoading(true);
@@ -80,9 +78,6 @@ export default (props) => {
   return (
     <StateProvider>
       <Prompt when={isBlocking} message={`You will lose all your data.`} />
-      <h3 className="text-center mb-4">
-        {isEdit ? "Edit Your " : "Add"} Video Template
-      </h3>
       <FormBuilder
         isEdit={isEdit}
         video={video}
