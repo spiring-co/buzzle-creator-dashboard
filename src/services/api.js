@@ -88,6 +88,26 @@ export const renderTestJob = async (data) => {
   }
 };
 
+
+export const updateJob = async (jobId, jobData) => {
+  try {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/jobs/${jobId}`, {
+      method: 'PUT',
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(jobData)
+    })
+    if (response.ok) {
+      return await response.json()
+    }
+    else {
+      throw new Error(await response.text())
+    }
+  } catch (err) {
+    console.log(err);
+    throw new Error(err)
+  }
+}
+
 export const sendOtp = async (email) => {
   try {
     const response = await fetch(

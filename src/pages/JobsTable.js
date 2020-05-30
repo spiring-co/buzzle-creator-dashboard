@@ -39,11 +39,18 @@ export default () => {
                     actionsColumnIndex: -1,
                 }}
                 columns={[
-                    { title: "Job Id", field: "id" },
+                    {
+                        title: "Job Id", field: "id",
+                        render: ({ id }) => (
+                            <Link component={RouterLink} to={`${path}${id}`}>
+                                {id}
+                            </Link>
+                        ),
+                    },
                     {
                         title: "Video Template Id",
                         render: ({ idVideoTemplate }) => (
-                            <Link as={RouterLink} to={`/videTemplates/${idVideoTemplate}`}>
+                            <Link component={RouterLink} to={`/home/videoTemplates/${idVideoTemplate}`}>
                                 {idVideoTemplate}
                             </Link>
                         ),
@@ -78,12 +85,7 @@ export default () => {
                             return { data: jobs, page: query.page, totalCount };
                         })
                 }
-                onRowClick={(e, rowData) => {
-                    e.preventDefault();
-                    history.push(`${path}${rowData.id}`, {
-                        jobDetails: rowData,
-                    });
-                }}
+
                 actions={[
                     //TODO add rerender and edit job actions
                     {
