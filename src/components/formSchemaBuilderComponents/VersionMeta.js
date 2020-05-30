@@ -13,7 +13,7 @@ const validationSchema = Yup.object().shape({
     .max(200, "Lenght Too Long!"),
 });
 
-export default ({ onSubmit, initialValue }) => {
+export default ({ onSubmit, initialValue, onBack }) => {
   const {
     values,
     errors,
@@ -25,9 +25,9 @@ export default ({ onSubmit, initialValue }) => {
     initialValues: initialValue
       ? initialValue
       : {
-          title: "",
-          description: "",
-        },
+        title: "",
+        description: "",
+      },
     validationSchema,
     onSubmit,
   });
@@ -70,14 +70,22 @@ export default ({ onSubmit, initialValue }) => {
         placeholder="Enter Version Description"
         label="Version Description"
       />
-
-      <Button
-        style={{ width: "fit-content", marginTop: 10 }}
-        color="primary"
-        variant="contained"
-        type="submit"
-        children="Next"
-      />
+      <div>
+        <Button
+          onClick={() => onBack()}
+          size="small"
+          style={{ width: 'fit-content', marginTop: 10 }}
+          children="back"
+        />
+        <Button
+          size="small"
+          style={{ width: 'fit-content', marginTop: 10 }}
+          color="primary"
+          variant="contained"
+          type="submit"
+          children="Next"
+        />
+      </div>
     </form>
   );
 };

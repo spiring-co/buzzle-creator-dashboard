@@ -6,7 +6,6 @@ export const EDIT_VERSION_KEYS = "EDIT_VERSION_KEYS";
 export const ADD_FIELD = "ADD_FIELD";
 export const UPDATE_FIELD = "UPDATE_FIELD";
 export const REMOVE_FIELD = "REMOVE_FIELD";
-export const SWAP_FIELDS = "SWAP_FIELDS";
 export const RESET_STATE = "RESET_STATE";
 export const LOAD_STATE = "LOAD_STATE";
 export const RESTORE_FIELDS = "RESTORE_FIELDS";
@@ -14,23 +13,17 @@ export const RESTORE_FIELDS = "RESTORE_FIELDS";
 export default (state, action) => {
   switch (action.type) {
     //payload : activeVersionIndex,currentCompositionFields
-    // case RESTORE_FIELDS:
-    //   var filteredSegments = state.versions[0].form.segments.map((segment) => {
-    //     return {
-    //       ...segment,
-    //       fields: Object.assign(
-    //         [],
-    //         ...segment.fields.filter((field) =>
-    //           action.payload.currentCompositionFields.includes(field.name)
-    //         )
-    //       ),
-    //     };
-    //   });
-    //   state.versions[
-    //     action.payload.activeVersionIndex
-    //   ].form.segments = filteredSegments;
+    case RESTORE_FIELDS:
+      var editableLayers = state.versions[0].editableLayers.filter((layer) =>
+        action.payload.currentCompositionFields.includes(layer.layerName)
+      )
 
-    //   return state;
+      state.versions[
+        action.payload.activeVersionIndex
+      ].editableLayers = editableLayers
+
+      return Object.assign({}, state);
+
     //payload: action.payload.value={key:action.payload.value}
     case EDIT_VIDEO_KEYS:
       return { ...state, ...action.payload.value };
@@ -94,17 +87,6 @@ export default (state, action) => {
     case UPDATE_FIELD:
       state.versions[action.payload.activeVersionIndex].editableLayers[action.payload.fieldIndex] = action.payload.value
       return Object.assign({}, state);
-
-    // payload: {  action.payload.swapIndex, action.payload.targetSwapIndex ,action.payload.activeVersionIndex}
-    case SWAP_FIELDS:
-      [
-        state.versions[action.payload.activeVersionIndex].editableLayers[action.payload.swapIndex],
-        state.versions[action.payload.activeVersionIndex].editableLayers[action.payload.targetSwapIndex],
-      ] = [
-          state.versions[action.payload.activeVersionIndex].editableLayers[action.payload.targetSwapIndex],
-          state.versions[action.payload.activeVersionIndex].editableLayers[action.payload.swapIndex],
-        ];
-      return state;
 
     // load segments to edit , payload = video object
     case LOAD_STATE:

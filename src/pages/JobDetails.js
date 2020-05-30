@@ -39,10 +39,11 @@ export default (props) => {
 
   const fetchJobDetails = async () => {
     try {
+      setError(false)
+      setLoading(true)
+      const result = await fetch(`${process.env.REACT_APP_API_URL}/jobs/${jobId}`)
       setLoading(true);
-      const result = await fetch(
-        `${process.env.REACT_APP_API_URL}/jobs/${jobId}`
-      );
+
       if (result.ok) {
         setJobDetails(await result.json());
       }
@@ -65,44 +66,43 @@ export default (props) => {
 
   var { output, state, assets } = jobDetails;
   return (
-    <Paper className={classes.container}>
+
+    <>
       {loading ? <CustomProgress /> : ""}
-      <Typography variant="h4">Job Details</Typography>
-      <Typography variant="h5" style={{ marginTop: 10, fontWeight: "bold" }}>
-        Status
-      </Typography>
-      <Typography
-        style={{
-          color: getColorFromState(state),
-        }}>
-        {state}
-      </Typography>
+      <Paper className={classes.container}>
 
-      <Typography variant="h5" style={{ marginTop: 10, fontWeight: "bold" }}>
-        Output
-      </Typography>
-      {state === "finished" ? (
-        <video
+        <Typography variant="h4">Job Details</Typography>
+        <Typography variant="h5" style={{ marginTop: 10, fontWeight: 'bold' }}>Status</Typography>
+        <Typography
           style={{
-            width: 320,
-            height: 220,
-            marginTop: 10,
+            color: getColorFromState(state),
           }}
-          controls
-          src={output}
-        />
-      ) : (
-        <Typography style={{ color: "grey" }}>No Output Yet</Typography>
-      )}
+        >
+          {state}
+        </Typography>
 
-      <Typography variant="h5" style={{ marginTop: 10, fontWeight: "bold" }}>
-        Assets
-      </Typography>
+        <Typography variant="h5" style={{ marginTop: 10, fontWeight: 'bold' }}>Output</Typography>
+        {state === "finished" ? (
+          <video
+            style={{
+              width: 320,
+              height: 220,
+              marginTop: 10,
+            }}
+            controls
+            src={output}
+          />
+        ) : (
+            <Typography style={{ color: "grey" }}>No Output Yet</Typography>
+          )}
 
-      {assets?.map((props, index) => {
-        return <AssetsPreview key={index} {...props} />;
-      })}
-    </Paper>
+        <Typography variant="h5" style={{ marginTop: 10, fontWeight: 'bold' }}>Assets</Typography>
+
+        {assets?.map((props) => {
+          return <AssetsPreview {...props} />;
+        })}
+      </Paper>
+    </>
   );
 };
 

@@ -8,13 +8,13 @@ import {
 } from "react-router-dom";
 import MaterialTable from "material-table";
 import { renderTestJob, deleteTemplate } from "services/api";
-import { Alert } from "@material-ui/lab";
-
+import ErrorHandler from "components/ErrorHandler";
+import SnackAlert from "components/SnackAlert";
 const uri = `${process.env.REACT_APP_API_URL}/creators/${localStorage.getItem(
   "creatorId"
 )}/videoTemplates`;
 
-export default () => {
+export default (props) => {
   let { url, path } = useRouteMatch();
   const history = useHistory();
 
@@ -41,12 +41,34 @@ export default () => {
     }
   };
 
+  const [deleteStatus, setDeleteStatus] = useState(
+    props?.location?.state?.deleteStatus ?? { status: false, err: false }
+  );
+
+  if (error) {
+    return (
+      <ErrorHandler
+        message={error.message}
+        showRetry={true}
+        onRetry={() => setError(false)}
+      />
+    );
+  }
+  let { status, err } = deleteStatus;
   return (
     <>
-      {error && <Alert severity="error" children={`${error.message}`} />}
-      {/* TODO maybe add info and success alerts */}
+      <SnackAlert
+        open={err || status}
+        type={status ? "success" : "error"}
+        message={
+          status
+            ? "Deleted Sucesfully"
+            : "Oop's, something went wrong, action failed !"
+        }
+        onClose={() => setDeleteStatus({ status: false, err: false })}
+      />
       <MaterialTable
-        tableRef={tableRef}
+        ref={tableRef}
         title="Your Video Templates"
         columns={[
           {
@@ -102,6 +124,7 @@ export default () => {
                 totalCount: result.count,
               };
             })
+            .catch((err) => setError(err))
         }
         options={{
           headerStyle: { fontWeight: 700 },

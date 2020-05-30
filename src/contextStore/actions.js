@@ -10,7 +10,7 @@ import {
   REMOVE_VERSION,
   LOAD_STATE,
   RESET_STATE,
-  SWAP_FIELDS,
+  RESTORE_FIELDS
 } from "./reducer";
 import { VideoTemplateContext } from "./store";
 
@@ -18,15 +18,15 @@ export default function useActions() {
   const [state, dispatch] = React.useContext(VideoTemplateContext);
 
   return {
-    // restoreFieldsFromPreviousVersion: function (
-    //   activeVersionIndex,
-    //   currentCompositionFields
-    // ) {
-    //   dispatch({
-    //     type: RESTORE_FIELDS,
-    //     payload: { activeVersionIndex, currentCompositionFields },
-    //   });
-    // },
+    restoreFieldsFromPreviousVersion: function (
+      activeVersionIndex,
+      currentCompositionFields
+    ) {
+      dispatch({
+        type: RESTORE_FIELDS,
+        payload: { activeVersionIndex, currentCompositionFields },
+      });
+    },
     editVideoKeys: function (value) {
       // value = : { title: "Video Title" }
       dispatch({
@@ -96,15 +96,5 @@ export default function useActions() {
     loadVideo: function (video) {
       dispatch({ type: LOAD_STATE, payload: video });
     },
-    swapFields: function (activeVersionIndex, swapIndex, targetSwapIndex) {
-      dispatch({
-        type: SWAP_FIELDS,
-        payload: {
-          activeVersionIndex,
-          swapIndex,
-          targetSwapIndex,
-        },
-      });
-    },
   };
-}
+} 

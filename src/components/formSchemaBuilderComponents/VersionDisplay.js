@@ -43,10 +43,6 @@ export default ({
     setActiveStep(activeStep + 1);
   };
 
-  const openSegmentBuilder = () => {
-    setActiveStep(activeStep + 1);
-  };
-
   const openVersionDisplay = () => {
     setEditVersion(false);
     setEditIndex(null);
@@ -68,13 +64,20 @@ export default ({
       case 1:
         return (
           <VersionMeta
+            onBack={() => setActiveStep(activeStep - 1)}
             onSubmit={(data) => {
               editversionKeys(editVersion ? editIndex : activeVersionIndex, {
                 title: data.title,
                 description: data.description,
               });
-              openSegmentBuilder();
+              setActiveStep(activeStep + 1);
             }}
+            initialValue={
+              editVersion && {
+                title: videoObj?.versions[editIndex]?.title,
+                description: videoObj?.versions[editIndex]?.description,
+              }
+            }
             initialValue={
               editVersion && {
                 title: videoObj?.versions[editIndex]?.title,
@@ -86,6 +89,7 @@ export default ({
       case 2:
         return (
           <LayerAdder
+            onBack={() => setActiveStep(activeStep - 1)}
             isEdit={isEdit}
             editVersion={editVersion}
             compositions={compositions}
@@ -100,13 +104,13 @@ export default ({
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", marginTop: 30 }}>
+    <div style={{ display: "flex", flexDirection: "column", marginTop: 20 }}>
       <ExpansionPanel defaultExpanded={true} style={{ marginBottom: 20 }}>
         <ExpansionPanelSummary
           expandIcon={<ExpandMore />}
-          aria-controls="panel-content"
-          id="panel-header">
-          <Typography>Versions</Typography>
+          aria-controls="panel1c-content"
+          id="panel1c-header">
+          <Typography variant="h5">Versions</Typography>
         </ExpansionPanelSummary>
 
         <ExpansionPanelDetails style={{ flexWrap: "wrap" }}>
@@ -141,6 +145,7 @@ export default ({
                   </Typography>
                   <Button
                     size="small"
+                    disabled={activeStep !== 0}
                     style={{ margin: 8 }}
                     variant="contained"
                     color="primary"
@@ -149,6 +154,7 @@ export default ({
                   />
 
                   <Button
+                    disabled={activeStep !== 0}
                     size="small"
                     style={{ margin: 8 }}
                     variant="outlined"

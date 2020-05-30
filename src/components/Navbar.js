@@ -115,7 +115,7 @@ const useStyles = makeStyles((theme) =>
 export default function NavBar({ items }) {
   const classes = useStyles();
   const theme = useTheme();
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(true);
   const [anchorEl, setAnchorEl] = useState(null);
   const { logout } = useAuth();
 
@@ -142,8 +142,7 @@ export default function NavBar({ items }) {
         position="fixed"
         className={clsx(classes.appBar, {
           [classes.appBarShift]: drawerOpen,
-        })}
-      >
+        })}>
         <Toolbar>
           <IconButton
             color="inherit"
@@ -152,8 +151,7 @@ export default function NavBar({ items }) {
             edge="start"
             className={clsx(classes.menuButton, {
               [classes.hide]: drawerOpen,
-            })}
-          >
+            })}>
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap>
@@ -165,8 +163,7 @@ export default function NavBar({ items }) {
               aria-controls="menu-appbar"
               aria-haspopup="true"
               onClick={handleMenu}
-              color="inherit"
-            >
+              color="inherit">
               <AccountCircle fontSize={"large"} />
             </IconButton>
             <Menu
@@ -182,8 +179,7 @@ export default function NavBar({ items }) {
                 horizontal: "right",
               }}
               open={open}
-              onClose={handleClose}
-            >
+              onClose={handleClose}>
               <MenuItem onClick={handleClose}>Profile</MenuItem>
               <MenuItem onClick={logout}>Logout</MenuItem>
             </Menu>
@@ -201,8 +197,7 @@ export default function NavBar({ items }) {
             [classes.drawerOpen]: drawerOpen,
             [classes.drawerClose]: !drawerOpen,
           }),
-        }}
-      >
+        }}>
         <div className={classes.toolbar}>
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === "rtl" ? (
