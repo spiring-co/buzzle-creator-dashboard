@@ -41,7 +41,7 @@ export default ({ submitForm, isEdit, video }) => {
   const Steps = {
     VideoTemplateMetaForm: (
       <VideoTemplateMetaForm
-        initialValues={isEdit ? videoObj : null}
+        initialValues={isEdit ? videoObj : {}}
         onSubmit={handleVideoTemplateMetaSubmit}
       />
     ),

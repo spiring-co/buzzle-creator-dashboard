@@ -34,7 +34,8 @@ export default (props) => {
         throw new Error((await response.json()).message);
       }
     } catch (err) {
-      setError(err.message);
+      console.log(err)
+      setError(err);
     } finally {
       tableRef.current && tableRef.current.onQueryChange();
       setIsDeleting(false);
@@ -42,7 +43,7 @@ export default (props) => {
   };
 
   const [deleteStatus, setDeleteStatus] = useState(
-    props?.location?.state?.deleteStatus ?? { status: false, err: false }
+    props?.location?.state?.statusObj ?? { status: false, err: false }
   );
 
   if (error) {
@@ -68,7 +69,7 @@ export default (props) => {
         onClose={() => setDeleteStatus({ status: false, err: false })}
       />
       <MaterialTable
-        ref={tableRef}
+        tableRef={tableRef}
         title="Your Video Templates"
         columns={[
           {
