@@ -89,12 +89,12 @@ export const renderTestJob = async (data) => {
 };
 
 
-export const updateJob = async (jobId, jobData) => {
+export const updateJob = async (jobId, { actions, assets }) => {
   try {
     const response = await fetch(`${process.env.REACT_APP_API_URL}/jobs/${jobId}`, {
       method: 'PUT',
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(jobData)
+      body: JSON.stringify({ actions, assets })
     })
     if (response.ok) {
       return await response.json()

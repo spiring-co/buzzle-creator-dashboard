@@ -11,7 +11,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import { updateJob } from "services/api";
 import { useParams } from "react-router-dom";
 import ErrorHandler from "components/ErrorHandler";
+import AddAssetDialog from 'components/AddAssetDialog'
 
+import { Add } from '@material-ui/icons'
 const CustomProgress = withStyles({
   colorPrimary: {
     backgroundColor: "#b2dfdb",
@@ -33,34 +35,32 @@ export default (props) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const { jobId } = useParams();
-  const [updatedJob, setUpdatedJob] = useState({})
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [initialValue, setInitialValue] = useState({})
+  const [editIndex, setEditIndex] = useState(null)
   useEffect(() => {
     fetchJobDetails();
   }, []);
 
-  useEffect(() => {
-    setUpdatedJob(jobDetails)
-  }, [jobDetails])
 
-  const handleChange = (data, value, index) => {
-    switch (data.type) {
-      case 'data':
-        updatedJob.assets[index] = { ...data, value }
-        setUpdatedJob(updatedJob)
-        break
-      case 'image':
-        updatedJob.assets[index] = { ...data, src: value }
-        setUpdatedJob(updatedJob)
-        break;
-      default:
-        break;
-    }
+
+  const handleAddAsset = (data) => {
+
+    jobDetails.assets.push(data)
+    setJobDetails(jobDetails)
+
   }
+  const editAssetValue = (data) => {
+
+    jobDetails.assets[editIndex] = data
+    setJobDetails(jobDetails)
+  }
+
   const fetchJobDetails = async () => {
     try {
       setError(false)
       setLoading(true)
-      const result = await fetch(`${process.env.REACT_APP_API_URL}/jobs/${jobId}`)
+      const result = await fetch(`${process.env.REACT_APP_API_URL}/jobs/${jobId}?populateVideoTemplate=true`)
       setLoading(true);
 
       if (result.ok) {
@@ -78,7 +78,7 @@ export default (props) => {
     try {
 
       setLoading(true)
-      await updateJob(jobId, updatedJob)
+      await updateJob(jobId, jobDetails)
       setLoading(false)
 
     } catch (err) {
@@ -96,13 +96,24 @@ export default (props) => {
       />
     );
 
-  var { output, state, assets } = jobDetails;
+  var { output, state, assets, videoTemplate, idVersion } = jobDetails;
+  videoTemplate = videoTemplate?.versions[videoTemplate?.versions.map(({ id }) => id).indexOf(idVersion)]
+
   return (
 
     <>
       {loading ? <CustomProgress /> : ""}
       <Paper className={classes.container}>
+        {isDialogOpen && <AddAssetDialog
+          usedLayers={assets.map(({ layerName }) => layerName)}
+          editableLayers={videoTemplate?.editableLayers}
+          initialValue={editIndex !== null && { ...jobDetails.assets[editIndex] }}
+          editAsset={editIndex !== null}
+          toggleDialog={setIsDialogOpen}
+          editAssetValue={editAssetValue}
+          addAsset={handleAddAsset}
 
+        />}
         <Typography variant="h4">Job Details</Typography>
         <Typography variant="h5" style={{ marginTop: 10, fontWeight: 'bold' }}>Status</Typography>
         <Typography
@@ -127,11 +138,24 @@ export default (props) => {
         ) : (
             <Typography style={{ color: "grey" }}>No Output Yet</Typography>
           )}
-
+        <br />
+        <Button
+          style={{ marginTop: 10 }}
+          startIcon={<Add />} color="primary" variant="outlined"
+          onClick={() => {
+            setEditIndex(null)
+            setIsDialogOpen(true)
+          }}
+          children="Add Asset" />
         <Typography variant="h5" style={{ marginTop: 10, fontWeight: 'bold' }}>Assets</Typography>
 
         {assets?.map((props, index) => {
-          return <AssetsPreview {...props} onChange={(value) => handleChange(props, value, index)} />;
+          return <AssetsPreview {...props}
+            onEdit={() => {
+              setEditIndex(index)
+              setIsDialogOpen(true)
+            }}
+          />;
         })}
         <Button
           disabled={loading} color="primary" variant="contained" onClick={handleUpdateJob}
