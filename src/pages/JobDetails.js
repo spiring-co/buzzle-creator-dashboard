@@ -3,11 +3,12 @@ import {
   Typography,
   Paper,
   LinearProgress,
+  Button,
   withStyles,
 } from "@material-ui/core";
 import AssetsPreview from "components/AssetsPreview";
 import { makeStyles } from "@material-ui/core/styles";
-import useApi from "services/api";
+import { updateJob } from "services/api";
 import { useParams } from "react-router-dom";
 import ErrorHandler from "components/ErrorHandler";
 
@@ -32,11 +33,29 @@ export default (props) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const { jobId } = useParams();
-
+  const [updatedJob, setUpdatedJob] = useState({})
   useEffect(() => {
     fetchJobDetails();
   }, []);
 
+  useEffect(() => {
+    setUpdatedJob(jobDetails)
+  }, [jobDetails])
+
+  const handleChange = (data, value, index) => {
+    switch (data.type) {
+      case 'data':
+        updatedJob.assets[index] = { ...data, value }
+        setUpdatedJob(updatedJob)
+        break
+      case 'image':
+        updatedJob.assets[index] = { ...data, src: value }
+        setUpdatedJob(updatedJob)
+        break;
+      default:
+        break;
+    }
+  }
   const fetchJobDetails = async () => {
     try {
       setError(false)
@@ -54,6 +73,19 @@ export default (props) => {
       setError(err);
     }
   };
+
+  const handleUpdateJob = async () => {
+    try {
+
+      setLoading(true)
+      await updateJob(jobId, updatedJob)
+      setLoading(false)
+
+    } catch (err) {
+      setLoading(false)
+      console.log(err)
+    }
+  }
 
   if (error)
     return (
@@ -98,16 +130,20 @@ export default (props) => {
 
         <Typography variant="h5" style={{ marginTop: 10, fontWeight: 'bold' }}>Assets</Typography>
 
-        {assets?.map((props) => {
-          return <AssetsPreview {...props} />;
+        {assets?.map((props, index) => {
+          return <AssetsPreview {...props} onChange={(value) => handleChange(props, value, index)} />;
         })}
+        <Button
+          disabled={loading} color="primary" variant="contained" onClick={handleUpdateJob}
+          children="Update Job" />
       </Paper>
+
     </>
   );
 };
 
 const getColorFromState = (state) => {
-  console.log(state);
+
   switch (state) {
     case "finished":
       return "#4caf50";

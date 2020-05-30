@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Typography } from "@material-ui/core";
+import { Typography, TextField } from "@material-ui/core";
 import PropTypes from "prop-types";
 
 const useStyles = makeStyles(() => ({
@@ -19,7 +19,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-function RenderAsset({ type, layerName, property, value, src }) {
+function RenderAsset({ type, layerName, property, value, src, onChange }) {
   const classes = useStyles();
   switch (type) {
     case "data":
@@ -37,6 +37,11 @@ function RenderAsset({ type, layerName, property, value, src }) {
             <Typography className={classes.layerName}>Value</Typography>
             <p>{value}</p>
           </div>
+          <div className={classes.asset}>
+            <Typography className={classes.layerName}>Updated value</Typography>
+            <TextField margin="dense" variant="outlined" placeholder="Enter Updated Value"
+              onChange={({ target: { value } }) => onChange(value)} />
+          </div>
         </>
       );
     case "image":
@@ -49,6 +54,11 @@ function RenderAsset({ type, layerName, property, value, src }) {
           <div className={classes.asset}>
             <Typography className={classes.layerName}>Value</Typography>
             <img alt="value" style={{ height: 100, width: 100 }} src={src} />
+          </div>
+          <div className={classes.asset}>
+            <Typography className={classes.layerName}>Updated Image</Typography>
+            <TextField type="file" margin="dense" variant="outlined"
+              onChange={({ target: { files } }) => onChange('https://dummyimage.com/500x500/0gferf/fff')} />
           </div>
         </>
       );
