@@ -8,7 +8,6 @@ import { Button, Paper, Typography, Tooltip } from '@material-ui/core'
 import { Wallpaper, TextFields, Add } from '@material-ui/icons'
 export default ({
   compositions,
-
   usedFields,
   editVersion,
   activeVersionIndex,
@@ -21,18 +20,17 @@ export default ({
     addField,
     removeField,
     restoreFieldsFromPreviousVersion,
-
   } = useActions();
   const [currentCompositionFields, setCurrentCompositionFields] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
   const [isDialogVisible, setIsDialogVisible] = useState(false);
   const [restoreStatus, setRestoreStatus] = useState(false);
 
-  useEffect(() => {
-
-  }, []);
 
   useEffect(() => {
+    var layers = getLayersFromComposition(compositions[videoObj.versions[activeVersionIndex].composition])
+    layers = Object.keys(layers).map(layerType => layers[layerType].map(({ name }) => name)).flat()
+    setCurrentCompositionFields(layers)
     if (
       !restoreStatus &&
       !editVersion &&
@@ -45,11 +43,9 @@ export default ({
         window.confirm("Do you want to restore fields from previous version")
       ) {
 
-        console.log(currentCompositionFields)
-
         restoreFieldsFromPreviousVersion(
           activeVersionIndex,
-          currentCompositionFields
+          layers
         );
         setRestoreStatus(true);
       }

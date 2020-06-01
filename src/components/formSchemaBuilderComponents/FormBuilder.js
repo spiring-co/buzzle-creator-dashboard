@@ -17,6 +17,7 @@ export default ({ submitForm, isEdit, video }) => {
   const [activeDisplayIndex, setActiveDisplayIndex] = useState(0);
   const [compositions, setCompositions] = useState([]);
   const [error, setError] = useState(null)
+
   useEffect(() => {
     if (isEdit) {
       loadVideo(video);
@@ -49,7 +50,7 @@ export default ({ submitForm, isEdit, video }) => {
   const Steps = {
     VideoTemplateMetaForm: (
       <VideoTemplateMetaForm
-        initialValues={isEdit ? videoObj : {}}
+        initialValues={isEdit ? video : {}}
         onSubmit={handleVideoTemplateMetaSubmit}
       />
     ),
@@ -78,7 +79,6 @@ export default ({ submitForm, isEdit, video }) => {
       />
     ),
   };
-
 
   return (
     <>
