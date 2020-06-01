@@ -163,7 +163,7 @@ export default (props) => {
       aria-labelledby="form-dialog-title"
     >
       <form onSubmit={handleSubmit}>
-        <DialogTitle id="form-dialog-title">Add Asset</DialogTitle>
+        <DialogTitle id="form-dialog-title">{props.editAsset ? "Edit Asset" : "Add Asset"}</DialogTitle>
         <DialogContent>
           <FormControl
             fullWidth

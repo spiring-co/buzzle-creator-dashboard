@@ -63,8 +63,8 @@ export default (props) => {
         type={status ? "success" : "error"}
         message={
           status
-            ? "Deleted Sucesfully"
-            : "Oop's, something went wrong, action failed !"
+            ? status?.message ?? "Deleted Sucesfully"
+            : err?.message ?? "Oop's, something went wrong, action failed !"
         }
         onClose={() => setDeleteStatus({ status: false, err: false })}
       />

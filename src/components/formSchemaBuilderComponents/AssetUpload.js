@@ -6,7 +6,7 @@ import {
   FormControl,
 } from "@material-ui/core";
 import AssetUploader from "./AssetUploader";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, CircularProgress } from "@material-ui/core";
 import useActions from "contextStore/actions";
 import { VideoTemplateContext } from "contextStore/store";
 import { zipMaker } from "services/helper";
@@ -31,6 +31,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function AssetUpload({
   setActiveDisplayIndex,
+  isSubmitting,
+  submitError,
   activeDisplayIndex,
   handleSubmitForm,
 }) {
@@ -207,11 +209,13 @@ export default function AssetUpload({
           onClick={() => setActiveDisplayIndex(activeDisplayIndex - 1)}
         />
         <Button
-          endIcon={<ArrowForward />}
+          endIcon={isSubmitting && <CircularProgress color="white" size={15} />}
+          disabled={isSubmitting}
+
           style={{ margin: 10 }}
-          color="primary"
-          variant="contained"
-          children={"Submit"}
+          color={submitError ? "secondary" : "primary"}
+          variant={submitError ? 'outlined' : "contained"}
+          children={submitError ? 'Retry?' : isSubmitting ? 'Submitting' : "Submit"}
           onClick={() => handleSubmitForm(videoObj)}
         />
       </div>
