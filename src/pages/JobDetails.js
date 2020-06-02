@@ -5,7 +5,10 @@ import {
   LinearProgress,
   Button,
   withStyles,
+  IconButton,
 } from "@material-ui/core";
+
+import Refresh from "@material-ui/icons/Refresh";
 import AssetsPreview from "components/AssetsPreview";
 import { makeStyles } from "@material-ui/core/styles";
 import { updateJob } from "services/api";
@@ -24,6 +27,12 @@ const CustomProgress = withStyles({
 const useStyles = makeStyles((theme) => ({
   container: {
     padding: theme.spacing(2),
+    position: "relative",
+  },
+  refreshIcon: {
+    position: "absolute",
+    top: 16,
+    right: 16,
   },
 }));
 
@@ -33,34 +42,36 @@ export default (props) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const { jobId } = useParams();
-  const [updatedJob, setUpdatedJob] = useState({})
+  const [updatedJob, setUpdatedJob] = useState({});
   useEffect(() => {
     fetchJobDetails();
   }, []);
 
   useEffect(() => {
-    setUpdatedJob(jobDetails)
-  }, [jobDetails])
+    setUpdatedJob(jobDetails);
+  }, [jobDetails]);
 
   const handleChange = (data, value, index) => {
     switch (data.type) {
-      case 'data':
-        updatedJob.assets[index] = { ...data, value }
-        setUpdatedJob(updatedJob)
-        break
-      case 'image':
-        updatedJob.assets[index] = { ...data, src: value }
-        setUpdatedJob(updatedJob)
+      case "data":
+        updatedJob.assets[index] = { ...data, value };
+        setUpdatedJob(updatedJob);
+        break;
+      case "image":
+        updatedJob.assets[index] = { ...data, src: value };
+        setUpdatedJob(updatedJob);
         break;
       default:
         break;
     }
-  }
+  };
   const fetchJobDetails = async () => {
     try {
-      setError(false)
-      setLoading(true)
-      const result = await fetch(`${process.env.REACT_APP_API_URL}/jobs/${jobId}`)
+      setError(false);
+      setLoading(true);
+      const result = await fetch(
+        `${process.env.REACT_APP_API_URL}/jobs/${jobId}`
+      );
       setLoading(true);
 
       if (result.ok) {
@@ -76,16 +87,14 @@ export default (props) => {
 
   const handleUpdateJob = async () => {
     try {
-
-      setLoading(true)
-      await updateJob(jobId, updatedJob)
-      setLoading(false)
-
+      setLoading(true);
+      await updateJob(jobId, updatedJob);
+      setLoading(false);
     } catch (err) {
-      setLoading(false)
-      console.log(err)
+      setLoading(false);
+      console.log(err);
     }
-  }
+  };
 
   if (error)
     return (
@@ -96,54 +105,74 @@ export default (props) => {
       />
     );
 
-  var { output, state, assets } = jobDetails;
+  var { output, state, assets, renderTime } = jobDetails;
   return (
-
     <>
       {loading ? <CustomProgress /> : ""}
       <Paper className={classes.container}>
-
+        <IconButton
+          aria-label="delete"
+          onClick={fetchJobDetails}
+          className={classes.refreshIcon}>
+          <Refresh />
+        </IconButton>
         <Typography variant="h4">Job Details</Typography>
-        <Typography variant="h5" style={{ marginTop: 10, fontWeight: 'bold' }}>Status</Typography>
+        <Typography variant="h5" style={{ marginTop: 10, fontWeight: "bold" }}>
+          Status
+        </Typography>
         <Typography
           style={{
             color: getColorFromState(state),
-          }}
-        >
+          }}>
           {state}
         </Typography>
 
-        <Typography variant="h5" style={{ marginTop: 10, fontWeight: 'bold' }}>Output</Typography>
+        <Typography variant="h5" style={{ marginTop: 10, fontWeight: "bold" }}>
+          Output
+        </Typography>
         {state === "finished" ? (
           <video
             style={{
-              width: 320,
-              height: 220,
+              width: 600,
+              height: 400,
               marginTop: 10,
             }}
             controls
             src={output}
           />
         ) : (
-            <Typography style={{ color: "grey" }}>No Output Yet</Typography>
-          )}
+          <Typography style={{ color: "grey" }}>No Output Yet</Typography>
+        )}
+        <Typography variant="h5" style={{ marginTop: 10, fontWeight: "bold" }}>
+          Render Time: {renderTime / 1000 + "s"}
+        </Typography>
 
-        <Typography variant="h5" style={{ marginTop: 10, fontWeight: 'bold' }}>Assets</Typography>
+        <Typography variant="h5" style={{ marginTop: 10, fontWeight: "bold" }}>
+          Assets
+        </Typography>
 
         {assets?.map((props, index) => {
-          return <AssetsPreview {...props} onChange={(value) => handleChange(props, value, index)} />;
+          return (
+            <AssetsPreview
+              key={index}
+              {...props}
+              onChange={(value) => handleChange(props, value, index)}
+            />
+          );
         })}
         <Button
-          disabled={loading} color="primary" variant="contained" onClick={handleUpdateJob}
-          children="Update Job" />
+          disabled={loading}
+          color="primary"
+          variant="contained"
+          onClick={handleUpdateJob}
+          children="Update Job"
+        />
       </Paper>
-
     </>
   );
 };
 
 const getColorFromState = (state) => {
-
   switch (state) {
     case "finished":
       return "#4caf50";

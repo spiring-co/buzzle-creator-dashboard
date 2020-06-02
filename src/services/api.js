@@ -16,8 +16,8 @@ export default (url, fetchOptions = {}, type = "json") => {
   const { signal } = controller;
   async function fetchData() {
     try {
-      setLoading(true)
-      setError(null)
+      setLoading(true);
+      setError(null);
       const response = await fetch(baseUrl + url, { ...fetchOptions, signal });
 
       response.ok
@@ -25,8 +25,8 @@ export default (url, fetchOptions = {}, type = "json") => {
         : setError(await response.json());
       setLoading(false);
     } catch (err) {
-      setLoading(false)
-      setError(err)
+      setLoading(false);
+      setError(err);
     }
   }
   useEffect(() => {
@@ -88,25 +88,24 @@ export const renderTestJob = async (data) => {
   }
 };
 
-
-export const updateJob = async (jobId, jobData) => {
-  try {
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/jobs/${jobId}`, {
-      method: 'PUT',
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(jobData)
-    })
-    if (response.ok) {
-      return await response.json()
+export const updateJob = async (jobId, { actions, assets }) => {
+  const response = await fetch(
+    `${process.env.REACT_APP_API_URL}/jobs/${jobId}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("jwtoken")}`,
+      },
+      body: JSON.stringify({ actions, assets }),
     }
-    else {
-      throw new Error(await response.text())
-    }
-  } catch (err) {
-    console.log(err);
-    throw new Error(err)
+  );
+  if (response.ok) {
+    return await response.json();
+  } else {
+    throw new Error((await response.json()).message);
   }
-}
+};
 
 export const sendOtp = async (email) => {
   try {
