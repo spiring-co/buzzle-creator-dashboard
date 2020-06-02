@@ -2,6 +2,7 @@ import useActions from "contextStore/actions";
 import { VideoTemplateContext } from "contextStore/store";
 import React, { useContext, useState, useEffect } from "react";
 
+import SnackAlert from "components/SnackAlert";
 import AssetUpload from "./AssetUpload";
 import FontUpload from "./FontUpload";
 import FormStepper from "./FormStepper";
@@ -12,9 +13,10 @@ import { Paper } from "@material-ui/core";
 export default ({ submitForm, isEdit, video }) => {
   const [videoObj] = useContext(VideoTemplateContext);
   const { resetVideo, editVideoKeys, loadVideo } = useActions();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [activeDisplayIndex, setActiveDisplayIndex] = useState(0);
   const [compositions, setCompositions] = useState([]);
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     if (isEdit) {
@@ -22,11 +24,18 @@ export default ({ submitForm, isEdit, video }) => {
     } else {
       resetVideo();
     }
-    setLoading(false);
   }, []);
 
   const handleSubmitForm = async () => {
-    submitForm(videoObj);
+    try {
+      setError(null)
+      setLoading(true)
+      await submitForm(videoObj);
+      setLoading(false)
+    } catch (err) {
+      setLoading(false)
+      setError(err)
+    }
   };
 
   const handleVideoTemplateMetaSubmit = async (data) => {
@@ -41,7 +50,7 @@ export default ({ submitForm, isEdit, video }) => {
   const Steps = {
     VideoTemplateMetaForm: (
       <VideoTemplateMetaForm
-        initialValues={isEdit ? videoObj : {}}
+        initialValues={isEdit ? video : {}}
         onSubmit={handleVideoTemplateMetaSubmit}
       />
     ),
@@ -62,6 +71,8 @@ export default ({ submitForm, isEdit, video }) => {
     ),
     AssetUpload: (
       <AssetUpload
+        isSubmitting={loading}
+        submitError={error}
         setActiveDisplayIndex={setActiveDisplayIndex}
         activeDisplayIndex={activeDisplayIndex}
         handleSubmitForm={handleSubmitForm}
@@ -69,10 +80,15 @@ export default ({ submitForm, isEdit, video }) => {
     ),
   };
 
-  if (loading) return <p>Loading...</p>;
-
   return (
     <>
+      <SnackAlert
+        message={error?.message ?? "Oop's, something went wrong, action failed !"}
+        open={error}
+        onClose={() => {
+          setError(false)
+        }}
+        type={"error"} />
       <FormStepper activeDisplayIndex={activeDisplayIndex} />
       <Paper elevation={2} style={{ padding: 32 }}>
         {Steps[Object.keys(Steps)[activeDisplayIndex]]}

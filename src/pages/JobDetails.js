@@ -11,10 +11,12 @@ import {
 import Refresh from "@material-ui/icons/Refresh";
 import AssetsPreview from "components/AssetsPreview";
 import { makeStyles } from "@material-ui/core/styles";
-import { updateJob } from "services/api";
+import { Job } from "services/api";
 import { useParams } from "react-router-dom";
 import ErrorHandler from "components/ErrorHandler";
+import AddAssetDialog from "components/AddAssetDialog";
 
+import { Add } from "@material-ui/icons";
 const CustomProgress = withStyles({
   colorPrimary: {
     backgroundColor: "#b2dfdb",
@@ -42,35 +44,28 @@ export default (props) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const { jobId } = useParams();
-  const [updatedJob, setUpdatedJob] = useState({});
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [initialValue, setInitialValue] = useState({});
+  const [editIndex, setEditIndex] = useState(null);
   useEffect(() => {
     fetchJobDetails();
   }, []);
 
-  useEffect(() => {
-    setUpdatedJob(jobDetails);
-  }, [jobDetails]);
-
-  const handleChange = (data, value, index) => {
-    switch (data.type) {
-      case "data":
-        updatedJob.assets[index] = { ...data, value };
-        setUpdatedJob(updatedJob);
-        break;
-      case "image":
-        updatedJob.assets[index] = { ...data, src: value };
-        setUpdatedJob(updatedJob);
-        break;
-      default:
-        break;
-    }
+  const handleAddAsset = (data) => {
+    jobDetails.assets.push(data);
+    setJobDetails(jobDetails);
   };
+  const editAssetValue = (data) => {
+    jobDetails.assets[editIndex] = data;
+    setJobDetails(jobDetails);
+  };
+
   const fetchJobDetails = async () => {
     try {
       setError(false);
       setLoading(true);
       const result = await fetch(
-        `${process.env.REACT_APP_API_URL}/jobs/${jobId}`
+        `${process.env.REACT_APP_API_URL}/jobs/${jobId}?populateVideoTemplate=true`
       );
       setLoading(true);
 
@@ -88,7 +83,7 @@ export default (props) => {
   const handleUpdateJob = async () => {
     try {
       setLoading(true);
-      await updateJob(jobId, updatedJob);
+      await Job.update(jobId, jobDetails);
       setLoading(false);
     } catch (err) {
       setLoading(false);
@@ -105,18 +100,40 @@ export default (props) => {
       />
     );
 
-  var { output, state, assets, renderTime } = jobDetails;
+  var {
+    output,
+    state,
+    assets,
+    videoTemplate,
+    idVersion,
+    renderTime,
+  } = jobDetails;
+  videoTemplate =
+    videoTemplate?.versions[
+      videoTemplate?.versions.map(({ id }) => id).indexOf(idVersion)
+    ];
+
   return (
     <>
       {loading ? <CustomProgress /> : ""}
       <Paper className={classes.container}>
-        <IconButton
-          aria-label="delete"
-          onClick={fetchJobDetails}
-          className={classes.refreshIcon}>
-          <Refresh />
-        </IconButton>
+        {isDialogOpen && (
+          <AddAssetDialog
+            usedLayers={assets.map(({ layerName }) => layerName)}
+            editableLayers={videoTemplate?.editableLayers}
+            initialValue={
+              editIndex !== null && { ...jobDetails.assets[editIndex] }
+            }
+            editAsset={editIndex !== null}
+            toggleDialog={setIsDialogOpen}
+            editAssetValue={editAssetValue}
+            addAsset={handleAddAsset}
+          />
+        )}
         <Typography variant="h4">Job Details</Typography>
+        <Typography style={{ marginTop: 10, fontWeight: "bold" }}>
+          Render Time: {(renderTime / 1000).toFixed(2)} seconds
+        </Typography>
         <Typography variant="h5" style={{ marginTop: 10, fontWeight: "bold" }}>
           Status
         </Typography>
@@ -143,10 +160,18 @@ export default (props) => {
         ) : (
           <Typography style={{ color: "grey" }}>No Output Yet</Typography>
         )}
-        <Typography variant="h5" style={{ marginTop: 10, fontWeight: "bold" }}>
-          Render Time: {renderTime / 1000 + "s"}
-        </Typography>
-
+        <br />
+        <Button
+          style={{ marginTop: 10 }}
+          startIcon={<Add />}
+          color="primary"
+          variant="outlined"
+          onClick={() => {
+            setEditIndex(null);
+            setIsDialogOpen(true);
+          }}
+          children="Add Asset"
+        />
         <Typography variant="h5" style={{ marginTop: 10, fontWeight: "bold" }}>
           Assets
         </Typography>
@@ -156,7 +181,10 @@ export default (props) => {
             <AssetsPreview
               key={index}
               {...props}
-              onChange={(value) => handleChange(props, value, index)}
+              onEdit={() => {
+                setEditIndex(index);
+                setIsDialogOpen(true);
+              }}
             />
           );
         })}

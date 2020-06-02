@@ -3,12 +3,9 @@ import { StateProvider } from "contextStore/store";
 import React, { useState } from "react";
 import { Prompt, useHistory } from "react-router-dom";
 
-import SnackAlert from "components/SnackAlert";
 
 export default (props) => {
   const [isBlocking, setIsBlocking] = React.useState(true);
-  const [isEditing, setIsEditing] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState(null);
   const [status, setStatus] = useState(false)
   const { video } = props?.location?.state ?? {};
@@ -21,7 +18,6 @@ export default (props) => {
     var action = window.confirm("Are you sure, you want to save changes");
     if (action) {
       try {
-        setIsEditing(true);
         const response = await fetch(
           process.env.REACT_APP_API_URL + `/videoTemplates/${data.id}`,
           {
@@ -34,27 +30,23 @@ export default (props) => {
             },
           }
         );
-        setIsEditing(false);
         if (response.ok) {
           setStatus(true)
           setIsBlocking(false);
           history.push({
             pathname: `/home/videoTemplates/${data.id}`,
+            state: { statusObj: { status: { message: "Video Template Edited Successfully." }, err: false } }
           });
         } else {
-          setIsEditing(false);
           setError(await response.text())
         }
       } catch (err) {
-        setIsEditing(false);
-        setError(err)
+        throw new Error(err)
       }
     }
   };
   const handleSubmitForm = async (data) => {
-    console.log(data);
     try {
-      setLoading(true);
       const response = await fetch(
         process.env.REACT_APP_API_URL + `/videoTemplates`,
         {
@@ -66,34 +58,24 @@ export default (props) => {
           body: JSON.stringify(data),
         }
       );
-      setLoading(false);
       if (response.ok) {
         setStatus(true)
         setIsBlocking(false);
-        history.push("/home/videoTemplates");
+        history.push({
+          pathname: "/home/videoTemplates",
+          state: { statusObj: { status: { message: "Video Template Created  Successfully." }, err: false } }
+        });
       } else {
-        setLoading(false)
         setError(await response.text())
       }
     } catch (err) {
-      setLoading(false);
-
-      setError(err);
+      throw new Error(err)
     }
   };
-  if (loading || isEditing)
-    return <p>{isEditing ? "Editing" : "Submitting"} your template...</p>;
 
   return (
     <StateProvider>
-      <SnackAlert
-        message={status ? 'Templated Added Successfully!' : error?.message ?? "Oop's, something went wrong, action failed !"}
-        open={error || status}
-        onClose={() => {
-          setStatus(false)
-          setError(false)
-        }}
-        type={status ? 'sucess' : "error"} />
+
       <Prompt when={isBlocking} message={`You will lose all your data.`} />
       <FormBuilder
         isEdit={isEdit}

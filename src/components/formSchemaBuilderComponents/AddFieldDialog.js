@@ -47,25 +47,25 @@ export default (props) => {
       case "data":
         props.editField
           ? props.editFieldValue({
-              type,
-              label,
-              required,
-              maxLength,
-              layerName,
-            })
+            type,
+            label,
+            required,
+            maxLength,
+            layerName,
+          })
           : props.addField({ type, label, required, maxLength, layerName });
         break;
 
       case "image":
         props.editField
           ? props.editFieldValue({
-              type,
-              label,
-              required,
-              width,
-              height,
-              layerName,
-            })
+            type,
+            label,
+            required,
+            width,
+            height,
+            layerName,
+          })
           : props.addField({ type, label, required, width, height, layerName });
         break;
       default:
@@ -84,14 +84,14 @@ export default (props) => {
     initialValues: props.initialValue
       ? props.initialValue
       : {
-          type: "",
-          layerName: "",
-          label: "",
-          required: false,
-          width: 0,
-          height: 0,
-          maxLength: 0,
-        },
+        type: "",
+        layerName: "",
+        label: "",
+        required: false,
+        width: 400,
+        height: 400,
+        maxLength: 50,
+      },
     validationSchema,
     onSubmit,
   });

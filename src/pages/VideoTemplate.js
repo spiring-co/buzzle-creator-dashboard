@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useHistory, useRouteMatch, useParams } from "react-router-dom";
 
-import useApi, { deleteTemplate } from "services/api";
+import { VideoTemplate } from "services/api";
+import useApi from "services/apiHook";
 import {
   Button,
   Typography,
@@ -45,10 +46,7 @@ export default () => {
 
     try {
       setIsDeleting(true);
-      const response = await deleteTemplate(id);
-      if (!response.status === 200) {
-        throw new Error((await response.json()).message);
-      }
+      await VideoTemplate.delete(id);
     } catch (err) {
       setError(err);
     } finally {
