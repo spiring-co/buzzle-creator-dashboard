@@ -105,6 +105,11 @@ export default (props) => {
             onClick: () => history.push(`${url}/add`),
           },
           {
+            icon: "edit",
+            tooltip: "Edit Template",
+            onClick: (e, { id }) => history.push(`${url}/${id}/edit`),
+          },
+          {
             icon: "refresh",
             tooltip: "Refresh Data",
             isFreeAction: true,

@@ -1,42 +1,52 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Paper from "@material-ui/core/Paper";
+import Tabs from "@material-ui/core/Tabs";
+import Tab from "@material-ui/core/Tab";
+import { Typography, Container, Divider, Box } from "@material-ui/core";
+import { Creator } from "services/api";
+import { Alert } from "@material-ui/lab";
 
-export default () => {
-  const [image, setImage] = useState("");
+export default function DisabledTabs() {
+  const [value, setValue] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [creator, setCreator] = useState({});
+  const [error, setError] = useState(null);
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
+  useEffect(() => {
+    Creator.get(localStorage.getItem("creatorId"))
+      .then(setCreator)
+      .catch(setError);
+  }, []);
+
   return (
-    <div>
-      <form>
-        <label>username</label>
-        <input type="text" />
-        <label>Profile Image</label>
-        <input
-          type="file"
-          onChange={(e) => {
-            const file = e.target.files[0];
-            const reader = new FileReader();
-            reader.onload = (function (theFile) {
-              return function (e) {
-                setImage(e.target.result);
-              };
-            })(file);
-            reader.readAsDataURL(file);
-          }}
-        />
-        <img alt="avatar" src={image} />
-        <label>email</label>
-        <input type="text" />
-        <label>Phone Number</label>
-        <input
-          type="tel"
-          id="phone"
-          name="phone"
-          placeholder="123-45-678"
-          pattern="[0-9]{3}-[0-9]{2}-[0-9]{3}"
-          required
-        ></input>
-        <label>birth Date</label>
-        <input type="date" />
-        <input type="submit" />
-      </form>
-    </div>
+    <Container>
+      <Typography variant="h4">Your account</Typography>
+      {error && <Alert severity="error">{error.message}</Alert>}
+      <Divider />
+      <Paper square>
+        <Tabs
+          value={value}
+          indicatorColor="primary"
+          textColor="primary"
+          onChange={handleChange}
+          aria-label="account tabs">
+          <Tab label="Profile" />
+          <Tab label="Settings" />
+        </Tabs>
+        <Box>
+          {Object.keys(creator || {}).map((k) => (
+            <Box key={k}>
+              <Typography>
+                {k}- {creator[k]}
+              </Typography>
+            </Box>
+          ))}
+        </Box>
+      </Paper>
+    </Container>
   );
-};
+}

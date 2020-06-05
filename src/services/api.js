@@ -8,10 +8,13 @@ const headers = {
 };
 
 export const Job = {
-  get: async (id) => {
-    const response = await fetch(`${baseUrl}/jobs/${id}`, {
-      headers,
-    });
+  get: async (id, populateVideoTemplate) => {
+    const response = await fetch(
+      `${baseUrl}/jobs/${id}?populateVideoTemplate=${populateVideoTemplate}`,
+      {
+        headers,
+      }
+    );
 
     if (!response.ok) throw new Error("request failed.");
     return await response.json();
@@ -75,6 +78,18 @@ export const VideoTemplate = {
     if (!response.ok) throw new Error((await response.json()).message);
     return await response.json();
   },
+};
+
+export const Creator = {
+  get: async (id) => {
+    const response = await fetch(`${baseUrl}/creators/${id}`, {
+      headers,
+    });
+    if (!response.ok) throw new Error((await response.json()).message);
+    return await response.json();
+  },
+  create: async () => {},
+  update: async () => {},
 };
 
 export const sendOtp = async (email) => {

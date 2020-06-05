@@ -37,24 +37,25 @@ export default () => {
   const classes = useStyles();
   const links = [
     {
-      text: "Profile and Settings",
-      icon: <AssignmentInd />,
-      to: `${url}/profile`,
-    },
-    {
       text: "Video Templates",
       icon: <VideoLibrary />,
       to: `${url}/videoTemplates`,
     },
     {
-      text: "Orders",
-      icon: <MonetizationOn />,
-      to: `${url}/orders`,
-    },
-    {
       text: "Jobs",
       icon: <Work />,
       to: `${url}/jobs`,
+    },
+
+    {
+      text: "Profile and Settings",
+      icon: <AssignmentInd />,
+      to: `${url}/profile`,
+    },
+    {
+      text: "Revenue",
+      icon: <MonetizationOn />,
+      to: `${url}/orders`,
     },
   ];
 

@@ -8,7 +8,7 @@ export default () => {
   return (
     <Switch>
       <Route path={`${path}/`} exact component={JobsTable} />
-      <Route path={`${path}/:jobId`} component={JobDetails} />
+      <Route path={`${path}/:id`} component={JobDetails} />
     </Switch>
   );
 };
