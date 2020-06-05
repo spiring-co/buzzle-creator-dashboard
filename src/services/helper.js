@@ -108,16 +108,7 @@ export const jobSchemaConstructor = (template) => {
     return ({
       idVideoTemplate: template.id,
       idVersion: version.id,
-      actions: {
-        postrender: [{
 
-          "module": "@nexrender/action-encode",
-          "preset": "mp4",
-          "output": "encoded.mp4"
-
-        }],
-
-      },
       assets: (function () {
         return version.editableLayers.map(layer => {
           switch (layer.type) {

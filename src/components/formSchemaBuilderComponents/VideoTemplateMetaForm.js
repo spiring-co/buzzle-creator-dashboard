@@ -12,7 +12,6 @@ const validationSchema = Yup.object({
 });
 
 export default ({ initialValues = {}, onSubmit }) => {
-  console.log(initialValues)
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState(initialValues?.tags ?? []);
   const {
