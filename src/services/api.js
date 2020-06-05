@@ -1,147 +1,113 @@
-import { useEffect, useState } from "react";
-import { jobSchemaConstructor } from "./helper";
+import createTestJobs from "helpers/createTestJobs";
+
 const baseUrl = process.env.REACT_APP_API_URL;
-
-/**
- * Create a new use api hook.
- * @param  {String} url - url relative to the base url
- * @param  {Object} options - http options
- * @param  {String} type="json" - expected response type
- */
-export default (url, fetchOptions = {}, type = "json") => {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [data, setData] = useState(null);
-  const controller = new AbortController();
-  const { signal } = controller;
-  async function fetchData() {
-    try {
-      setLoading(true)
-      setError(null)
-      const response = await fetch(baseUrl + url, { ...fetchOptions, signal });
-
-      response.ok
-        ? setData(await response.json())
-        : setError(await response.json());
-      setLoading(false);
-    } catch (err) {
-      setLoading(false)
-      setError(err)
-    }
-  }
-  useEffect(() => {
-    fetchData();
-    return () => {
-      controller.abort();
-    };
-  }, [url]);
-
-  return { data, loading, error, onReferesh: fetchData };
+const headers = {
+  Accept: "application/json",
+  "Content-Type": "application/json",
+  Authorization: `bearer ${localStorage.getItem("jwtoken")}`,
 };
 
-export const deleteTemplate = async (id) => {
-  try {
+export const Job = {
+  get: async (id, populateVideoTemplate) => {
     const response = await fetch(
-      process.env.REACT_APP_API_URL + `/videoTemplates/${id}`,
+      `${baseUrl}/jobs/${id}?populateVideoTemplate=${populateVideoTemplate}`,
       {
-        method: "DELETE",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `bearer ${localStorage.getItem("jwtoken")}`,
-        },
+        headers,
       }
     );
-    return response;
-  } catch (err) {
-    console.log(err);
-    throw new Error(err);
-  }
-};
 
-export const renderTestJob = async (data) => {
-  try {
-    var jobs = jobSchemaConstructor(data);
+    if (!response.ok) throw new Error("request failed.");
+    return await response.json();
+  },
+
+  create: async ({ actions, assets, videoTemplateId, versionId }) => {
+    const response = await fetch(`${baseUrl}/jobs`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ actions, assets, videoTemplateId, versionId }),
+    });
+    if (!response.ok) throw new Error((await response.json()).message);
+    return await response.json();
+  },
+
+  update: async (id, { actions, assets }) => {
+    const response = await fetch(`${baseUrl}/jobs/${id}`, {
+      method: "PUT",
+      headers,
+      body: JSON.stringify({ actions, assets }),
+    });
+    if (!response.ok) throw new Error((await response.json()).message);
+    return await response.json();
+  },
+
+  delete: async (id) => {
+    const response = await fetch(`${baseUrl}/jobs/${id}`, {
+      method: "DELETE",
+      headers,
+    });
+
+    if (!response.ok) throw new Error("request failed.");
+    return await response.json();
+  },
+
+  renderTests: async (data) => {
+    const jobs = createTestJobs(data);
 
     await Promise.all(
       jobs.map((job) => {
-        var myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/json");
-        var raw = JSON.stringify(job);
-        var requestOptions = {
+        fetch("http://localhost:5000/jobs", {
           method: "POST",
-          headers: myHeaders,
-          body: raw,
-          redirect: "follow",
-        };
-        fetch("http://localhost:5000/jobs", requestOptions)
-          .then((response) => response.json())
-          .then((result) => {
-            console.log(result);
-          })
-          .catch((error) => console.log("error", error));
+          headers,
+          body: JSON.stringify(job),
+        }).then((response) => response.json());
       })
     );
-    window.location.assign("/home/jobs");
-  } catch (err) {
-    console.log(err);
-  }
+  },
 };
 
+export const VideoTemplate = {
+  get: async () => {},
+  create: async () => {},
+  update: async () => {},
 
-export const updateJob = async (jobId, { actions, assets }) => {
-  try {
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/jobs/${jobId}`, {
-      method: 'PUT',
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ actions, assets })
-    })
-    if (response.ok) {
-      return await response.json()
-    }
-    else {
-      throw new Error(await response.text())
-    }
-  } catch (err) {
-    console.log(err);
-    throw new Error(err)
-  }
-}
+  delete: async (id) => {
+    const response = await fetch(`${baseUrl}/videoTemplates/${id}`, {
+      method: "DELETE",
+      headers,
+    });
+    if (!response.ok) throw new Error((await response.json()).message);
+    return await response.json();
+  },
+};
+
+export const Creator = {
+  get: async (id) => {
+    const response = await fetch(`${baseUrl}/creators/${id}`, {
+      headers,
+    });
+    if (!response.ok) throw new Error((await response.json()).message);
+    return await response.json();
+  },
+  create: async () => {},
+  update: async () => {},
+};
 
 export const sendOtp = async (email) => {
-  try {
-    const response = await fetch(
-      process.env.REACT_APP_API_URL + "/auth/resetPasswordEmail",
-      {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      }
-    );
-  } catch (err) {
-    throw new Error(err);
-  }
+  const response = await fetch(baseUrl + "/auth/resetPasswordEmail", {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ email }),
+  });
+  if (!response.ok) throw new Error((await response.json()).message);
+  return await response.json();
 };
 
 export const registerUser = async (s) => {
-  try {
-    const response = await fetch(process.env.REACT_APP_API_URL + "/creator", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(s),
-    });
-    return response;
-  } catch (err) {
-    throw new Error(err);
-  }
-};
-
-export const deleteJob = async () => {
-  return "ok";
+  const response = await fetch(baseUrl + "/creator", {
+    method: "POST",
+    headers,
+    body: JSON.stringify(s),
+  });
+  if (!response.ok) throw new Error((await response.json()).message);
+  return await response.json();
 };

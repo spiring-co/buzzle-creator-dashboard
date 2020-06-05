@@ -7,7 +7,7 @@ import {
   useHistory,
 } from "react-router-dom";
 import MaterialTable from "material-table";
-import { renderTestJob, deleteTemplate } from "services/api";
+import { Job } from "services/api";
 import ErrorHandler from "components/ErrorHandler";
 import SnackAlert from "components/SnackAlert";
 const uri = `${process.env.REACT_APP_API_URL}/creators/${localStorage.getItem(
@@ -29,12 +29,8 @@ export default (props) => {
 
     try {
       setIsDeleting(true);
-      const response = await deleteTemplate(id);
-      if (!response.status === 200) {
-        throw new Error((await response.json()).message);
-      }
+      await Job.delete(id);
     } catch (err) {
-      console.log(err)
       setError(err);
     } finally {
       tableRef.current && tableRef.current.onQueryChange();
@@ -63,7 +59,7 @@ export default (props) => {
         type={status ? "success" : "error"}
         message={
           status
-            ? status?.message ?? "Deleted Sucesfully"
+            ? status?.message ?? "Deleted Sucessfully"
             : err?.message ?? "Oop's, something went wrong, action failed !"
         }
         onClose={() => setDeleteStatus({ status: false, err: false })}
@@ -93,7 +89,7 @@ export default (props) => {
           {
             icon: "alarm-on",
             tooltip: "Render Test Job",
-            onClick: (event, rowData) => renderTestJob(rowData),
+            onClick: (event, rowData) => Job.renderTests(rowData),
           },
           {
             icon: () =>
@@ -107,6 +103,11 @@ export default (props) => {
             tooltip: "Add Video Template",
             isFreeAction: true,
             onClick: () => history.push(`${url}/add`),
+          },
+          {
+            icon: "edit",
+            tooltip: "Edit Template",
+            onClick: (e, { id }) => history.push(`${url}/${id}/edit`),
           },
           {
             icon: "refresh",
@@ -128,6 +129,7 @@ export default (props) => {
             .catch((err) => setError(err))
         }
         options={{
+          pageSize: 10,
           headerStyle: { fontWeight: 700 },
           minBodyHeight: 500,
           actionsColumnIndex: -1,
