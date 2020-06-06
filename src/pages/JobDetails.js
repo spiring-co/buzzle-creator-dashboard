@@ -15,7 +15,7 @@ import { makeStyles } from "@material-ui/core/styles";
 
 import AssetsPreview from "components/AssetsPreview";
 import ErrorHandler from "components/ErrorHandler";
-import AddAssetDialog from "components/AddAssetDialog";
+import AssetDialog from "components/AssetDialog";
 
 import formatTime from "helpers/formatTime";
 import { Job } from "services/api";
@@ -59,13 +59,11 @@ export default (props) => {
     fetchJob();
   }, []);
 
-  const handleAddAsset = (data) => {
-    job.assets.push(data);
+  const handleAssetSubmit = (a) => {
+    //TODO check if property combination already exists
+    job.assets.push(a);
     setJob(job);
-  };
-  const editAssetValue = (data) => {
-    job.assets[editIndex] = data;
-    setJob(job);
+    setIsDialogOpen(false);
   };
 
   const fetchJob = async () => {
@@ -194,14 +192,10 @@ export default (props) => {
         </Grid>
       </Paper>
       {isDialogOpen && (
-        <AddAssetDialog
-          usedLayers={assets.map(({ layerName }) => layerName)}
+        <AssetDialog
           editableLayers={videoTemplate?.editableLayers}
-          initialValue={editIndex !== null && { ...job.assets[editIndex] }}
-          editAsset={editIndex !== null}
-          toggleDialog={setIsDialogOpen}
-          editAssetValue={editAssetValue}
-          addAsset={handleAddAsset}
+          initialValues={editIndex && { ...job.assets[editIndex] }}
+          onSubmit={handleAssetSubmit}
         />
       )}
     </>

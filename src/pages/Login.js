@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useFormik } from "formik";
 import { useTranslation } from "react-i18next";
-import { Link as RouterLink, Redirect } from "react-router-dom";
+import { Link as RouterLink, Redirect, useLocation } from "react-router-dom";
 
 import useAuth from "services/auth";
 import * as Yup from "yup";
@@ -42,6 +42,8 @@ const useStyles = makeStyles((theme) =>
 export default () => {
   const { t } = useTranslation();
   const classes = useStyles();
+  const { state } = useLocation();
+  const { message } = state || {};
 
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -104,6 +106,7 @@ export default () => {
           </Typography>
 
           {error && <Alert severity="error" children={error.message} />}
+          {message && <Alert severity="info" children={message} />}
 
           <TextField
             name={"email"}

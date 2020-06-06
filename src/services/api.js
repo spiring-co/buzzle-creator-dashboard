@@ -55,7 +55,7 @@ export const Job = {
 
     await Promise.all(
       jobs.map((job) => {
-        fetch("http://localhost:5000/jobs", {
+        fetch(`${baseUrl}/jobs`, {
           method: "POST",
           headers,
           body: JSON.stringify(job),
@@ -88,25 +88,24 @@ export const Creator = {
     if (!response.ok) throw new Error((await response.json()).message);
     return await response.json();
   },
-  create: async () => {},
+  create: async (user) => {
+    const response = await fetch(`${baseUrl}/creators`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(user),
+    });
+    if (!response.ok) throw new Error((await response.json()).message);
+    return await response.json();
+  },
   update: async () => {},
 };
 
+//TODO move to auth
 export const sendOtp = async (email) => {
   const response = await fetch(baseUrl + "/auth/resetPasswordEmail", {
     method: "POST",
     headers,
     body: JSON.stringify({ email }),
-  });
-  if (!response.ok) throw new Error((await response.json()).message);
-  return await response.json();
-};
-
-export const registerUser = async (s) => {
-  const response = await fetch(baseUrl + "/creator", {
-    method: "POST",
-    headers,
-    body: JSON.stringify(s),
   });
   if (!response.ok) throw new Error((await response.json()).message);
   return await response.json();

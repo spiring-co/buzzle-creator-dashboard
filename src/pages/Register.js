@@ -1,11 +1,11 @@
 import { useFormik } from "formik";
 import React, { useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useHistory } from "react-router-dom";
 import * as Yup from "yup";
 import { useTranslation } from "react-i18next";
 import { Alert } from "@material-ui/lab";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
-import { registerUser } from 'services/api'
+import { Creator } from "services/api";
 import {
   TextField,
   Button,
@@ -42,6 +42,7 @@ const useStyles = makeStyles((theme) =>
 export default () => {
   const { t } = useTranslation();
   const classes = useStyles();
+  const history = useHistory();
 
   const [error, setError] = useState(null);
 
@@ -66,20 +67,12 @@ export default () => {
     },
     validationSchema,
     onSubmit: async (s) => {
-      console.log(s);
       try {
-        const response = await registerUser(s)
-        if (response.ok) {
-          return window.location.assign("/");
-        } else {
-          const res = await response.json();
-          console.log(res.message);
-          let resSlice = res.message.slice(0, 6);
-          if (resSlice == "E11000") {
-            return setError({ message: t("emailUsed") });
-          }
-          return setError(res.message);
-        }
+        const response = await Creator.create(s);
+        history.push("/login", {
+          message:
+            "Please check your mail for a verification mail and click the link to continue.",
+        });
       } catch (e) {
         setError(e);
       }
@@ -93,8 +86,7 @@ export default () => {
         isValidated={Object.keys(errors).length}
         onSubmit={handleSubmit}
         noValidate
-        maxWidth={"sm"}
-      >
+        maxWidth={"sm"}>
         <Paper className={classes.content}>
           <Typography className={classes.spacedText} variant="h4">
             Register
@@ -149,8 +141,7 @@ export default () => {
             fullWidth
             margin="normal"
             error={touched.gender && !!errors.gender}
-            variant="outlined"
-          >
+            variant="outlined">
             <InputLabel id="demo-simple-select-outlined-label">
               Gender
             </InputLabel>
@@ -164,8 +155,7 @@ export default () => {
               name={"gender"}
               type="text"
               placeholder="Select gender"
-              label="Gender"
-            >
+              label="Gender">
               <MenuItem value="Male">Male</MenuItem>
               <MenuItem value="Female">Female</MenuItem>
               <MenuItem value="Other">Other</MenuItem>
@@ -221,8 +211,7 @@ export default () => {
             fullWidth
             margin="normal"
             error={touched.country && !!errors.country}
-            variant="outlined"
-          >
+            variant="outlined">
             <InputLabel id="demo-simple-select-outlined-label">
               Country
             </InputLabel>
@@ -235,8 +224,7 @@ export default () => {
               value={values.country}
               name={"country"}
               placeholder="Select country"
-              label="Country"
-            >
+              label="Country">
               {countryList.map(renderCountryMenuItem)}
             </Select>
             <FormHelperText error={touched.country && !!errors.country}>
