@@ -10,6 +10,7 @@ import MaterialTable from "material-table";
 import { Job } from "services/api";
 import ErrorHandler from "components/ErrorHandler";
 import SnackAlert from "components/SnackAlert";
+import ReactJson from "react-json-view";
 const uri = `${process.env.REACT_APP_API_URL}/creators/${localStorage.getItem(
   "creatorId"
 )}/videoTemplates`;
@@ -85,11 +86,28 @@ export default (props) => {
           },
           { title: "Created At", field: "dateCreated", type: "datetime" },
         ]}
+        detailPanel={[
+          {
+            render: (rowData) => (
+              <ReactJson
+                displayDataTypes={false}
+                name={rowData.id}
+                collapsed={1}
+                src={rowData}
+              />
+            ),
+            icon: "code",
+            tooltip: "Show Code",
+          },
+        ]}
         actions={[
           {
             icon: "alarm-on",
             tooltip: "Render Test Job",
-            onClick: (event, rowData) => Job.renderTests(rowData),
+            onClick: (event, rowData) => {
+              Job.renderTests(rowData);
+              history.push("/jobs");
+            },
           },
           {
             icon: () =>

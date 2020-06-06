@@ -9,8 +9,29 @@ import Login from "pages/Login";
 import Landing from "pages/Landing";
 import Register from "pages/Register";
 import ForgotPassword from "pages/ForgotPassword";
+import {
+  purple,
+  deepPurple,
+  amber,
+  yellow,
+  pink,
+  indigo,
+} from "@material-ui/core/colors";
 
-const theme = createMuiTheme({});
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      main: "#3742fa",
+    },
+    secondary: pink,
+    background: {
+      default: "#f1f2f6",
+    },
+  },
+  typography: {
+    fontFamily: "Rubik",
+  },
+});
 
 export default () => {
   return (

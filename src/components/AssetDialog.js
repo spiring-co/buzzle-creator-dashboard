@@ -24,6 +24,7 @@ const validationSchema = null;
 const defaultValues = {
   type: "data",
   value: "",
+  src: "",
 };
 
 export default ({
@@ -66,18 +67,35 @@ export default ({
     )
       return <div />;
     return (
-      <TextField
-        fullWidth
-        variant="outlined"
-        margin="dense"
-        name="src"
-        value={value}
-        onBlur={handleBlur}
-        onChange={handleChange}
-        error={touched && error}
-        helperText={touched && error}
-        type="file"
-      />
+      <div>
+        {/* <TextField
+          fullWidth
+          variant="outlined"
+          margin="dense"
+          name="src"
+          value={value}
+          onBlur={handleBlur}
+          onChange={handleChange}
+          error={touched && error}
+          helperText={touched && error}
+          type="file"
+        />
+        <p> OR</p> */}
+        <TextField
+          fullWidth
+          variant="outlined"
+          margin="dense"
+          value={value}
+          name="src"
+          onBlur={handleBlur}
+          onChange={handleChange}
+          error={touched && error}
+          helperText={touched && error}
+          type="text"
+          label={"URL"}
+          placeholder={"Enter URL Here"}
+        />
+      </div>
     );
   }
 
@@ -206,7 +224,7 @@ export default ({
                 onChange={handleChange}>
                 {(editableLayers[selectedLayerIndex].type === "data"
                   ? ["data"]
-                  : ["data", "src"]
+                  : ["data", editableLayers[selectedLayerIndex].type]
                 ).map((t) => (
                   <FormControlLabel
                     key={t}
@@ -242,6 +260,7 @@ export default ({
               errors={errors.src}
               touched={touched.src}
               src={values.src}
+              value={values.src}
               type={values.type}
               handleChange={handleChange}
               handleBlur={handleBlur}

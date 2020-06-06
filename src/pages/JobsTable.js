@@ -9,6 +9,7 @@ import {
 import { Alert } from "@material-ui/lab";
 import { Delete } from "@material-ui/icons";
 import { Job } from "services/api";
+import ReactJson from "react-json-view";
 
 const uri = `${process.env.REACT_APP_API_URL}/creators/${localStorage.getItem(
   "creatorId"
@@ -37,6 +38,20 @@ export default () => {
           minBodyHeight: 500,
           actionsColumnIndex: -1,
         }}
+        detailPanel={[
+          {
+            render: (rowData) => (
+              <ReactJson
+                displayDataTypes={false}
+                name={rowData.id}
+                collapsed={1}
+                src={rowData}
+              />
+            ),
+            icon: "code",
+            tooltip: "Show Code",
+          },
+        ]}
         columns={[
           {
             title: "Job Id",

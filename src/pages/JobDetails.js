@@ -9,7 +9,17 @@ import {
   Grid,
   Divider,
   Box,
+  Link,
+  AppBar,
+  Tabs,
+  Tab,
 } from "@material-ui/core";
+import {
+  Link as RouterLink,
+  useRouteMatch,
+  useHistory,
+  Redirect,
+} from "react-router-dom";
 import { Add } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -20,6 +30,39 @@ import AssetDialog from "components/AssetDialog";
 import formatTime from "helpers/formatTime";
 import { Job } from "services/api";
 import { useParams } from "react-router-dom";
+import MaterialTable from "material-table";
+
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}>
+      {value === index && (
+        <Box p={3}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
+
+// TabPanel.propTypes = {
+//   children: PropTypes.node,
+//   index: PropTypes.any.isRequired,
+//   value: PropTypes.any.isRequired,
+// };
+
+function a11yProps(index) {
+  return {
+    id: `simple-tab-${index}`,
+    "aria-controls": `simple-tabpanel-${index}`,
+  };
+}
 
 const CustomProgress = withStyles({
   colorPrimary: {
@@ -31,6 +74,9 @@ const CustomProgress = withStyles({
 })(LinearProgress);
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+  },
   container: {
     padding: theme.spacing(0),
     position: "relative",
@@ -48,12 +94,15 @@ export default (props) => {
   const [job, setJob] = useState({});
   const [error, setError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [redirect, setRedirect] = useState(null);
 
   const { id } = useParams();
+  const history = useHistory();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [initialValue, setInitialValue] = useState({});
   const [editIndex, setEditIndex] = useState(null);
+  const [activeTabIndex, setActiveTabIndex] = useState(0);
 
   useEffect(() => {
     fetchJob();
@@ -64,6 +113,19 @@ export default (props) => {
     job.assets.push(a);
     setJob(job);
     setIsDialogOpen(false);
+  };
+
+  const handleDeleteAsset = (_, { layerName, property, src }) => {
+    setJob({
+      ...job,
+      assets: job.assets.filter(
+        (a) =>
+          !(
+            a.layerName == layerName &&
+            (a.property == property || a.src === src)
+          )
+      ),
+    });
   };
 
   const fetchJob = async () => {
@@ -84,6 +146,7 @@ export default (props) => {
       setIsLoading(true);
       await Job.update(id, job);
       setIsLoading(false);
+      setRedirect("/home/jobs");
     } catch (err) {
       setIsLoading(false);
       console.log(err);
@@ -123,76 +186,124 @@ export default (props) => {
     "Finished at": new Date(dateFinished).toLocaleString(),
   };
 
+  if (redirect) return <Redirect to="/home/jobs" />;
+  if (isLoading) return <CustomProgress />;
   return (
     <>
-      {isLoading ? <CustomProgress /> : ""}
-      <Typography variant="h4">Job Details</Typography>
-      <Paper className={classes.container}>
-        <Grid container spacing={0}>
-          <Grid xs={6} item>
-            {state === "finished" ? (
-              <video style={{ height: 320 }} controls src={output} />
-            ) : (
-              <Box backgroundColor="grey" textAlign="center" height={320}>
-                No output yet.
+      <div className={classes.root}>
+        <AppBar position="static" color="transparent" elevation={0}>
+          <Tabs
+            value={activeTabIndex}
+            indicatorColor="primary"
+            textColor="primary"
+            centered
+            onChange={(_, i) => setActiveTabIndex(i)}
+            aria-label="simple tabs example">
+            <Tab label="Output" {...a11yProps(0)} />
+            <Tab label="Assets" {...a11yProps(1)} />
+            <Tab label="Actions" {...a11yProps(2)} />
+          </Tabs>
+        </AppBar>
+        <TabPanel value={activeTabIndex} index={0}>
+          <Paper>
+            <Grid xs={12} item>
+              {state === "finished" ? (
+                <video style={{ height: 320 }} controls src={output} />
+              ) : (
+                <Box
+                  style={{ background: "gainsboro" }}
+                  justifyContent="center"
+                  textAlign="center"
+                  height={320}>
+                  <p style={{ padding: 100 }}> No output yet.</p>
+                </Box>
+              )}
+              <Box p={2}>
+                <Typography variant="h5">Details</Typography>
+                <br />
+                {Object.keys(content).map((k) => (
+                  <Grid key={k} container direction={"row"} spacing={1}>
+                    <Grid xs={6} item>
+                      <Typography> {k}</Typography>
+                    </Grid>
+                    <Grid xs={6} item>
+                      <Typography> {content[k]}</Typography>
+                    </Grid>
+                  </Grid>
+                ))}
               </Box>
-            )}
-            <Box p={2}>
-              <Typography variant="h5">Details</Typography>
-              <br />
-              {Object.keys(content).map((k) => (
-                <Grid key={k} container direction={"row"} spacing={1}>
-                  <Grid xs={6} item>
-                    <Typography> {k}</Typography>
-                  </Grid>
-                  <Grid xs={6} item>
-                    <Typography> {content[k]}</Typography>
-                  </Grid>
-                </Grid>
-              ))}
-            </Box>
-          </Grid>
-          <Grid xs={6} item>
-            <Divider orientation="vertical" flexItem />
-            <Box p={2}>
-              <Typography variant="h5">Assets</Typography>
-
-              {assets?.map((props, index) => {
-                return (
-                  <AssetsPreview
-                    key={index}
-                    {...props}
-                    onEdit={() => {
-                      setEditIndex(index);
-                      setIsDialogOpen(true);
-                    }}
-                  />
-                );
-              })}
-              <Button
-                style={{ marginTop: 10 }}
-                startIcon={<Add />}
-                color="primary"
-                variant="outlined"
-                onClick={() => {
+            </Grid>
+          </Paper>
+        </TabPanel>
+        <TabPanel value={activeTabIndex} index={1}>
+          <Box p={1}>
+            <Button
+              disabled={isLoading}
+              color="secondary"
+              variant="contained"
+              onClick={handleUpdateJob}
+              children="Update Job"
+            />
+          </Box>
+          <MaterialTable
+            options={{
+              pageSize: 5,
+              headerStyle: { fontWeight: 700 },
+              actionsColumnIndex: -1,
+            }}
+            actions={[
+              {
+                icon: "add",
+                tooltip: "Add Asset",
+                isFreeAction: true,
+                onClick: () => {
                   setEditIndex(null);
                   setIsDialogOpen(true);
-                }}
-                children="Add Asset"
-              />
-              <Button
-                disabled={isLoading}
-                color="primary"
-                variant="contained"
-                onClick={handleUpdateJob}
-                children="Update Job"
-              />
-            </Box>
-          </Grid>
-        </Grid>
-      </Paper>
+                },
+              },
+              {
+                icon: "edit",
+                tooltip: "Edit Asset",
+                onClick: () => {
+                  setEditIndex(null);
+                  setIsDialogOpen(true);
+                },
+              },
+              {
+                icon: "delete",
+                tooltip: "Delete Asset",
+                onClick: handleDeleteAsset,
+              },
+            ]}
+            columns={[
+              { title: "Layer Name", field: "layerName" },
+              { title: "Type", field: "type" },
+              {
+                title: "Property",
+                render: ({ property }) => property || "Source",
+              },
+              {
+                title: "Value/Source",
+                field: "value",
+                render: ({ value, src }) =>
+                  src ? (
+                    <Link src={src} target="_blank" children={src} />
+                  ) : (
+                    value
+                  ),
+              },
+            ]}
+            data={job.assets}
+            title="Assets"
+          />
+        </TabPanel>
+        <TabPanel value={activeTabIndex} index={2}>
+          Actions Here
+        </TabPanel>
+      </div>
       {isDialogOpen && (
         <AssetDialog
+          setIsDialogOpen={setIsDialogOpen}
           editableLayers={videoTemplate?.editableLayers}
           initialValues={editIndex && { ...job.assets[editIndex] }}
           onSubmit={handleAssetSubmit}
