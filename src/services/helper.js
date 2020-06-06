@@ -101,3 +101,37 @@ export async function s3FileReader(fileUrl) {
   // return the fileObj from s3
   //return {}
 }
+
+export const jobSchemaConstructor = (template) => {
+
+  return template.versions.map(version => {
+    return ({
+      idVideoTemplate: template.id,
+      idVersion: version.id,
+
+      assets: (function () {
+        return version.editableLayers.map(layer => {
+          switch (layer.type) {
+            case 'data':
+              return ({
+                type: layer.type,
+                value: layer.label,
+                layerName: layer.layerName,
+                property: 'Source Text',
+              })
+            case 'image':
+              return ({
+                type: layer.type,
+                layerName: layer.layerName,
+                src: `https://dummyimage.com/${layer.width}x${layer.height}/0011ff/fff`,
+                extension: "png",
+              })
+            default:
+              return;
+          }
+        })
+      })()
+    })
+  })
+
+}
