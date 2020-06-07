@@ -8,11 +8,15 @@ export default ({ activeDisplayIndex }) => {
   return (
     <Stepper
       style={{ background: "transparent" }}
-      activeStep={activeDisplayIndex}
-      alternativeLabel>
+      activeStep={activeDisplayIndex}>
       {steps.map((label) => (
         <Step key={label}>
-          <StepLabel>{label}</StepLabel>
+          <StepLabel
+            style={{
+              fontWeight: 700,
+            }}>
+            {label}
+          </StepLabel>
         </Step>
       ))}
     </Stepper>

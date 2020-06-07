@@ -29,7 +29,41 @@ const theme = createMuiTheme({
     },
   },
   typography: {
-    fontFamily: "Rubik",
+    fontSize: 14,
+    fontFamily: "Noto Sans",
+    h3: {
+      fontWeight: 700,
+    },
+    h4: {
+      fontWeight: 700,
+    },
+    h5: {
+      fontWeight: 700,
+    },
+    h6: {
+      fontWeight: 700,
+    },
+  },
+  overrides: {
+    MuiListItemText: {
+      primary: {
+        fontSize: 15,
+        fontWeight: 700,
+      },
+    },
+    MuiStepLabel: {
+      label: {
+        fontWeight: 700,
+      },
+      active: {
+        fontWeight: 700,
+      },
+    },
+    MuiButton: {
+      label: {
+        fontWeight: 700,
+      },
+    },
   },
 });
 

@@ -38,7 +38,7 @@ function ListItemLink(props) {
     <li>
       <ListItem button component={renderLink}>
         {icon ? <ListItemIcon>{icon}</ListItemIcon> : null}
-        <ListItemText primary={primary} />
+        <ListItemText style={{ fontSize: 700 }} primary={primary} />
       </ListItem>
     </li>
   );
@@ -154,8 +154,8 @@ export default function NavBar({ items }) {
             })}>
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap>
-            Pharaoh
+          <Typography variant="h6" style={{ fontWeight: 700 }} noWrap>
+            PHARAOH
           </Typography>
           <div className={classes.menu}>
             <IconButton

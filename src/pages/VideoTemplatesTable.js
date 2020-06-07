@@ -84,7 +84,7 @@ export default (props) => {
             title: "Description",
             field: "description",
           },
-          { title: "Created At", field: "dateCreated", type: "datetime" },
+          { title: "Last Updated", field: "dateUpdated", type: "datetime" },
         ]}
         detailPanel={[
           {

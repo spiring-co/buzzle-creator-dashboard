@@ -82,7 +82,11 @@ export default () => {
               <Chip
                 size="small"
                 label={state}
-                style={{ background: getColorFromState(state), color: "white" }}
+                style={{
+                  fontWeight: 700,
+                  background: getColorFromState(state),
+                  color: "white",
+                }}
               />
             ),
           },
