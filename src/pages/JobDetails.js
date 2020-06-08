@@ -34,7 +34,6 @@ import MaterialTable from "material-table";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
-
   return (
     <div
       role="tabpanel"
@@ -107,7 +106,6 @@ export default (props) => {
   useEffect(() => {
     fetchJob();
   }, []);
-
   const handleAssetSubmit = (a) => {
     //TODO check if property combination already exists
     job.assets.push(a);
@@ -309,7 +307,7 @@ export default (props) => {
         <AssetDialog
           setIsDialogOpen={setIsDialogOpen}
           editableLayers={videoTemplate?.editableLayers}
-          initialValues={editIndex && { ...job.assets[editIndex] }}
+          initialValues={editIndex && job.assets[editIndex]}
           onSubmit={handleAssetSubmit}
         />
       )}

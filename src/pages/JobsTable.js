@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Chip, Link, CircularProgress } from "@material-ui/core";
 import MaterialTable from "material-table";
 import {
@@ -10,16 +10,53 @@ import { Alert } from "@material-ui/lab";
 import { Delete } from "@material-ui/icons";
 import { Job } from "services/api";
 import ReactJson from "react-json-view";
+import io from "socket.io-client";
 
 const uri = `${process.env.REACT_APP_API_URL}/creators/${localStorage.getItem(
   "creatorId"
 )}/jobs`;
 export default () => {
   const [error, setError] = useState(null);
+  const [progress, setProgress] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
   let history = useHistory();
   let { path } = useRouteMatch();
   const tableRef = useRef(null);
+
+  function JobState({ id, state }) {
+    const [progress, setProgress] = useState(0);
+    useEffect(() => {
+      const nsp = io(`http://localhost:8080/${id}%`);
+      nsp.on("progress", setProgress);
+      // return () => io.removeAllListeners();
+    });
+
+    if (!(state === "started"))
+      return (
+        <Chip
+          size="small"
+          label={state}
+          style={{
+            fontWeight: 700,
+            background: getColorFromState(state),
+            color: "white",
+          }}
+        />
+      );
+
+    return (
+      <Chip
+        size="small"
+        label={`Rendering ${progress}`}
+        style={{
+          fontWeight: 700,
+          background: getColorFromState(state),
+          color: "white",
+        }}
+      />
+    );
+  }
+
   return (
     <>
       {error && (
@@ -28,7 +65,7 @@ export default () => {
           children={`Failed to fetch records ${error.message}`}
         />
       )}
-
+      {progress && <p>{JSON.stringify(progress, null, 2)}</p>}
       <MaterialTable
         tableRef={tableRef}
         title="Your Jobs"
@@ -78,17 +115,7 @@ export default () => {
           {
             title: "State",
             field: "state",
-            render: ({ state }) => (
-              <Chip
-                size="small"
-                label={state}
-                style={{
-                  fontWeight: 700,
-                  background: getColorFromState(state),
-                  color: "white",
-                }}
-              />
-            ),
+            render: ({ id, state }) => <JobState id={id} state={state} />,
           },
         ]}
         data={(query) =>
