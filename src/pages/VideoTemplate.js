@@ -92,6 +92,15 @@ export default () => {
           Edit
         </Button>
         <Button
+          component={"a"}
+          target="_blank"
+          style={{ margin: 10, marginLeft: 0 }}
+          variant="contained"
+          color="primary"
+          href={data?.src || ""}>
+          Download AEP(X)
+        </Button>
+        <Button
           style={{ margin: 10 }}
           disabled={isDeleting}
           variant="outlined"

@@ -208,7 +208,11 @@ export default (props) => {
           <Paper>
             <Grid xs={12} item>
               {state === "finished" ? (
-                <video style={{ height: 320 }} controls src={output} />
+                <video
+                  style={{ height: 320, width: "100%" }}
+                  controls
+                  src={output}
+                />
               ) : (
                 <Box
                   style={{ background: "gainsboro" }}

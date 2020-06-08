@@ -112,6 +112,7 @@ export default ({
       default:
         return (
           <TextField
+            key={"valueInput"}
             fullWidth
             variant="outlined"
             margin="dense"
@@ -141,10 +142,9 @@ export default ({
     const layerProperties = ["scale", "color"];
     const propertiesByType = {
       data: [
-        "Source Text",
+        "Source Text.text",
         "Source Text.font",
         "Source Text.fontSize",
-        "Source Text.fontLocation",
         "Source Text.fillColor",
       ],
       image: ["opacity", "height"],
@@ -237,7 +237,7 @@ export default ({
             </FormControl>
           )}
           {values.type === "data" ? (
-            <>
+            <div>
               <PropertyPicker
                 errors={errors.property}
                 touched={touched.property}
@@ -246,15 +246,22 @@ export default ({
                 handleChange={handleChange}
                 handleBlur={handleBlur}
               />
-              <ValueInput
-                errors={errors.value}
-                touched={touched.value}
+              <TextField
+                key={"valueInput"}
+                fullWidth
+                variant="outlined"
+                margin="dense"
                 value={values.value}
-                type={values.property}
-                handleChange={handleChange}
-                handleBlur={handleBlur}
+                name="value"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                error={touched.value && errors.value}
+                helperText={touched.value && errors.value}
+                type="text"
+                label={"Value"}
+                placeholder={"Enter Value Here"}
               />
-            </>
+            </div>
           ) : (
             <SourceInput
               errors={errors.src}
