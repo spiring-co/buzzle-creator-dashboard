@@ -17,28 +17,32 @@ const uri = `${process.env.REACT_APP_API_URL}/creators/${localStorage.getItem(
 )}/jobs`;
 export default () => {
   const [error, setError] = useState(null);
-  const [progress, setProgress] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
   let history = useHistory();
   let { path } = useRouteMatch();
   const tableRef = useRef(null);
 
   function JobState({ id, state }) {
+    const [status, setStatus] = useState(state)
     const [progress, setProgress] = useState(0);
     useEffect(() => {
       const nsp = io(`http://localhost:8080/${id}%`);
-      nsp.on("progress", setProgress);
-      // return () => io.removeAllListeners();
-    });
+      nsp.on("progress", p => {
+        // to re-render if previously state was created
+        p !== 100 ? setStatus("started") : setStatus("finished")
+        setProgress(p)
+      });
+      return () => status === "finished" ? io.removeAllListeners() : true
+    }, []);
 
-    if (!(state === "started"))
+    if (!(status === "started"))
       return (
         <Chip
           size="small"
-          label={state}
+          label={status}
           style={{
             fontWeight: 700,
-            background: getColorFromState(state),
+            background: getColorFromState(status),
             color: "white",
           }}
         />
@@ -50,7 +54,7 @@ export default () => {
         label={`Rendering ${progress}`}
         style={{
           fontWeight: 700,
-          background: getColorFromState(state),
+          background: getColorFromState('started'),
           color: "white",
         }}
       />
@@ -65,7 +69,6 @@ export default () => {
           children={`Failed to fetch records ${error.message}`}
         />
       )}
-      {progress && <p>{JSON.stringify(progress, null, 2)}</p>}
       <MaterialTable
         tableRef={tableRef}
         title="Your Jobs"
