@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Link, CircularProgress } from "@material-ui/core";
+import { Link, CircularProgress, Typography } from "@material-ui/core";
 import { Delete } from "@material-ui/icons";
 import {
   Link as RouterLink,
@@ -86,6 +86,18 @@ export default (props) => {
           },
           { title: "Last Updated", field: "dateUpdated", type: "datetime" },
         ]}
+        localization={{
+          body: {
+            emptyDataSourceMessage: (
+              <Typography>
+                <Link component={RouterLink} to={`${path}add`}>
+                  Click here
+                </Link>{" "}
+                to create a Video Template😀
+              </Typography>
+            ),
+          },
+        }}
         detailPanel={[
           {
             render: (rowData) => (

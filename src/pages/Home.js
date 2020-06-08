@@ -7,7 +7,7 @@ import {
 } from "@material-ui/icons";
 import Dashboard from "pages/Dashboard";
 import Jobs from "pages/Jobs";
-import Orders from "pages/Orders";
+import Revenue from "pages/Revenue";
 import Profile from "pages/Profile";
 import VideoTemplates from "pages/VideoTemplates";
 import React from "react";
@@ -55,7 +55,7 @@ export default () => {
     {
       text: "Revenue",
       icon: <MonetizationOn />,
-      to: `${url}/orders`,
+      to: `${url}/revenue`,
     },
   ];
 
@@ -68,7 +68,7 @@ export default () => {
           <Route path={`${path}/`} exact component={Dashboard} />
           <Route path={`${path}/profile`} component={Profile} />
           <Route path={`${path}/videoTemplates`} component={VideoTemplates} />
-          <Route path={`${path}/orders`} component={Orders} />
+          <Route path={`${path}/revenue`} component={Revenue} />
           <Route path={`${path}/jobs`} component={Jobs} />
         </Switch>
       </main>

@@ -266,8 +266,8 @@ export default (props) => {
               {
                 icon: "edit",
                 tooltip: "Edit Asset",
-                onClick: () => {
-                  setEditIndex(null);
+                onClick: (e, rowData) => {
+                  setEditIndex(rowData.tableData.id);
                   setIsDialogOpen(true);
                 },
               },
@@ -307,7 +307,7 @@ export default (props) => {
         <AssetDialog
           setIsDialogOpen={setIsDialogOpen}
           editableLayers={videoTemplate?.editableLayers}
-          initialValues={editIndex && job.assets[editIndex]}
+          initialValues={editIndex!==null && job.assets[editIndex]}
           onSubmit={handleAssetSubmit}
         />
       )}

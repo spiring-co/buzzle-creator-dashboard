@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
 const baseUrl = process.env.REACT_APP_API_URL;
-var jwtDecode = require('jwt-decode');
+var jwtDecode = require("jwt-decode");
 export default () => {
   const history = useHistory();
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -24,10 +24,10 @@ export default () => {
     }
     const { token } = await response.json();
     localStorage.setItem("jwtoken", token);
-    var user = jwtDecode(token)
-    // set here decoded info 
+    var user = jwtDecode(token);
+    // set here decoded info
     localStorage.setItem("creatorId", user.id);
-    localStorage.setItem('email', user.email)
+    localStorage.setItem("email", user.email);
     setIsAuthenticated(true);
     return token;
   };
