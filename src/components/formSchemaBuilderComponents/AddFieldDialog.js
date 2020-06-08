@@ -40,7 +40,7 @@ const validationSchema = Yup.object().shape({
 
 export default (props) => {
   const { textLayers = [], imageLayers = [] } = props;
-  console.log(props.initialValue)
+
   const onSubmit = (data) => {
     var { type, label, required, maxLength, layerName, width, height } = data;
     switch (type) {
@@ -82,16 +82,7 @@ export default (props) => {
     handleChange,
   } = useFormik({
     initialValues: props.initialValue
-      ? props.initialValue
-      : {
-        type: "",
-        layerName: "",
-        label: "",
-        required: false,
-        width: 400,
-        height: 400,
-        maxLength: 50,
-      },
+    ,
     validationSchema,
     onSubmit,
   });

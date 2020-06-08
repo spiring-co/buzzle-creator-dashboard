@@ -118,7 +118,7 @@ export default (props) => {
             tooltip: "Render Test Job",
             onClick: (event, rowData) => {
               Job.renderTests(rowData);
-              history.push("/jobs");
+              history.push("/home/jobs");
             },
           },
           {
