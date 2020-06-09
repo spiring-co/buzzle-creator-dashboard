@@ -26,6 +26,7 @@ import { Alert } from "@material-ui/lab";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
+import Branding from "components/Branding";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -99,7 +100,19 @@ export default () => {
         maxWidth={"xs"}>
         <Paper className={classes.content}>
           <CssBaseline />
-          <Typography variant="h4">Sign In</Typography>
+          <Typography
+            variant="h4"
+            style={{
+              textAlign: "center",
+              color: "#747d8c",
+              marginBottom: 16,
+              fontWeight: 800,
+              fontSize: "2.5rem",
+              fontFamily: "Poppins",
+            }}>
+            Buzzle!
+          </Typography>
+          <Typography variant="h6">Sign In</Typography>
           <Typography className={classes.spacedText}>
             Welcome back fam, what&apos;s cooking?{" "}
             <span aria-label="cool" role="img" children="😎" />
@@ -181,6 +194,7 @@ export default () => {
           </Typography>
         </Paper>
       </Container>
+      <Branding dark />
     </Box>
   );
 };

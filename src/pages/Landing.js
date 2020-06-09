@@ -5,22 +5,51 @@ import {
   Typography,
   Box,
   Grid,
-  Paper,
   withStyles,
+  makeStyles,
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
+import Branding from "components/Branding";
 import { useTranslation } from "react-i18next";
 import landingIllustration from "assets/landing.svg";
-import spiring from "assets/spiring.svg";
-const WhiteTypography = withStyles({
-  root: {
-    color: "#FFFFFF",
+
+const HoverHeading = withStyles();
+const useStyles = makeStyles({
+  hoverHighlight: {
+    backgroundImage:
+      "linear-gradient(transparent calc(15% - 5px), #394afa 5px)",
+    backgroundSize: 0,
+    backgroundRepeat: "no-repeat",
+    display: "inline",
+    transition: "0.5s ease",
+    "-webkit-transition": "0.5s ease",
+
+    "&:hover": {
+      color: "white",
+      backgroundSize: "100%",
+    },
   },
-})(Typography);
+  hoverUnderline: {
+    backgroundImage:
+      "linear-gradient(transparent calc(100% - 5px), #394afa 5px)",
+    backgroundSize: 0,
+    backgroundRepeat: "no-repeat",
+    display: "inline",
+    transition: "0.5s ease",
+    "-webkit-transition": "0.5s ease",
+
+    "&:hover": {
+      backgroundSize: "100%",
+    },
+  },
+});
+
 function Landing() {
   const { t } = useTranslation();
+  const classes = useStyles();
   return (
-    <Container>
+    <Box>
+      <Branding />
       <Box
         style={{
           height: "100vh",
@@ -34,7 +63,7 @@ function Landing() {
       />
       <Box
         style={{
-          height: "42vh",
+          height: "30vh",
           width: "100vw",
           zIndex: -999,
           position: "absolute",
@@ -43,34 +72,41 @@ function Landing() {
           background: "#394afa",
         }}
       />
-      <div
-        style={{
-          textAlign: "center",
-          position: "absolute",
-          bottom: 32,
-          left: 0,
-          right: 0,
-          margin: "auto",
-        }}>
-        <img style={{ height: 32 }} src={spiring} />
-        <Typography style={{ color: "white", fontSize: 10 }}>
-          Copyright © 2020 All rights reserved | Pharaoh is a product of spiring
-          designs pvt. ltd.
-        </Typography>
-      </div>
-      <Box mt={8}>
-        <Grid container direction="row">
-          <Grid xs={6} item>
-            <img src={landingIllustration} />
+      <Box>
+        <Grid
+          style={{ alignItems: "stretch", height: "-webkit-fill-available" }}
+          container
+          direction="row">
+          <Grid
+            md={6}
+            sm={12}
+            item
+            style={{ display: "flex", alignItems: "center" }}>
+            <img style={{ width: "100%" }} src={landingIllustration} />
           </Grid>
-          <Grid xs={6} item>
-            <Box mt={16}>
-              <Typography color="" variant="h3">
-                Buzzle!
+          <Grid
+            md={6}
+            sm={12}
+            item
+            style={{ display: "flex", alignItems: "center" }}>
+            <Box mb={4}>
+              <Typography
+                color=""
+                variant="h1"
+                style={{
+                  color: "#2f3542",
+                  marginBottom: 16,
+                  fontWeight: 800,
+                  fontFamily: "Poppins",
+                }}>
+                <span className={classes.hoverHighlight}>Buzzle!</span>
               </Typography>
               <Box mt={2}>
-                <Typography style={{ fontWeight: 700, width: 350 }}>
-                  {t("welcome")}🥳{" "}
+                <Typography
+                  style={{ fontWeight: 700, width: 350, color: "#2f3542" }}>
+                  <span className={classes.hoverUnderline}>
+                    {t("welcome")}🥳
+                  </span>
                 </Typography>
               </Box>
               <Box mt={6}>
@@ -93,7 +129,7 @@ function Landing() {
           </Grid>
         </Grid>
       </Box>
-    </Container>
+    </Box>
   );
 }
 export default Landing;

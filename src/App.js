@@ -17,6 +17,7 @@ import {
   pink,
   indigo,
 } from "@material-ui/core/colors";
+import Branding from "components/Branding";
 
 const theme = createMuiTheme({
   palette: {
@@ -30,7 +31,7 @@ const theme = createMuiTheme({
   },
   typography: {
     fontSize: 14,
-    fontFamily: "Noto Sans",
+    fontFamily: "Noto Sans JP",
     h3: {
       fontWeight: 700,
     },

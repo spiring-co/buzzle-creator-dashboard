@@ -154,8 +154,14 @@ export default function NavBar({ items }) {
             })}>
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" style={{ fontWeight: 700 }} noWrap>
-            PHARAOH
+          <Typography
+            noWrap
+            variant="h5"
+            style={{
+              fontWeight: 800,
+              fontFamily: "Poppins",
+            }}>
+            Buzzle!
           </Typography>
           <div className={classes.menu}>
             <IconButton
