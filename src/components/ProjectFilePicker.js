@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) =>
       padding: theme.spacing(2),
       textAlign: "center",
       justifyContent: "center",
-      marginBottom: theme.spacing(4),
+
     },
     label: {
       display: "flex",
@@ -129,11 +129,11 @@ export default ({ value, onData, name, onTouched, onError }) => {
               />
             </>
           ) : (
-            <>
-              <CircularProgress style={{ margin: 10 }} size={28} />
-              <p>Extracting Layer and compositions ...</p>
-            </>
-          ))}
+              <>
+                <CircularProgress style={{ margin: 10 }} size={28} />
+                <p>Extracting Layer and compositions ...</p>
+              </>
+            ))}
       </div>
     </Container>
   );

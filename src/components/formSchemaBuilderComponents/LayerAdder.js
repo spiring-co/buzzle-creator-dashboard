@@ -8,8 +8,7 @@ export default ({
   activeVersionIndex,
   editVersion,
   compositions,
-  setActiveVersionIndex,
-  openVersionDisplay,
+  onSubmit,
   onBack,
   onCancel
 }) => {
@@ -34,25 +33,17 @@ export default ({
       />
       <div>
         <Button
-          onClick={() => onBack()}
+          onClick={onBack}
           size="small"
           style={{ width: 'fit-content', marginTop: 10 }}
           children="back"
         />
         <Button
-          disabled={usedFields.length === 0}
           style={{ marginTop: 10 }}
           color="primary"
           variant="contained"
-          onClick={() => {
-            if (!editVersion) {
-              setActiveVersionIndex(activeVersionIndex + 1);
-            }
-            openVersionDisplay();
-          }}
-          children={
-            isEdit ? "Save Edits" : editVersion ? "Save Edits" : "Create Version"
-          }
+          onClick={onSubmit}
+          children={"Next"}
         />
       </div>
     </form>

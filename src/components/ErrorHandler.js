@@ -1,25 +1,20 @@
 import React from "react"
 import { Paper, Container, Typography, Button } from "@material-ui/core"
+import { Alert } from "@material-ui/lab";
 
 export default ({ message, showRetry, onRetry }) => {
-    return <Paper style={{
-        height: 300,
-        textAlign: 'center',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center'
-    }}>
-        <Container>
-            <Typography color="secondary">
-                {message}
-            </Typography>
-            {showRetry && <Button
-                style={{ marginTop: 10 }}
-                color="secondary"
-                variant="outlined"
+    return <Alert
+        variant="filled"
+        style={{ marginBottom: 20 }}
+        severity="error"
+        children={message}
+        action={
+            showRetry && <Button
                 onClick={onRetry}
-                children="Retry?" />}
-        </Container>
-    </Paper>
+                color="inherit" size="small">
+                Retry?
+      </Button>
+        }
+    />
 
 }

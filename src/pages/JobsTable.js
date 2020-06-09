@@ -1,11 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Chip, Link, CircularProgress } from "@material-ui/core";
+import { Chip, Link, CircularProgress, Button } from "@material-ui/core";
 import MaterialTable from "material-table";
 import {
   useRouteMatch,
   useHistory,
   Link as RouterLink,
 } from "react-router-dom";
+import ErrorHandler from "components/ErrorHandler";
+
 import { Alert } from "@material-ui/lab";
 import { Delete } from "@material-ui/icons";
 import { Job } from "services/api";
@@ -15,58 +17,68 @@ import io from "socket.io-client";
 const uri = `${process.env.REACT_APP_API_URL}/creators/${localStorage.getItem(
   "creatorId"
 )}/jobs`;
+
+function JobState({ id, state }) {
+
+  const [status, setStatus] = useState(state)
+  const [progress, setProgress] = useState(0);
+  useEffect(() => {
+    const nsp = io(`http://localhost:8080/${id}`);
+    nsp.on("progress", p => {
+      console.log(p)
+      // to re-render if previously state was created
+      setStatus("started")
+      setProgress(p)
+    });
+    nsp.on("finished", () => setStatus("finished"));
+    // return () => status === "finished" ? io.removeAllListeners() : true
+  }, []);
+
+  if (!(status === "started"))
+    return (
+      <Chip
+        size="small"
+        label={status}
+        style={{
+          fontWeight: 700,
+          background: getColorFromState(status),
+          color: "white",
+        }}
+      />
+    );
+
+  return (
+    <Chip
+      size="small"
+      label={`Rendering - ${progress}%`}
+      style={{
+        fontWeight: 700,
+        background: getColorFromState('started'),
+        color: "white",
+      }}
+    />
+  );
+}
+
+
 export default () => {
   const [error, setError] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
   let history = useHistory();
   let { path } = useRouteMatch();
   const tableRef = useRef(null);
-
-  function JobState({ id, state }) {
-    const [status, setStatus] = useState(state)
-    const [progress, setProgress] = useState(0);
-    useEffect(() => {
-      const nsp = io(`http://localhost:8080/${id}%`);
-      nsp.on("progress", p => {
-        // to re-render if previously state was created
-        p !== 100 ? setStatus("started") : setStatus("finished")
-        setProgress(p)
-      });
-      return () => status === "finished" ? io.removeAllListeners() : true
-    }, []);
-
-    if (!(status === "started"))
-      return (
-        <Chip
-          size="small"
-          label={status}
-          style={{
-            fontWeight: 700,
-            background: getColorFromState(status),
-            color: "white",
-          }}
-        />
-      );
-
-    return (
-      <Chip
-        size="small"
-        label={`Rendering ${progress}`}
-        style={{
-          fontWeight: 700,
-          background: getColorFromState('started'),
-          color: "white",
-        }}
-      />
-    );
+  const handleRetry = () => {
+    setError(false)
+    tableRef.current && tableRef.current.onQueryChange()
   }
 
   return (
     <>
       {error && (
-        <Alert
-          severity="error"
-          children={`Failed to fetch records ${error.message}`}
+        <ErrorHandler
+          message={error.message}
+          showRetry={true}
+          onRetry={handleRetry}
         />
       )}
       <MaterialTable
@@ -121,6 +133,13 @@ export default () => {
             render: ({ id, state }) => <JobState id={id} state={state} />,
           },
         ]}
+        localization={{
+          body: {
+            emptyDataSourceMessage: error && <Button
+              onClick={handleRetry}
+              color="secondary" variant="outlined" children={"retry?"} />
+          },
+        }}
         data={(query) =>
           fetch(`${uri}?page=${query.page + 1}&size=${query.pageSize}`, {
             headers: {
@@ -134,6 +153,9 @@ export default () => {
                 setError(new Error(message));
               }
               return { data: jobs, page: query.page, totalCount };
+            }).catch(e => {
+              setError(e)
+              return { data: [], page: query.page, totalCount: 0 }
             })
         }
         actions={[
@@ -142,7 +164,7 @@ export default () => {
             icon: "refresh",
             tooltip: "Refresh Data",
             isFreeAction: true,
-            onClick: () => tableRef.current && tableRef.current.onQueryChange(),
+            onClick: handleRetry,
           },
           {
             icon: "repeat",

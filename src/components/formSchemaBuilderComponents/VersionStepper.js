@@ -9,6 +9,7 @@ export default ({ activeStep, editVersion, renderStep }) => {
     `${editVersion ? "Edit" : "Add"} Version`,
     `${editVersion ? "Edit" : "Add"} Version Meta`,
     `${editVersion ? "Edit" : "Add"} Fields`,
+    `${editVersion ? "Edit" : "Add"} Sample Video`
   ];
   return (
     <Stepper activeStep={activeStep} orientation="vertical">
