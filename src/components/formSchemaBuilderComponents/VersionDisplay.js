@@ -14,7 +14,7 @@ import CompositionPicker from "./CompositionPicker";
 import LayerAdder from "./LayerAdder";
 import VersionMeta from "./VersionMeta";
 import VersionStepper from "./VersionStepper";
-
+import VersionSampleField from "./VersionSampleField"
 export default ({
   isEdit,
   compositions,
@@ -95,9 +95,18 @@ export default ({
             compositions={compositions}
             activeVersionIndex={editVersion ? editIndex : activeVersionIndex}
             setActiveVersionIndex={setActiveVersionIndex}
-            openVersionDisplay={openVersionDisplay}
+            onSubmit={() => setActiveStep(activeStep + 1)}
           />
         );
+      case 3:
+        return <VersionSampleField
+          onBack={() => setActiveStep(activeStep - 1)}
+
+          isEdit={isEdit}
+          editVersion={editVersion}
+          activeVersionIndex={editVersion ? editIndex : activeVersionIndex}
+          setActiveVersionIndex={setActiveVersionIndex}
+          openVersionDisplay={openVersionDisplay} />
       default:
         return;
     }
@@ -121,54 +130,54 @@ export default ({
               </Typography>
             </div>
           ) : (
-            videoObj?.versions?.map((item, index) => {
-              if (index === activeVersionIndex) {
-                return <div></div>;
-              }
+              videoObj?.versions?.map((item, index) => {
+                if (index === activeVersionIndex) {
+                  return <div></div>;
+                }
 
-              if (index === editIndex) {
-                return <div></div>;
-              }
-              return (
-                <Paper key={index} style={{ padding: 10, margin: 10 }}>
-                  <Typography>
-                    <strong>Title: </strong>
-                    {item.title}
-                  </Typography>
-                  <Typography>
-                    <strong>Description: </strong>
-                    {item.description}
-                  </Typography>
-                  <Typography>
-                    <strong>No of fields: </strong>
-                    {item.editableLayers.length}
-                  </Typography>
-                  <Button
-                    size="small"
-                    disabled={activeStep !== 0}
-                    style={{ margin: 8 }}
-                    variant="contained"
-                    color="primary"
-                    onClick={() => openVersionMeta(index, true)}
-                    children="Edit"
-                  />
+                if (index === editIndex) {
+                  return <div></div>;
+                }
+                return (
+                  <Paper key={index} style={{ padding: 10, margin: 10 }}>
+                    <Typography>
+                      <strong>Title: </strong>
+                      {item.title}
+                    </Typography>
+                    <Typography>
+                      <strong>Description: </strong>
+                      {item.description}
+                    </Typography>
+                    <Typography>
+                      <strong>No of fields: </strong>
+                      {item.editableLayers.length}
+                    </Typography>
+                    <Button
+                      size="small"
+                      disabled={activeStep !== 0}
+                      style={{ margin: 8 }}
+                      variant="contained"
+                      color="primary"
+                      onClick={() => openVersionMeta(index, true)}
+                      children="Edit"
+                    />
 
-                  <Button
-                    disabled={activeStep !== 0}
-                    size="small"
-                    style={{ margin: 8 }}
-                    variant="outlined"
-                    color="secondary"
-                    onClick={() => {
-                      setActiveVersionIndex(activeVersionIndex - 1);
-                      removeVersion(index);
-                    }}
-                    children="Delete"
-                  />
-                </Paper>
-              );
-            })
-          )}
+                    <Button
+                      disabled={activeStep !== 0}
+                      size="small"
+                      style={{ margin: 8 }}
+                      variant="outlined"
+                      color="secondary"
+                      onClick={() => {
+                        setActiveVersionIndex(activeVersionIndex - 1);
+                        removeVersion(index);
+                      }}
+                      children="Delete"
+                    />
+                  </Paper>
+                );
+              })
+            )}
         </ExpansionPanelDetails>
       </ExpansionPanel>
 

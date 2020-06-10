@@ -11,8 +11,7 @@ import Revenue from "pages/Revenue";
 import Profile from "pages/Profile";
 import VideoTemplates from "pages/VideoTemplates";
 import React from "react";
-import { Route, Switch, useRouteMatch } from "react-router-dom";
-
+import { Route, Switch, useRouteMatch, Redirect } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
 const useStyles = makeStyles((theme) =>
@@ -70,6 +69,7 @@ export default () => {
           <Route path={`${path}/videoTemplates`} component={VideoTemplates} />
           <Route path={`${path}/revenue`} component={Revenue} />
           <Route path={`${path}/jobs`} component={Jobs} />
+          <Redirect to={"/NotFound"} />
         </Switch>
       </main>
     </div>

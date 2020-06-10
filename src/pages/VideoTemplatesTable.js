@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Link, CircularProgress, Typography } from "@material-ui/core";
+import { Link, CircularProgress, Typography, Button } from "@material-ui/core";
 import { Delete } from "@material-ui/icons";
 import {
   Link as RouterLink,
@@ -43,18 +43,18 @@ export default (props) => {
     props?.location?.state?.statusObj ?? { status: false, err: false }
   );
 
-  if (error) {
-    return (
-      <ErrorHandler
-        message={error.message}
-        showRetry={true}
-        onRetry={() => setError(false)}
-      />
-    );
+  const handleRetry = () => {
+    setError(false)
+    tableRef.current && tableRef.current.onQueryChange()
   }
   let { status, err } = deleteStatus;
   return (
     <>
+      {error && <ErrorHandler
+        message={error.message}
+        showRetry={true}
+        onRetry={handleRetry}
+      />}
       <SnackAlert
         open={err || status}
         type={status ? "success" : "error"}
@@ -88,14 +88,17 @@ export default (props) => {
         ]}
         localization={{
           body: {
-            emptyDataSourceMessage: (
-              <Typography>
-                <Link component={RouterLink} to={`${path}add`}>
-                  Click here
+            emptyDataSourceMessage: error ? <Button
+              onClick={handleRetry
+              }
+              color="secondary" variant="outlined" children={"retry?"} /> : (
+                <Typography>
+                  <Link component={RouterLink} to={`${path}add`}>
+                    Click here
                 </Link>{" "}
                 to create a Video Template😀
-              </Typography>
-            ),
+                </Typography>
+              ),
           },
         }}
         detailPanel={[
@@ -143,7 +146,7 @@ export default (props) => {
             icon: "refresh",
             tooltip: "Refresh Data",
             isFreeAction: true,
-            onClick: () => tableRef.current && tableRef.current.onQueryChange(),
+            onClick: handleRetry,
           },
         ]}
         data={(query) =>
@@ -156,7 +159,14 @@ export default (props) => {
                 totalCount: result.count,
               };
             })
-            .catch((err) => setError(err))
+            .catch((err) => {
+              setError(err)
+              return {
+                data: [],
+                page: query.page,
+                totalCount: 0,
+              };
+            })
         }
         options={{
           pageSize: 10,
