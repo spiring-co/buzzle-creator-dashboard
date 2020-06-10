@@ -1,5 +1,5 @@
 const extractStructureFromFile = async (file) => {
-  const data = new FormData();
+  var data = new FormData();
   data.append("file", file);
 
   const response = await fetch(`${process.env.REACT_APP_AE_SERVICE_URL}/`, {

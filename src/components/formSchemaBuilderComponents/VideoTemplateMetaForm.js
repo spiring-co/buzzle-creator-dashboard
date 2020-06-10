@@ -5,11 +5,11 @@ import { ArrowForward } from "@material-ui/icons";
 import { useFormik } from "formik";
 import React, { useState } from "react";
 import * as Yup from "yup";
-
+import FileUploader from "components/FileUploader";
 const validationSchema = Yup.object({
   title: Yup.string().required("Title is Required"),
   projectFile: Yup.object().required("Project File is required"),
-  thumbnail: Yup.object().required("Thumbnail is required!"),
+  thumbnail: Yup.string().required("Thumbnail is required!"),
 });
 
 export default ({ initialValues = {}, onSubmit }) => {
@@ -46,11 +46,6 @@ export default ({ initialValues = {}, onSubmit }) => {
       setTagInput(value);
     }
   };
-  const handleThumnailUpload = (e) => {
-    // handle setField
-    // not working
-    setFieldValue("thumbnail", e.target.files[0]);
-  };
   const handleDelete = (tagValue) => {
     // delete the tag
     setTags(tags.filter((tag) => tag !== tagValue));
@@ -71,23 +66,16 @@ export default ({ initialValues = {}, onSubmit }) => {
           <FormHelperText error={true}>{errors.projectFile}</FormHelperText>
         )}
       </div>
-      <TextField
-        fullWidth
-        margin={"dense"}
-        variant={"outlined"}
-        onChange={handleThumnailUpload}
-        name={"thumbnail"}
-        type="file"
-        InputLabelProps={{
-          shrink: true,
-        }}
+      <FileUploader
+        fullWidth={true}
+        value={values.thumbnail}
+        onError={(e) => setFieldError(e.message)}
+        onChange={(value) => setFieldValue("thumbnail", value)}
+        fieldName={"thumbnails"}
         label="Template Thumbnail"
-        error={!!errors.thumbnail}
-        helperText={
-          errors.thumbnail
-            ? errors.thumbnail
-            : "Thumbnails are presenters of your template"
-        }
+        onTouched={setFieldTouched}
+        error={touched.thumbnail && errors.thumbnail}
+        helperText={"Thumbnails are presenters of your template"}
       />
       <TextField
         fullWidth
@@ -168,7 +156,7 @@ export default ({ initialValues = {}, onSubmit }) => {
         endIcon={<ArrowForward />}
         color="primary"
         variant="contained"
-        onClick={() => console.log(values.thumbnail)}
+        type="submit"
         children={isSubmitting ? "Loading..." : "Next"}
         disabled={isSubmitting}
       />

@@ -64,18 +64,29 @@ export default ({ value, onData, name, onTouched, onError }) => {
       onTouched(true);
       //TODO generate file name here.
       const { Location: uri } = await upload(
-        "templates/test.aep",
+        `templates/${file.name}`,
         file
       ).promise();
-      const { compositions, staticAssets } = await extractStructureFromFile(
-        uri
-      );
 
+      // un comment it when aeinteract configures extraction using url
+      // const { compositions, staticAssets } = await extractStructureFromFile(
+      //   uri
+      // );
+      var { compositions, staticAssets } = await extractStructureFromFile(file);
+
+      setHasExtractedData(true);
+      onTouched(true);
       if (!compositions)
         throw new Error("Could not extract project structure.");
       setMessage(getCompositionDetails(compositions));
       setHasExtractedData(true);
-      onData({ data: { compositions, staticAssets }, fileUrl: uri });
+      onData({
+        compositions,
+        staticAssets: staticAssets.map((asset) => ({
+          name: asset.substring(asset.lastIndexOf("\\") + 1),
+        })),
+        fileUrl: uri,
+      });
     } catch (error) {
       setHasPickedFile(false);
       setHasExtractedData(false);

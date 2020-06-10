@@ -19,43 +19,43 @@ export function getLayersFromComposition(c, type) {
   } else return [];
 }
 
-// function downloadBlob(blob, filename) {
-//   // Create an object URL for the blob object
-//   const url = URL.createObjectURL(blob);
+function downloadBlob(blob, filename) {
+  // Create an object URL for the blob object
+  const url = URL.createObjectURL(blob);
 
-//   // Create a new anchor element
-//   const a = document.createElement("a");
+  // Create a new anchor element
+  const a = document.createElement("a");
 
-//   // Set the href and download attributes for the anchor element
-//   // You can optionally set other attributes like `title`, etc
-//   // Especially, if the anchor element will be attached to the DOM
-//   a.href = url;
-//   a.download = filename || "download";
+  // Set the href and download attributes for the anchor element
+  // You can optionally set other attributes like `title`, etc
+  // Especially, if the anchor element will be attached to the DOM
+  a.href = url;
+  a.download = filename || "download";
 
-//   // Click handler that releases the object URL after the element has been clicked
-//   // This is required for one-off downloads of the blob content
-//   const clickHandler = () => {
-//     setTimeout(() => {
-//       URL.revokeObjectURL(url);
-//       a.removeEventListener("click", clickHandler);
-//     }, 150);
-//   };
+  // Click handler that releases the object URL after the element has been clicked
+  // This is required for one-off downloads of the blob content
+  const clickHandler = () => {
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+      a.removeEventListener("click", clickHandler);
+    }, 150);
+  };
 
-//   // Add the click event listener on the anchor element
-//   // Comment out this line if you don't want a one-off download of the blob content
-//   a.addEventListener("click", clickHandler, false);
+  // Add the click event listener on the anchor element
+  // Comment out this line if you don't want a one-off download of the blob content
+  a.addEventListener("click", clickHandler, false);
 
-//   // Programmatically trigger a click on the anchor element
-//   // Useful if you want the download to happen automatically
-//   // Without attaching the anchor element to the DOM
-//   // Comment out this line if you don't want an automatic download of the blob content
-//   a.click();
+  // Programmatically trigger a click on the anchor element
+  // Useful if you want the download to happen automatically
+  // Without attaching the anchor element to the DOM
+  // Comment out this line if you don't want an automatic download of the blob content
+  a.click();
 
-//   // Return the anchor element
-//   // Useful if you want a reference to the element
-//   // in order to attach it to the DOM or use it in some other way
-//   return a;
-// }
+  // Return the anchor element
+  // Useful if you want a reference to the element
+  // in order to attach it to the DOM or use it in some other way
+  return a;
+}
 
 export async function zipMaker(assets) {
   try {
@@ -63,34 +63,9 @@ export async function zipMaker(assets) {
       zip.file(`${item.name}`, item);
     });
 
-    return await zip
+    return new Promise((resolve, reject) => zip
       .generateAsync({ type: "blob" })
-      .then(async function (blob) {
-        // TODO S3 upload here instead of download and return the uri from s3
-        // set uri
-        // downloadBlob(blob, "assets.zip");
-        const data = new FormData();
-        data.append("file", blob);
-        const response = await fetch(
-          "https://infinite-atoll-19947.herokuapp.com/upload_file",
-          {
-            method: "POST",
-            mode: "no-cors",
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-            },
-            body: data,
-          }
-        );
-        const result = await response.text();
-        console.log(result);
-        console.log(result);
-        if (response.ok) {
-          return result;
-        }
-        throw new Error(result);
-      });
+      .then(blob => resolve(blob)).catch(reject))
   } catch (err) {
     throw new Error(err);
   }

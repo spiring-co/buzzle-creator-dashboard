@@ -12,6 +12,8 @@ import useActions from "contextStore/actions";
 import { VideoTemplateContext } from "contextStore/store";
 import { zipMaker } from "services/helper";
 import { ArrowBack } from "@material-ui/icons";
+import upload from "services/s3Upload";
+
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -31,6 +33,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 export default function AssetUpload({
+  staticAssets,
   setActiveDisplayIndex,
   isSubmitting,
   submitError,
@@ -47,13 +50,10 @@ export default function AssetUpload({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const { editVideoKeys } = useActions();
-
+  const [progress, setProgress] = useState(0)
   useEffect(() => {
     //sets asset array retrieve it from composition
-    setAssetsArray([
-      { type: "image", name: "banner.png" },
-      { type: "audio", name: "background.mp4" },
-    ]);
+    setAssetsArray(staticAssets);
   }, []);
 
   useEffect(() => {
@@ -90,7 +90,6 @@ export default function AssetUpload({
             setAssets={setAssets}
             assets={assets}
             uploadType={uploadType}
-            accept={asset.type}
             uploadFileName={asset.name}
           />
         ))}
@@ -109,9 +108,17 @@ export default function AssetUpload({
         assetNames.includes(name.toLowerCase())
       );
       // call zipMaker and upload it to s3 get the uri
-      const uri = await zipMaker(newAssets);
+      const zipBlob = await zipMaker(newAssets);
+
+      //TODO blob not uploading fine
+      const task = upload(
+        `staticAssets/${Date.now}.zip`,
+        zipBlob
+      )
+      task.on('httpUploadProgress', ({ loaded, total }) => setProgress(`${parseInt(loaded * 100 / total)}%`))
+      const { Location: uri } = await task.promise()
       console.log(uri);
-      // save this uri to global State
+      // // save this uri to global State
       editVideoKeys({ assetsUri: uri });
 
       setLoading(false);
@@ -158,7 +165,7 @@ export default function AssetUpload({
   if (loading) {
     return (
       <div className={classes.container}>
-        <h4>Uploading Assets...</h4>
+        <h4>Uploading Assets - {progress}%</h4>
       </div>
     );
   }
@@ -211,7 +218,7 @@ export default function AssetUpload({
         />
         <Button
           endIcon={isSubmitting && <CircularProgress color="white" size={15} />}
-          disabled={isSubmitting}
+          disabled={isSubmitting || !videoObj.assetsUri}
           style={{ margin: 10 }}
           color={submitError ? "secondary" : "primary"}
           variant={submitError ? "outlined" : "contained"}

@@ -1,8 +1,8 @@
 import React, { useState, useContext, useEffect } from "react";
-import LayerBuilder from "components/formSchemaBuilderComponents/LayerBuilder";
 import { Button, TextField } from "@material-ui/core";
 import { VideoTemplateContext } from "contextStore/store";
 import useActions from "contextStore/actions";
+import FileUploader from 'components/FileUploader'
 
 export default ({
     isEdit,
@@ -13,6 +13,7 @@ export default ({
     onBack,
     onCancel
 }) => {
+    const [error, setError] = useState(null)
     const [videoObj] = useContext(VideoTemplateContext);
     const { editversionKeys } = useActions()
     return (
@@ -20,18 +21,22 @@ export default ({
             onSubmit={(e) => {
                 e.preventDefault();
             }}>
-            <TextField
-                margin={"dense"}
-                variant={"outlined"}
-                type="file"
-                onChange={e => editversionKeys(activeVersionIndex, {
-                    sample: e.target.files[0]
+            <FileUploader
+                fullWidth={false}
+                value={videoObj?.versions[activeVersionIndex]?.sample}
+                onError={(e) => setError(e.message)}
+                onChange={url => editversionKeys(activeVersionIndex, {
+                    sample: url
                 })}
-                InputLabelProps={{
-                    shrink: true,
-                }}
+                fieldName={"samples"}
                 label="Version Sample Video"
+                onTouched={() => setError(null)}
+                error={error}
+                helperText={
+                    "Sample Video of your template should be specific to version you are creating."
+                }
             />
+
             <div>
                 <Button
                     onClick={() => onBack()}
