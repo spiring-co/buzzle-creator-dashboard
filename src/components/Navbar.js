@@ -156,8 +156,12 @@ export default function NavBar({ items }) {
           </IconButton>
           <Typography
             noWrap
+            component={RouterLink}
+            to="/home"
             variant="h5"
             style={{
+              textDecoration: "none",
+              color: "white",
               fontWeight: 800,
               fontFamily: "Poppins",
             }}>

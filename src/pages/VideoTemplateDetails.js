@@ -28,7 +28,9 @@ export default () => {
 
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState(null);
-  const { data, loading, err } = useApi(`/videoTemplates/${id}`);
+  const { data, loading, err } = useApi(
+    `${process.env.REACT_APP_API_URL}/videoTemplates/${id}`
+  );
 
   const handleEdit = async () => {
     history.push({

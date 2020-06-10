@@ -17,7 +17,7 @@ export default (url, fetchOptions = {}, type = "json") => {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch(baseUrl + url, { ...fetchOptions, signal });
+      const response = await fetch(url, { ...fetchOptions, signal });
 
       response.ok
         ? setData(await response.json())

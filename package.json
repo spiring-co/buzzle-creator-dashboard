@@ -24,6 +24,7 @@
     "react-json-view": "^1.19.1",
     "react-router-dom": "^5.1.2",
     "socket.io-client": "^2.3.0",
+    "timeago.js": "^4.0.2",
     "yup": "^0.28.3"
   },
   "scripts": {

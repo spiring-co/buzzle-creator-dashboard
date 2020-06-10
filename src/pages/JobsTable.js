@@ -8,66 +8,59 @@ import {
 } from "react-router-dom";
 import ErrorHandler from "components/ErrorHandler";
 
-import { Alert } from "@material-ui/lab";
 import { Delete } from "@material-ui/icons";
 import { Job } from "services/api";
 import ReactJson from "react-json-view";
 import io from "socket.io-client";
+import * as timeago from "timeago.js";
+
 const uri = `${process.env.REACT_APP_API_URL}/creators/${localStorage.getItem(
   "creatorId"
 )}/jobs`;
 
-function JobState({ id, state }) {
-  const [status, setStatus] = useState(state);
-  const [progress, setProgress] = useState(0);
-  useEffect(() => {
-    const nsp = io(`http://localhost:8080/${id}`);
-    nsp.on("progress", (p) => {
-      console.log(p);
-      // to re-render if previously state was created
-      setStatus("started");
-      setProgress(p);
-    });
-    nsp.on("finished", () => setStatus("finished"));
-    // return () => status === "finished" ? io.removeAllListeners() : true
-  }, []);
-
-  if (!(status === "started"))
-    return (
-      <Chip
-        size="small"
-        label={status}
-        style={{
-          fontWeight: 700,
-          background: getColorFromState(status),
-          color: "white",
-        }}
-      />
-    );
-
-  return (
-    <Chip
-      size="small"
-      label={`Rendering - ${progress}%`}
-      style={{
-        fontWeight: 700,
-        background: getColorFromState("started"),
-        color: "white",
-      }}
-    />
-  );
-}
-
 export default () => {
   const [error, setError] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [socket, setSocket] = useState(null);
+  const [rtProgressData, setRtProgressData] = useState({});
+  // should do this with tableRef if possible
+  const [jobIds, setJobIds] = useState([]);
   let history = useHistory();
   let { path } = useRouteMatch();
+
   const tableRef = useRef(null);
   const handleRetry = () => {
     setError(false);
     tableRef.current && tableRef.current.onQueryChange();
   };
+
+  useEffect(() => {
+    setSocket(io.connect(`http://localhost:8080`));
+    return () => {
+      io.disconnect();
+    };
+  }, []);
+
+  function subscribeToProgress(id) {
+    if (!socket) return;
+    console.log("Listening for " + id);
+    socket.on(id, (data) =>
+      setRtProgressData({ ...rtProgressData, [id]: data })
+    );
+  }
+
+  function unsubscribeFromProgress() {
+    if (!socket) return;
+    jobIds.map(socket.off);
+  }
+
+  useEffect(() => {
+    jobIds.map(subscribeToProgress);
+
+    return () => {
+      unsubscribeFromProgress();
+    };
+  }, [jobIds]);
 
   return (
     <>
@@ -123,11 +116,33 @@ export default () => {
             field: "idVideoTemplate",
           },
           { title: "Version Id", field: "idVersion" },
-          { title: "Created At", field: "dateCreated", type: "datetime" },
+          {
+            title: "Created",
+            field: "dateCreated",
+            type: "datetime",
+            render: ({ dateCreated }) => (
+              <p>{timeago.format(new Date(dateCreated))}</p>
+            ),
+          },
           {
             title: "State",
             field: "state",
-            render: ({ id, state }) => <JobState id={id} state={state} />,
+            render: function ({ id, state }) {
+              state = rtProgressData[id]?.state || state;
+              let percent = rtProgressData[id]?.percent;
+              return (
+                <Chip
+                  size="small"
+                  label={`${state}${percent ? " " + percent + "%" : ""}`}
+                  style={{
+                    transition: "background-color 0.5s ease",
+                    fontWeight: 700,
+                    background: getColorFromState(state, percent),
+                    color: "white",
+                  }}
+                />
+              );
+            },
           },
         ]}
         localization={{
@@ -154,6 +169,8 @@ export default () => {
               if (message) {
                 setError(new Error(message));
               }
+
+              setJobIds(jobs.map(({ id }) => id));
               return { data: jobs, page: query.page, totalCount };
             })
             .catch((e) => {
@@ -206,12 +223,16 @@ export default () => {
   );
 };
 
-const getColorFromState = (state) => {
+const getColorFromState = (state, percent) => {
   switch (state) {
     case "finished":
       return "#4caf50";
     case "error":
       return "#f44336";
+    case "started":
+      return "#ffa502";
+    case "rendering":
+      return `linear-gradient(90deg, #4caf50 ${percent}%, grey ${percent}%)`;
     default:
       return "grey";
   }

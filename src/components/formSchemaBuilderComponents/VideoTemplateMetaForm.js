@@ -9,7 +9,7 @@ import * as Yup from "yup";
 const validationSchema = Yup.object({
   title: Yup.string().required("Title is Required"),
   projectFile: Yup.object().required("Project File is required"),
-  thumbnail: Yup.object().required("Thumbnail is required!")
+  thumbnail: Yup.object().required("Thumbnail is required!"),
 });
 
 export default ({ initialValues = {}, onSubmit }) => {
@@ -49,28 +49,14 @@ export default ({ initialValues = {}, onSubmit }) => {
   const handleThumnailUpload = (e) => {
     // handle setField
     // not working
-    setFieldValue("thumbnail", e.target.files[0])
-  }
+    setFieldValue("thumbnail", e.target.files[0]);
+  };
   const handleDelete = (tagValue) => {
     // delete the tag
     setTags(tags.filter((tag) => tag !== tagValue));
   };
   return (
     <form onSubmit={handleSubmit} noValidate>
-<<<<<<< HEAD
-      <ProjectFilePicker
-        as={ProjectFilePicker}
-        onData={(f) => setFieldValue("projectFile", f)}
-        onError={(e) => setFieldError("projectFile", e)}
-        onTouched={(e) => setFieldTouched("projectFile", e)}
-        value={values.projectFile}
-        name={"projectFile"}
-        placeholder="Pick or drop project file"
-      />
-      {touched.projectFile && errors.projectFile && (
-        <FormHelperText error>Error: {errors.projectFile}</FormHelperText>
-      )}
-=======
       <div style={{ marginBottom: 20 }}>
         <ProjectFilePicker
           as={ProjectFilePicker}
@@ -81,7 +67,9 @@ export default ({ initialValues = {}, onSubmit }) => {
           name={"projectFile"}
           placeholder="Pick or drop project file"
         />
-        {errors.projectFile && <FormHelperText error={true}>{errors.projectFile}</FormHelperText>}
+        {errors.projectFile && (
+          <FormHelperText error={true}>{errors.projectFile}</FormHelperText>
+        )}
       </div>
       <TextField
         fullWidth
@@ -101,7 +89,6 @@ export default ({ initialValues = {}, onSubmit }) => {
             : "Thumbnails are presenters of your template"
         }
       />
->>>>>>> b49067f4e00b71cb1cc7ffc831a5e2a177c0cfa9
       <TextField
         fullWidth
         margin={"dense"}
