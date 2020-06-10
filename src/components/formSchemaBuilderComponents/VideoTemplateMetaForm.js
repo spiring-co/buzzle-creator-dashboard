@@ -1,4 +1,4 @@
-import { Button, TextField, Chip } from "@material-ui/core";
+import { Button, TextField, Chip, FormHelperText } from "@material-ui/core";
 import ProjectFilePicker from "components/ProjectFilePicker";
 
 import { ArrowForward } from "@material-ui/icons";
@@ -55,13 +55,15 @@ export default ({ initialValues = {}, onSubmit }) => {
       <ProjectFilePicker
         as={ProjectFilePicker}
         onData={(f) => setFieldValue("projectFile", f)}
-        onError={(e) => setFieldError(e.message)}
-        onTouched={setFieldTouched}
+        onError={(e) => setFieldError("projectFile", e)}
+        onTouched={(e) => setFieldTouched("projectFile", e)}
         value={values.projectFile}
         name={"projectFile"}
         placeholder="Pick or drop project file"
       />
-
+      {touched.projectFile && errors.projectFile && (
+        <FormHelperText error>Error: {errors.projectFile}</FormHelperText>
+      )}
       <TextField
         fullWidth
         margin={"dense"}

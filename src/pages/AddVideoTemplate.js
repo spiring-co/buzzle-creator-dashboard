@@ -1,87 +1,49 @@
-import FormBuilder from "components/formSchemaBuilderComponents/FormBuilder";
-import { StateProvider } from "contextStore/store";
 import React, { useState } from "react";
+import { StateProvider } from "contextStore/store";
+
+import FormBuilder from "components/formSchemaBuilderComponents/FormBuilder";
 import { Prompt, useHistory } from "react-router-dom";
+import { VideoTemplate } from "services/api";
+import { Alert } from "@material-ui/lab";
 
+export default ({ location }) => {
+  const [isBlocking, setIsBlocking] = useState(true);
+  const [error, setError] = useState(null);
 
-export default (props) => {
-  const [isBlocking, setIsBlocking] = React.useState(true);
-  const [error, setError] = React.useState(null);
-  const [status, setStatus] = useState(false)
-  const { video } = props?.location?.state ?? {};
+  const { video, isEdit } = location?.state ?? {};
 
-  const isEdit = props?.location?.state?.isEdit ?? false;
   const history = useHistory();
 
-  const handleEditForm = async (data) => {
-    console.log(data);
-    var action = window.confirm("Are you sure, you want to save changes");
-    if (action) {
-      try {
-        const response = await fetch(
-          process.env.REACT_APP_API_URL + `/videoTemplates/${data.id}`,
-          {
-            method: "PUT",
-            body: JSON.stringify(data),
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-              Authorization: `bearer ${localStorage.getItem("jwtoken")}`,
-            },
-          }
-        );
-        if (response.ok) {
-          setStatus(true)
-          setIsBlocking(false);
-          history.push({
-            pathname: `/home/videoTemplates/${data.id}`,
-            state: { statusObj: { status: { message: "Video Template Edited Successfully." }, err: false } }
-          });
-        } else {
-          setError(await response.text())
-        }
-      } catch (err) {
-        throw new Error(err)
-      }
-    }
-  };
-  const handleSubmitForm = async (data) => {
+  const handleSubmit = async (data) => {
     try {
-      const response = await fetch(
-        process.env.REACT_APP_API_URL + `/videoTemplates`,
-        {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
+      isEdit
+        ? await VideoTemplate.update(data.id, data)
+        : await VideoTemplate.create(data);
+
+      setIsBlocking(false);
+      history.push({
+        pathname: "/home/videoTemplates",
+        state: {
+          statusObj: {
+            status: {
+              message: `Video Template ${
+                isEdit ? "Edited" : "Added"
+              } Successfully.`,
+            },
+            err: false,
           },
-          body: JSON.stringify(data),
-        }
-      );
-      if (response.ok) {
-        setStatus(true)
-        setIsBlocking(false);
-        history.push({
-          pathname: "/home/videoTemplates",
-          state: { statusObj: { status: { message: "Video Template Created  Successfully." }, err: false } }
-        });
-      } else {
-        setError(await response.text())
-      }
+        },
+      });
     } catch (err) {
-      throw new Error(err)
+      setError(err);
     }
   };
 
   return (
     <StateProvider>
-
+      {error && <Alert severity="error" children={error.message} />}
       <Prompt when={isBlocking} message={`You will lose all your data.`} />
-      <FormBuilder
-        isEdit={isEdit}
-        video={video}
-        submitForm={isEdit ? handleEditForm : handleSubmitForm}
-      />
+      <FormBuilder isEdit={isEdit} video={video} submitForm={handleSubmit} />
     </StateProvider>
   );
 };

@@ -26,10 +26,10 @@ export default function FontUploader({ fontName, fontStatus }) {
     try {
       setError(null);
       setLoading(true);
-      var data = new FormData();
+      const data = new FormData();
       data.append("file", e.target.files[0]);
 
-      // var response = await fetch(
+      // const response = await fetch(
       //   "https://infinite-atoll-19947.herokuapp.com/upload_file",
       //   {
       //     mode: "no-cors",
@@ -39,7 +39,7 @@ export default function FontUploader({ fontName, fontStatus }) {
       //   }
       // );
 
-      // var result = await response.text();
+      // const result = await response.text();
       // console.log(result);
       // if (response.ok) {
       //   editVideoKeys({
@@ -69,8 +69,7 @@ export default function FontUploader({ fontName, fontStatus }) {
         <p style={{ color: "green" }}>Success</p>
       ) : (
         <label
-          style={{ padding: 5, border: "1px solid black", borderRadius: 10 }}
-        >
+          style={{ padding: 5, border: "1px solid black", borderRadius: 10 }}>
           Upload Font
           <input
             id={fontName}

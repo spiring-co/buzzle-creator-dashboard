@@ -1,5 +1,5 @@
-var JSZip = require("jszip");
-var zip = new JSZip();
+const JSZip = require("jszip");
+const zip = new JSZip();
 
 export function getLayersFromComposition(c, type) {
   if (!c) return [];
@@ -69,9 +69,9 @@ export async function zipMaker(assets) {
         // TODO S3 upload here instead of download and return the uri from s3
         // set uri
         // downloadBlob(blob, "assets.zip");
-        var data = new FormData();
+        const data = new FormData();
         data.append("file", blob);
-        var response = await fetch(
+        const response = await fetch(
           "https://infinite-atoll-19947.herokuapp.com/upload_file",
           {
             method: "POST",
@@ -83,7 +83,7 @@ export async function zipMaker(assets) {
             body: data,
           }
         );
-        var result = await response.text();
+        const result = await response.text();
         console.log(result);
         console.log(result);
         if (response.ok) {
@@ -103,35 +103,33 @@ export async function s3FileReader(fileUrl) {
 }
 
 export const jobSchemaConstructor = (template) => {
-
-  return template.versions.map(version => {
-    return ({
+  return template.versions.map((version) => {
+    return {
       idVideoTemplate: template.id,
       idVersion: version.id,
 
       assets: (function () {
-        return version.editableLayers.map(layer => {
+        return version.editableLayers.map((layer) => {
           switch (layer.type) {
-            case 'data':
-              return ({
+            case "data":
+              return {
                 type: layer.type,
                 value: layer.label,
                 layerName: layer.layerName,
-                property: 'Source Text',
-              })
-            case 'image':
-              return ({
+                property: "Source Text",
+              };
+            case "image":
+              return {
                 type: layer.type,
                 layerName: layer.layerName,
                 src: `https://dummyimage.com/${layer.width}x${layer.height}/0011ff/fff`,
                 extension: "png",
-              })
+              };
             default:
               return;
           }
-        })
-      })()
-    })
-  })
-
-}
+        });
+      })(),
+    };
+  });
+};

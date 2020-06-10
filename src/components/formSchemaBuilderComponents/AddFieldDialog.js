@@ -42,7 +42,7 @@ export default (props) => {
   const { textLayers = [], imageLayers = [] } = props;
 
   const onSubmit = (data) => {
-    var { type, label, required, maxLength, layerName, width, height } = data;
+    const { type, label, required, maxLength, layerName, width, height } = data;
     switch (type) {
       case "data":
         props.editField

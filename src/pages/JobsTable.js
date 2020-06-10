@@ -11,50 +11,23 @@ import { Delete } from "@material-ui/icons";
 import { Job } from "services/api";
 import ReactJson from "react-json-view";
 import io from "socket.io-client";
-
 const uri = `${process.env.REACT_APP_API_URL}/creators/${localStorage.getItem(
   "creatorId"
 )}/jobs`;
 export default () => {
   const [error, setError] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  let history = useHistory();
   let { path } = useRouteMatch();
   const tableRef = useRef(null);
 
   function JobState({ id, state }) {
-    const [status, setStatus] = useState(state)
-    const [progress, setProgress] = useState(0);
-    useEffect(() => {
-      const nsp = io(`http://localhost:8080/${id}%`);
-      nsp.on("progress", p => {
-        // to re-render if previously state was created
-        p !== 100 ? setStatus("started") : setStatus("finished")
-        setProgress(p)
-      });
-      return () => status === "finished" ? io.removeAllListeners() : true
-    }, []);
-
-    if (!(status === "started"))
-      return (
-        <Chip
-          size="small"
-          label={status}
-          style={{
-            fontWeight: 700,
-            background: getColorFromState(status),
-            color: "white",
-          }}
-        />
-      );
-
     return (
       <Chip
         size="small"
-        label={`Rendering ${progress}`}
+        label={state}
         style={{
           fontWeight: 700,
-          background: getColorFromState('started'),
+          background: getColorFromState("started"),
           color: "white",
         }}
       />

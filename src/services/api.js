@@ -68,7 +68,15 @@ export const Job = {
 export const VideoTemplate = {
   get: async () => {},
   create: async () => {},
-  update: async () => {},
+  update: async (id, data) => {
+    const response = await fetch(`${baseUrl}/videoTemplates/${id}`, {
+      method: "PUT",
+      headers,
+      body: data,
+    });
+    if (!response.ok) throw new Error((await response.json()).message);
+    return await response.json();
+  },
 
   delete: async (id) => {
     const response = await fetch(`${baseUrl}/videoTemplates/${id}`, {

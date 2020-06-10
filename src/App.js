@@ -81,6 +81,7 @@ export default () => {
           <PrivateRoute>
             <Route path="/home" component={Home} />
           </PrivateRoute>
+          {/* <Route path="/" component={NotFound} /> */}
         </Switch>
       </Router>
     </MuiThemeProvider>

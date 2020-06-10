@@ -1,6 +1,6 @@
+import React, { useContext, useState, useEffect } from "react";
 import useActions from "contextStore/actions";
 import { VideoTemplateContext } from "contextStore/store";
-import React, { useContext, useState, useEffect } from "react";
 
 import SnackAlert from "components/SnackAlert";
 import AssetUpload from "./AssetUpload";
@@ -16,7 +16,7 @@ export default ({ submitForm, isEdit, video }) => {
   const [loading, setLoading] = useState(false);
   const [activeDisplayIndex, setActiveDisplayIndex] = useState(0);
   const [compositions, setCompositions] = useState([]);
-  const [error, setError] = useState(null)
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (isEdit) {
@@ -28,13 +28,13 @@ export default ({ submitForm, isEdit, video }) => {
 
   const handleSubmitForm = async () => {
     try {
-      setError(null)
-      setLoading(true)
+      setError(null);
+      setLoading(true);
       await submitForm(videoObj);
-      setLoading(false)
+      setLoading(false);
     } catch (err) {
-      setLoading(false)
-      setError(err)
+      setLoading(false);
+      setError(err);
     }
   };
 
@@ -83,12 +83,15 @@ export default ({ submitForm, isEdit, video }) => {
   return (
     <>
       <SnackAlert
-        message={error?.message ?? "Oop's, something went wrong, action failed !"}
+        message={
+          error?.message ?? "Oop's, something went wrong, action failed !"
+        }
         open={error}
         onClose={() => {
-          setError(false)
+          setError(false);
         }}
-        type={"error"} />
+        type={"error"}
+      />
       <FormStepper activeDisplayIndex={activeDisplayIndex} />
       <Paper elevation={2} style={{ padding: 32 }}>
         {Steps[Object.keys(Steps)[activeDisplayIndex]]}
