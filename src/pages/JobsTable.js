@@ -13,22 +13,20 @@ import { Delete } from "@material-ui/icons";
 import { Job } from "services/api";
 import ReactJson from "react-json-view";
 import io from "socket.io-client";
-
 const uri = `${process.env.REACT_APP_API_URL}/creators/${localStorage.getItem(
   "creatorId"
 )}/jobs`;
 
 function JobState({ id, state }) {
-
-  const [status, setStatus] = useState(state)
+  const [status, setStatus] = useState(state);
   const [progress, setProgress] = useState(0);
   useEffect(() => {
     const nsp = io(`http://localhost:8080/${id}`);
-    nsp.on("progress", p => {
-      console.log(p)
+    nsp.on("progress", (p) => {
+      console.log(p);
       // to re-render if previously state was created
-      setStatus("started")
-      setProgress(p)
+      setStatus("started");
+      setProgress(p);
     });
     nsp.on("finished", () => setStatus("finished"));
     // return () => status === "finished" ? io.removeAllListeners() : true
@@ -53,13 +51,12 @@ function JobState({ id, state }) {
       label={`Rendering - ${progress}%`}
       style={{
         fontWeight: 700,
-        background: getColorFromState('started'),
+        background: getColorFromState("started"),
         color: "white",
       }}
     />
   );
 }
-
 
 export default () => {
   const [error, setError] = useState(null);
@@ -68,9 +65,9 @@ export default () => {
   let { path } = useRouteMatch();
   const tableRef = useRef(null);
   const handleRetry = () => {
-    setError(false)
-    tableRef.current && tableRef.current.onQueryChange()
-  }
+    setError(false);
+    tableRef.current && tableRef.current.onQueryChange();
+  };
 
   return (
     <>
@@ -135,9 +132,14 @@ export default () => {
         ]}
         localization={{
           body: {
-            emptyDataSourceMessage: error && <Button
-              onClick={handleRetry}
-              color="secondary" variant="outlined" children={"retry?"} />
+            emptyDataSourceMessage: error && (
+              <Button
+                onClick={handleRetry}
+                color="secondary"
+                variant="outlined"
+                children={"retry?"}
+              />
+            ),
           },
         }}
         data={(query) =>
@@ -153,9 +155,10 @@ export default () => {
                 setError(new Error(message));
               }
               return { data: jobs, page: query.page, totalCount };
-            }).catch(e => {
-              setError(e)
-              return { data: [], page: query.page, totalCount: 0 }
+            })
+            .catch((e) => {
+              setError(e);
+              return { data: [], page: query.page, totalCount: 0 };
             })
         }
         actions={[

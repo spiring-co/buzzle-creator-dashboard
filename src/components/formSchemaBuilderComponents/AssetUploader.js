@@ -3,7 +3,6 @@ import React, { useState } from "react";
 export default function AssetUploader({
   uploadType,
   uploadFileName,
-  accept,
   assets,
   setAssets,
   assetsUri,
@@ -12,10 +11,13 @@ export default function AssetUploader({
   const [result, setResult] = useState(Boolean(assetsUri));
 
   const handleAssetUpload = (e) => {
+
     setLoading(true);
     if (uploadType === "folder") {
+
       setAssets(Object.assign([], e.target.files));
     } else {
+
       setAssets([...assets, ...e.target.files]);
     }
     setLoading(false);
@@ -44,30 +46,30 @@ export default function AssetUploader({
       ) : result ? (
         <p style={{ color: "green" }}>Success</p>
       ) : (
-        <label
-          style={{ padding: 5, border: "1px solid black", borderRadius: 10 }}
-        >
-          Upload Asset
-          {uploadType === "folder" ? (
-            <input
-              style={{ display: "none" }}
-              type="file"
-              name={uploadFileName}
-              webkitdirectory=""
-              mozdirectory=""
-              onChange={handleAssetUpload}
-            />
-          ) : (
-            <input
-              style={{ display: "none" }}
-              type="file"
-              accept={`${accept}/*`}
-              name={uploadFileName}
-              onChange={handleAssetUpload}
-            />
+            <label
+              style={{ padding: 5, border: "1px solid black", borderRadius: 10 }}
+            >
+              Upload Asset
+              {uploadType === "folder" ? (
+                <input
+                  style={{ display: "none" }}
+                  type="file"
+                  name={uploadFileName}
+                  webkitdirectory=""
+                  mozdirectory=""
+                  onChange={handleAssetUpload}
+                />
+              ) : (
+                  <input
+                    style={{ display: "none" }}
+                    type="file"
+
+                    name={uploadFileName}
+                    onChange={handleAssetUpload}
+                  />
+                )}
+            </label>
           )}
-        </label>
-      )}
     </div>
   );
 }

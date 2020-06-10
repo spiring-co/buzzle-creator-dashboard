@@ -9,7 +9,7 @@ import Login from "pages/Login";
 import Landing from "pages/Landing";
 import Register from "pages/Register";
 import ForgotPassword from "pages/ForgotPassword";
-import NotFoundPage from "pages/NotFoundPage"
+import NotFoundPage from "pages/NotFoundPage";
 import {
   purple,
   deepPurple,
@@ -80,7 +80,6 @@ export default () => {
           <Route path="/forgotPassword" component={ForgotPassword} />
           <PrivateRoute path="/home" component={Home} />
           <Route path="*" component={NotFoundPage} />
-
         </Switch>
       </Router>
     </MuiThemeProvider>

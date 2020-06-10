@@ -1,6 +1,6 @@
+import React, { useContext, useState, useEffect } from "react";
 import useActions from "contextStore/actions";
 import { VideoTemplateContext } from "contextStore/store";
-import React, { useContext, useState, useEffect } from "react";
 
 import SnackAlert from "components/SnackAlert";
 import AssetUpload from "./AssetUpload";
@@ -14,10 +14,10 @@ export default ({ submitForm, isEdit, video }) => {
   const [videoObj] = useContext(VideoTemplateContext);
   const { resetVideo, editVideoKeys, loadVideo } = useActions();
   const [loading, setLoading] = useState(false);
-  const [activeDisplayIndex, setActiveDisplayIndex] = useState(0);
+  const [activeDisplayIndex, setActiveDisplayIndex] = useState(3);
   const [compositions, setCompositions] = useState([]);
   const [error, setError] = useState(null)
-  const [assets, setAssets] = useState([])
+  const [assets, setAssets] = useState([{ name: "watermakred.mp4" }])
   useEffect(() => {
     if (isEdit) {
       loadVideo(video);
@@ -28,19 +28,19 @@ export default ({ submitForm, isEdit, video }) => {
 
   const handleSubmitForm = async () => {
     try {
-      setError(null)
-      setLoading(true)
+      setError(null);
+      setLoading(true);
       await submitForm(videoObj);
-      setLoading(false)
+      setLoading(false);
     } catch (err) {
-      setLoading(false)
-      setError(err)
+      setLoading(false);
+      setError(err);
     }
   };
 
   const handleVideoTemplateMetaSubmit = async (data) => {
-    const { tags, title, description, fileUrl = "", staticAssets = [], compositions = [] } = data;
-
+    const { tags, title, description, projectFile: { fileUrl = "", staticAssets = [], compositions = [] } } = data;
+    console.log(staticAssets)
     setCompositions(compositions);
     setAssets(staticAssets)
     editVideoKeys({ tags, title, description, src: fileUrl });
@@ -76,7 +76,7 @@ export default ({ submitForm, isEdit, video }) => {
         setActiveDisplayIndex={setActiveDisplayIndex}
         activeDisplayIndex={activeDisplayIndex}
         handleSubmitForm={handleSubmitForm}
-        assets={assets}
+        staticAssets={assets}
       />
     ),
   };
@@ -84,12 +84,15 @@ export default ({ submitForm, isEdit, video }) => {
   return (
     <>
       <SnackAlert
-        message={error?.message ?? "Oop's, something went wrong, action failed !"}
+        message={
+          error?.message ?? "Oop's, something went wrong, action failed !"
+        }
         open={error}
         onClose={() => {
-          setError(false)
+          setError(false);
         }}
-        type={"error"} />
+        type={"error"}
+      />
       <FormStepper activeDisplayIndex={activeDisplayIndex} />
       <Paper elevation={2} style={{ padding: 32 }}>
         {Steps[Object.keys(Steps)[activeDisplayIndex]]}
