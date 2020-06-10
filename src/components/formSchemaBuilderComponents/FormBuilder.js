@@ -17,7 +17,7 @@ export default ({ submitForm, isEdit, video }) => {
   const [activeDisplayIndex, setActiveDisplayIndex] = useState(0);
   const [compositions, setCompositions] = useState([]);
   const [error, setError] = useState(null)
-
+  const [assets, setAssets] = useState([])
   useEffect(() => {
     if (isEdit) {
       loadVideo(video);
@@ -39,11 +39,11 @@ export default ({ submitForm, isEdit, video }) => {
   };
 
   const handleVideoTemplateMetaSubmit = async (data) => {
-    const { tags, title, description, projectFile = "" } = data;
+    const { tags, title, description, fileUrl = "", staticAssets = [], compositions = [] } = data;
 
-    setCompositions(projectFile?.data ?? []);
-
-    editVideoKeys({ tags, title, description, src: projectFile.fileUrl });
+    setCompositions(compositions);
+    setAssets(staticAssets)
+    editVideoKeys({ tags, title, description, src: fileUrl });
     setActiveDisplayIndex(1);
   };
 
@@ -76,6 +76,7 @@ export default ({ submitForm, isEdit, video }) => {
         setActiveDisplayIndex={setActiveDisplayIndex}
         activeDisplayIndex={activeDisplayIndex}
         handleSubmitForm={handleSubmitForm}
+        assets={assets}
       />
     ),
   };

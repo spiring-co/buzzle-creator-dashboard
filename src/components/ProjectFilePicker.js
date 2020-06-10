@@ -59,12 +59,12 @@ export default ({ value, onData, name, onTouched, onError }) => {
 
       setHasPickedFile(true);
 
-      const data = await extractStructureFromFile(file);
-      console.log(data);
-      setCompositions(data.data);
+      const { compositions, staticAssets } = await extractStructureFromFile(file);
+      staticAssets = staticAssets.map(asset => asset.substring(asset.lastIndexOf('\\') + 1))
+      setCompositions(compositions);
       setHasExtractedData(true);
 
-      onData(data);
+      onData({ compositions, staticAssets, fileUrl: "file url here" });
       onTouched(true);
     } catch (error) {
       console.error(error.message);
