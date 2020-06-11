@@ -75,7 +75,7 @@ export default ({ initialValues = {}, onSubmit }) => {
         fieldName={"thumbnails"}
         label="Template Thumbnail"
         onTouched={setFieldTouched}
-        error={touched.thumbnail && errors.thumbnail}
+        error={errors.thumbnail}
         helperText={"Thumbnails are presenters of your template"}
       />
       <TextField

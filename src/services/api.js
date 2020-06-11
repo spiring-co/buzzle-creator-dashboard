@@ -66,8 +66,18 @@ export const Job = {
 };
 
 export const VideoTemplate = {
-  get: async () => {},
-  create: async () => {},
+  get: async () => { },
+  create: async (data) => {
+
+    const response = await fetch(process.env.REACT_APP_API_URL + `/videoTemplates`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error((await response.json()).message);
+    return await response.json();
+
+  },
   update: async (id, data) => {
     const response = await fetch(`${baseUrl}/videoTemplates/${id}`, {
       method: "PUT",
@@ -105,7 +115,7 @@ export const Creator = {
     if (!response.ok) throw new Error((await response.json()).message);
     return await response.json();
   },
-  update: async () => {},
+  update: async () => { },
 };
 
 //TODO move to auth
