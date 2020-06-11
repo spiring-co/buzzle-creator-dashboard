@@ -1,14 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Chip, Link, CircularProgress, Button } from "@material-ui/core";
+import { Chip, Link, Button, Container } from "@material-ui/core";
 import MaterialTable from "material-table";
-import {
-  useRouteMatch,
-  useHistory,
-  Link as RouterLink,
-} from "react-router-dom";
+import { useRouteMatch, Link as RouterLink } from "react-router-dom";
 import ErrorHandler from "components/ErrorHandler";
 
-import { Delete } from "@material-ui/icons";
 import { Job } from "services/api";
 import ReactJson from "react-json-view";
 import io from "socket.io-client";
@@ -20,26 +15,16 @@ const uri = `${process.env.REACT_APP_API_URL}/creators/${localStorage.getItem(
 
 export default () => {
   const [error, setError] = useState(null);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [socket, setSocket] = useState(null);
   const [rtProgressData, setRtProgressData] = useState({});
-  // should do this with tableRef if possible
   const [jobIds, setJobIds] = useState([]);
-  let history = useHistory();
-  let { path } = useRouteMatch();
-
+  const { path } = useRouteMatch();
   const tableRef = useRef(null);
+
   const handleRetry = () => {
     setError(false);
     tableRef.current && tableRef.current.onQueryChange();
   };
-
-  useEffect(() => {
-    setSocket(io.connect(`http://localhost:8080`));
-    return () => {
-      io.disconnect();
-    };
-  }, []);
 
   function subscribeToProgress(id) {
     if (!socket) return;
@@ -55,6 +40,10 @@ export default () => {
   }
 
   useEffect(() => {
+    setSocket(io.connect(process.env.REACT_APP_EVENTS_SOCKET_URL));
+  }, []);
+
+  useEffect(() => {
     jobIds.map(subscribeToProgress);
 
     return () => {
@@ -63,7 +52,7 @@ export default () => {
   }, [jobIds]);
 
   return (
-    <>
+    <Container fluid>
       {error && (
         <ErrorHandler
           message={error.message}
@@ -77,7 +66,6 @@ export default () => {
         options={{
           pageSize: 10,
           headerStyle: { fontWeight: 700 },
-          minBodyHeight: 500,
           actionsColumnIndex: -1,
         }}
         detailPanel={[
@@ -121,7 +109,7 @@ export default () => {
             field: "dateCreated",
             type: "datetime",
             render: ({ dateCreated }) => (
-              <p>{timeago.format(new Date(dateCreated))}</p>
+              <span>{timeago.format(new Date(dateCreated))}</span>
             ),
           },
           {
@@ -158,6 +146,7 @@ export default () => {
           },
         }}
         data={(query) =>
+          // TODO should be abstracted to API service
           fetch(`${uri}?page=${query.page + 1}&size=${query.pageSize}`, {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("jwtoken")}`,
@@ -199,27 +188,22 @@ export default () => {
             },
           },
           {
-            icon: () =>
-              isDeleting ? <CircularProgress size={20} /> : <Delete />,
+            icon: "delete",
             tooltip: "Delete Template",
-            disabled: isDeleting,
             onClick: async (event, rowData) => {
               const action = window.confirm("Are you sure, you want to delete");
               if (!action) return;
               try {
-                setIsDeleting(true);
                 await Job.delete(rowData.id);
-                setIsDeleting(false);
                 tableRef.current && tableRef.current.onQueryChange();
               } catch (err) {
-                setIsDeleting(false);
                 setError(err);
               }
             },
           },
         ]}
       />
-    </>
+    </Container>
   );
 };
 

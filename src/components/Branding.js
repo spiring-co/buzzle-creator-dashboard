@@ -14,7 +14,7 @@ export default ({ dark }) => (
     <img style={{ height: 36 }} src={dark ? spiring_grey : spiring} />
     <Typography
       style={{
-        color: dark ? "#616161" : "white",
+        color: dark ? "#747d8c" : "white",
         fontSize: 12,
         fontWeight: 700,
       }}>

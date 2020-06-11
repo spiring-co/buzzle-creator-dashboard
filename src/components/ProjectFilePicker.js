@@ -61,12 +61,30 @@ export default ({ value, onData, name, onTouched, onError }) => {
         (e?.dataTransfer?.files ?? [null])[0];
       if (!file) return;
 
-      onTouched(true);
-      //TODO generate file name here.
-      const { Location: uri } = await upload(
-        `templates/${file.name}`,
-        file
-      ).promise();
+      setMessage(
+        <>
+          <p>Processing...</p>
+        </>
+      );
+
+      const task = upload(`templates/${file.name}`, file);
+
+      task.on("httpUploadProgress", ({ loaded, total }) =>
+        setMessage(
+          <>
+            <CircularProgress style={{ margin: 10 }} size={28} />
+            <p>{`${parseInt((loaded / total) * 100)}% uploaded`}</p>
+          </>
+        )
+      );
+      const { Location: uri } = await task.promise();
+
+      setMessage(
+        <>
+          <CircularProgress style={{ margin: 10 }} size={28} />
+          <p>Extracting Layer and compositions ...</p>
+        </>
+      );
 
       // un comment it when aeinteract configures extraction using url
       // const { compositions, staticAssets } = await extractStructureFromFile(
@@ -75,10 +93,9 @@ export default ({ value, onData, name, onTouched, onError }) => {
       var { compositions, staticAssets } = await extractStructureFromFile(file);
 
       setHasExtractedData(true);
-      onTouched(true);
       if (!compositions)
         throw new Error("Could not extract project structure.");
-      setMessage(getCompositionDetails(compositions));
+      setMessage(<p>{getCompositionDetails(compositions)}</p>);
       setHasExtractedData(true);
       onData({
         compositions,
@@ -87,8 +104,10 @@ export default ({ value, onData, name, onTouched, onError }) => {
         })),
         fileUrl: uri,
       });
+      onTouched(true);
     } catch (error) {
-      setHasPickedFile(false);
+      console.log(error);
+      // setHasPickedFile(false);
       setHasExtractedData(false);
 
       onError(error.message);
@@ -135,26 +154,24 @@ export default ({ value, onData, name, onTouched, onError }) => {
             />
           </label>
         )}
-        {hasPickedFile &&
-          (hasExtractedData ? (
-            <>
-              <p style={{ color: "green" }}>{message}</p>
+        {hasPickedFile && (
+          <>
+            {message}
+            <br />
+            {hasExtractedData && (
               <Button
                 color="primary"
                 variant="contained"
                 children="Change"
+                disabled={!hasExtractedData}
                 onClick={() => {
                   setHasPickedFile(false);
                   setHasExtractedData(false);
                 }}
               />
-            </>
-          ) : (
-            <>
-              <CircularProgress style={{ margin: 10 }} size={28} />
-              <p>Extracting Layer and compositions ...</p>
-            </>
-          ))}
+            )}
+          </>
+        )}
       </Box>
     </Container>
   );
