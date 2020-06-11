@@ -46,7 +46,6 @@ export default function AssetUpload({
   const [uploadType, setUploadType] = useState(
     "file"
   );
-  const [assetsArray, setAssetsArray] = useState([]);
   const [assets, setAssets] = useState(
     staticAssets
   );
@@ -54,25 +53,14 @@ export default function AssetUpload({
   const [error, setError] = useState(null);
   const { editVideoKeys } = useActions();
   const [progress, setProgress] = useState(0)
-  useEffect(() => {
-    //sets asset array retrieve it from composition
-    setAssetsArray(staticAssets);
-  }, []);
+
+  // useEffect(() => {
+  //   //sets asset array retrieve it from composition
+  //   setAssets(staticAssets);
+  // }, []);
 
   useEffect(() => {
-    if (
-      assets.length === assetsArray.length &&
-      assetsArray.length !== 0 &&
-      uploadType === "file"
-    ) {
-      handleZipAssetUpload();
-    } else if (
-      assetsArray.length !== 0 &&
-      uploadType === "folder" &&
-      assets.length !== 0
-    ) {
-      handleZipAssetUpload();
-    }
+    editVideoKeys({ staticAssets: assets });
   }, [assets]);
 
   useEffect(() => {
@@ -108,7 +96,7 @@ export default function AssetUpload({
       setError(null);
       setLoading(true);
       // filter only files required in template with all files
-      const assetNames = assetsArray.map((i) => i.name.toLowerCase());
+      const assetNames = assets.map((i) => i.name.toLowerCase());
 
       const newAssets = assets.filter(({ name }) =>
         assetNames.includes(name.toLowerCase())
@@ -125,7 +113,7 @@ export default function AssetUpload({
       const { Location: uri } = await task.promise()
       console.log(uri);
       // // save this uri to global State
-      editVideoKeys({ assetsUri: uri });
+      editVideoKeys({ staticAssets: assets });
 
       setLoading(false);
     } catch (err) {
@@ -144,7 +132,7 @@ export default function AssetUpload({
             setAssets={setAssets}
             uploadType={uploadType}
             uploadFileName="assets"
-            assetsArray={assetsArray}
+            assets={assets}
           />
         );
       case "file":

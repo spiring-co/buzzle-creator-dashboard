@@ -9,7 +9,7 @@ export default function FontUpload({
   setActiveDisplayIndex,
   activeDisplayIndex,
 }) {
-  const [fontList, setFontList] = useState([]);
+  const [fontList, setFontList] = useState(["MetalMania-Regular"]);
   const [loading, setLoading] = useState(true);
   // takes all font used in template
   useEffect(() => {
@@ -18,7 +18,7 @@ export default function FontUpload({
       .flat();
 
     const fontNames = Array.from(new Set(allTextLayers.map((l) => l.font)));
-
+    console.log(fontNames);
     fetchFontStatus(fontNames)
       .then(setFontList)
       .catch(console.log)
@@ -40,16 +40,12 @@ export default function FontUpload({
     return await response.json();
   };
   if (loading) {
-    return (
-      <Container style={styles.container}>
-        <Typography variant="h5">Resolving Font...</Typography>
-      </Container>
-    );
+    return <Typography variant="h5">Resolving Font...</Typography>;
   }
   return (
-    <Container style={styles.container}>
-      <Typography variant="h4">Upload Font Files</Typography>
-      <Typography variant="h6" style={{ color: "grey" }}>
+    <div>
+      <Typography variant="h5">Upload Font Files</Typography>
+      <Typography style={{ color: "grey" }}>
         We will try to resolve your fonts automatically, if not resolved, Upload
         your Font File
       </Typography>
@@ -82,17 +78,6 @@ export default function FontUpload({
           Next
         </Button>
       </div>
-    </Container>
+    </div>
   );
 }
-const styles = {
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    backgroundColor: "white",
-    marginTop: 30,
-    marginBottom: 30,
-    padding: 50,
-  },
-};

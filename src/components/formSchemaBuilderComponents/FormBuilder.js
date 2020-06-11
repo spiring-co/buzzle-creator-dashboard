@@ -8,7 +8,7 @@ import FontUpload from "./FontUpload";
 import FormStepper from "./FormStepper";
 import VersionDisplay from "./VersionDisplay";
 import VideoTemplateMetaForm from "./VideoTemplateMetaForm";
-import { Paper } from "@material-ui/core";
+import { Paper, Container } from "@material-ui/core";
 
 export default ({ submitForm, isEdit, video }) => {
   const [videoObj] = useContext(VideoTemplateContext);
@@ -81,7 +81,7 @@ export default ({ submitForm, isEdit, video }) => {
   };
 
   return (
-    <>
+    <Container fluid>
       <SnackAlert
         message={
           error?.message ?? "Oop's, something went wrong, action failed !"
@@ -96,6 +96,6 @@ export default ({ submitForm, isEdit, video }) => {
       <Paper elevation={2} style={{ padding: 32 }}>
         {Steps[Object.keys(Steps)[activeDisplayIndex]]}
       </Paper>
-    </>
+    </Container>
   );
 };
