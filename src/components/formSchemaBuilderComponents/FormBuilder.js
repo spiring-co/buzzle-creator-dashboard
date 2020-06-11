@@ -14,10 +14,10 @@ export default ({ submitForm, isEdit, video }) => {
   const [videoObj] = useContext(VideoTemplateContext);
   const { resetVideo, editVideoKeys, loadVideo } = useActions();
   const [loading, setLoading] = useState(false);
-  const [activeDisplayIndex, setActiveDisplayIndex] = useState(3);
+  const [activeDisplayIndex, setActiveDisplayIndex] = useState(0);
   const [compositions, setCompositions] = useState([]);
   const [error, setError] = useState(null)
-  const [assets, setAssets] = useState([{ name: "watermakred.mp4" }])
+  const [assets, setAssets] = useState([])
   useEffect(() => {
     if (isEdit) {
       loadVideo(video);
@@ -40,9 +40,8 @@ export default ({ submitForm, isEdit, video }) => {
 
   const handleVideoTemplateMetaSubmit = async (data) => {
     const { tags, title, description, projectFile: { fileUrl = "", staticAssets = [], compositions = [] } } = data;
-    console.log(staticAssets)
     setCompositions(compositions);
-    setAssets(staticAssets)
+    setAssets(video.staticAssets.length !== 0 ? video.staticAssets : staticAssets)
     editVideoKeys({ tags, title, description, src: fileUrl });
     setActiveDisplayIndex(1);
   };
