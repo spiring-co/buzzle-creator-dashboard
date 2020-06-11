@@ -28,7 +28,7 @@ const useStyles = makeStyles(() => ({
   },
   rowWrapped: {
     display: "flex",
-    flexWrap: "wrap",
+    flexDirection: 'column',
     justifyContent: "center",
   },
 }));
@@ -41,6 +41,7 @@ export default function AssetUpload({
   activeDisplayIndex,
   handleSubmitForm,
 }) {
+  console.log(staticAssets)
   const classes = useStyles();
   const [videoObj] = useContext(VideoTemplateContext);
   const [uploadType, setUploadType] = useState(
@@ -74,7 +75,7 @@ export default function AssetUpload({
   const renderAssetFileUploader = () => {
     return (
       <div className={classes.rowWrapped}>
-        {assets.length !== 0 ? assets.map((asset, index) => (
+        {assets?.length !== 0 ? assets?.map((asset, index) => (
           <AssetUploader
             key={index}
             handleDelete={() => {

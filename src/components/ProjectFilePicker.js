@@ -101,6 +101,8 @@ export default ({ value, onData, name, onTouched, onError }) => {
         compositions,
         staticAssets: staticAssets.map((asset) => ({
           name: asset.substring(asset.lastIndexOf("\\") + 1),
+          type: "static",
+          src: ""
         })),
         fileUrl: uri,
       });
@@ -124,7 +126,7 @@ export default ({ value, onData, name, onTouched, onError }) => {
         .flat();
       return `${Object.keys(c).length} compositions & ${
         allLayers.length
-      } layers found`;
+        } layers found`;
     } catch (err) {
       onError(err);
     }

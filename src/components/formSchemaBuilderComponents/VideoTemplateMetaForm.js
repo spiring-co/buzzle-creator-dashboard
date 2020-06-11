@@ -62,14 +62,15 @@ export default ({ initialValues = {}, onSubmit }) => {
           name={"projectFile"}
           placeholder="Pick or drop project file"
         />
-        {errors.projectFile && (
+        {touched?.projectFile && errors.projectFile && (
           <FormHelperText error={true}>{errors.projectFile}</FormHelperText>
         )}
       </div>
       <FileUploader
+        required={true}
         fullWidth={true}
         value={values.thumbnail}
-        onError={(e) => setFieldError(e.message)}
+        onError={(e) => setFieldError(e)}
         onChange={(value) => setFieldValue("thumbnail", value)}
         fieldName={"thumbnails"}
         label="Template Thumbnail"

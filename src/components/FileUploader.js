@@ -9,6 +9,7 @@ import upload from "services/s3Upload";
 
 export default ({
   value,
+  required,
   onChange,
   label,
   fullWidth,
@@ -18,7 +19,7 @@ export default ({
   helperText,
   onTouched,
 }) => {
-  const [progress, setProgress] = useState(0);
+  const [progress, setProgress] = useState("0%");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -28,11 +29,14 @@ export default ({
   }, []);
   const uploadFile = async (e) => {
     try {
-      onTouched(true);
+
       const file =
         (e?.target?.files ?? [null])[0] ||
         (e?.dataTransfer?.files ?? [null])[0];
-      if (!file) return;
+      if (!file) {
+
+        return;
+      }
       setLoading(true);
       const task = upload(`${fieldName}/${file.name}`, file);
       task.on("httpUploadProgress", ({ loaded, total }) =>
@@ -43,11 +47,12 @@ export default ({
 
       onChange(uri);
     } catch (err) {
-      onError(err);
+      onError(err.message);
     }
   };
   return (
     <TextField
+      onFocus={() => onTouched(true)}
       InputProps={{
         startAdornment: loading && (
           <InputAdornment position="start">

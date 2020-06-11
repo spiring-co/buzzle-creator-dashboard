@@ -37,6 +37,7 @@ export default function AssetUploader({
     <div
       style={{
         display: "flex",
+        marginTop: 4,
         paddingLeft: 5, paddingRight: 5,
         background: "lightgrey", alignItems: "center"
       }}
@@ -81,6 +82,7 @@ export default function AssetUploader({
             background: `linear-gradient(90deg, #3742fa ${progress}, #fff ${progress})`
           }} />
         :
+
         <Tooltip
           arrow={true}
           placement="right"
@@ -92,7 +94,6 @@ export default function AssetUploader({
               margin: 5,
               marginTop: 0,
               marginBottom: 0,
-
               color: "grey"
             }} fontSize="small" />
         </Tooltip>}
