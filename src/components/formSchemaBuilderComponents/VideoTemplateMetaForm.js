@@ -12,7 +12,7 @@ const validationSchema = Yup.object({
   thumbnail: Yup.string().required("Thumbnail is required!"),
 });
 
-export default ({ initialValues = {}, onSubmit }) => {
+export default ({ initialValues = {}, isEdit, assets, compositions, onSubmit }) => {
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState(initialValues?.tags ?? []);
   const {
@@ -54,6 +54,9 @@ export default ({ initialValues = {}, onSubmit }) => {
     <form onSubmit={handleSubmit} noValidate>
       <div style={{ marginBottom: 20 }}>
         <ProjectFilePicker
+          isEdit={isEdit}
+          assets={assets}
+          compositions={compositions}
           as={ProjectFilePicker}
           onData={(f) => setFieldValue("projectFile", f)}
           onError={(e) => setFieldError(e.message)}
@@ -67,12 +70,10 @@ export default ({ initialValues = {}, onSubmit }) => {
         )}
       </div>
       <FileUploader
-        required={true}
-        fullWidth={true}
         value={values.thumbnail}
         onError={(e) => setFieldError(e)}
         onChange={(value) => setFieldValue("thumbnail", value)}
-        fieldName={"thumbnails"}
+        fieldName={"thumbnail"}
         label="Template Thumbnail"
         onTouched={setFieldTouched}
         error={errors.thumbnail}

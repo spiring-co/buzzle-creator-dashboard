@@ -16,8 +16,7 @@ export default ({
 
   const [usedFields, setUsedFields] = useState([]);
   useEffect(() => {
-
-    setUsedFields(videoObj.versions[activeVersionIndex].editableLayers.map(layer => layer.layerName))
+    setUsedFields(videoObj.versions[activeVersionIndex]?.editableLayers?.map(layer => layer.layerName) ?? [])
   }, [isEdit])
   return (
     <form

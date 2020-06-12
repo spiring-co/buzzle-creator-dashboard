@@ -14,7 +14,7 @@ export default ({ submitForm, isEdit, video }) => {
   const [videoObj] = useContext(VideoTemplateContext);
   const { resetVideo, editVideoKeys, loadVideo } = useActions();
   const [loading, setLoading] = useState(false);
-  const [activeDisplayIndex, setActiveDisplayIndex] = useState(0);
+  const [activeDisplayIndex, setActiveDisplayIndex] = useState(1);
   const [compositions, setCompositions] = useState([]);
   const [error, setError] = useState(null)
   const [assets, setAssets] = useState([])
@@ -25,7 +25,97 @@ export default ({ submitForm, isEdit, video }) => {
       resetVideo();
     }
   }, []);
-
+  useEffect(() => {
+    setCompositions({
+      "save the date": {
+        textLayers: [],
+        imageLayers: [
+          {
+            name: "spiring banner.png",
+            height: 427,
+            width: 1103,
+          },
+        ],
+        comps: {},
+      },
+      main: {
+        textLayers: [
+          {
+            name: "textLayer1",
+            text: "Hello I am the text layer!",
+            font: "Helvetica",
+          },
+        ],
+        imageLayers: [
+          {
+            name: "myImageLayer",
+            height: 427,
+            width: 1103,
+          },
+        ],
+        comps: {
+          hello: {
+            textLayers: [
+              {
+                name: "<empty text layer>",
+                text: "",
+                font: "Helvetica",
+              },
+            ],
+            imageLayers: [
+              {
+                name: "spiring banner.png",
+                height: 427,
+                width: 1103,
+              },
+            ],
+            comps: {
+              mycomp2: {
+                textLayers: [],
+                imageLayers: [
+                  {
+                    name: "spiring banner.png",
+                    height: 427,
+                    width: 1103,
+                  },
+                ],
+                comps: {},
+              },
+            },
+          },
+        },
+      },
+      hello: {
+        textLayers: [
+          {
+            name: "<empty text layer>",
+            text: "",
+            font: "Helvetica",
+          },
+        ],
+        imageLayers: [
+          {
+            name: "spiring banner.png",
+            height: 427,
+            width: 1103,
+          },
+        ],
+        comps: {
+          mycomp2: {
+            textLayers: [],
+            imageLayers: [
+              {
+                name: "spiring banner.png",
+                height: 427,
+                width: 1103,
+              },
+            ],
+            comps: {},
+          },
+        },
+      },
+    });
+  }, []);
   const handleSubmitForm = async () => {
     try {
       setError(null);
@@ -39,17 +129,22 @@ export default ({ submitForm, isEdit, video }) => {
   };
 
   const handleVideoTemplateMetaSubmit = async (data) => {
-    const { tags, title, description, projectFile: { fileUrl = "", staticAssets = [], compositions = [] } } = data;
+    const { tags, title, description, thumbnail, projectFile: { fileUrl = "", staticAssets = [], compositions = [] } } = data;
     setCompositions(compositions);
     setAssets(isEdit ? video?.staticAssets : staticAssets)
-    editVideoKeys({ tags, title, description, src: fileUrl });
+    editVideoKeys({ tags, title, description, src: fileUrl, thumbnail });
     setActiveDisplayIndex(1);
   };
 
   const Steps = {
     VideoTemplateMetaForm: (
       <VideoTemplateMetaForm
-        initialValues={isEdit ? video : {}}
+        isEdit={isEdit}
+        assets={assets}
+        compositions={compositions}
+        initialValues={isEdit
+          ? { ...video, projectFile: video.src }
+          : { ...videoObj, projectFile: videoObj?.src ?? "" }}
         onSubmit={handleVideoTemplateMetaSubmit}
       />
     ),

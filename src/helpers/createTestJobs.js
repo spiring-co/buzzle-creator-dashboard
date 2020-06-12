@@ -10,7 +10,7 @@ export default ({ versions, id, staticAssets }) => {
               type,
               value: label,
               layerName,
-              property: "Source Text",
+              property: "Source Text.text",
             };
           case "image":
             return {
