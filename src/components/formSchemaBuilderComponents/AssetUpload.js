@@ -41,7 +41,6 @@ export default function AssetUpload({
   activeDisplayIndex,
   handleSubmitForm,
 }) {
-  console.log(staticAssets)
   const classes = useStyles();
   const [videoObj] = useContext(VideoTemplateContext);
   const [uploadType, setUploadType] = useState(

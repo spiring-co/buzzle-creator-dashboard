@@ -82,7 +82,7 @@ export const VideoTemplate = {
     const response = await fetch(`${baseUrl}/videoTemplates/${id}`, {
       method: "PUT",
       headers,
-      body: data,
+      body: JSON.stringify(data),
     });
     if (!response.ok) throw new Error((await response.json()).message);
     return await response.json();

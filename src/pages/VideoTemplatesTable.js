@@ -140,13 +140,16 @@ export default (props) => {
           {
             icon: "edit",
             tooltip: "Edit Template",
-            onClick: (e, data) => history.push({
-              pathname: `${url}/${data.id}/edit`,
-              state: {
-                isEdit: true,
-                video: data,
-              }
-            })
+            onClick: (e, data) => {
+              delete data['tableData']
+              history.push({
+                pathname: `${url}/${data.id}/edit`,
+                state: {
+                  isEdit: true,
+                  video: data,
+                }
+              })
+            }
           }
           ,
           {
