@@ -26,7 +26,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import AssetsPreview from "components/AssetsPreview";
 import ErrorHandler from "components/ErrorHandler";
 import AssetDialog from "components/AssetDialog";
-
+import ActionsHandler from "components/ActionsHandler"
 import formatTime from "helpers/formatTime";
 import { Job } from "services/api";
 import { useParams } from "react-router-dom";
@@ -300,7 +300,7 @@ export default (props) => {
           />
         </TabPanel>
         <TabPanel value={activeTabIndex} index={2}>
-          Actions Here
+         <ActionsHandler/>
         </TabPanel>
       </div>
       {isDialogOpen && (

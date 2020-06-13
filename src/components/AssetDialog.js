@@ -190,8 +190,8 @@ export default ({
       onClose={() => setIsDialogOpen(false)}
       aria-labelledby="form-dialog-title">
       <form onSubmit={handleSubmit}>
+        <DialogTitle id="form-dialog-title">{"Edit Asset"}</DialogTitle>
         <DialogContent>
-          <DialogTitle id="form-dialog-title">{"Edit Asset"}</DialogTitle>
 
           <FormControl fullWidth margin="dense" variant="outlined">
             <InputLabel id="layer-select">Select Layer</InputLabel>
@@ -263,16 +263,16 @@ export default ({
               />
             </div>
           ) : (
-            <SourceInput
-              errors={errors.src}
-              touched={touched.src}
-              src={values.src}
-              value={values.src}
-              type={values.type}
-              handleChange={handleChange}
-              handleBlur={handleBlur}
-            />
-          )}
+              <SourceInput
+                errors={errors.src}
+                touched={touched.src}
+                src={values.src}
+                value={values.src}
+                type={values.type}
+                handleChange={handleChange}
+                handleBlur={handleBlur}
+              />
+            )}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setIsDialogOpen(false)} color="primary">
