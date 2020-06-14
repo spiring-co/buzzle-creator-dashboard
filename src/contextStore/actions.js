@@ -5,7 +5,7 @@ import {
   ADD_FIELD,
   UPDATE_FIELD,
   REMOVE_FIELD,
-  ADD_VERSION,
+  // ADD_VERSION,
   EDIT_VERSION_KEYS,
   REMOVE_VERSION,
   LOAD_STATE,
@@ -34,10 +34,10 @@ export default function useActions() {
         payload: { value },
       });
     },
-    addVersion: function (value) {
-      // value = { composition: "main" }
-      dispatch({ type: ADD_VERSION, payload: value });
-    },
+    // addVersion: function (value) {
+    //   // value = { composition: "main" }
+    //   dispatch({ type: ADD_VERSION, payload: value });
+    // },
     editversionKeys: function (activeVersionIndex, value) {
       // value= { price: "900" }
       dispatch({

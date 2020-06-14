@@ -5,7 +5,7 @@ import useActions from "contextStore/actions";
 import FileUploader from 'components/FileUploader'
 
 export default ({
-    isEdit,
+    isEdit, onClick,
     activeVersionIndex,
     editVersion,
     setActiveVersionIndex,
@@ -22,13 +22,12 @@ export default ({
                 e.preventDefault();
             }}>
             <FileUploader
-                fullWidth={false}
                 value={videoObj?.versions[activeVersionIndex]?.sample}
                 onError={(e) => setError(e.message)}
                 onChange={url => editversionKeys(activeVersionIndex, {
                     sample: url
                 })}
-                fieldName={"samples"}
+                fieldName={"sample"}
                 label="Version Sample Video"
                 onTouched={() => setError(null)}
                 error={error}
@@ -54,6 +53,8 @@ export default ({
                         if (!editVersion) {
                             setActiveVersionIndex(activeVersionIndex + 1);
                         }
+                        onClick()
+
                         openVersionDisplay();
                     }}
                     children={

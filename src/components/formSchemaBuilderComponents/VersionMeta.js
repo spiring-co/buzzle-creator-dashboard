@@ -22,12 +22,7 @@ export default ({ onSubmit, initialValue, onBack }) => {
     handleSubmit,
     handleChange,
   } = useFormik({
-    initialValues: initialValue
-      ? initialValue
-      : {
-        title: "",
-        description: "",
-      },
+    initialValues: initialValue,
     validationSchema,
     onSubmit,
   });

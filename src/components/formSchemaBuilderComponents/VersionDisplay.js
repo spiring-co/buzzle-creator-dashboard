@@ -25,7 +25,7 @@ export default ({
   const [activeVersionIndex, setActiveVersionIndex] = useState(0);
   const [editIndex, setEditIndex] = useState(null);
   const [editVersion, setEditVersion] = useState(false);
-  const { addVersion, removeVersion, editversionKeys } = useActions();
+  const { removeVersion, editversionKeys } = useActions();
   const [activeStep, setActiveStep] = useState(0);
   const [composition, setComposition] = useState("");
 
@@ -38,7 +38,7 @@ export default ({
       setEditIndex(index);
       setEditVersion(true);
     } else {
-      addVersion({ composition });
+      editversionKeys(editVersion ? editIndex : activeVersionIndex, { composition });
     }
     setActiveStep(activeStep + 1);
   };
@@ -64,7 +64,10 @@ export default ({
       case 1:
         return (
           <VersionMeta
-            onBack={() => setActiveStep(activeStep - 1)}
+            onBack={() => {
+              setComposition(videoObj?.versions[editVersion ? editIndex : activeVersionIndex]?.composition)
+              setActiveStep(activeStep - 1)
+            }}
             onSubmit={(data) => {
               editversionKeys(editVersion ? editIndex : activeVersionIndex, {
                 title: data.title,
@@ -73,17 +76,12 @@ export default ({
               setActiveStep(activeStep + 1);
             }}
             initialValue={
-              editVersion && {
-                title: videoObj?.versions[editIndex]?.title,
-                description: videoObj?.versions[editIndex]?.description,
+              {
+                title: videoObj?.versions[editVersion ? editIndex : activeVersionIndex]?.title,
+                description: videoObj?.versions[editVersion ? editIndex : activeVersionIndex]?.description,
               }
             }
-            initialValue={
-              editVersion && {
-                title: videoObj?.versions[editIndex]?.title,
-                description: videoObj?.versions[editIndex]?.description,
-              }
-            }
+
           />
         );
       case 2:
@@ -101,7 +99,7 @@ export default ({
       case 3:
         return <VersionSampleField
           onBack={() => setActiveStep(activeStep - 1)}
-
+          onClick={() => console.log(videoObj)}
           isEdit={isEdit}
           editVersion={editVersion}
           activeVersionIndex={editVersion ? editIndex : activeVersionIndex}
@@ -202,7 +200,7 @@ export default ({
           style={{ margin: 10 }}
           color="primary"
           variant="contained"
-          disabled={videoObj.versions.length === 0}
+          disabled={videoObj.versions.length === 0 || activeStep !== 0}
           onClick={() => setActiveDisplayIndex(activeDisplayIndex + 1)}>
           Next
         </Button>

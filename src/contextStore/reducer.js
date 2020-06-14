@@ -1,6 +1,6 @@
 //action Types
 export const EDIT_VIDEO_KEYS = "EDIT_VIDEO_KEYS";
-export const ADD_VERSION = "ADD_VERSION";
+// export const ADD_VERSION = "ADD_VERSION";
 export const REMOVE_VERSION = "REMOVE_VERSION";
 export const EDIT_VERSION_KEYS = "EDIT_VERSION_KEYS";
 export const ADD_FIELD = "ADD_FIELD";
@@ -28,18 +28,6 @@ export default (state, action) => {
     case EDIT_VIDEO_KEYS:
       return { ...state, ...action.payload.value };
 
-    //payload:{composition:action.payload.value}
-    case ADD_VERSION:
-      state.versions.push({
-        ...action.payload,
-        title: "",
-        description: "",
-        sample: "",
-        editableLayers: [],
-      });
-
-      return state;
-
     //payload : action.payload.activeVersionIndex
     case REMOVE_VERSION:
       return {
@@ -54,6 +42,7 @@ export default (state, action) => {
     case EDIT_VERSION_KEYS:
       state.versions[action.payload.activeVersionIndex] = {
         ...state.versions[action.payload.activeVersionIndex],
+        editableLayers: state.versions[action.payload.activeVersionIndex]?.editableLayers ?? [],
         ...action.payload.value,
       };
       return Object.assign({}, state);

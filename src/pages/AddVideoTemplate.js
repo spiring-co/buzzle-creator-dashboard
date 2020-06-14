@@ -15,6 +15,7 @@ export default ({ location }) => {
   const history = useHistory();
 
   const handleSubmit = async (data) => {
+    console.log(data)
     try {
       isEdit
         ? await VideoTemplate.update(data.id, data)
@@ -28,7 +29,7 @@ export default ({ location }) => {
             status: {
               message: `Video Template ${
                 isEdit ? "Edited" : "Added"
-              } Successfully.`,
+                } Successfully.`,
             },
             err: false,
           },

@@ -1,8 +1,8 @@
-export default ({ versions, id }) => {
+export default ({ versions, id, staticAssets }) => {
   return versions.map((v) => ({
     idVideoTemplate: id,
     idVersion: v.id,
-    assets: v.editableLayers.map(
+    assets: [...staticAssets, ...v.editableLayers.map(
       ({ type, label, layerName, width, height }) => {
         switch (type) {
           case "data":
@@ -10,7 +10,7 @@ export default ({ versions, id }) => {
               type,
               value: label,
               layerName,
-              property: "Source Text",
+              property: "Source Text.text",
             };
           case "image":
             return {
@@ -23,6 +23,6 @@ export default ({ versions, id }) => {
             return;
         }
       }
-    ),
+    )],
   }));
 };

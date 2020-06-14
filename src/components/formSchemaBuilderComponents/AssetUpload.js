@@ -4,6 +4,7 @@ import {
   Radio,
   FormControlLabel,
   FormControl,
+  Typography,
 } from "@material-ui/core";
 
 import AssetUploader from "./AssetUploader";
@@ -27,7 +28,7 @@ const useStyles = makeStyles(() => ({
   },
   rowWrapped: {
     display: "flex",
-    flexWrap: "wrap",
+    flexDirection: 'column',
     justifyContent: "center",
   },
 }));
@@ -43,37 +44,27 @@ export default function AssetUpload({
   const classes = useStyles();
   const [videoObj] = useContext(VideoTemplateContext);
   const [uploadType, setUploadType] = useState(
-    videoObj.assetsUri ? "file" : ""
+    "file"
   );
-  const [assetsArray, setAssetsArray] = useState([]);
-  const [assets, setAssets] = useState([]);
+  const [assets, setAssets] = useState(
+    staticAssets
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const { editVideoKeys } = useActions();
   const [progress, setProgress] = useState(0)
-  useEffect(() => {
-    //sets asset array retrieve it from composition
-    setAssetsArray(staticAssets);
-  }, []);
+
+  // useEffect(() => {
+  //   //sets asset array retrieve it from composition
+  //   setAssets(staticAssets);
+  // }, []);
 
   useEffect(() => {
-    if (
-      assets.length === assetsArray.length &&
-      assetsArray.length !== 0 &&
-      uploadType === "file"
-    ) {
-      handleZipAssetUpload();
-    } else if (
-      assetsArray.length !== 0 &&
-      uploadType === "folder" &&
-      assets.length !== 0
-    ) {
-      handleZipAssetUpload();
-    }
+    editVideoKeys({ staticAssets: assets });
   }, [assets]);
 
   useEffect(() => {
-    setAssets([]);
+    //setAssets([]);
   }, [uploadType]);
 
   const handleChange = (e) => {
@@ -83,16 +74,19 @@ export default function AssetUpload({
   const renderAssetFileUploader = () => {
     return (
       <div className={classes.rowWrapped}>
-        {assetsArray.map((asset, index) => (
+        {assets?.length !== 0 ? assets?.map((asset, index) => (
           <AssetUploader
             key={index}
-            assetsUri={videoObj.assetsUri}
-            setAssets={setAssets}
-            assets={assets}
-            uploadType={uploadType}
-            uploadFileName={asset.name}
+            handleDelete={() => {
+              setAssets(assets.filter((a, i) => i !== index))
+            }}
+            setAssets={src => {
+              assets[index] = { ...assets[index], src }
+              setAssets(assets)
+            }}
+            asset={asset}
           />
-        ))}
+        )) : <p>No Assets Found!</p>}
       </div>
     );
   };
@@ -102,7 +96,7 @@ export default function AssetUpload({
       setError(null);
       setLoading(true);
       // filter only files required in template with all files
-      const assetNames = assetsArray.map((i) => i.name.toLowerCase());
+      const assetNames = assets.map((i) => i.name.toLowerCase());
 
       const newAssets = assets.filter(({ name }) =>
         assetNames.includes(name.toLowerCase())
@@ -112,14 +106,14 @@ export default function AssetUpload({
 
       //TODO blob not uploading fine
       const task = upload(
-        `staticAssets/${Date.now}.zip`,
+        `staticAssets/${Date.now()}.zip`,
         zipBlob
       )
       task.on('httpUploadProgress', ({ loaded, total }) => setProgress(`${parseInt(loaded * 100 / total)}%`))
       const { Location: uri } = await task.promise()
       console.log(uri);
       // // save this uri to global State
-      editVideoKeys({ assetsUri: uri });
+      editVideoKeys({ staticAssets: assets });
 
       setLoading(false);
     } catch (err) {
@@ -138,7 +132,7 @@ export default function AssetUpload({
             setAssets={setAssets}
             uploadType={uploadType}
             uploadFileName="assets"
-            assetsArray={assetsArray}
+            assets={assets}
           />
         );
       case "file":
@@ -172,16 +166,16 @@ export default function AssetUpload({
 
   return (
     <div className={classes.container}>
-      <FormControl component="fieldset">
-        <h4>Upload Asset Files</h4>
-        <p style={{ color: "grey" }}>
-          Assets Files includes, files which are not associated with user input,
-          and used in template
+      {/* <FormControl component="fieldset"> */}
+      <Typography variant="h4">Upload Asset Files</Typography>
+      <p style={{ color: "grey" }}>
+        Assets Files includes, files which are not associated with user input,
+        and used in template
         </p>
-        <p>
-          <b>Choose Asset Upload Structure</b>
-        </p>
-        <FormControlLabel
+      {/* <p>
+        <b>Choose Asset Upload Structure</b>
+      </p> */}
+      {/* <FormControlLabel
           value="folder"
           control={
             <Radio
@@ -205,7 +199,7 @@ export default function AssetUpload({
           label="Individual Assets"
           labelPlacement="end"
         />
-      </FormControl>
+      </FormControl> */}
       {renderAssetUploader(uploadType)}
       <div style={{ display: "flex", justifyContent: "center" }}>
         <Button
@@ -218,7 +212,7 @@ export default function AssetUpload({
         />
         <Button
           endIcon={isSubmitting && <CircularProgress color="white" size={15} />}
-          disabled={isSubmitting || !videoObj.assetsUri}
+          disabled={isSubmitting}
           style={{ margin: 10 }}
           color={submitError ? "secondary" : "primary"}
           variant={submitError ? "outlined" : "contained"}

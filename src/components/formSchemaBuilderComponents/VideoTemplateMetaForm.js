@@ -12,7 +12,7 @@ const validationSchema = Yup.object({
   thumbnail: Yup.string().required("Thumbnail is required!"),
 });
 
-export default ({ initialValues = {}, onSubmit }) => {
+export default ({ initialValues = {}, isEdit, assets, compositions, onSubmit }) => {
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState(initialValues?.tags ?? []);
   const {
@@ -54,6 +54,9 @@ export default ({ initialValues = {}, onSubmit }) => {
     <form onSubmit={handleSubmit} noValidate>
       <div style={{ marginBottom: 20 }}>
         <ProjectFilePicker
+          isEdit={isEdit}
+          assets={assets}
+          compositions={compositions}
           as={ProjectFilePicker}
           onData={(f) => setFieldValue("projectFile", f)}
           onError={(e) => setFieldError(e.message)}
@@ -62,19 +65,18 @@ export default ({ initialValues = {}, onSubmit }) => {
           name={"projectFile"}
           placeholder="Pick or drop project file"
         />
-        {errors.projectFile && (
+        {touched?.projectFile && errors.projectFile && (
           <FormHelperText error={true}>{errors.projectFile}</FormHelperText>
         )}
       </div>
       <FileUploader
-        fullWidth={true}
         value={values.thumbnail}
-        onError={(e) => setFieldError(e.message)}
+        onError={(e) => setFieldError(e)}
         onChange={(value) => setFieldValue("thumbnail", value)}
-        fieldName={"thumbnails"}
+        fieldName={"thumbnail"}
         label="Template Thumbnail"
         onTouched={setFieldTouched}
-        error={touched.thumbnail && errors.thumbnail}
+        error={errors.thumbnail}
         helperText={"Thumbnails are presenters of your template"}
       />
       <TextField

@@ -39,7 +39,7 @@ export default ({
       !editVersion &&
       videoObj.versions[0].title !== "" &&
       activeVersionIndex !== 0 &&
-      videoObj.versions[activeVersionIndex].editableLayers.length === 0
+      videoObj.versions[activeVersionIndex]?.editableLayers.length === 0
     ) {
       if (
         window.confirm("Do you want to restore fields from previous version")
@@ -68,14 +68,14 @@ export default ({
   const editFieldValue = (value) => {
     //if user changed field name
     if (
-      videoObj.versions[activeVersionIndex].editableLayers[editIndex]
+      videoObj.versions[activeVersionIndex]?.editableLayers[editIndex]
         .layerName !== value.layerName
     ) {
       setUsedFields(
         usedFields.map((item) => {
           if (
             item ===
-            videoObj.versions[activeVersionIndex].editableLayers[editIndex]
+            videoObj.versions[activeVersionIndex]?.editableLayers[editIndex]
               .layerName
           ) {
             return value.layerName;
@@ -123,32 +123,32 @@ export default ({
                 </Typography>
               </>
             ) : (
-              <>
-                <Wallpaper
-                  style={{
-                    fontSize: 40,
-                    margin: 10,
-                    padding: 5,
-                    border: "1px solid grey",
-                  }}
-                />
-                <Typography>
-                  <strong>Width:</strong> {item.width}, &nbsp;{" "}
-                </Typography>
-                <Typography>
-                  {" "}
-                  <strong>Height:</strong> {item.height}, &nbsp;{" "}
-                </Typography>
-                <Typography>
-                  {" "}
-                  <strong>Layer name:</strong> {item.layerName}, &nbsp;{" "}
-                </Typography>
-                <Typography>
-                  {" "}
-                  <strong>Required:</strong> {item.required ? "true" : "false"}
-                </Typography>
-              </>
-            )}
+                <>
+                  <Wallpaper
+                    style={{
+                      fontSize: 40,
+                      margin: 10,
+                      padding: 5,
+                      border: "1px solid grey",
+                    }}
+                  />
+                  <Typography>
+                    <strong>Width:</strong> {item.width}, &nbsp;{" "}
+                  </Typography>
+                  <Typography>
+                    {" "}
+                    <strong>Height:</strong> {item.height}, &nbsp;{" "}
+                  </Typography>
+                  <Typography>
+                    {" "}
+                    <strong>Layer name:</strong> {item.layerName}, &nbsp;{" "}
+                  </Typography>
+                  <Typography>
+                    {" "}
+                    <strong>Required:</strong> {item.required ? "true" : "false"}
+                  </Typography>
+                </>
+              )}
           </div>
         }
       />
@@ -173,7 +173,7 @@ export default ({
           children="Add Field"
         />
       </Tooltip>
-      {videoObj.versions[activeVersionIndex].editableLayers.map(
+      {videoObj.versions[activeVersionIndex]?.editableLayers?.map(
         renderFieldPreview
       )}
 
@@ -191,25 +191,25 @@ export default ({
             usedFields={usedFields}
             initialValue={{
               type:
-                videoObj.versions[activeVersionIndex].editableLayers[editIndex]
+                videoObj.versions[activeVersionIndex]?.editableLayers[editIndex]
                   ?.type ?? "",
               layerName:
-                videoObj.versions[activeVersionIndex].editableLayers[editIndex]
+                videoObj.versions[activeVersionIndex]?.editableLayers[editIndex]
                   ?.layerName ?? "",
               label:
-                videoObj.versions[activeVersionIndex].editableLayers[editIndex]
+                videoObj.versions[activeVersionIndex]?.editableLayers[editIndex]
                   ?.label ?? "",
               required:
-                videoObj.versions[activeVersionIndex].editableLayers[editIndex]
+                videoObj.versions[activeVersionIndex]?.editableLayers[editIndex]
                   ?.required ?? false,
               width:
-                videoObj.versions[activeVersionIndex].editableLayers[editIndex]
+                videoObj.versions[activeVersionIndex]?.editableLayers[editIndex]
                   ?.width ?? 400,
               height:
-                videoObj.versions[activeVersionIndex].editableLayers[editIndex]
+                videoObj.versions[activeVersionIndex]?.editableLayers[editIndex]
                   ?.height ?? 400,
               maxLength:
-                videoObj.versions[activeVersionIndex].editableLayers[editIndex]
+                videoObj.versions[activeVersionIndex]?.editableLayers[editIndex]
                   ?.maxLength ?? 50,
             }}
             editField={editIndex !== null}
