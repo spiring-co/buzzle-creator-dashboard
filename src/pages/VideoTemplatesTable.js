@@ -11,6 +11,8 @@ import { Job } from "services/api";
 import ErrorHandler from "components/ErrorHandler";
 import SnackAlert from "components/SnackAlert";
 import ReactJson from "react-json-view";
+import * as timeago from "timeago.js";
+
 const uri = `${process.env.REACT_APP_API_URL}/creators/${localStorage.getItem(
   "creatorId"
 )}/videoTemplates`;
@@ -44,17 +46,19 @@ export default (props) => {
   );
 
   const handleRetry = () => {
-    setError(false)
-    tableRef.current && tableRef.current.onQueryChange()
-  }
+    setError(false);
+    tableRef.current && tableRef.current.onQueryChange();
+  };
   let { status, err } = deleteStatus;
   return (
     <>
-      {error && <ErrorHandler
-        message={error.message}
-        showRetry={true}
-        onRetry={handleRetry}
-      />}
+      {error && (
+        <ErrorHandler
+          message={error.message}
+          showRetry={true}
+          onRetry={handleRetry}
+        />
+      )}
       <SnackAlert
         open={err || status}
         type={status ? "success" : "error"}
@@ -81,24 +85,35 @@ export default (props) => {
             field: "title",
           },
           {
-            title: "Description",
-            field: "description",
+            title: "Versions",
+            render: ({ versions }) => <span>{versions.length}</span>,
           },
-          { title: "Last Updated", field: "dateUpdated", type: "datetime" },
+          {
+            title: "Last Updated",
+            field: "dateUpdated",
+            type: "datetime",
+            render: ({ dateUpdated }) => (
+              <span>{timeago.format(dateUpdated)}</span>
+            ),
+          },
         ]}
         localization={{
           body: {
-            emptyDataSourceMessage: error ? <Button
-              onClick={handleRetry
-              }
-              color="secondary" variant="outlined" children={"retry?"} /> : (
-                <Typography>
-                  <Link component={RouterLink} to={`${path}add`}>
-                    Click here
+            emptyDataSourceMessage: error ? (
+              <Button
+                onClick={handleRetry}
+                color="secondary"
+                variant="outlined"
+                children={"retry?"}
+              />
+            ) : (
+              <Typography>
+                <Link component={RouterLink} to={`${path}add`}>
+                  Click here
                 </Link>{" "}
                 to create a Video Template😀
-                </Typography>
-              ),
+              </Typography>
+            ),
           },
         }}
         detailPanel={[
@@ -160,7 +175,7 @@ export default (props) => {
               };
             })
             .catch((err) => {
-              setError(err)
+              setError(err);
               return {
                 data: [],
                 page: query.page,

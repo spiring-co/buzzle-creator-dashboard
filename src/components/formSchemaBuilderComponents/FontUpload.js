@@ -1,15 +1,38 @@
-import { Button, Container, Typography } from "@material-ui/core";
+import {
+  Button,
+  Container,
+  Typography,
+  Avatar,
+  IconButton,
+  Divider,
+  Box,
+} from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { getLayersFromComposition } from "services/helper";
-import { ArrowForward, ArrowBack } from "@material-ui/icons";
+import {
+  ArrowForward,
+  ArrowBack,
+  HelpOutline,
+  Backup,
+} from "@material-ui/icons";
 import FontUploader from "./FontUploader";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemAvatar from "@material-ui/core/ListItemAvatar";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import ListItemText from "@material-ui/core/ListItemText";
 
 export default function FontUpload({
   compositions,
   setActiveDisplayIndex,
   activeDisplayIndex,
 }) {
-  const [fontList, setFontList] = useState(["MetalMania-Regular"]);
+  const [fontList, setFontList] = useState([
+    "MetalMania-Regular",
+    "Poppins",
+    "Helvetica",
+  ]);
   const [loading, setLoading] = useState(true);
   // takes all font used in template
   useEffect(() => {
@@ -49,6 +72,26 @@ export default function FontUpload({
         We will try to resolve your fonts automatically, if not resolved, Upload
         your Font File
       </Typography>
+      <Divider />
+      <Box mt={2}>
+        <List dense>
+          {fontList.map((f, i) => (
+            <ListItem key={i}>
+              <ListItemAvatar>
+                <Avatar>
+                  <HelpOutline />
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText primary={f} />
+              <ListItemSecondaryAction>
+                <IconButton edge="end" aria-label="delete">
+                  <Backup />
+                </IconButton>
+              </ListItemSecondaryAction>
+            </ListItem>
+          ))}
+        </List>
+      </Box>
       <Container
         style={{ display: "flex", justifyContent: "center", flexWrap: "wrap" }}>
         {fontList.map((font, index) => (
