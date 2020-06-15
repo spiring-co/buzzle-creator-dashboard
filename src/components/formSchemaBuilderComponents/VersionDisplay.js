@@ -31,7 +31,17 @@ export default ({
 
   useEffect(() => {
     setActiveVersionIndex(videoObj.versions.length);
-  }, []);
+  }, [activeVersionIndex]);
+
+  const handleCancel = () => {
+    if (editVersion) {
+      openVersionDisplay()
+    }
+    else {
+      removeVersion(activeVersionIndex);
+      openVersionDisplay()
+    }
+  }
 
   const openVersionMeta = (index, fromEdit = false) => {
     if (fromEdit) {
@@ -178,7 +188,9 @@ export default ({
             )}
         </ExpansionPanelDetails>
       </ExpansionPanel>
-
+      {activeStep !== 0 && <Button
+        onClick={handleCancel}
+        style={{ justifyContent: 'flex-start', width: 'fit-content' }} variant="outlined" color="secondary">Discard</Button>}
       <VersionStepper activeStep={activeStep} renderStep={renderStep} />
       <div style={{ display: "flex", justifyContent: "center" }}>
         <Button
