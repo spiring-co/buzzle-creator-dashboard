@@ -60,6 +60,7 @@ export default () => {
       email: "",
       countryCode: "",
       password: "",
+      confirmPassword: "",
       gender: "",
       country: "",
       phoneNumber: "",
@@ -68,6 +69,7 @@ export default () => {
     validationSchema,
     onSubmit: async (s) => {
       try {
+        delete s['confirmPassword']
         const response = await Creator.create(s);
         history.push("/login", {
           message:
@@ -136,6 +138,18 @@ export default () => {
             label="Password"
             error={touched.password && !!errors.password}
             helperText={errors?.password ?? t("passwordMust")}
+          /><TextField
+            fullWidth
+            margin={"normal"}
+            variant={"outlined"}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            value={values.confirmPassword}
+            name={"confirmPassword"}
+            placeholder="Confirm Password"
+            label="Confirm Password"
+            error={touched.confirmPassword && !!errors.confirmPassword}
+            helperText={errors?.confirmPassword}
           />
           <FormControl
             fullWidth
@@ -249,7 +263,20 @@ export default () => {
     </Box>
   );
 };
-
+function equalTo(ref, msg) {
+  return Yup.mixed().test({
+    name: 'equalTo',
+    exclusive: false,
+    message: msg || '${path} must be the same as ${reference}',
+    params: {
+      reference: ref.path,
+    },
+    test: function (value) {
+      return value === this.resolve(ref);
+    },
+  });
+}
+Yup.addMethod(Yup.string, 'equalTo', equalTo);
 const validationSchema = Yup.object({
   name: Yup.string()
     .min(3, "Should be at least 3 characters")
@@ -268,6 +295,8 @@ const validationSchema = Yup.object({
       "Should have  at least a number, and at least a special character"
     )
     .required("Password is Required"),
+  confirmPassword: Yup.string().equalTo(Yup.ref('password'), 'Incorrect password!')
+    .required('Confirm password is required!'),
   countryCode: Yup.string()
     .matches(/^(\+?\d{1,3}|\d{1,4})$/gm, "Country code is not valid")
     .required("Country code is required"),
