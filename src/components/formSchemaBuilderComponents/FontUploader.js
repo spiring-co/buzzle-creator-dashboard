@@ -1,98 +1,103 @@
-import React, { useContext, useEffect, useState } from "react";
-import { VideoTemplateContext } from "contextStore/store";
-import useActions from "contextStore/actions";
-
-export default function FontUploader({ fontName, fontStatus }) {
-  const [videoObj] = useContext(VideoTemplateContext);
-  const { editVideoKeys } = useActions();
-  const [loading, setLoading] = useState(true);
-  const [result, setResult] = useState(
-    fontStatus ? true : videoObj?.fonts?.map((f) => f?.name).includes(fontName)
-  );
-
-  const [error, setError] = useState(null);
-
-  // takes all font used in template
-  useEffect(() => {
-    setLoading(false);
-    setResult(
-      fontStatus
-        ? true
-        : videoObj?.fonts?.map((f) => f?.name).includes(fontName)
-    );
-  }, [fontStatus, fontName, videoObj]);
-
+import React, { useState } from "react";
+import { Tooltip } from "@material-ui/core"
+import upload from "services/s3Upload";
+import { Close } from "@material-ui/icons"
+export default ({
+  font,
+  handleDelete,
+  setFont,
+}) => {
+  const [loading, setLoading] = useState(false);
+  const [src, setSrc] = useState(Boolean(font?.src));
+  const [progress, setProgress] = useState('0%')
+  const [error, setError] = useState(null)
   const handleFontUpload = async (e) => {
     try {
-      setError(null);
-      setLoading(true);
-      const data = new FormData();
-      data.append("file", e.target.files[0]);
-
-      // const response = await fetch(
-      //   "https://infinite-atoll-19947.herokuapp.com/upload_file",
-      //   {
-      //     mode: "no-cors",
-      //     method: "POST",
-
-      //     body: data,
-      //   }
-      // );
-
-      // const result = await response.text();
-      // console.log(result);
-      // if (response.ok) {
-      //   editVideoKeys({
-      //     fonts: [...videoObj.fonts, { name: fontName, uri: result }],
-      //   });
-      editVideoKeys({
-        fonts: [...videoObj.fonts, { name: fontName, uri: true }],
-      });
+      const file =
+        (e?.target?.files ?? [null])[0] ||
+        (e?.dataTransfer?.files ?? [null])[0];
+      if (!file) return;
+      setLoading(true)
+      const task = upload(
+        `fonts/${file.name}`,
+        file
+      )
+      task.on('httpUploadProgress', ({ loaded, total }) => setProgress(`${parseInt(loaded * 100 / total)}%`))
+      const { Location: uri } = await task.promise()
+      setLoading(false)
+      setFont(uri)
+      setSrc(true);
       setLoading(false);
-      setResult(true);
-      return result;
     } catch (err) {
-      setLoading(false);
-      setError("Failed, Retry?");
+      setError(err)
     }
   };
 
   return (
-    <div style={styles.container}>
-      <p>
-        <b>{fontName}</b>
+    <div
+      style={{
+        display: "flex",
+        marginTop: 4,
+        paddingLeft: 5, paddingRight: 5,
+        background: "lightgrey", alignItems: "center"
+      }}
+    ><label
+      style={{
+        padding: 5,
+        margin: 5,
+        marginTop: 0, marginBottom: 0,
+        paddingTop: 0,
+        paddingBottom: 0,
+        background: "white",
+        border: "1px solid grey",
+        fontSize: "13.3333px",
+        fontFamily: "Arial",
+        borderRadius: 5
+      }}
+    >
+        {src ? 'Change Font' : "Upload Font"}
+
+        <input
+          style={{ display: "none" }}
+          type="file"
+          name={font?.name}
+          onChange={handleFontUpload}
+        />
+
+      </label>
+
+      <p style={{ fontSize: 13, marginLeft: 5, marginRight: 5, color: src ? "#3742fa" : "black" }}>
+        <b>{font?.name} {loading && `(${progress})`}</b>
       </p>
-      <p style={{ color: "red" }}>{error}</p>
-      {loading ? (
-        <p>Resolving...</p>
-      ) : result ? (
-        <p style={{ color: "green" }}>Success</p>
-      ) : (
-        <label
-          style={{ padding: 5, border: "1px solid black", borderRadius: 10 }}>
-          Upload Font
-          <input
-            id={fontName}
-            style={{ display: "none" }}
-            type="file"
-            name={fontName}
-            accept={[".ttf", ".otf"]}
-            onChange={handleFontUpload}
-          />
-        </label>
-      )}
+      {loading ?
+        <div
+          style={{
+            height: 13,
+            width: 80,
+            margin: 5,
+            marginTop: 0,
+            marginBottom: 0,
+            border: "1px solid white",
+            transition: "background-color 0.5s ease",
+            background: `linear-gradient(90deg, #3742fa ${progress}, #fff ${progress})`
+          }} />
+        :
+
+        <Tooltip
+          arrow={true}
+          placement="right"
+          title="Remove Font">
+          <Close
+            onClick={handleDelete}
+            align="right"
+            style={{
+              margin: 5,
+              marginTop: 0,
+              marginBottom: 0,
+              color: "grey"
+            }} fontSize="small" />
+        </Tooltip>}
+
     </div>
   );
 }
-const styles = {
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    textAlign: "center",
-    border: "1px solid grey",
-    borderRadius: 20,
-    padding: 20,
-    margin: 20,
-  },
-};

@@ -36,7 +36,15 @@ const getListStyle = isDraggingOver => ({
 });
 
 export default ({ initialValues, onSubmit }) => {
-    const [prerenderActions, setPrerenderActions] = useState({})
+    const [prerenderActions, setPrerenderActions] = useState([{
+        installFonts: {
+            module: 'install-fonts',
+            fonts: ["SourceSansPro-Blackd",
+                "SourceSansPro-BlackItd",
+                "SourceSansPro-Boldd",
+                "SourceSansPro-BoldItd"]
+        }
+    }])
     const [editIndex, setEditIndex] = useState(0)
     const [postrenderActions, setPostrenderActions] = useState([{
         compress:
@@ -153,7 +161,8 @@ export default ({ initialValues, onSubmit }) => {
     const actions = {
         postrender: <PostRender initialValue={initialValue}
             handleEdit={(obj) => setInitialValue(obj)} />,
-        prerender: <PreRender />
+        prerender: <PreRender initialValue={initialValue}
+            handleEdit={(obj) => setInitialValue(obj)} />
     }
     return (<Paper style={{ padding: 20 }}>
         <Button color="primary"
@@ -167,12 +176,13 @@ export default ({ initialValues, onSubmit }) => {
                 {(provided, snapshot) => (
                     <RootRef rootRef={provided.innerRef}>
                         <List style={getListStyle(snapshot.isDraggingOver)}>
-                            {Object.keys(prerenderActions).length !== 0
-                                ? Object.keys(prerenderActions)?.map((item, index) => (
-                                    <Draggable key={item} draggableId={item} index={index}>
-                                        {(provided, snapshot) => (
-                                            <Paper>
-                                                <ListItem
+                            {prerenderActions.length !== 0
+                                ? prerenderActions.map((item, index) => {
+                                    var name = Object.keys(item)[0]
+                                    return (
+                                        <Draggable key={name} draggableId={name} index={index}>
+                                            {(provided, snapshot) => (
+                                                <Paper><ListItem
                                                     ContainerComponent="li"
                                                     ContainerProps={{ ref: provided.innerRef }}
                                                     {...provided.draggableProps}
@@ -183,22 +193,20 @@ export default ({ initialValues, onSubmit }) => {
                                                     )}
                                                 >
                                                     <ListItemText
-                                                        primary={item}
-                                                        secondary={Object.keys(prerenderActions[item])?.map((key, index) =>
-                                                            <Typography>{`${[key]}: ${JSON.stringify(prerenderActions[item][key])}`}</Typography>)}
+                                                        primary={name}
+                                                        secondary={Object.keys(item[name])?.map((key, index) =>
+                                                            <Typography>{`${[key]}: ${JSON.stringify(item[name][key])}`}</Typography>)}
                                                     />
                                                     <ListItemSecondaryAction>
-                                                        <IconButton
-                                                            onClick={() =>
-                                                                handleOpen('prerender', { [item]: prerenderActions[item] }, index)
-                                                            }>
+                                                        <IconButton onClick={() => handleOpen('prerender', { [name]: item[name] }, index)}>
                                                             <EditIcon />
                                                         </IconButton>
                                                     </ListItemSecondaryAction>
                                                 </ListItem></Paper>
-                                        )}
-                                    </Draggable>
-                                )) : <p>No Action</p>}
+                                            )}
+                                        </Draggable>
+                                    )
+                                }) : <p>No Action</p>}
                             {provided.placeholder}
                         </List>
                     </RootRef>
