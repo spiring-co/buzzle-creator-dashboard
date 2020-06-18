@@ -1,4 +1,4 @@
-export default ({ versions, id, staticAssets }) => {
+export default ({ versions, id, staticAssets, }) => {
   return versions.map((v) => ({
     idVideoTemplate: id,
     idVersion: v.id,

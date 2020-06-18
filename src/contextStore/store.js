@@ -13,7 +13,7 @@ const StateProvider = ({ children }) => {
     description: '',
     tags: [],
     staticAssets: [],
-    idFontsUsed: [],
+    fonts: [],
     thumbnail: '',
     isDeleted: false,
   });

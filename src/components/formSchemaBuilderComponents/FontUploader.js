@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Tooltip, FormHelperText } from "@material-ui/core"
 import upload from "services/s3Upload";
 import { Close } from "@material-ui/icons"
+import { Fonts } from "services/api"
 export default ({
   font,
   handleDelete,
@@ -27,7 +28,8 @@ export default ({
       setLoading(false)
       setFont(uri)
       setSrc(true);
-      setLoading(false);
+      console.log({ name: font?.name, src: uri })
+      await Fonts.addFont({ name: font?.name, src: uri })
     } catch (err) {
       setLoading(false)
       setError(err)

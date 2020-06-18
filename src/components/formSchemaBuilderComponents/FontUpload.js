@@ -1,15 +1,18 @@
 import { Button, Container, Typography, CircularProgress } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { getLayersFromComposition } from "services/helper";
 import { ArrowForward, ArrowBack } from "@material-ui/icons";
 import FontUploader from "./FontUploader";
 import useActions from "contextStore/actions";
-
+import { VideoTemplateContext } from "contextStore/store";
+import { Fonts } from 'services/api'
 export default function FontUpload({
   compositions,
   setActiveDisplayIndex,
   activeDisplayIndex,
 }) {
+  const [videoObj] = useContext(VideoTemplateContext);
+
   const { editVideoKeys } = useActions();
   const [fontList, setFontList] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,27 +25,18 @@ export default function FontUpload({
     const fontNames = Array.from(new Set(allTextLayers.map((l) => l.font)));
     console.log(fontNames);
     // this is without checking font Status
-    setFontList(fontNames.map((f) => ({ name: f, src: "hiih" })))
-    setLoading(false)
-    //TODO call it to check status 
-    // fetchFontStatus(fontNames)
-    //   .then(setFontList)
-    //   .catch(console.log)
-    //.finally(() => setLoading(false));
+    Promise.all(fontNames.map((f) => Fonts.getStatus(f))).then(data => {
+      setFontList(data)
+      setLoading(false)
+    })
   }, [compositions]);
 
 
   useEffect(() => {
-    editVideoKeys({ idFontsUsed: fontList });
+    editVideoKeys({ fonts: fontList });
   }, [fontList]);
 
 
-  const fetchFontStatus = async (fontArray) => {
-    // TODO to be implmented
-    // return something like 
-    // src will be empty when not installed, and else return the url
-    //[{name:"OpenSans Bold" src:"http://examle.com"},{name:"Helvit",src:""}]
-  };
 
   return (
     <div style={{ textAlign: 'center' }}>

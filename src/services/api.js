@@ -97,7 +97,36 @@ export const VideoTemplate = {
     return await response.json();
   },
 };
+export const Fonts = {
+  getStatus: async (name) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/fonts?name=${name}`)
+      if (response.ok) {
+        const result = await response.json()
+        return result
+      }
+      else {
+        return ({ name, src: "" })
+      }
+    }
+    catch (err) {
+      console.log(err)
+      return ({ name, src: "" })
+    }
+  },
+  addFont: async (fontObj) => {
+    try {
+      await fetch(`${process.env.REACT_APP_API_URL}/fonts`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(fontObj)
+      })
+    } catch (err) {
+      console.log(err)
+    }
+  }
 
+}
 export const Creator = {
   get: async (id) => {
     const response = await fetch(`${baseUrl}/creators/${id}`, {
