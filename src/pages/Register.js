@@ -291,10 +291,6 @@ const validationSchema = Yup.object({
   password: Yup.string()
     .min(8, "Should be at least 8 characters")
     .max(40, "Should not be more than 40 characters")
-    .matches(
-      /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,40}$/,
-      "Should have  at least a number, and at least a special character"
-    )
     .required("Password is Required"),
   confirmPassword: Yup.string()
     .equalTo(Yup.ref("password"), "Incorrect password!")
