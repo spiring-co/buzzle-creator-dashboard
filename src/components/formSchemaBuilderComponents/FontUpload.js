@@ -1,4 +1,4 @@
-import { Button, Container, Typography } from "@material-ui/core";
+import { Button, Container, Typography, CircularProgress } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { getLayersFromComposition } from "services/helper";
 import { ArrowForward, ArrowBack } from "@material-ui/icons";
@@ -43,32 +43,34 @@ export default function FontUpload({
     // src will be empty when not installed, and else return the url
     //[{name:"OpenSans Bold" src:"http://examle.com"},{name:"Helvit",src:""}]
   };
-  if (loading) {
-    return <Typography variant="h5">Resolving Font...</Typography>;
-  }
+
   return (
-    <div>
+    <div style={{ textAlign: 'center' }}>
       <Typography variant="h5">Upload Font Files</Typography>
       <Typography style={{ color: "grey" }}>
         We will try to resolve your fonts automatically, if not resolved, Upload
         your Font File
       </Typography>
-      <Container
-        style={{ display: "flex", justifyContent: "center", flexWrap: "wrap" }}>
-        {fontList.length !== 0 ? fontList.map((font, index) => (
-          <FontUploader
-            key={index}
-            font={font}
-            handleDelete={() => {
-              setFontList(fontList.filter((a, i) => i !== index))
-            }}
-            setFont={src => {
-              fontList[index] = { ...fontList[index], src }
-              setFontList(fontList)
-            }}
-          />
-        )) : <p>No Font Found!</p>}
-      </Container>
+      {loading ?
+        <>
+          <CircularProgress size={20} style={{ marginTop: 30 }} />
+          <p>Resolving Font...</p></>
+        : <Container
+          style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", marginBottom: 20, marginTop: 20 }}>
+          {fontList.length !== 0 ? fontList.map((font, index) => (
+            <FontUploader
+              key={index}
+              font={font}
+              handleDelete={() => {
+                setFontList(fontList.filter((a, i) => i !== index))
+              }}
+              setFont={src => {
+                fontList[index] = { ...fontList[index], src }
+                setFontList(fontList)
+              }}
+            />
+          )) : <p>No Font Found!</p>}
+        </Container>}
       <div style={{ display: "flex", justifyContent: "center" }}>
         <Button
           startIcon={<ArrowBack />}

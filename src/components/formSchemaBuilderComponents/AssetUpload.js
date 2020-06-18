@@ -54,18 +54,14 @@ export default function AssetUpload({
   const { editVideoKeys } = useActions();
   const [progress, setProgress] = useState(0)
 
-  // useEffect(() => {
-  //   //sets asset array retrieve it from composition
-  //   setAssets(staticAssets);
-  // }, []);
-
   useEffect(() => {
+    // set the value to global state of videoTemplate
     editVideoKeys({ staticAssets: assets });
   }, [assets]);
 
-  useEffect(() => {
-    //setAssets([]);
-  }, [uploadType]);
+  // useEffect(() => {
+  //   //setAssets([]);
+  // }, [uploadType]);
 
   const handleChange = (e) => {
     setUploadType(e.target.value);
@@ -91,40 +87,42 @@ export default function AssetUpload({
     );
   };
 
-  const handleZipAssetUpload = async () => {
-    try {
-      setError(null);
-      setLoading(true);
-      // filter only files required in template with all files
-      const assetNames = assets.map((i) => i.name.toLowerCase());
+  // Not Usable Currently
+  // const handleZipAssetUpload = async () => {
+  //   try {
+  //     setError(null);
+  //     setLoading(true);
+  //     // filter only files required in template with all files
+  //     const assetNames = assets.map((i) => i.name.toLowerCase());
 
-      const newAssets = assets.filter(({ name }) =>
-        assetNames.includes(name.toLowerCase())
-      );
-      // call zipMaker and upload it to s3 get the uri
-      const zipBlob = await zipMaker(newAssets);
+  //     const newAssets = assets.filter(({ name }) =>
+  //       assetNames.includes(name.toLowerCase())
+  //     );
+  //     // call zipMaker and upload it to s3 get the uri
+  //     const zipBlob = await zipMaker(newAssets);
 
-      //TODO blob not uploading fine
-      const task = upload(
-        `staticAssets/${Date.now()}.zip`,
-        zipBlob
-      )
-      task.on('httpUploadProgress', ({ loaded, total }) => setProgress(`${parseInt(loaded * 100 / total)}%`))
-      const { Location: uri } = await task.promise()
-      console.log(uri);
-      // // save this uri to global State
-      editVideoKeys({ staticAssets: assets });
+  //     //TODO blob not uploading fine
+  //     const task = upload(
+  //       `staticAssets/${Date.now()}.zip`,
+  //       zipBlob
+  //     )
+  //     task.on('httpUploadProgress', ({ loaded, total }) => setProgress(`${parseInt(loaded * 100 / total)}%`))
+  //     const { Location: uri } = await task.promise()
+  //     console.log(uri);
+  //     // // save this uri to global State
+  //     editVideoKeys({ staticAssets: assets });
 
-      setLoading(false);
-    } catch (err) {
-      setLoading(false);
+  //     setLoading(false);
+  //   } catch (err) {
+  //     setLoading(false);
 
-      setError("Something Went Wrong, Please Retry...");
-    }
-  };
+  //     setError("Something Went Wrong, Please Retry...");
+  //   }
+  // };
 
   const renderAssetUploader = () => {
     switch (uploadType) {
+      // not using currently
       case "folder":
         return (
           <AssetUploader
@@ -142,27 +140,28 @@ export default function AssetUpload({
         return;
     }
   };
-  if (error) {
-    return (
-      <div className={classes.container}>
-        <p style={{ color: "red" }}>{error}</p>
-        <Button
-          variant="outlined"
-          color="secondary"
-          onClick={handleZipAssetUpload}
-          children="Retry"
-        />
-      </div>
-    );
-  }
-
-  if (loading) {
-    return (
-      <div className={classes.container}>
-        <h4>Uploading Assets - {progress}%</h4>
-      </div>
-    );
-  }
+  // Not applicable currently
+  // if (error) {
+  //   return (
+  //     <div className={classes.container}>
+  //       <p style={{ color: "red" }}>{error}</p>
+  //       <Button
+  //         variant="outlined"
+  //         color="secondary"
+  //         onClick={handleZipAssetUpload}
+  //         children="Retry"
+  //       />
+  //     </div>
+  //   );
+  // }
+  // Not Applicable Currently
+  // if (loading) {
+  //   return (
+  //     <div className={classes.container}>
+  //       <h4>Uploading Assets - {progress}%</h4>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className={classes.container}>
