@@ -23,47 +23,31 @@ import * as Yup from "yup";
 const validationSchema = null;
 
 export default ({
-    initialValues,
-    setIsDialogOpen,
+    title,
+    handleClose,
+    children,
     onSubmit,
 }) => {
-
-    const {
-        values,
-        errors,
-        touched,
-        handleBlur,
-        handleSubmit,
-        handleChange,
-    } = useFormik({
-        initialValues: initialValues,
-        validationSchema,
-        onSubmit,
-    });
-
     return (
         <Dialog
             fullWidth
             open
-            onClose={() => setIsDialogOpen(false)}
+            onClose={handleClose}
             aria-labelledby="form-dialog-title">
-            <DialogTitle id="form-dialog-title">{"Action Details"}</DialogTitle>
-            <form onSubmit={handleSubmit}>
-                <DialogContent>
-                    <Typography>Here comes Details</Typography>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setIsDialogOpen(false)} color="primary">
-                        Cancel
+            <DialogTitle id="form-dialog-title">{title}</DialogTitle>
+            <DialogContent children={children} />
+
+            <DialogActions>
+                <Button onClick={handleClose} color="primary">
+                    Cancel
           </Button>
-                    <Button
-                        variant="contained"
-                        type="submit"
-                        color="primary"
-                        children={"Save Action"}
-                    />
-                </DialogActions>
-            </form>
+                <Button
+                    variant="contained"
+                    onClick={onSubmit}
+                    color="primary"
+                    children={"Save Action"}
+                />
+            </DialogActions>
         </Dialog>
     );
 };

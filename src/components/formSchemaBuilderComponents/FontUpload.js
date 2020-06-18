@@ -19,7 +19,6 @@ import FontUploader from "./FontUploader";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import ListItemText from "@material-ui/core/ListItemText";
 
@@ -28,11 +27,7 @@ export default function FontUpload({
   setActiveDisplayIndex,
   activeDisplayIndex,
 }) {
-  const [fontList, setFontList] = useState([
-    "MetalMania-Regular",
-    "Poppins",
-    "Helvetica",
-  ]);
+  const [fontList, setFontList] = useState([]);
   const [loading, setLoading] = useState(true);
   // takes all font used in template
   useEffect(() => {
@@ -42,25 +37,25 @@ export default function FontUpload({
 
     const fontNames = Array.from(new Set(allTextLayers.map((l) => l.font)));
     console.log(fontNames);
-    fetchFontStatus(fontNames)
-      .then(setFontList)
-      .catch(console.log)
-      .finally(() => setLoading(false));
+    // this is without checking font Status
+    setFontList(fontNames.map((f) => ({ name: f, src: "hiih" })));
+    setLoading(false);
+    //TODO call it to check status
+    // fetchFontStatus(fontNames)
+    //   .then(setFontList)
+    //   .catch(console.log)
+    //.finally(() => setLoading(false));
   }, [compositions]);
 
+  useEffect(() => {
+    editVideoKeys({ idFontsUsed: fontList });
+  }, [fontList]);
+
   const fetchFontStatus = async (fontArray) => {
-    const response = await fetch(
-      `http://localhost:4488/getFontInstallableStatus`,
-      {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ fontArray }),
-      }
-    );
-    return await response.json();
+    // TODO to be implmented
+    // return something like
+    // src will be empty when not installed, and else return the url
+    //[{name:"OpenSans Bold" src:"http://examle.com"},{name:"Helvit",src:""}]
   };
   if (loading) {
     return <Typography variant="h5">Resolving Font...</Typography>;
@@ -94,13 +89,23 @@ export default function FontUpload({
       </Box>
       <Container
         style={{ display: "flex", justifyContent: "center", flexWrap: "wrap" }}>
-        {fontList.map((font, index) => (
-          <FontUploader
-            key={index}
-            fontName={font.name}
-            fontStatus={font.resolved}
-          />
-        ))}
+        {fontList.length !== 0 ? (
+          fontList.map((font, index) => (
+            <FontUploader
+              key={index}
+              font={font}
+              handleDelete={() => {
+                setFontList(fontList.filter((a, i) => i !== index));
+              }}
+              setFont={(src) => {
+                fontList[index] = { ...fontList[index], src };
+                setFontList(fontList);
+              }}
+            />
+          ))
+        ) : (
+          <p>No Font Found!</p>
+        )}
       </Container>
       <div style={{ display: "flex", justifyContent: "center" }}>
         <Button
