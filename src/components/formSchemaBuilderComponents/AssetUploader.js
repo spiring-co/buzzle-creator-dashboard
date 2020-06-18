@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Tooltip } from "@material-ui/core"
+import { Tooltip, FormHelperText } from "@material-ui/core"
 import upload from "services/s3Upload";
 import { Close } from "@material-ui/icons"
 export default function AssetUploader({
@@ -29,75 +29,79 @@ export default function AssetUploader({
       setSrc(true);
       setLoading(false);
     } catch (err) {
+      setLoading(false)
       setError(err)
     }
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        marginTop: 4,
-        paddingLeft: 5, paddingRight: 5,
-        background: "lightgrey", alignItems: "center"
-      }}
-    ><label
-      style={{
-        padding: 5,
-        margin: 5,
-        marginTop: 0, marginBottom: 0,
-        paddingTop: 0,
-        paddingBottom: 0,
-        background: "white",
-        border: "1px solid grey",
-        fontSize: "13.3333px",
-        fontFamily: "Arial",
-        borderRadius: 5
-      }}
-    >
-        {src ? 'Change Asset' : "Upload Asset"}
+    <div style={{ display: 'flex', flexDirection: "column" }}>
+      <div
+        style={{
+          display: "flex",
+          marginTop: 4,
+          paddingLeft: 5, paddingRight: 5,
+          background: "lightgrey", alignItems: "center"
+        }}
+      ><label
+        style={{
+          padding: 5,
+          margin: 5,
+          marginTop: 0, marginBottom: 0,
+          paddingTop: 0,
+          paddingBottom: 0,
+          background: "white",
+          border: "1px solid grey",
+          fontSize: "13.3333px",
+          fontFamily: "Arial",
+          borderRadius: 5
+        }}
+      >
+          {src ? 'Change Asset' : "Upload Asset"}
 
-        <input
-          style={{ display: "none" }}
-          type="file"
-          name={asset?.name}
-          onChange={handleAssetUpload}
-        />
+          <input
+            style={{ display: "none" }}
+            type="file"
+            name={asset?.name}
+            onChange={handleAssetUpload}
+          />
 
-      </label>
+        </label>
 
-      <p style={{ fontSize: 13, marginLeft: 5, marginRight: 5, color: src ? "#3742fa" : "black" }}>
-        <b>{asset?.name} {loading && `(${progress})`}</b>
-      </p>
-      {loading ?
-        <div
-          style={{
-            height: 13,
-            width: 80,
-            margin: 5,
-            marginTop: 0,
-            marginBottom: 0,
-            border: "1px solid white",
-            transition: "background-color 0.5s ease",
-            background: `linear-gradient(90deg, #3742fa ${progress}, #fff ${progress})`
-          }} />
-        :
-
-        <Tooltip
-          arrow={true}
-          placement="right"
-          title="Remove Asset">
-          <Close
-            onClick={handleDelete}
-            align="right"
+        <p style={{ fontSize: 13, marginLeft: 5, marginRight: 5, color: src ? "#3742fa" : "black" }}>
+          <b>{asset?.name} {loading && `(${progress})`}</b>
+        </p>
+        {loading ?
+          <div
             style={{
+              height: 13,
+              width: 80,
               margin: 5,
               marginTop: 0,
               marginBottom: 0,
-              color: "grey"
-            }} fontSize="small" />
-        </Tooltip>}
+              border: "1px solid white",
+              transition: "background-color 0.5s ease",
+              background: `linear-gradient(90deg, #3742fa ${progress}, #fff ${progress})`
+            }} />
+          :
 
+          <Tooltip
+            arrow={true}
+            placement="right"
+            title="Remove Asset">
+            <Close
+              onClick={handleDelete}
+              align="right"
+              style={{
+                margin: 5,
+                marginTop: 0,
+                marginBottom: 0,
+                color: "grey"
+              }} fontSize="small" />
+          </Tooltip>}
+
+      </div>
+      {error && <FormHelperText error={true} children={error?.message} />}
     </div>
   );
 }

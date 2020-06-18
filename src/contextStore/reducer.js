@@ -101,7 +101,7 @@ export default (state, action) => {
         description: "",
         tags: [],
         staticAssets: [],
-        idFontsUsed: [],
+        fonts: [],
         thumbnail: "",
         isDeleted: false,
       };
