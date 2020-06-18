@@ -3,12 +3,14 @@ import React, { useEffect, useState } from "react";
 import { getLayersFromComposition } from "services/helper";
 import { ArrowForward, ArrowBack } from "@material-ui/icons";
 import FontUploader from "./FontUploader";
+import useActions from "contextStore/actions";
 
 export default function FontUpload({
   compositions,
   setActiveDisplayIndex,
   activeDisplayIndex,
 }) {
+  const { editVideoKeys } = useActions();
   const [fontList, setFontList] = useState([]);
   const [loading, setLoading] = useState(true);
   // takes all font used in template
