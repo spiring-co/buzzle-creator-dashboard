@@ -5,21 +5,20 @@ import Tab from "@material-ui/core/Tab";
 import { Typography, Container, Divider, Box } from "@material-ui/core";
 import { Creator } from "services/api";
 import { Alert } from "@material-ui/lab";
+import useAuth from "services/auth";
 
 export default function DisabledTabs() {
   const [value, setValue] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [creator, setCreator] = useState({});
   const [error, setError] = useState(null);
-
+  const { user } = useAuth();
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
   useEffect(() => {
-    Creator.get(localStorage.getItem("creatorId"))
-      .then(setCreator)
-      .catch(setError);
+    Creator.get(user?.id).then(setCreator).catch(setError);
   }, []);
 
   return (

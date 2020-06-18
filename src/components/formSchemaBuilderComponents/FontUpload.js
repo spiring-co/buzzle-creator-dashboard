@@ -48,7 +48,7 @@ export default function FontUpload({
   }, [compositions]);
 
   useEffect(() => {
-    editVideoKeys({ idFontsUsed: fontList });
+    // editVideoKeys({ idFontsUsed: fontList });
   }, [fontList]);
 
   const fetchFontStatus = async (fontArray) => {

@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import { useFormik } from "formik";
 import { useTranslation } from "react-i18next";
-import { Link as RouterLink, Redirect, useLocation } from "react-router-dom";
+import {
+  Link as RouterLink,
+  Redirect,
+  useLocation,
+  useHistory,
+} from "react-router-dom";
 
 import useAuth from "services/auth";
 import * as Yup from "yup";
@@ -44,6 +49,7 @@ export default () => {
   const { t } = useTranslation();
   const classes = useStyles();
   const { state } = useLocation();
+  const history = useHistory();
   const { message } = state || {};
 
   const [error, setError] = useState(null);
@@ -74,6 +80,7 @@ export default () => {
         setLoading(true);
         await login(email, password);
         setIsLoggedIn(true);
+        history.push("/home");
       } catch (e) {
         setError(e);
       } finally {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   DialogActions,
   Dialog,
@@ -15,6 +15,7 @@ import {
   FormControlLabel,
   Radio,
   FormLabel,
+  Checkbox,
 } from "@material-ui/core";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -45,11 +46,17 @@ export default ({
   } = useFormik({
     initialValues: initialValues || defaultValues,
     validationSchema,
-    onSubmit: (a) =>
-      onSubmit({
+    onSubmit: (a) => {
+      if (a.overrideExpression) {
+        a.expression = a.value;
+        delete a.overrideExpression;
+      }
+
+      return onSubmit({
         layerName: editableLayers[selectedLayerIndex].layerName,
         ...a,
-      }),
+      });
+    },
   });
 
   /*
@@ -192,7 +199,6 @@ export default ({
       <form onSubmit={handleSubmit}>
         <DialogTitle id="form-dialog-title">{"Edit Asset"}</DialogTitle>
         <DialogContent>
-
           <FormControl fullWidth margin="dense" variant="outlined">
             <InputLabel id="layer-select">Select Layer</InputLabel>
             <Select
@@ -261,18 +267,29 @@ export default ({
                 label={"Value"}
                 placeholder={"Enter Value Here"}
               />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={values.overrideExpression}
+                    onChange={handleChange}
+                    name="overrideExpression"
+                    color="primary"
+                  />
+                }
+                label="Override Expression"
+              />
             </div>
           ) : (
-              <SourceInput
-                errors={errors.src}
-                touched={touched.src}
-                src={values.src}
-                value={values.src}
-                type={values.type}
-                handleChange={handleChange}
-                handleBlur={handleBlur}
-              />
-            )}
+            <SourceInput
+              errors={errors.src}
+              touched={touched.src}
+              src={values.src}
+              value={values.src}
+              type={values.type}
+              handleChange={handleChange}
+              handleBlur={handleBlur}
+            />
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setIsDialogOpen(false)} color="primary">

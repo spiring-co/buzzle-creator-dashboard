@@ -17,7 +17,7 @@ import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import MenuIcon from "@material-ui/icons/Menu";
 import clsx from "clsx";
 import React, { forwardRef, useMemo, useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useHistory } from "react-router-dom";
 
 import useAuth from "../services/auth";
 
@@ -25,7 +25,6 @@ const drawerWidth = 240;
 
 function ListItemLink(props) {
   const { icon, primary, to } = props;
-
   const renderLink = useMemo(
     () =>
       forwardRef((itemProps, ref) => (
@@ -118,6 +117,7 @@ export default function NavBar({ items }) {
   const [drawerOpen, setDrawerOpen] = useState(true);
   const [anchorEl, setAnchorEl] = useState(null);
   const { logout } = useAuth();
+  const history = useHistory();
 
   const handleDrawerOpen = () => {
     setDrawerOpen(true);
@@ -191,7 +191,13 @@ export default function NavBar({ items }) {
               open={open}
               onClose={handleClose}>
               <MenuItem onClick={handleClose}>Profile</MenuItem>
-              <MenuItem onClick={logout}>Logout</MenuItem>
+              <MenuItem
+                onClick={() => {
+                  logout();
+                  history.push("/login");
+                }}>
+                Logout
+              </MenuItem>
             </Menu>
           </div>
         </Toolbar>

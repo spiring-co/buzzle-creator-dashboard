@@ -5,28 +5,19 @@ import {
   LinearProgress,
   Button,
   withStyles,
-  IconButton,
   Grid,
-  Divider,
   Box,
   Link,
   AppBar,
   Tabs,
   Tab,
 } from "@material-ui/core";
-import {
-  Link as RouterLink,
-  useRouteMatch,
-  useHistory,
-  Redirect,
-} from "react-router-dom";
-import { Add } from "@material-ui/icons";
+import { useHistory, Redirect } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 
-import AssetsPreview from "components/AssetsPreview";
 import ErrorHandler from "components/ErrorHandler";
 import AssetDialog from "components/AssetDialog";
-import ActionsHandler from "components/ActionsHandler"
+import ActionsHandler from "components/ActionsHandler";
 import formatTime from "helpers/formatTime";
 import { Job } from "services/api";
 import { useParams } from "react-router-dom";
@@ -49,12 +40,6 @@ function TabPanel(props) {
     </div>
   );
 }
-
-// TabPanel.propTypes = {
-//   children: PropTypes.node,
-//   index: PropTypes.any.isRequired,
-//   value: PropTypes.any.isRequired,
-// };
 
 function a11yProps(index) {
   return {
@@ -87,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default (props) => {
+export default () => {
   const classes = useStyles();
 
   const [job, setJob] = useState({});
@@ -96,10 +81,8 @@ export default (props) => {
   const [redirect, setRedirect] = useState(null);
 
   const { id } = useParams();
-  const history = useHistory();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [initialValue, setInitialValue] = useState({});
   const [editIndex, setEditIndex] = useState(null);
   const [activeTabIndex, setActiveTabIndex] = useState(0);
 
@@ -107,8 +90,26 @@ export default (props) => {
     fetchJob();
   }, []);
   const handleAssetSubmit = (a) => {
-    //TODO check if property combination already exists
-    job.assets.push(a);
+    if (editIndex !== null) {
+      job.assets[editIndex] = a;
+    } else {
+      const i = job.assets.findIndex(
+        (j) => j.layerName == a.layerName && j.property === a.property
+      );
+
+      if (i === -1) {
+        job.assets.push(a);
+      } else {
+        if (
+          window.confirm(
+            `This will replace the existing asset on layer ${a.layerName}'s property ${a.property} with value: ${a.value}`
+          )
+        ) {
+          job.assets[i] = a;
+        }
+      }
+    }
+    setEditIndex(null);
     setJob(job);
     setIsDialogOpen(false);
   };
@@ -300,14 +301,17 @@ export default (props) => {
           />
         </TabPanel>
         <TabPanel value={activeTabIndex} index={2}>
-         <ActionsHandler/>
+          <ActionsHandler
+            prerender={job.actions?.prerender ?? []}
+            postrender={job.actions?.postrender ?? []}
+          />
         </TabPanel>
       </div>
       {isDialogOpen && (
         <AssetDialog
           setIsDialogOpen={setIsDialogOpen}
           editableLayers={videoTemplate?.editableLayers}
-          initialValues={editIndex!==null && job.assets[editIndex]}
+          initialValues={editIndex !== null && job.assets[editIndex]}
           onSubmit={handleAssetSubmit}
         />
       )}

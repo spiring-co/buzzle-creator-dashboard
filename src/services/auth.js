@@ -1,48 +1,56 @@
 import { useState } from "react";
-import { useHistory } from "react-router-dom";
-const baseUrl = process.env.REACT_APP_API_URL;
 const jwtDecode = require("jwt-decode");
 
 export default () => {
-  const history = useHistory();
+  const getUser = () => {
+    const jwt = localStorage.getItem("jwtoken");
+    if (!jwt) return null;
 
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    localStorage.getItem("jwtoken") !== null
-  );
+    try {
+      const { exp, id, name, email } = jwtDecode(jwt);
+      if (!(exp * 1000 > Date.now())) return null;
+      return { id, name, email };
+    } catch (err) {
+      return null;
+    }
+  };
+
+  const [user, setUser] = useState(getUser());
 
   const login = async (email, password) => {
-    localStorage.removeItem("jwtoken");
-
-    const response = await fetch(baseUrl + "/auth/login", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
-
+    const response = await fetch(
+      `${process.env.REACT_APP_API_URL}/auth/login`,
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      }
+    );
     if (!response.ok) {
       throw new Error((await response.json()).message);
     }
 
     const { token } = await response.json();
-
     localStorage.setItem("jwtoken", token);
-    const user = jwtDecode(token);
-    // set here decoded info
-    localStorage.setItem("creatorId", user.id);
-    localStorage.setItem("email", user.email);
-    setIsAuthenticated(true);
+
+    try {
+      const { id, name, email } = jwtDecode(token);
+      setUser({ id, name, email });
+    } catch (err) {
+      setUser(null);
+      console.log(err);
+    }
     return token;
   };
 
   const logout = async () => {
     localStorage.removeItem("jwtoken");
-    history.push("/login"); // done this because isAuthenticated ,is not rendering in private route after setIsAuthenticated(false)
-    setIsAuthenticated(false);
+    setUser(null);
     return true;
   };
 
-  return { login, logout, isAuthenticated };
+  return { login, logout, user };
 };

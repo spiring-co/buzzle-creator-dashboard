@@ -12,10 +12,7 @@ import ErrorHandler from "components/ErrorHandler";
 import SnackAlert from "components/SnackAlert";
 import ReactJson from "react-json-view";
 import * as timeago from "timeago.js";
-
-const uri = `${process.env.REACT_APP_API_URL}/creators/${localStorage.getItem(
-  "creatorId"
-)}/videoTemplates`;
+import useAuth from "services/auth";
 
 export default (props) => {
   let { url, path } = useRouteMatch();
@@ -25,7 +22,8 @@ export default (props) => {
   const [error, setError] = useState(null);
 
   const tableRef = useRef(null);
-
+  const { user } = useAuth();
+  const uri = `${process.env.REACT_APP_API_URL}/creators/${user?.id}/videoTemplates`;
   const handleDelete = async (id) => {
     const action = window.confirm("Are you sure, you want to delete");
     if (!action) return;
@@ -156,17 +154,16 @@ export default (props) => {
             icon: "edit",
             tooltip: "Edit Template",
             onClick: (e, data) => {
-              delete data['tableData']
+              delete data["tableData"];
               history.push({
                 pathname: `${url}/${data.id}/edit`,
                 state: {
                   isEdit: true,
                   video: data,
-                }
-              })
-            }
-          }
-          ,
+                },
+              });
+            },
+          },
           {
             icon: "refresh",
             tooltip: "Refresh Data",

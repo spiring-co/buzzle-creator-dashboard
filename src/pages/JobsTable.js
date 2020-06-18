@@ -3,15 +3,12 @@ import { Chip, Link, Button, Container } from "@material-ui/core";
 import MaterialTable from "material-table";
 import { useRouteMatch, Link as RouterLink } from "react-router-dom";
 import ErrorHandler from "components/ErrorHandler";
+import useAuth from "services/auth";
 
 import { Job } from "services/api";
 import ReactJson from "react-json-view";
 import io from "socket.io-client";
 import * as timeago from "timeago.js";
-
-const uri = `${process.env.REACT_APP_API_URL}/creators/${localStorage.getItem(
-  "creatorId"
-)}/jobs`;
 
 export default () => {
   const [error, setError] = useState(null);
@@ -20,6 +17,10 @@ export default () => {
   const [jobIds, setJobIds] = useState([]);
   const { path } = useRouteMatch();
   const tableRef = useRef(null);
+
+  const { user } = useAuth();
+
+  const uri = `${process.env.REACT_APP_API_URL}/creators/${user?.id}/jobs`;
 
   const handleRetry = () => {
     setError(false);

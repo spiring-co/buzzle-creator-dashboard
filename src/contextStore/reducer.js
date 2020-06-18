@@ -1,3 +1,5 @@
+import useAuth from "services/auth";
+
 //action Types
 export const EDIT_VIDEO_KEYS = "EDIT_VIDEO_KEYS";
 // export const ADD_VERSION = "ADD_VERSION";
@@ -11,6 +13,8 @@ export const LOAD_STATE = "LOAD_STATE";
 export const RESTORE_FIELDS = "RESTORE_FIELDS";
 
 export default (state, action) => {
+  const { user } = useAuth();
+
   switch (action.type) {
     //payload : activeVersionIndex,currentCompositionFields
     case RESTORE_FIELDS:
@@ -42,7 +46,9 @@ export default (state, action) => {
     case EDIT_VERSION_KEYS:
       state.versions[action.payload.activeVersionIndex] = {
         ...state.versions[action.payload.activeVersionIndex],
-        editableLayers: state.versions[action.payload.activeVersionIndex]?.editableLayers ?? [],
+        editableLayers:
+          state.versions[action.payload.activeVersionIndex]?.editableLayers ??
+          [],
         ...action.payload.value,
       };
       return Object.assign({}, state);
@@ -89,7 +95,7 @@ export default (state, action) => {
     case RESET_STATE:
       return {
         title: "",
-        idCreator: localStorage.getItem("creatorId"), //fetch from localStorage
+        idCreator: user?.id,
         src: "",
         versions: [],
         description: "",
