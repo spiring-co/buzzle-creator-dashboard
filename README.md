@@ -1,5 +1,5 @@
 # Buzzle - Creator Dashboard
-
+[![Netlify Status](https://api.netlify.com/api/v1/badges/a983bc15-d476-474e-8658-a515fb4cada2/deploy-status)](https://app.netlify.com/sites/buzzle/deploys)
 ### Rules
 
 1. Only functional components allowed. (use hooks)
