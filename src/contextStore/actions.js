@@ -57,8 +57,8 @@ export default function useActions() {
       });
     },
 
-    resetVideo: function () {
-      dispatch({ type: RESET_STATE });
+    resetVideo: function (id) {
+      dispatch({ type: RESET_STATE, payload: id });
     },
 
     addField: function (activeVersionIndex, value) {

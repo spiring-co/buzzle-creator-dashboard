@@ -105,13 +105,13 @@ export default (props) => {
                 children={"retry?"}
               />
             ) : (
-              <Typography>
-                <Link component={RouterLink} to={`${path}add`}>
-                  Click here
+                <Typography>
+                  <Link component={RouterLink} to={`${path}add`}>
+                    Click here
                 </Link>{" "}
                 to create a Video Template😀
-              </Typography>
-            ),
+                </Typography>
+              ),
           },
         }}
         detailPanel={[

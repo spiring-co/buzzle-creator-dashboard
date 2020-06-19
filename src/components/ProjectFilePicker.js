@@ -121,39 +121,25 @@ export default ({ value, compositions, assets, isEdit, onData, name, onTouched, 
         </>
       );
 
-      // un comment it when aeinteract configures extraction using url
-      // const { compositions, staticAssets } = await extractStructureFromFile(
-      //   uri
-      // );
-      if (!isEdit) {
-        var { compositions, staticAssets } = await extractStructureFromFile(file);
+      const { compositions, staticAssets } = await extractStructureFromFile(
+        uri
+      );
 
-        setHasExtractedData(true);
-        if (!compositions)
-          throw new Error("Could not extract project structure.");
-        setMessage(<p style={{ color: "green" }}>{getCompositionDetails(compositions)}</p>);
-        setHasExtractedData(true);
-        onData({
-          compositions,
-          staticAssets: staticAssets.map((asset) => ({
-            name: asset.substring(asset.lastIndexOf("\\") + 1),
-            type: "static",
-            src: ""
-          })),
-          fileUrl: uri,
-        });
-      } else {
-        alert("extraction with uri not yet implemented")
-        onData({
-          compositions: [],
-          staticAssets: [].map((asset) => ({
-            name: asset.substring(asset.lastIndexOf("\\") + 1),
-            type: "static",
-            src: ""
-          })),
-          fileUrl: uri,
-        });
-      }
+      setHasExtractedData(true);
+      if (!compositions)
+        throw new Error("Could not extract project structure.");
+      setMessage(<p style={{ color: "green" }}>{getCompositionDetails(compositions)}</p>);
+      setHasExtractedData(true);
+      onData({
+        compositions,
+        staticAssets: staticAssets.map((asset) => ({
+          name: asset.substring(asset.lastIndexOf("\\") + 1),
+          type: "static",
+          src: ""
+        })),
+        fileUrl: uri,
+      });
+
       onTouched(true);
     } catch (error) {
       setHasPickedFile(false);

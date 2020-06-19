@@ -9,8 +9,11 @@ import FormStepper from "./FormStepper";
 import VersionDisplay from "./VersionDisplay";
 import VideoTemplateMetaForm from "./VideoTemplateMetaForm";
 import { Paper, Container } from "@material-ui/core";
+import useAuth from "services/auth";
 
 export default ({ submitForm, isEdit, video }) => {
+  const { user } = useAuth();
+
   const [videoObj] = useContext(VideoTemplateContext);
   const { resetVideo, editVideoKeys, loadVideo } = useActions();
   const [loading, setLoading] = useState(false);
@@ -22,7 +25,7 @@ export default ({ submitForm, isEdit, video }) => {
     if (isEdit) {
       loadVideo(video);
     } else {
-      resetVideo();
+      resetVideo(user?.id);
     }
   }, []);
 
