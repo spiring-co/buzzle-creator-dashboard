@@ -8,7 +8,7 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
     const [action, setAction] = useState(actionName)
     const [fonts, setFonts] = useState(actionName === 'installFonts' ? actionValue : {
         module: 'install-fonts',
-        fonts: []
+        fonts: [{ name: "", src: "" }]
     })
     const renderFontInstall = () => {
         return (<>
