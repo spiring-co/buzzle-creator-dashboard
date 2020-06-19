@@ -12,6 +12,7 @@ import Register from "pages/Register";
 import ForgotPassword from "pages/ForgotPassword";
 import NotFoundPage from "pages/NotFoundPage";
 import { pink } from "@material-ui/core/colors";
+import { AuthProvider } from "services/auth";
 
 export default () => {
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
@@ -70,17 +71,19 @@ export default () => {
   );
 
   return (
-    <MuiThemeProvider theme={theme}>
-      <Router>
-        <Switch>
-          <Route exact path="/" component={Landing} />
-          <Route path="/login" exact component={Login} />
-          <Route path="/register" exact component={Register} />
-          <Route path="/forgotPassword" component={ForgotPassword} />
-          <PrivateRoute path="/home" component={Home} />
-          <Route path="*" component={NotFoundPage} />
-        </Switch>
-      </Router>
-    </MuiThemeProvider>
+    <AuthProvider>
+      <MuiThemeProvider theme={theme}>
+        <Router>
+          <Switch>
+            <Route exact path="/" component={Landing} />
+            <Route path="/login" exact component={Login} />
+            <Route path="/register" exact component={Register} />
+            <Route path="/forgotPassword" component={ForgotPassword} />
+            <PrivateRoute path="/home" component={Home} />
+            <Route path="*" component={NotFoundPage} />
+          </Switch>
+        </Router>
+      </MuiThemeProvider>
+    </AuthProvider>
   );
 };

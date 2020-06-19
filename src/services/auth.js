@@ -1,7 +1,16 @@
-import { useState } from "react";
+import React, { useState, useMemo, createContext, useContext } from "react";
 const jwtDecode = require("jwt-decode");
+const AuthContext = createContext();
 
-export default () => {
+function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    console.log('useAuth must be used within a AuthProvider');
+  }
+  return context;
+}
+
+function AuthProvider(props) {
   const getUser = () => {
     const jwt = localStorage.getItem("jwtoken");
     if (!jwt) return null;
@@ -14,7 +23,6 @@ export default () => {
       return null;
     }
   };
-
   const [user, setUser] = useState(getUser());
 
   const login = async (email, password) => {
@@ -52,5 +60,15 @@ export default () => {
     return true;
   };
 
-  return { login, logout, user };
+  const value = useMemo(() => {
+    return {
+      login,
+      logout,
+      user,
+    };
+  }, [login, logout, user
+  ]);
+  return <AuthContext.Provider value={value} {...props} />;
 };
+
+export { AuthProvider, useAuth }

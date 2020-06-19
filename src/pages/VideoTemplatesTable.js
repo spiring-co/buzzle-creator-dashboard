@@ -12,7 +12,7 @@ import ErrorHandler from "components/ErrorHandler";
 import SnackAlert from "components/SnackAlert";
 import ReactJson from "react-json-view";
 import * as timeago from "timeago.js";
-import useAuth from "services/auth";
+import { useAuth } from "services/auth";
 
 export default (props) => {
   let { url, path } = useRouteMatch();

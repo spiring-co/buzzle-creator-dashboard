@@ -19,7 +19,7 @@ import clsx from "clsx";
 import React, { forwardRef, useMemo, useState } from "react";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 
-import useAuth from "../services/auth";
+import { useAuth } from "../services/auth";
 
 const drawerWidth = 240;
 
@@ -219,8 +219,8 @@ export default function NavBar({ items }) {
             {theme.direction === "rtl" ? (
               <ChevronRightIcon />
             ) : (
-              <ChevronLeftIcon />
-            )}
+                <ChevronLeftIcon />
+              )}
           </IconButton>
         </div>
         <Divider />
