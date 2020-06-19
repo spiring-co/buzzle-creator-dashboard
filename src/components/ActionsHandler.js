@@ -54,7 +54,7 @@ export default ({ prerender, postrender, onSubmit }) => {
   };
   const handleSubmit = () => {
     onSubmit({
-      prerender: postrenderActions.map((action, index) =>
+      prerender: prerenderActions.map((action, index) =>
         Object.values(action)[0]),
       postrender: postrenderActions.map((action, index) =>
         Object.values(action)[0])

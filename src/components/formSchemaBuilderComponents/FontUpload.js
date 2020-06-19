@@ -50,33 +50,33 @@ export default function FontUpload({
           <p>Resolving Font...</p>
         </>
       ) : (
-        <Container
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            flexWrap: "wrap",
-            marginBottom: 20,
-            marginTop: 20,
-          }}>
-          {fontList.length !== 0 ? (
-            fontList.map((font, index) => (
-              <FontUploader
-                key={index}
-                font={font}
-                handleDelete={() => {
-                  setFontList(fontList.filter((a, i) => i !== index));
-                }}
-                setFont={(src) => {
-                  fontList[index] = { ...fontList[index], src };
-                  setFontList(fontList);
-                }}
-              />
-            ))
-          ) : (
-            <p>No Font Found!</p>
-          )}
-        </Container>
-      )}
+          <Container
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              flexWrap: "wrap",
+              marginBottom: 20,
+              marginTop: 20,
+            }}>
+            {fontList.length !== 0 ? (
+              fontList.map((font, index) => (
+                <FontUploader
+                  key={index}
+                  font={font}
+                  handleDelete={() => {
+                    setFontList(fontList.filter((a, i) => i !== index));
+                  }}
+                  setFont={(value) => {
+                    fontList[index] = { ...fontList[index], ...value };
+                    setFontList(fontList);
+                  }}
+                />
+              ))
+            ) : (
+                <p>No Font Found!</p>
+              )}
+          </Container>
+        )}
       <div style={{ display: "flex", justifyContent: "center" }}>
         <Button
           startIcon={<ArrowBack />}

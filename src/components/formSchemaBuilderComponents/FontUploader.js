@@ -8,6 +8,7 @@ export default ({
   handleDelete,
   setFont,
 }) => {
+  const [name, setName] = useState(font?.name !== "" ? font?.name : "No File Choosen")
   const [loading, setLoading] = useState(false);
   const [src, setSrc] = useState(Boolean(font?.src));
   const [progress, setProgress] = useState('0%')
@@ -18,6 +19,8 @@ export default ({
         (e?.target?.files ?? [null])[0] ||
         (e?.dataTransfer?.files ?? [null])[0];
       if (!file) return;
+      const temp = font?.name !== "" ? font?.name : file.name.split(".")[0]
+      setName(temp)
       setLoading(true)
       const task = upload(
         `fonts/${file.name}`, file
@@ -26,10 +29,10 @@ export default ({
       task.on('httpUploadProgress', ({ loaded, total }) => setProgress(`${parseInt(loaded * 100 / total)}%`))
       const { Location: uri } = await task.promise()
       setLoading(false)
-      setFont(uri)
+      setFont({ name: temp, src: uri })
       setSrc(true);
-      console.log({ name: font?.name, src: uri })
-      await Fonts.addFont({ name: font?.name, src: uri })
+
+      await Fonts.addFont({ name: temp, src: uri })
     } catch (err) {
       setLoading(false)
       setError(err)
@@ -64,14 +67,13 @@ export default ({
           <input
             style={{ display: "none" }}
             type="file"
-            name={font?.name}
             onChange={handleFontUpload}
           />
 
         </label>
 
         <p style={{ fontSize: 13, marginLeft: 5, marginRight: 5, color: src ? "#3742fa" : "black" }}>
-          <b>{font?.name} {loading && `(${progress})`}</b>
+          <b>{name} {loading && `(${progress})`}</b>
         </p>
         {loading ?
           <div
