@@ -1,19 +1,10 @@
 import React from "react";
-import {
-  Button,
-  Container,
-  Typography,
-  Box,
-  Grid,
-  withStyles,
-  makeStyles,
-} from "@material-ui/core";
+import { Button, Typography, Box, Grid, makeStyles } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import Branding from "components/Branding";
 import { useTranslation } from "react-i18next";
 import landingIllustration from "assets/landing.svg";
 
-const HoverHeading = withStyles();
 const useStyles = makeStyles({
   hoverHighlight: {
     backgroundImage:
@@ -79,14 +70,14 @@ function Landing() {
           direction="row">
           <Grid
             md={6}
-            sm={12}
+            sm={6}
             item
             style={{ display: "flex", alignItems: "center" }}>
             <img style={{ width: "100%" }} src={landingIllustration} />
           </Grid>
           <Grid
             md={6}
-            sm={12}
+            sm={6}
             item
             style={{ display: "flex", alignItems: "center" }}>
             <Box mb={4}>

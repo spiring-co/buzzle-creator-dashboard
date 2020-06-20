@@ -1,10 +1,13 @@
-const extractStructureFromFile = async (file) => {
-  var data = new FormData();
-  data.append("file", file);
+const extractStructureFromFile = async (fileUrl) => {
+  const data = { fileUrl };
 
   const response = await fetch(`${process.env.REACT_APP_AE_SERVICE_URL}/`, {
     method: "POST",
-    body: data,
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
   });
 
   if (response.ok) {

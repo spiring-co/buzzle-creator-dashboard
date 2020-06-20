@@ -9,7 +9,6 @@ import useAuth from "services/auth";
 
 export default function DisabledTabs() {
   const [value, setValue] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
   const [creator, setCreator] = useState({});
   const [error, setError] = useState(null);
   const { user } = useAuth();

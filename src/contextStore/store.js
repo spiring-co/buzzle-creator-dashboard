@@ -1,14 +1,12 @@
 import React, { createContext, useReducer } from "react";
-import useAuth from "services/auth";
 import segmentReducer from "./reducer";
 
 const VideoTemplateContext = createContext();
 
 const StateProvider = ({ children }) => {
-  const { user } = useAuth();
   const [state, dispatch] = useReducer(segmentReducer, {
     title: "",
-    idCreator: user?.id, //fetch from localStorage
+    idCreator: "1kDWnfYrk", //fetch from localStorage
     src: "",
     versions: [],
     description: "",
