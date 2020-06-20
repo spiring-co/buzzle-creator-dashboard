@@ -35,53 +35,10 @@ const getListStyle = () => ({
   //background: isDraggingOver ? 'lightblue' : 'lightgrey',
 });
 
-export default ({ initialValues, onSubmit }) => {
-  const [prerenderActions, setPrerenderActions] = useState([
-    {
-      installFonts: {
-        module: "install-fonts",
-        fonts: [
-          "SourceSansPro-Blackd",
-          "SourceSansPro-BlackItd",
-          "SourceSansPro-Boldd",
-          "SourceSansPro-BoldItd",
-        ],
-      },
-    },
-  ]);
+export default ({ prerender, postrender, onSubmit }) => {
+  const [prerenderActions, setPrerenderActions] = useState(prerender);
   const [editIndex, setEditIndex] = useState(0);
-  const [postrenderActions, setPostrenderActions] = useState([
-    {
-      compress: {
-        module: "@nexrender/action-encode",
-        preset: "mp4",
-        output: "encoded.mp4",
-      },
-    },
-    {
-      addWaterMark: {
-        module: "action-watermark",
-        input: "encoded.mp4",
-        watermark:
-          "http://assets.stickpng.com/images/5cb78678a7c7755bf004c14c.png",
-        output: "watermarked.mp4",
-      },
-    },
-    {
-      upload: {
-        module: "@nexrender/action-upload",
-        input: "encoded.mp4",
-        provider: "s3",
-        params: {
-          region: "us-east-1",
-          bucket: "bulaava-assets",
-          key: `outputs/filename.mp4`,
-          //TODO better acl policy
-          acl: "public-read",
-        },
-      },
-    },
-  ]);
+  const [postrenderActions, setPostrenderActions] = useState(postrender);
   const [actionType, setActionType] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [initialValue, setInitialValue] = useState({});
@@ -95,6 +52,15 @@ export default ({ initialValues, onSubmit }) => {
       reorder(prerenderActions, result.source.index, result.destination.index)
     );
   };
+  const handleSubmit = () => {
+    onSubmit({
+      prerender: prerenderActions.map((action, index) =>
+        Object.values(action)[0]),
+      postrender: postrenderActions.map((action, index) =>
+        Object.values(action)[0])
+    })
+
+  }
   const onDragEndPostrender = (result) => {
     // dropped outside the list
     if (!result.destination) {
@@ -110,12 +76,14 @@ export default ({ initialValues, onSubmit }) => {
         case "prerender":
           prerenderActions[editIndex] = initialValue;
           setPrerenderActions(prerenderActions);
+          handleSubmit()
           handleClose();
 
           break;
         case "postrender":
           postrenderActions[editIndex] = initialValue;
           setPostrenderActions(postrenderActions);
+          handleSubmit()
           handleClose();
 
           break;
@@ -128,16 +96,19 @@ export default ({ initialValues, onSubmit }) => {
         case "prerender":
           prerenderActions.push(initialValue);
           setPrerenderActions(prerenderActions);
+          handleSubmit()
           handleClose();
 
           break;
         case "postrender":
           postrenderActions.push(initialValue);
           setPrerenderActions(prerenderActions);
+          handleSubmit()
           handleClose();
 
           break;
         default:
+          handleSubmit()
           handleClose();
           break;
       }
@@ -235,8 +206,8 @@ export default ({ initialValues, onSubmit }) => {
                     );
                   })
                 ) : (
-                  <p>No Action</p>
-                )}
+                    <p>No Action</p>
+                  )}
                 {provided.placeholder}
               </List>
             </RootRef>
@@ -302,8 +273,8 @@ export default ({ initialValues, onSubmit }) => {
                     );
                   })
                 ) : (
-                  <p>No Action</p>
-                )}
+                    <p>No Action</p>
+                  )}
                 {provided.placeholder}
               </List>
             </RootRef>
@@ -325,7 +296,3 @@ export default ({ initialValues, onSubmit }) => {
     </Paper>
   );
 };
-
-// convert it to array post render and pre render
-// reordder as per array
-//render as per array

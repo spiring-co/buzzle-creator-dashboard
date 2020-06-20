@@ -5,7 +5,7 @@ import Tab from "@material-ui/core/Tab";
 import { Typography, Container, Divider, Box } from "@material-ui/core";
 import { Creator } from "services/api";
 import { Alert } from "@material-ui/lab";
-import useAuth from "services/auth";
+import { useAuth } from "services/auth";
 
 export default function DisabledTabs() {
   const [value, setValue] = useState(0);

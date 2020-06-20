@@ -1,4 +1,5 @@
 import React, { createContext, useReducer } from "react";
+import { useAuth } from "services/auth";
 import segmentReducer from "./reducer";
 
 const VideoTemplateContext = createContext();

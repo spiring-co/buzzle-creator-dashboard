@@ -11,6 +11,8 @@ export const LOAD_STATE = "LOAD_STATE";
 export const RESTORE_FIELDS = "RESTORE_FIELDS";
 
 export default (state, action) => {
+  // const { user } = useAuth();
+
   switch (action.type) {
     //payload : activeVersionIndex,currentCompositionFields
     case RESTORE_FIELDS:
@@ -91,7 +93,7 @@ export default (state, action) => {
     case RESET_STATE:
       return {
         title: "",
-        idCreator: "1kDWnfYrk",
+        idCreator: action.payload,
         src: "",
         versions: [],
         description: "",

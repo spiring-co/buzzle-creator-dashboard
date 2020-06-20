@@ -91,21 +91,21 @@ export default () => {
   }, []);
   const handleAssetSubmit = (a) => {
     if (editIndex !== null) {
-      job.assets[editIndex] = a;
+      assets[editIndex] = a;
     } else {
-      const i = job.assets.findIndex(
+      const i = assets.findIndex(
         (j) => j.layerName == a.layerName && j.property === a.property
       );
 
       if (i === -1) {
-        job.assets.push(a);
+        assets.push(a);
       } else {
         if (
           window.confirm(
             `This will replace the existing asset on layer ${a.layerName}'s property ${a.property} with value: ${a.value}`
           )
         ) {
-          job.assets[i] = a;
+          assets[i] = a;
         }
       }
     }
@@ -117,7 +117,7 @@ export default () => {
   const handleDeleteAsset = (_, { layerName, property, src }) => {
     setJob({
       ...job,
-      assets: job.assets.filter(
+      assets: assets.filter(
         (a) =>
           !(
             a.layerName == layerName &&
@@ -165,6 +165,7 @@ export default () => {
     output,
     state,
     assets,
+    actions,
     videoTemplate: vt,
     idVersion,
     renderTime,
@@ -213,14 +214,14 @@ export default () => {
                   src={output}
                 />
               ) : (
-                <Box
-                  style={{ background: "gainsboro" }}
-                  justifyContent="center"
-                  textAlign="center"
-                  height={320}>
-                  <p style={{ padding: 100 }}> No output yet.</p>
-                </Box>
-              )}
+                  <Box
+                    style={{ background: "gainsboro" }}
+                    justifyContent="center"
+                    textAlign="center"
+                    height={320}>
+                    <p style={{ padding: 100 }}> No output yet.</p>
+                  </Box>
+                )}
               <Box p={2}>
                 <Typography variant="h5">Details</Typography>
                 <br />
@@ -292,18 +293,32 @@ export default () => {
                   src ? (
                     <Link src={src} target="_blank" children={src} />
                   ) : (
-                    value
-                  ),
+                      value
+                    ),
               },
             ]}
-            data={job.assets}
+            data={assets}
             title="Assets"
           />
         </TabPanel>
         <TabPanel value={activeTabIndex} index={2}>
           <ActionsHandler
-            prerender={job.actions?.prerender ?? []}
-            postrender={job.actions?.postrender ?? []}
+            onSubmit={(actions) => setJob({ ...job, actions })}
+            // set the key 
+            prerender={actions?.prerender?.map(action => ({ installFonts: action })) ?? []}
+            // set the key to every acrtion
+            postrender={actions?.postrender?.map(action => {
+              switch (action.module) {
+                case "@nexrender/action-encode":
+                  return ({ compress: action })
+                case "action-watermark":
+                  return ({ addWaterMark: action })
+                case "@nexrender/action-upload":
+                  return ({ upload: action })
+                default:
+                  return;
+              }
+            }) ?? []}
           />
         </TabPanel>
       </div>
@@ -311,7 +326,7 @@ export default () => {
         <AssetDialog
           setIsDialogOpen={setIsDialogOpen}
           editableLayers={videoTemplate?.editableLayers}
-          initialValues={editIndex !== null && job.assets[editIndex]}
+          initialValues={editIndex !== null && assets[editIndex]}
           onSubmit={handleAssetSubmit}
         />
       )}

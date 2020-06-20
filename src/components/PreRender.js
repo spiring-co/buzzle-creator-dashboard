@@ -1,69 +1,72 @@
 import React, { useState } from 'react'
-import { Button, TextField, Chip, FormHelperText } from "@material-ui/core";
+import { Button, FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
+import FontUploader from './formSchemaBuilderComponents/FontUploader';
 
 export default ({ initialValue, onSubmit, handleEdit }) => {
     const actionName = Object.keys(initialValue)[0]
     const actionValue = initialValue[actionName]
-    const [fontInput, setFontInput] = useState("")
+    const [action, setAction] = useState(actionName)
     const [fonts, setFonts] = useState(actionName === 'installFonts' ? actionValue : {
         module: 'install-fonts',
-        fonts: []
+        fonts: [{ name: "", src: "" }]
     })
+    const renderFontInstall = () => {
+        return (<>
+            {fonts.fonts.map((font, index) => <FontUploader font={font} handleDelete={() => handleDelete(index)}
+                setFont={value => handleFontInput(index, value)} />)}
+        </>)
+    }
+    const actions = {
+        "installFonts": renderFontInstall(),
+    }
+    const handleAddFont = () => {
+        fonts.fonts.push({ name: "", src: "" })
+        setFonts({ ...fonts, fonts: fonts.fonts });
+        handleEdit({ installFonts: { ...fonts, fonts: fonts.fonts } })
+    }
 
+    const handleFontInput = (index, value) => {
 
-    const handleFontInput = (value) => {
-        if (
-            (value.substr(-1) === "," || value.substr(-1) === " ") &&
-            value.substr(0, 1) !== " " &&
-            value.substr(0, 1) !== ","
-        ) {
-            setFonts({ ...fonts, fonts: [...fonts.fonts, value.substr(0, value.length - 1)] });
-            handleEdit({ installFonts: { ...fonts, fonts: [...fonts.fonts, value.substr(0, value.length - 1)] } })
-            setFontInput("");
-        } else {
-            setFontInput(value);
-        }
+        fonts.fonts[index] = value
+        setFonts({ ...fonts, fonts: fonts.fonts });
+        handleEdit({ installFonts: { ...fonts, fonts: fonts.fonts } })
     };
-    const handleDelete = (fontValue) => {
+    const handleDelete = (index) => {
         // delete the font
-        setFonts({ ...fonts, fonts: fonts.fonts.filter((font) => font !== fontValue) });
-        handleEdit({ installFonts: { ...fonts, fonts: fonts.fonts.filter((font) => font !== fontValue) } })
-
+        const temp = fonts.fonts.filter((font, i) => index !== i)
+        setFonts({ ...fonts, fonts: temp });
+        handleEdit({ installFonts: { ...fonts, fonts: temp } })
     };
     return (<>
-        <TextField
-            fullWidth
-            margin={"dense"}
-            variant={"outlined"}
-            onChange={({ target: { value } }) => handleFontInput(value)}
-            value={fontInput}
-            type="text"
-            placeholder="Enter font Name"
-            label="Fonts"
-            error={
+        <Button variant="outlined" color="primary"
+            onClick={handleAddFont}
+            children={"Add Font"} />
 
-                fontInput.substr(0, 1) === " " ||
-                fontInput.substr(0, 1) === ","
-            }
-            helperText={
-                fontInput.substr(0, 1) === " " || fontInput.substr(0, 1) === ","
-                && "Invalid Font Value"
-            }
-            InputProps={{
-                startAdornment: <div style={{ display: 'flex', flexWrap: "wrap", flexDirection: 'row' }}>
-                    {fonts.fonts.map((font, index) => {
-                        return (
-                            <Chip
-                                key={index}
-                                style={{ margin: 6 }}
-                                size="small"
-                                label={font}
-                                onDelete={() => handleDelete(font)}
-                            />
-                        );
-                    })
-                    }
-                </div>
-            }}
-        /></>)
+        <FormControl
+            fullWidth
+            margin="dense"
+            variant="outlined"
+        >
+            <InputLabel id="property-select">Action Name</InputLabel>
+
+            <Select
+                labelId="property-select"
+                id="property-select"
+                onChange={(e) => setAction(e?.target?.value)}
+                name="property"
+                value={actionName}
+                placeholder="Select Action"
+                label="Action Name">
+                {Object.keys(actions).map((item, index) => (
+                    <MenuItem
+                        key={index}
+                        id={index}
+                        value={item}
+                        children={item}
+                        selected={actionName === item}
+                    />
+                ))}
+            </Select>
+        </FormControl>
+        {actions[action]}</>)
 }

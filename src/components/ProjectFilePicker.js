@@ -121,12 +121,9 @@ export default ({
         </>
       );
 
-      // un comment it when aeinteract configures extraction using url
-      // const { compositions, staticAssets } = await extractStructureFromFile(
-      //   uri
-      // );
-      console.log(uri);
-      var { compositions, staticAssets } = await extractStructureFromFile(uri);
+      const { compositions, staticAssets } = await extractStructureFromFile(
+        uri
+      );
 
       setHasExtractedData(true);
       if (!compositions)

@@ -3,7 +3,7 @@ import { Chip, Link, Button, Container } from "@material-ui/core";
 import MaterialTable from "material-table";
 import { useRouteMatch, Link as RouterLink } from "react-router-dom";
 import ErrorHandler from "components/ErrorHandler";
-import useAuth from "services/auth";
+import { useAuth } from "services/auth";
 
 import { Job } from "services/api";
 import ReactJson from "react-json-view";

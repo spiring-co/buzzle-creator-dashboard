@@ -2,7 +2,7 @@ import Enzyme from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
 import React from "react";
 import { act, wait } from "react-dom/test-utils";
-import useAuth from "services/auth";
+import { useAuth } from "services/auth";
 
 Enzyme.configure({ adapter: new Adapter() });
 
