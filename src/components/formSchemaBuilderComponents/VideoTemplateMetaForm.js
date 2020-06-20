@@ -8,11 +8,17 @@ import * as Yup from "yup";
 import FileUploader from "components/FileUploader";
 const validationSchema = Yup.object({
   title: Yup.string().required("Title is Required"),
-  projectFile: Yup.object().required("Project File is required"),
+  // projectFile: Yup.string().required("Project File is required"),
   thumbnail: Yup.string().required("Thumbnail is required!"),
 });
 
-export default ({ initialValues = {}, isEdit, assets, compositions, onSubmit }) => {
+export default ({
+  initialValues = {},
+  isEdit,
+  assets,
+  compositions,
+  onSubmit,
+}) => {
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState(initialValues?.tags ?? []);
   const {

@@ -24,6 +24,6 @@ module.exports = {
     "react/display-name": "off",
     "react/no-children-prop": "off",
     "react/prop-types": "off",
-    "no-unused-vars": "warn",
+    "no-unused-vars": "error",
   },
 };
