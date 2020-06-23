@@ -6,6 +6,7 @@ export default function AssetUploader({
   asset,
   handleDelete,
   setAssets,
+  accept,
   type, assetsName, isFolderResolved
 }) {
   const [loading, setLoading] = useState(false);
@@ -91,7 +92,7 @@ export default function AssetUploader({
               style={{ display: "none" }}
               type="file"
               name={asset?.name}
-
+              accept={asset?.name.substr(asset?.name.lastIndexOf("."))}
               onChange={handleAssetUpload}
             />}
 
