@@ -123,25 +123,28 @@ export default ({
         uri
       );
       setHasExtractedData(true);
-      if (!compositions)
-        throw new Error("Could not extract project structure.");
-      setMessage(
-        <p style={{ color: "green" }}>{getCompositionDetails(compositions)}</p>
-      );
-      setHasExtractedData(true);
-      onData({
-        compositions,
-        staticAssets: staticAssets.map((asset) => ({
-          name: asset.substring(asset.lastIndexOf("\\") + 1),
-          type: "static",
-          src: "",
-        })),
-        fileUrl: uri,
-      });
-      onTouched(true);
+      if (!compositions) {
+        onError("Could not extract project structure.");
+      } else {
+        setMessage(
+          <p style={{ color: "green" }}>{getCompositionDetails(compositions)}</p>
+        );
+        setHasExtractedData(true);
+        onData({
+          compositions,
+          staticAssets: staticAssets.map((asset) => ({
+            name: asset.substring(asset.lastIndexOf("\\") + 1),
+            type: "static",
+            src: "",
+          })),
+          fileUrl: uri,
+        });
+        onTouched(true);
+      }
     } catch (error) {
       setHasPickedFile(false);
       setHasExtractedData(false);
+      onTouched(true);
       onError(error.message);
     }
   };

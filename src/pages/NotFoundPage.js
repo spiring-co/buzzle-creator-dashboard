@@ -13,7 +13,6 @@ import Branding from "components/Branding";
 import { useTranslation } from "react-i18next";
 import notFoundIllustration from "assets/404.svg";
 import { ArrowBack } from "@material-ui/icons";
-const HoverHeading = withStyles();
 const useStyles = makeStyles({
   hoverHighlight: {
     backgroundImage:

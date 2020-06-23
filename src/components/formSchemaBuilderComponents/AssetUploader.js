@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Tooltip, FormHelperText } from "@material-ui/core"
 import upload from "services/s3Upload";
 import { Close } from "@material-ui/icons"
@@ -6,17 +6,37 @@ export default function AssetUploader({
   asset,
   handleDelete,
   setAssets,
+  type, assetsName, isFolderResolved
 }) {
   const [loading, setLoading] = useState(false);
   const [src, setSrc] = useState(Boolean(asset?.src));
   const [progress, setProgress] = useState('0%')
   const [error, setError] = useState(null)
+
+  useEffect(() => {
+    if (isFolderResolved && typeof asset?.src === "object") {
+      handleUpload(asset.src)
+    }
+  }, [])
   const handleAssetUpload = async (e) => {
-    try {
+
+    if (type === 'file') {
       const file =
         (e?.target?.files ?? [null])[0] ||
         (e?.dataTransfer?.files ?? [null])[0];
       if (!file) return;
+      handleUpload(file)
+    } else {
+      const temp = Object.assign([], e?.target.files)
+      setAssets(
+        temp.filter(({ name }) => assetsName.includes(name))
+          .map(file => ({ name: file?.name, type: "static", src: file })))
+    }
+
+  };
+
+  const handleUpload = async (file) => {
+    try {
       setLoading(true)
       const task = upload(
         `staticAssets/${file.name}`,
@@ -32,7 +52,7 @@ export default function AssetUploader({
       setLoading(false)
       setError(err)
     }
-  };
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: "column" }}>
@@ -59,12 +79,21 @@ export default function AssetUploader({
       >
           {src ? 'Change Asset' : "Upload Asset"}
 
-          <input
+          {type === "folder" ? <input
             style={{ display: "none" }}
             type="file"
             name={asset?.name}
+            webkitdirectory=""
+            mozdirectory=""
             onChange={handleAssetUpload}
           />
+            : <input
+              style={{ display: "none" }}
+              type="file"
+              name={asset?.name}
+
+              onChange={handleAssetUpload}
+            />}
 
         </label>
 
@@ -84,7 +113,7 @@ export default function AssetUploader({
               background: `linear-gradient(90deg, #3742fa ${progress}, #fff ${progress})`
             }} />
           :
-
+          type !== "folder" &&
           <Tooltip
             arrow={true}
             placement="right"
