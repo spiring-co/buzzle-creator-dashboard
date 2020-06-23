@@ -76,6 +76,7 @@ export default ({
         )}
       </div>
       <FileUploader
+        accept={"image/*"}
         value={values.thumbnail}
         onError={(e) => setFieldError(e)}
         onChange={(value) => setFieldValue("thumbnail", value)}

@@ -50,6 +50,7 @@ export default ({
   onError,
 }) => {
   const classes = useStyles();
+  const [edit, setEdit] = useState(isEdit)
   const [hasPickedFile, setHasPickedFile] = useState(!!value);
   const [hasExtractedData, setHasExtractedData] = useState(
     isEdit ? compositions.length !== 0 : !!value
@@ -89,7 +90,7 @@ export default ({
     setHasPickedFile(true);
     setHasExtractedData(false);
     try {
-      if (!isEdit) {
+      if (!edit) {
         var file =
           (e?.target?.files ?? [null])[0] ||
           (e?.dataTransfer?.files ?? [null])[0];
@@ -154,7 +155,7 @@ export default ({
         .flat();
       return `${Object.keys(c).length} compositions & ${
         allLayers.length
-      } layers found`;
+        } layers found`;
     } catch (err) {
       onError(err);
     }
@@ -195,6 +196,8 @@ export default ({
                 children="Change"
                 disabled={!hasExtractedData}
                 onClick={() => {
+                  // change will work in edit mode
+                  isEdit && setEdit(false)
                   setHasPickedFile(false);
                   setHasExtractedData(false);
                 }}

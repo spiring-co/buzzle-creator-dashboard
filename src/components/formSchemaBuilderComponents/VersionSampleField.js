@@ -31,6 +31,7 @@ export default ({
                 label="Version Sample Video"
                 onTouched={() => setError(null)}
                 error={error}
+                accept={"video/*"}
                 helperText={
                     "Sample Video of your template should be specific to version you are creating."
                 }
