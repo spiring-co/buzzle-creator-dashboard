@@ -87,11 +87,16 @@ export default () => {
           {
             title: "Job Id",
             field: "id",
-            render: ({ id }) => (
-              <Link component={RouterLink} to={`${path}${id}`}>
-                {id}
-              </Link>
-            ),
+            render: ({ id, state }) => {
+              state = rtProgressData[id]?.state || state;
+
+              if (state !== "finished") return <span>{id}</span>;
+              return (
+                <Link component={RouterLink} to={`${path}${id}`}>
+                  {id}
+                </Link>
+              );
+            },
           },
           {
             title: "Video Template Id",
