@@ -44,6 +44,7 @@ export default ({ submitForm, isEdit, video }) => {
   const handleVideoTemplateMetaSubmit = async (data) => {
     const { tags, title, description, thumbnail, projectFile: { fileUrl = "", staticAssets = [], compositions = [] } } = data;
     setCompositions(compositions);
+    console.log(compositions)
     setAssets(isEdit ? video?.staticAssets : staticAssets)
     editVideoKeys({ tags, title, description, src: fileUrl, thumbnail });
     setActiveDisplayIndex(1);
@@ -83,7 +84,9 @@ export default ({ submitForm, isEdit, video }) => {
         setActiveDisplayIndex={setActiveDisplayIndex}
         activeDisplayIndex={activeDisplayIndex}
         handleSubmitForm={handleSubmitForm}
-        staticAssets={videoObj?.staticAssets.length !== 0 ? videoObj?.staticAssets : assets}
+        staticAssets={videoObj?.staticAssets.length !== 0
+          ? videoObj?.staticAssets
+          : assets}
       />
     ),
   };

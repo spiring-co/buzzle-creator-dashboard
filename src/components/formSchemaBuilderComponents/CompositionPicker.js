@@ -30,10 +30,7 @@ export default ({
         <Select
           labelId="demo-simple-select-outlined-label"
           id="demo-simple-select-outlined"
-          onChange={(e) => {
-            setComposition(e.target.value)
-            openVersionMeta()
-          }}
+          onChange={(e) => setComposition(e.target.value)}
           value={composition}
           placeholder="Select Composition"
           label="Select Composition">
@@ -49,7 +46,14 @@ export default ({
           })}
         </Select>
       </FormControl>
-
+      <Button
+        style={{ marginLeft: 10 }}
+        color={"primary"}
+        variant="outlined"
+        onClick={() => openVersionMeta()}
+        disabled={composition === ""}
+        children="Add"
+      />
     </form>
   );
 };
