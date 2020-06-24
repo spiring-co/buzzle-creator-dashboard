@@ -136,7 +136,7 @@ export default ({
         onData({
           compositions,
           staticAssets: staticAssets.map((asset) => ({
-            name: asset.substring(asset.lastIndexOf("/") + 1),
+            name: asset.substring(asset.lastIndexOf("\\") + 1),
             type: "static",
             src: "",
           })),
