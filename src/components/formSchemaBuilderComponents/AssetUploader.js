@@ -21,7 +21,7 @@ export default function AssetUploader({
   }, [])
   const handleAssetUpload = async (e) => {
 
-    if (type === 'file') {
+    if (type !== 'folder') {
       const file =
         (e?.target?.files ?? [null])[0] ||
         (e?.dataTransfer?.files ?? [null])[0];

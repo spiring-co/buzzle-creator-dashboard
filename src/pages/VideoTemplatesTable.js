@@ -16,7 +16,6 @@ import { useAuth } from "services/auth";
 export default (props) => {
   let { url, path } = useRouteMatch();
   const history = useHistory();
-
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState(null);
 
@@ -104,13 +103,13 @@ export default (props) => {
                 children={"retry?"}
               />
             ) : (
-              <Typography>
-                <Link component={RouterLink} to={`${path}add`}>
-                  Click here
+                <Typography>
+                  <Link component={RouterLink} to={`${path}add`}>
+                    Click here
                 </Link>{" "}
                 to create a Video Template😀
-              </Typography>
-            ),
+                </Typography>
+              ),
           },
         }}
         detailPanel={[

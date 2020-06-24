@@ -123,8 +123,7 @@ export default () => {
             title: "Version",
             render: ({ videoTemplate, idVersion }) => (
               <span>
-                {videoTemplate?.versions.find((v) => v?.id === idVersion)
-                  ?.title ?? ""}
+                {videoTemplate?.versions.find((v) => v?.id === idVersion)?.title ?? ""}
               </span>
             ),
           },
