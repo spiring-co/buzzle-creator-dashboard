@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Tooltip, FormHelperText } from "@material-ui/core"
+import { Tooltip, FormHelperText, Button } from "@material-ui/core"
 import upload from "services/s3Upload";
 import { Close } from "@material-ui/icons"
 import { Fonts } from "services/api"
@@ -13,6 +13,7 @@ export default ({
   const [src, setSrc] = useState(Boolean(font?.src));
   const [progress, setProgress] = useState('0%')
   const [error, setError] = useState(null)
+  const [taskController, setTaskController] = useState(null)
   const handleFontUpload = async (e) => {
     try {
       const file =
@@ -26,6 +27,7 @@ export default ({
         `fonts/${file.name}`, file
 
       )
+      setTaskController(task)
       task.on('httpUploadProgress', ({ loaded, total }) => setProgress(`${parseInt(loaded * 100 / total)}%`))
       const { Location: uri } = await task.promise()
       setLoading(false)
@@ -38,9 +40,17 @@ export default ({
       setError(err)
     }
   };
-
+  const handleUploadCancel = async () => {
+    try {
+      await taskController?.abort()
+    }
+    catch (err) {
+      setLoading(false)
+      setError(err)
+    }
+  }
   return (
-    <div style={{ display: "flex", flexDirection: 'column' }}>
+    <div style={{ display: "flex", flexDirection: 'column', width: "fit-content" }}>
       <div
         style={{
           display: "flex",
@@ -75,7 +85,7 @@ export default ({
         <p style={{ fontSize: 13, marginLeft: 5, marginRight: 5, color: src ? "#3742fa" : "black" }}>
           <b>{name} {loading && `(${progress})`}</b>
         </p>
-        {loading ?
+        {loading ? <>
           <div
             style={{
               height: 13,
@@ -87,6 +97,11 @@ export default ({
               transition: "background-color 0.5s ease",
               background: `linear-gradient(90deg, #3742fa ${progress}, #fff ${progress})`
             }} />
+          <Button
+            color="secondary"
+            size="small"
+            onClick={handleUploadCancel}>cancel</Button>
+        </>
           :
 
           <Tooltip

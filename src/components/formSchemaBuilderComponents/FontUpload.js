@@ -17,7 +17,7 @@ export default function FontUpload({
 }) {
   const { editVideoKeys } = useActions();
   const [fontList, setFontList] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [isValid, setIsValid] = useState(false)
   // takes all font used in template
   useEffect(() => {
@@ -26,7 +26,6 @@ export default function FontUpload({
       .flat();
 
     const fontNames = Array.from(new Set(allTextLayers.map((l) => l.font)));
-
     // this is without checking font Status
     Promise.all(fontNames.map((f) => Fonts.getStatus(f))).then((data) => {
       setFontList(data);
@@ -55,8 +54,8 @@ export default function FontUpload({
       ) : (
           <Container
             style={{
-              display: "flex",
-              justifyContent: "center",
+              display: "flex", flexDirection: 'column',
+              justifyContent: "center", alignItems: "center",
               flexWrap: "wrap",
               marginBottom: 20,
               marginTop: 20,

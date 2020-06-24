@@ -13,6 +13,7 @@ export default function AssetUploader({
   const [src, setSrc] = useState(Boolean(asset?.src));
   const [progress, setProgress] = useState('0%')
   const [error, setError] = useState(null)
+  const [taskController, setTaskController] = useState(null)
 
   useEffect(() => {
     if (isFolderResolved && typeof asset?.src === "object") {
@@ -43,6 +44,7 @@ export default function AssetUploader({
         `staticAssets/${file.name}`,
         file
       )
+      setTaskController(task)
       task.on('httpUploadProgress', ({ loaded, total }) => setProgress(`${parseInt(loaded * 100 / total)}%`))
       const { Location: uri } = await task.promise()
       setLoading(false)
@@ -54,7 +56,15 @@ export default function AssetUploader({
       setError(err)
     }
   }
-
+  const handleUploadCancel = async () => {
+    try {
+      await taskController?.abort()
+    }
+    catch (err) {
+      setLoading(false)
+      setError(err)
+    }
+  }
   return (
     <div style={{ display: 'flex', flexDirection: "column" }}>
       <div
@@ -102,17 +112,22 @@ export default function AssetUploader({
           <b>{asset?.name} {loading && `(${progress})`}</b>
         </p>
         {loading ?
-          <div
-            style={{
-              height: 13,
-              width: 80,
-              margin: 5,
-              marginTop: 0,
-              marginBottom: 0,
-              border: "1px solid white",
-              transition: "background-color 0.5s ease",
-              background: `linear-gradient(90deg, #3742fa ${progress}, #fff ${progress})`
-            }} />
+          <>
+            <div
+              style={{
+                height: 13,
+                width: 80,
+                margin: 5,
+                marginTop: 0,
+                marginBottom: 0,
+                border: "1px solid white",
+                transition: "background-color 0.5s ease",
+                background: `linear-gradient(90deg, #3742fa ${progress}, #fff ${progress})`
+              }} />
+            <Button
+              color="secondary"
+              size="small"
+              onClick={handleUploadCancel}>cancel</Button></>
           :
           type !== "folder" &&
           <Tooltip
