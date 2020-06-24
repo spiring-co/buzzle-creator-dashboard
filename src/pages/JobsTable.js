@@ -113,8 +113,8 @@ export default () => {
               <span>
                 <Link
                   component={RouterLink}
-                  to={`/home/videoTemplates/${videoTemplate.id}`}>
-                  {videoTemplate.title}
+                  to={`/home/videoTemplates/${videoTemplate?.id}`}>
+                  {videoTemplate?.title}
                 </Link>
               </span>
             ),
@@ -123,7 +123,7 @@ export default () => {
             title: "Version",
             render: ({ videoTemplate, idVersion }) => (
               <span>
-                {videoTemplate.versions.find((v) => v.id === idVersion)
+                {videoTemplate?.versions.find((v) => v?.id === idVersion)
                   ?.title ?? ""}
               </span>
             ),

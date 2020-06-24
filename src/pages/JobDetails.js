@@ -215,14 +215,14 @@ export default () => {
         {state === "finished" ? (
           <video style={{ height: 320, width: "100%" }} controls src={output} />
         ) : (
-          <Box
-            style={{ background: "gainsboro" }}
-            justifyContent="center"
-            textAlign="center"
-            height={320}>
-            <p style={{ padding: 100 }}> No output yet.</p>
-          </Box>
-        )}
+            <Box
+              style={{ background: "gainsboro" }}
+              justifyContent="center"
+              textAlign="center"
+              height={320}>
+              <p style={{ padding: 100 }}> No output yet.</p>
+            </Box>
+          )}
         <Paper>
           <AppBar position="static" color="transparent" elevation={0}>
             <Tabs
@@ -278,7 +278,7 @@ export default () => {
                   icon: "edit",
                   tooltip: "Edit Asset",
                   onClick: (e, rowData) => {
-                    setEditIndex(rowData.tableData.id);
+                    setEditIndex(isStaticVisible ? rowData.tableData.id : rowData.tableData.id + assets?.filter(({ type }) => type === "static").length);
                     setIsDialogOpen(true);
                   },
                 },
@@ -302,8 +302,8 @@ export default () => {
                     src ? (
                       <Link src={src} target="_blank" children={src} />
                     ) : (
-                      value
-                    ),
+                        value
+                      ),
                 },
               ]}
               data={
