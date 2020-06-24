@@ -42,26 +42,26 @@ export default function AssetUpload({
   handleSubmitForm,
 }) {
   const classes = useStyles();
+  console.log(staticAssets)
   const [videoObj] = useContext(VideoTemplateContext);
   const [uploadType, setUploadType] = useState(
-    "file"
+    (staticAssets[0]?.src ?? false) === "" ? null : "file"
   );
   const [assets, setAssets] = useState(
     staticAssets
   );
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const { editVideoKeys } = useActions();
-  const [progress, setProgress] = useState(0)
+  const [isFolderResolved, setIsFolderResolved] = useState(
+    (typeof staticAssets[0]?.src === "object" || staticAssets[0]?.src !== "")
+      ? true
+      : false)
 
   useEffect(() => {
     // set the value to global state of videoTemplate
     editVideoKeys({ staticAssets: assets });
   }, [assets]);
 
-  // useEffect(() => {
-  //   //setAssets([]);
-  // }, [uploadType]);
+
 
   const handleChange = (e) => {
     setUploadType(e.target.value);
@@ -81,56 +81,33 @@ export default function AssetUpload({
               setAssets(assets)
             }}
             asset={asset}
+            isFolderResolved={isFolderResolved}
           />
         )) : <p>No Assets Found!</p>}
       </div>
     );
   };
 
-  // Not Usable Currently
-  // const handleZipAssetUpload = async () => {
-  //   try {
-  //     setError(null);
-  //     setLoading(true);
-  //     // filter only files required in template with all files
-  //     const assetNames = assets.map((i) => i.name.toLowerCase());
-
-  //     const newAssets = assets.filter(({ name }) =>
-  //       assetNames.includes(name.toLowerCase())
-  //     );
-  //     // call zipMaker and upload it to s3 get the uri
-  //     const zipBlob = await zipMaker(newAssets);
-
-  //     //TODO blob not uploading fine
-  //     const task = upload(
-  //       `staticAssets/${Date.now()}.zip`,
-  //       zipBlob
-  //     )
-  //     task.on('httpUploadProgress', ({ loaded, total }) => setProgress(`${parseInt(loaded * 100 / total)}%`))
-  //     const { Location: uri } = await task.promise()
-  //     console.log(uri);
-  //     // // save this uri to global State
-  //     editVideoKeys({ staticAssets: assets });
-
-  //     setLoading(false);
-  //   } catch (err) {
-  //     setLoading(false);
-
-  //     setError("Something Went Wrong, Please Retry...");
-  //   }
-  // };
 
   const renderAssetUploader = () => {
     switch (uploadType) {
-      // not using currently
       case "folder":
         return (
           <AssetUploader
-            assetsUri={videoObj.assetsUri}
-            setAssets={setAssets}
-            uploadType={uploadType}
-            uploadFileName="assets"
-            assets={assets}
+            type={uploadType}
+            assetsName={assets.map(({ name }) => name)}
+            setAssets={(data) => {
+              const resolvedAssetNames = data.map(({ name }) => name)
+              setAssets(assets.map((asset, index) =>
+                resolvedAssetNames.includes(asset?.name)
+                  ? data[resolvedAssetNames.indexOf(asset?.name)]
+                  : asset))
+              setIsFolderResolved(true)
+              setUploadType("file")
+            }}
+            asset={{ name: "Asset Folder" }}
+            isFolderResolved={isFolderResolved}
+
           />
         );
       case "file":
@@ -140,65 +117,44 @@ export default function AssetUpload({
         return;
     }
   };
-  // Not applicable currently
-  // if (error) {
-  //   return (
-  //     <div className={classes.container}>
-  //       <p style={{ color: "red" }}>{error}</p>
-  //       <Button
-  //         variant="outlined"
-  //         color="secondary"
-  //         onClick={handleZipAssetUpload}
-  //         children="Retry"
-  //       />
-  //     </div>
-  //   );
-  // }
-  // Not Applicable Currently
-  // if (loading) {
-  //   return (
-  //     <div className={classes.container}>
-  //       <h4>Uploading Assets - {progress}%</h4>
-  //     </div>
-  //   );
-  // }
 
   return (
     <div className={classes.container}>
-      {/* <FormControl component="fieldset"> */}
       <Typography variant="h4">Upload Asset Files</Typography>
       <p style={{ color: "grey" }}>
         Assets Files includes, files which are not associated with user input,
         and used in template
-        </p>
-      {/* <p>
+      </p>
+      {!isFolderResolved && <><p>
         <b>Choose Asset Upload Structure</b>
-      </p> */}
-      {/* <FormControlLabel
-          value="folder"
-          control={
-            <Radio
-              onChange={handleChange}
-              checked={uploadType === "folder"}
-              color="primary"
-            />
-          }
-          label="Complete Assets Folder"
-          labelPlacement="end"
-        />
-        <FormControlLabel
-          value="file"
-          control={
-            <Radio
-              onChange={handleChange}
-              checked={uploadType === "file"}
-              color="primary"
-            />
-          }
-          label="Individual Assets"
-          labelPlacement="end"
-        />
-      </FormControl> */}
+      </p>
+        <FormControl component="fieldset">
+
+          <FormControlLabel
+            value="folder"
+            control={
+              <Radio
+                onChange={handleChange}
+                checked={uploadType === "folder"}
+                color="primary"
+              />
+            }
+            label="Complete Assets Folder"
+            labelPlacement="end"
+          />
+          <FormControlLabel
+            value="file"
+            control={
+              <Radio
+                onChange={handleChange}
+                checked={uploadType === "file"}
+                color="primary"
+              />
+            }
+            label="Individual Assets"
+            labelPlacement="end"
+          />
+        </FormControl></>}
       {renderAssetUploader(uploadType)}
       <div style={{ display: "flex", justifyContent: "center" }}>
         <Button

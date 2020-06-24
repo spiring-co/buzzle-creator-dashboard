@@ -80,6 +80,7 @@ export default (props) => {
     handleBlur,
     handleSubmit,
     handleChange,
+    setFieldValue,
   } = useFormik({
     initialValues: props.initialValue
     ,
@@ -96,7 +97,23 @@ export default (props) => {
   const toggleDialog = (state) => {
     props.toggleDialog(state);
   };
+  const handleLayerChange = (e) => {
+    const value = e.target.value
+    setFieldValue('layerName', value)
+    // set default text value to label
+    if (values.type === "data") {
+      const layerNames = textLayers.map(({ name }) => name)
+      setFieldValue('label', textLayers[layerNames.indexOf(value)].text)
+    }
+    //set height and width coming from layer
+    else {
+      const layerNames = imageLayers.map(({ name }) => name)
+      setFieldValue('height', imageLayers[layerNames.indexOf(value)]["height"])
+      setFieldValue('width', imageLayers[layerNames.indexOf(value)]["width"])
 
+    }
+
+  }
   const renderTextInputCreator = () => (
     <div>
       <TextField
@@ -320,7 +337,7 @@ export default (props) => {
               labelId="demo-simple-select-outlined-label"
               id="demo-simple-select-outlined"
               onBlur={handleBlur}
-              onChange={handleChange}
+              onChange={handleLayerChange}
               name="layerName"
               value={values.layerName}
               placeholder="Select Layer"

@@ -5,7 +5,7 @@ const AuthContext = createContext();
 function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
-    console.log('useAuth must be used within a AuthProvider');
+    console.log("useAuth must be used within a AuthProvider");
   }
   return context;
 }
@@ -17,6 +17,7 @@ function AuthProvider(props) {
 
     try {
       const { exp, id, name, email } = jwtDecode(jwt);
+      console.log(exp);
       if (!(exp * 1000 > Date.now())) return null;
       return { id, name, email };
     } catch (err) {
@@ -66,9 +67,8 @@ function AuthProvider(props) {
       logout,
       user,
     };
-  }, [login, logout, user
-  ]);
+  }, [login, logout, user]);
   return <AuthContext.Provider value={value} {...props} />;
-};
+}
 
-export { AuthProvider, useAuth }
+export { AuthProvider, useAuth };

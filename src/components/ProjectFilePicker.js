@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-
 import {
   Button,
   CircularProgress,
@@ -9,11 +8,9 @@ import {
 } from "@material-ui/core";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
-
 import upload from "services/s3Upload";
 import { extractStructureFromFile } from "services/ae";
 import { getLayersFromComposition } from "services/helper";
-
 const useStyles = makeStyles((theme) =>
   createStyles({
     content: {
@@ -42,7 +39,6 @@ const useStyles = makeStyles((theme) =>
     },
   })
 );
-
 export default ({
   value,
   compositions,
@@ -54,7 +50,7 @@ export default ({
   onError,
 }) => {
   const classes = useStyles();
-
+  const [edit, setEdit] = useState(isEdit)
   const [hasPickedFile, setHasPickedFile] = useState(!!value);
   const [hasExtractedData, setHasExtractedData] = useState(
     isEdit ? compositions.length !== 0 : !!value
@@ -64,7 +60,6 @@ export default ({
       <p style={{ color: "green" }}>{getCompositionDetails(compositions)}</p>
     )
   );
-
   useEffect(() => {
     // if template is in edit mode
     if (isEdit) {
@@ -91,65 +86,68 @@ export default ({
       }
     }
   }, []);
-
   const handlePickFile = async (e) => {
     setHasPickedFile(true);
     setHasExtractedData(false);
     try {
-      var file =
-        (e?.target?.files ?? [null])[0] ||
-        (e?.dataTransfer?.files ?? [null])[0];
-      if (!file) return;
-
-      setMessage(<p>Processing...</p>);
-
-      const task = upload(`templates/${file.name}`, file);
-      task.on("httpUploadProgress", ({ loaded, total }) =>
+      if (!edit) {
+        var file =
+          (e?.target?.files ?? [null])[0] ||
+          (e?.dataTransfer?.files ?? [null])[0];
+        if (!file) return;
         setMessage(
           <>
-            <CircularProgress style={{ margin: 10 }} size={28} />
-            <p>{`${parseInt((loaded / total) * 100)}% uploaded`}</p>
+            <p>Processing...</p>
           </>
-        )
-      );
-      const { Location: uri } = await task.promise();
-
+        );
+        const task = upload(`templates/${file.name}`, file);
+        task.on("httpUploadProgress", ({ loaded, total }) =>
+          setMessage(
+            <>
+              <CircularProgress style={{ margin: 10 }} size={28} />
+              <p>{`${parseInt((loaded / total) * 100)}% uploaded`}</p>
+            </>
+          )
+        );
+        var { Location: uri } = await task.promise();
+      } else {
+        var uri = value;
+      }
       setMessage(
         <>
           <CircularProgress style={{ margin: 10 }} size={28} />
           <p>Extracting Layer and compositions ...</p>
         </>
       );
-
       const { compositions, staticAssets } = await extractStructureFromFile(
         uri
       );
-
       setHasExtractedData(true);
-      if (!compositions)
-        throw new Error("Could not extract project structure.");
-      setMessage(
-        <p style={{ color: "green" }}>{getCompositionDetails(compositions)}</p>
-      );
-      setHasExtractedData(true);
-      onData({
-        compositions,
-        staticAssets: staticAssets.map((asset) => ({
-          name: asset.substring(asset.lastIndexOf("\\") + 1),
-          type: "static",
-          src: "",
-        })),
-        fileUrl: uri,
-      });
-
-      onTouched(true);
+      if (!compositions) {
+        onError("Could not extract project structure.");
+      } else {
+        setMessage(
+          <p style={{ color: "green" }}>{getCompositionDetails(compositions)}</p>
+        );
+        setHasExtractedData(true);
+        onData({
+          compositions,
+          staticAssets: staticAssets.map((asset) => ({
+            name: asset.substring(asset.lastIndexOf("\\") + 1),
+            type: "static",
+            src: "",
+          })),
+          fileUrl: uri,
+        });
+        onTouched(true);
+      }
     } catch (error) {
       setHasPickedFile(false);
       setHasExtractedData(false);
+      onTouched(true);
       onError(error.message);
     }
   };
-
   function getCompositionDetails(c) {
     try {
       const allLayers = Object.values(c)
@@ -160,7 +158,7 @@ export default ({
         .flat();
       return `${Object.keys(c).length} compositions & ${
         allLayers.length
-      } layers found`;
+        } layers found`;
     } catch (err) {
       onError(err);
     }
@@ -201,6 +199,8 @@ export default ({
                 children="Change"
                 disabled={!hasExtractedData}
                 onClick={() => {
+                  // change will work in edit mode
+                  isEdit && setEdit(false)
                   setHasPickedFile(false);
                   setHasExtractedData(false);
                 }}

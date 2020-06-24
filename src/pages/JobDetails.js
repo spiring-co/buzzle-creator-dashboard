@@ -9,7 +9,7 @@ import {
   Grid,
   Box,
   Link,
-  AppBar,
+  AppBar, FormControlLabel, Checkbox,
   Tabs,
   Tab,
 } from "@material-ui/core";
@@ -22,7 +22,7 @@ import ActionsHandler from "components/ActionsHandler";
 import formatTime from "helpers/formatTime";
 import { Job } from "services/api";
 import { useParams } from "react-router-dom";
-import MaterialTable from "material-table";
+import MaterialTable, { MTableToolbar } from "material-table";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -80,7 +80,7 @@ export default () => {
   const [error, setError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [redirect, setRedirect] = useState(null);
-
+  const [isStaticVisible, setIsStaticVisible] = useState(false)
   const { id } = useParams();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -303,7 +303,26 @@ export default () => {
                   ),
               },
             ]}
-            data={assets}
+            data={isStaticVisible ? assets : assets?.filter(({ type }) => type !== "static")}
+            components={{
+              Toolbar: props => (
+                <div >
+                  <MTableToolbar {...props} />
+                  <FormControlLabel
+                    style={{ paddingLeft: 20 }}
+                    control={
+                      <Checkbox
+                        checked={isStaticVisible}
+                        onChange={(e) => setIsStaticVisible(e.target.checked)}
+                        name="staticAsset"
+                        color="primary"
+                      />
+                    }
+                    label="Show Static Assets"
+                  />
+                </div>
+              ),
+            }}
             title="Assets"
           />
         </TabPanel>

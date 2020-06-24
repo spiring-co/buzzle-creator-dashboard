@@ -13,7 +13,6 @@ export default ({
   compositions,
   openVersionMeta,
 }) => {
-  console.log(composition)
   return (
     <form
       style={{

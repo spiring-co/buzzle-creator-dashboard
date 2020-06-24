@@ -12,6 +12,7 @@ export default ({
   value,
   onChange,
   label,
+  accept,
   fieldName,
   onError,
   error,
@@ -80,7 +81,7 @@ export default ({
 
           <input
             onFocus={() => onTouched(true)}
-
+            accept={accept}
             style={{ display: "none" }}
             type="file"
             onChange={uploadFile}
