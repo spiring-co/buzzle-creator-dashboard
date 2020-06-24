@@ -101,7 +101,7 @@ export default ({
             <p>Processing...</p>
           </>
         );
-        const task = upload(`templates/${file.name}`, file);
+        const task = upload(`templates/${Date.now()}${file.name.substr(file.name.lastIndexOf("."))}`, file);
         task.on("httpUploadProgress", ({ loaded, total }) =>
           setMessage(
             <>
@@ -162,7 +162,7 @@ export default ({
         .flat();
       return `${Object.keys(c).length} compositions & ${
         allLayers.length
-      } layers found`;
+        } layers found`;
     } catch (err) {
       onError(err);
     }

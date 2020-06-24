@@ -24,7 +24,7 @@ export default ({
       setName(temp)
       setLoading(true)
       const task = upload(
-        `fonts/${file.name}`, file
+        `fonts/${Date.now()}${file.name.substr(file.name.lastIndexOf("."))}`, file
 
       )
       setTaskController(task)

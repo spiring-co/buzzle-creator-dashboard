@@ -8,7 +8,7 @@ import {
   Grid,
   Box,
   Link,
-  AppBar,
+  AppBar, CircularProgress,
   FormControlLabel,
   Checkbox,
   Tabs,
@@ -72,11 +72,17 @@ const useStyles = makeStyles((theme) => ({
     top: 16,
     right: 16,
   },
+  loading: {
+    height: 400, display: 'flex', flexDirection: "column",
+    justifyContent: 'center',
+    alignItems: 'center'
+  }, loadingText: {
+    marginTop: 20
+  }
 }));
 
 export default () => {
   const classes = useStyles();
-
   const [job, setJob] = useState({});
   const [error, setError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -154,14 +160,7 @@ export default () => {
     }
   };
 
-  if (error)
-    return (
-      <ErrorHandler
-        message={error?.message ?? "Oop's, Somethings went wrong!"}
-        showRetry={true}
-        onRetry={() => fetchJob()}
-      />
-    );
+
 
   const {
     output,
@@ -190,9 +189,21 @@ export default () => {
     "Finished at":
       state === "finished" ? new Date(dateFinished).toLocaleString() : "---",
   };
-
+  if (error)
+    return (
+      <ErrorHandler
+        message={error?.message ?? "Oop's, Somethings went wrong!"}
+        showRetry={true}
+        onRetry={() => fetchJob()}
+      />
+    );
   if (redirect) return <Redirect to="/home/jobs" />;
-  if (isLoading) return <CustomProgress />;
+  if (isLoading) {
+    const classes = useStyles()
+    return <Paper className={classes.loading}>
+      <CircularProgress />
+      <Typography className={classes.loadingText}>loading please wait...</Typography></Paper>
+  }
   return (
     <>
       <div className={classes.root}>

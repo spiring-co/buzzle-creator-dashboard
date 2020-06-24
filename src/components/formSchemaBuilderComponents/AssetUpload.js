@@ -11,9 +11,7 @@ import AssetUploader from "./AssetUploader";
 import { makeStyles, CircularProgress } from "@material-ui/core";
 import useActions from "contextStore/actions";
 import { VideoTemplateContext } from "contextStore/store";
-import { zipMaker } from "services/helper";
 import { ArrowBack } from "@material-ui/icons";
-import upload from "services/s3Upload";
 
 
 const useStyles = makeStyles(() => ({

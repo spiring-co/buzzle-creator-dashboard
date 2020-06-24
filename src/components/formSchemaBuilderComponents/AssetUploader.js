@@ -41,7 +41,7 @@ export default function AssetUploader({
     try {
       setLoading(true)
       const task = upload(
-        `staticAssets/${file.name}`,
+        `staticAssets/${Date.now()}${file.name.substr(file.name.lastIndexOf("."))}`,
         file
       )
       setTaskController(task)
