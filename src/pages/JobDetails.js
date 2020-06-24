@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import {
   Typography,
   Paper,
@@ -214,14 +215,14 @@ export default () => {
                   src={output}
                 />
               ) : (
-                  <Box
-                    style={{ background: "gainsboro" }}
-                    justifyContent="center"
-                    textAlign="center"
-                    height={320}>
-                    <p style={{ padding: 100 }}> No output yet.</p>
-                  </Box>
-                )}
+                <Box
+                  style={{ background: "gainsboro" }}
+                  justifyContent="center"
+                  textAlign="center"
+                  height={320}>
+                  <p style={{ padding: 100 }}> No output yet.</p>
+                </Box>
+              )}
               <Box p={2}>
                 <Typography variant="h5">Details</Typography>
                 <br />
@@ -235,6 +236,11 @@ export default () => {
                     </Grid>
                   </Grid>
                 ))}
+                <Button
+                  startIcon={<CloudDownloadIcon />}
+                  href={output}>
+                  Download Output
+                </Button>
               </Box>
             </Grid>
           </Paper>
@@ -293,8 +299,8 @@ export default () => {
                   src ? (
                     <Link src={src} target="_blank" children={src} />
                   ) : (
-                      value
-                    ),
+                    value
+                  ),
               },
             ]}
             data={assets}
@@ -304,21 +310,26 @@ export default () => {
         <TabPanel value={activeTabIndex} index={2}>
           <ActionsHandler
             onSubmit={(actions) => setJob({ ...job, actions })}
-            // set the key 
-            prerender={actions?.prerender?.map(action => ({ installFonts: action })) ?? []}
+            // set the key
+            prerender={
+              actions?.prerender?.map((action) => ({ installFonts: action })) ??
+              []
+            }
             // set the key to every acrtion
-            postrender={actions?.postrender?.map(action => {
-              switch (action.module) {
-                case "@nexrender/action-encode":
-                  return ({ compress: action })
-                case "action-watermark":
-                  return ({ addWaterMark: action })
-                case "@nexrender/action-upload":
-                  return ({ upload: action })
-                default:
-                  return;
-              }
-            }) ?? []}
+            postrender={
+              actions?.postrender?.map((action) => {
+                switch (action.module) {
+                  case "@nexrender/action-encode":
+                    return { compress: action };
+                  case "action-watermark":
+                    return { addWaterMark: action };
+                  case "@nexrender/action-upload":
+                    return { upload: action };
+                  default:
+                    return;
+                }
+              }) ?? []
+            }
           />
         </TabPanel>
       </div>
