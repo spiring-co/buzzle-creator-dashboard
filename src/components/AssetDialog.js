@@ -257,6 +257,7 @@ export default ({
                 fullWidth
                 variant="outlined"
                 margin="dense"
+                multiline
                 value={values.value}
                 name="value"
                 onBlur={handleBlur}
