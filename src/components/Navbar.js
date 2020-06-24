@@ -17,7 +17,7 @@ import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import MenuIcon from "@material-ui/icons/Menu";
 import clsx from "clsx";
 import React, { forwardRef, useMemo, useState } from "react";
-import { Link as RouterLink, useHistory } from "react-router-dom";
+import { Link as RouterLink, useHistory, useRouteMatch } from "react-router-dom";
 
 import { useAuth } from "../services/auth";
 
@@ -35,7 +35,7 @@ function ListItemLink(props) {
 
   return (
     <li>
-      <ListItem button component={renderLink}>
+      <ListItem selected={to === window.location.pathname} button component={renderLink}>
         {icon ? <ListItemIcon>{icon}</ListItemIcon> : null}
         <ListItemText style={{ fontSize: 700 }} primary={primary} />
       </ListItem>
@@ -112,6 +112,7 @@ const useStyles = makeStyles((theme) =>
 );
 
 export default function NavBar({ items }) {
+
   const classes = useStyles();
   const theme = useTheme();
   const [drawerOpen, setDrawerOpen] = useState(true);

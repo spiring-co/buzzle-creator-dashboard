@@ -22,6 +22,7 @@ import {
 } from "@material-ui/core";
 
 import { countryList } from "components/CountryList";
+import Branding from "components/Branding";
 
 function renderCountryMenuItem(country) {
   return <MenuItem value={country}>{country}</MenuItem>;
@@ -99,7 +100,7 @@ export default () => {
           )}
           <TextField
             fullWidth
-            margin={"normal"}
+            margin={"dense"}
             variant={"outlined"}
             name={"name"}
             value={values.name}
@@ -113,7 +114,7 @@ export default () => {
           />
           <TextField
             fullWidth
-            margin={"normal"}
+            margin={"dense"}
             variant={"outlined"}
             onChange={handleChange}
             onBlur={handleBlur}
@@ -127,7 +128,7 @@ export default () => {
           />
           <TextField
             fullWidth
-            margin={"normal"}
+            margin={"dense"}
             variant={"outlined"}
             onChange={handleChange}
             onBlur={handleBlur}
@@ -141,7 +142,7 @@ export default () => {
           />
           <TextField
             fullWidth
-            margin={"normal"}
+            margin={"dense"}
             variant={"outlined"}
             onChange={handleChange}
             onBlur={handleBlur}
@@ -154,7 +155,7 @@ export default () => {
           />
           <FormControl
             fullWidth
-            margin="normal"
+            margin="dense"
             error={touched.gender && !!errors.gender}
             variant="outlined">
             <InputLabel id="demo-simple-select-outlined-label">
@@ -181,7 +182,7 @@ export default () => {
           </FormControl>
           <TextField
             fullWidth
-            margin={"normal"}
+            margin={"dense"}
             variant={"outlined"}
             onChange={handleChange}
             onBlur={handleBlur}
@@ -195,7 +196,7 @@ export default () => {
           />
           <TextField
             fullWidth
-            margin={"normal"}
+            margin={"dense"}
             variant={"outlined"}
             onChange={handleChange}
             onBlur={handleBlur}
@@ -209,7 +210,7 @@ export default () => {
           />
           <TextField
             fullWidth
-            margin={"normal"}
+            margin={"dense"}
             variant={"outlined"}
             onChange={handleChange}
             onBlur={handleBlur}
@@ -224,7 +225,7 @@ export default () => {
           />
           <FormControl
             fullWidth
-            margin="normal"
+            margin="dense"
             error={touched.country && !!errors.country}
             variant="outlined">
             <InputLabel id="demo-simple-select-outlined-label">
@@ -260,7 +261,7 @@ export default () => {
             </Link>
           </Typography>
         </Paper>
-      </Container>
+      </Container> <Branding dark />
     </Box>
   );
 };

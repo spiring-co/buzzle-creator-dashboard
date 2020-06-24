@@ -99,7 +99,7 @@ export default () => {
   if (isLoggedIn) return <Redirect to={"/home"} />;
 
   return (
-    <Box mt={16}>
+    <Box mt={5}>
       <Container
         component="form"
         onSubmit={handleSubmit}
@@ -130,13 +130,14 @@ export default () => {
 
           <TextField
             name={"email"}
+            margin="dense"
             value={values.email}
             label="Email address"
             onBlur={handleBlur}
             onChange={handleChange}
             error={touched.email && !!errors.email}
             fullWidth
-            margin={"normal"}
+
             variant={"outlined"}
             placeholder="Enter email"
             helperText={
@@ -145,7 +146,9 @@ export default () => {
                 : t("wontShareEmail")
             }
           />
-          <FormControl fullWidth margin={"normal"} variant="outlined">
+          <FormControl fullWidth
+            margin="dense"
+            variant="outlined">
             <InputLabel htmlFor="outlined-adornment-password">
               Password
             </InputLabel>

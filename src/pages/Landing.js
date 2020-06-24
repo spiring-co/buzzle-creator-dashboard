@@ -40,29 +40,8 @@ function Landing() {
   const classes = useStyles();
   return (
     <Box>
-      <Branding />
-      <Box
-        style={{
-          height: "100vh",
-          width: "100vw",
-          zIndex: -9999,
-          position: "absolute",
-          left: 0,
-          top: 0,
-          background: "#ffffff",
-        }}
-      />
-      <Box
-        style={{
-          height: "30vh",
-          width: "100vw",
-          zIndex: -999,
-          position: "absolute",
-          left: 0,
-          bottom: 0,
-          background: "#394afa",
-        }}
-      />
+
+
       <Box>
         <Grid
           style={{ alignItems: "stretch", height: "-webkit-fill-available" }}
@@ -119,7 +98,20 @@ function Landing() {
             </Box>
           </Grid>
         </Grid>
+      </Box>  <Box
+        style={{
+          height: "30vh",
+          width: "100vw",
+          zIndex: -999,
+          position: "absolute",
+          left: 0,
+          bottom: 0,
+          background: "#394afa",
+        }}
+      >
+        <Branding mt={50} />
       </Box>
+
     </Box>
   );
 }
