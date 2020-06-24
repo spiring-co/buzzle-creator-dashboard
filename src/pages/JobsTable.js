@@ -1,7 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Chip, Link, Button, Container } from "@material-ui/core";
 import MaterialTable from "material-table";
-import { useRouteMatch, Link as RouterLink } from "react-router-dom";
+import {
+  useRouteMatch,
+  useHistory,
+  Link as RouterLink,
+} from "react-router-dom";
 import ErrorHandler from "components/ErrorHandler";
 import { useAuth } from "services/auth";
 
@@ -19,6 +23,7 @@ export default () => {
   const tableRef = useRef(null);
 
   const { user } = useAuth();
+  const history = useHistory();
 
   const uri = `${process.env.REACT_APP_API_URL}/creators/${user?.id}/jobs`;
 
@@ -69,6 +74,10 @@ export default () => {
           headerStyle: { fontWeight: 700 },
           actionsColumnIndex: -1,
         }}
+        onRowClick={(e, { id }) => {
+          if (["td", "TD"].includes(e.target.tagName))
+            history.push(`${path}${id}`);
+        }}
         detailPanel={[
           {
             render: (rowData) => (
@@ -84,34 +93,49 @@ export default () => {
           },
         ]}
         columns={[
+          // {
+          //   title: "Job Id",
+          //   field: "id",
+          //   render: ({ id, state }) => {
+          //     state = rtProgressData[id]?.state || state;
+
+          //     if (state !== "finished") return <span>{id}</span>;
+          //     return (
+          //       <Link component={RouterLink} to={`${path}${id}`}>
+          //         {id}
+          //       </Link>
+          //     );
+          //   },
+          // },
           {
-            title: "Job Id",
-            field: "id",
-            render: ({ id }) => (
-              <Link component={RouterLink} to={`${path}${id}`}>
-                {id}
-              </Link>
+            title: "Video Template",
+            render: ({ videoTemplate }) => (
+              <span>
+                <Link
+                  component={RouterLink}
+                  to={`/home/videoTemplates/${videoTemplate.id}`}>
+                  {videoTemplate.title}
+                </Link>
+              </span>
             ),
           },
           {
-            title: "Video Template Id",
-            render: ({ idVideoTemplate }) => (
-              <Link
-                component={RouterLink}
-                to={`/home/videoTemplates/${idVideoTemplate}`}>
-                {idVideoTemplate}
-              </Link>
+            title: "Version",
+            render: ({ videoTemplate, idVersion }) => (
+              <span>
+                {videoTemplate.versions.find((v) => v.id === idVersion)
+                  ?.title ?? ""}
+              </span>
             ),
-            field: "idVideoTemplate",
           },
-          { title: "Version Id", field: "idVersion" },
           {
-            title: "Created",
-            field: "dateCreated",
+            title: "Last Updated",
+            field: "dateUpdated",
             type: "datetime",
-            render: ({ dateCreated }) => (
-              <span>{timeago.format(new Date(dateCreated))}</span>
+            render: ({ dateUpdated }) => (
+              <span>{timeago.format(new Date(dateUpdated))}</span>
             ),
+            defaultSort: "desc",
           },
           {
             title: "State",

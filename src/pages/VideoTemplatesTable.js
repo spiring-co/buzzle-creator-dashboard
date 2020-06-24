@@ -1,13 +1,12 @@
 import React, { useState, useRef } from "react";
-import { Link, CircularProgress, Typography, Button } from "@material-ui/core";
-import { Delete } from "@material-ui/icons";
+import { Link, Typography, Button } from "@material-ui/core";
 import {
   Link as RouterLink,
   useRouteMatch,
   useHistory,
 } from "react-router-dom";
 import MaterialTable from "material-table";
-import { Job } from "services/api";
+import { VideoTemplate, Job } from "services/api";
 import ErrorHandler from "components/ErrorHandler";
 import SnackAlert from "components/SnackAlert";
 import ReactJson from "react-json-view";
@@ -30,7 +29,7 @@ export default (props) => {
 
     try {
       setIsDeleting(true);
-      await Job.delete(id);
+      await VideoTemplate.delete(id);
     } catch (err) {
       setError(err);
     } finally {
@@ -72,15 +71,14 @@ export default (props) => {
         title="Your Video Templates"
         columns={[
           {
-            title: "Id",
-            field: "id",
-            render: ({ id }) => (
-              <Link component={RouterLink} to={`${path}${id}`} children={id} />
-            ),
-          },
-          {
             title: "Title",
-            field: "title",
+            render: ({ id, title }) => (
+              <Link
+                component={RouterLink}
+                to={`${path}${id}`}
+                children={title}
+              />
+            ),
           },
           {
             title: "Versions",
@@ -93,6 +91,7 @@ export default (props) => {
             render: ({ dateUpdated }) => (
               <span>{timeago.format(dateUpdated)}</span>
             ),
+            defaultSort: "desc",
           },
         ]}
         localization={{
@@ -105,13 +104,13 @@ export default (props) => {
                 children={"retry?"}
               />
             ) : (
-                <Typography>
-                  <Link component={RouterLink} to={`${path}add`}>
-                    Click here
+              <Typography>
+                <Link component={RouterLink} to={`${path}add`}>
+                  Click here
                 </Link>{" "}
                 to create a Video Template😀
-                </Typography>
-              ),
+              </Typography>
+            ),
           },
         }}
         detailPanel={[
@@ -138,8 +137,7 @@ export default (props) => {
             },
           },
           {
-            icon: () =>
-              isDeleting ? <CircularProgress size={20} /> : <Delete />,
+            icon: "delete",
             tooltip: "Delete Template",
             disabled: isDeleting,
             onClick: async (event, { id }) => handleDelete(id),
