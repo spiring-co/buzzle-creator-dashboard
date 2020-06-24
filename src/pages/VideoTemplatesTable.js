@@ -71,15 +71,14 @@ export default (props) => {
         title="Your Video Templates"
         columns={[
           {
-            title: "Id",
-            field: "id",
-            render: ({ id }) => (
-              <Link component={RouterLink} to={`${path}${id}`} children={id} />
-            ),
-          },
-          {
             title: "Title",
-            field: "title",
+            render: ({ id, title }) => (
+              <Link
+                component={RouterLink}
+                to={`${path}${id}`}
+                children={title}
+              />
+            ),
           },
           {
             title: "Versions",
@@ -92,6 +91,7 @@ export default (props) => {
             render: ({ dateUpdated }) => (
               <span>{timeago.format(dateUpdated)}</span>
             ),
+            defaultSort: "desc",
           },
         ]}
         localization={{
