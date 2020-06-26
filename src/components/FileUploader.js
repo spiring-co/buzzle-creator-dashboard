@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
-  TextField,
-  CircularProgress,
-  InputAdornment,
-  Typography,
+  Button,
   FormHelperText,
 } from "@material-ui/core";
 import upload from "services/s3Upload";
@@ -20,8 +17,10 @@ export default ({
   onTouched,
 }) => {
   const [progress, setProgress] = useState("0%");
+  const [taskController, setTaskController] = useState(null)
   const [loading, setLoading] = useState(false);
-  const [name, setName] = useState(value ? value.substring(value.lastIndexOf("/") + 1) : "No file choosen")
+  const [name, setName] = useState(value
+    ? value.substring(value.lastIndexOf("/") + 1) : "No file choosen")
   useEffect(() => {
     if (value) {
       onChange(value);
@@ -29,7 +28,6 @@ export default ({
   }, []);
   const uploadFile = async (e) => {
     try {
-
       const file =
         (e?.target?.files ?? [null])[0] ||
         (e?.dataTransfer?.files ?? [null])[0];
@@ -39,7 +37,8 @@ export default ({
       }
       setName(file.name)
       setLoading(true);
-      const task = upload(`${fieldName}s/${file.name}`, file);
+      const task = upload(`${fieldName}s/${Date.now()}${file.name.substr(file.name.lastIndexOf("."))}`, file);
+      setTaskController(task)
       task.on("httpUploadProgress", ({ loaded, total }) =>
         setProgress(`${parseInt((loaded * 100) / total)}%`)
       );
@@ -48,9 +47,24 @@ export default ({
 
       onChange(uri);
     } catch (err) {
+      setName(value
+        ? value.substring(value.lastIndexOf("/") + 1) : "No file choosen")
+      setLoading(false);
       onError(err.message);
     }
   };
+
+  const handleUploadCancel = async () => {
+    try {
+      await taskController?.abort()
+    }
+    catch (err) {
+      setName(value
+        ? value.substring(value.lastIndexOf("/") + 1) : "No file choosen")
+      setLoading(false)
+      onError(err.message);
+    }
+  }
   return (
     <><p style={{ marginBottom: 0, }}>
       {label}
@@ -98,17 +112,23 @@ export default ({
         </p>
         {
           loading &&
-          <div
-            style={{
-              height: 13,
-              width: 80,
-              margin: 5,
-              marginTop: 0,
-              marginBottom: 0,
-              border: "1px solid black",
-              transition: "background-color 0.5s ease",
-              background: `linear-gradient(90deg, #3742fa ${progress}, #fff ${progress})`
-            }} />
+          <>
+            <div
+              style={{
+                height: 13,
+                width: 80,
+                margin: 5,
+                marginTop: 0,
+                marginBottom: 0,
+                border: "1px solid black",
+                transition: "background-color 0.5s ease",
+                background: `linear-gradient(90deg, #3742fa ${progress}, #fff ${progress})`
+              }} />
+            <Button
+              color="secondary"
+              size="small"
+              onClick={handleUploadCancel}>cancel</Button>
+          </>
         }
       </div >
       <FormHelperText style={{ marginBottom: 10, marginTop: 0 }} error={error}>{error ? error : helperText}</FormHelperText>

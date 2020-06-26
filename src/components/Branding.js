@@ -3,11 +3,14 @@ import { Typography, Box } from "@material-ui/core";
 import spiring from "assets/spiring.svg";
 import spiring_grey from "assets/spiring_grey.svg";
 
-export default ({ dark }) => (
+export default ({ dark, mt }) => (
   <Box
     style={{
+      marginTop: mt ? mt : 10,
       textAlign: "center",
-      position: "fixed",
+      // position: "relative",
+      paddingTop: 30,
+      paddingBottom: 30,
       bottom: 32,
       width: "100%",
     }}>

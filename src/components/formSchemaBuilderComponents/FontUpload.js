@@ -18,6 +18,7 @@ export default function FontUpload({
   const { editVideoKeys } = useActions();
   const [fontList, setFontList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isValid, setIsValid] = useState(false)
   // takes all font used in template
   useEffect(() => {
     const allTextLayers = Object.values(compositions)
@@ -25,16 +26,17 @@ export default function FontUpload({
       .flat();
 
     const fontNames = Array.from(new Set(allTextLayers.map((l) => l.font)));
-    console.log(fontNames);
     // this is without checking font Status
     Promise.all(fontNames.map((f) => Fonts.getStatus(f))).then((data) => {
       setFontList(data);
       setLoading(false);
     });
+
   }, [compositions]);
 
   useEffect(() => {
     editVideoKeys({ fonts: fontList });
+    setIsValid(fontList.every(i => !!i.src))
   }, [fontList]);
 
   return (
@@ -52,8 +54,8 @@ export default function FontUpload({
       ) : (
           <Container
             style={{
-              display: "flex",
-              justifyContent: "center",
+              display: "flex", flexDirection: 'column',
+              justifyContent: "center", alignItems: "center",
               flexWrap: "wrap",
               marginBottom: 20,
               marginTop: 20,
@@ -68,7 +70,9 @@ export default function FontUpload({
                   }}
                   setFont={(value) => {
                     fontList[index] = { ...fontList[index], ...value };
-                    setFontList(fontList);
+                    setFontList(fontList.map((font, i) => i === index
+                      ? ({ ...font, ...value })
+                      : font));
                   }}
                 />
               ))
@@ -88,6 +92,7 @@ export default function FontUpload({
         </Button>
 
         <Button
+          disabled={!isValid}
           endIcon={<ArrowForward />}
           style={{ margin: 10 }}
           color="primary"

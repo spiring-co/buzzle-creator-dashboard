@@ -11,9 +11,7 @@ import AssetUploader from "./AssetUploader";
 import { makeStyles, CircularProgress } from "@material-ui/core";
 import useActions from "contextStore/actions";
 import { VideoTemplateContext } from "contextStore/store";
-import { zipMaker } from "services/helper";
 import { ArrowBack } from "@material-ui/icons";
-import upload from "services/s3Upload";
 
 
 const useStyles = makeStyles(() => ({
@@ -43,6 +41,7 @@ export default function AssetUpload({
 }) {
   const classes = useStyles();
   console.log(staticAssets)
+  const [isValid, setIsValid] = useState(false)
   const [videoObj] = useContext(VideoTemplateContext);
   const [uploadType, setUploadType] = useState(
     (staticAssets[0]?.src ?? false) === "" ? null : "file"
@@ -59,9 +58,11 @@ export default function AssetUpload({
   useEffect(() => {
     // set the value to global state of videoTemplate
     editVideoKeys({ staticAssets: assets });
+    setIsValid(assets.every(i => !!i.src))
   }, [assets]);
 
-
+  useEffect(() => {
+  }, [isValid])
 
   const handleChange = (e) => {
     setUploadType(e.target.value);
@@ -77,8 +78,9 @@ export default function AssetUpload({
               setAssets(assets.filter((a, i) => i !== index))
             }}
             setAssets={src => {
-              assets[index] = { ...assets[index], src }
-              setAssets(assets)
+              setAssets(assets?.map((asset, i) => i === index
+                ? ({ ...asset, src })
+                : asset))
             }}
             asset={asset}
             isFolderResolved={isFolderResolved}
@@ -167,7 +169,7 @@ export default function AssetUpload({
         />
         <Button
           endIcon={isSubmitting && <CircularProgress color="white" size={15} />}
-          disabled={isSubmitting}
+          disabled={isSubmitting || !isValid}
           style={{ margin: 10 }}
           color={submitError ? "secondary" : "primary"}
           variant={submitError ? "outlined" : "contained"}

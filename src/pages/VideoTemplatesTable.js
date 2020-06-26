@@ -16,7 +16,6 @@ import { useAuth } from "services/auth";
 export default (props) => {
   let { url, path } = useRouteMatch();
   const history = useHistory();
-
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState(null);
 
@@ -71,15 +70,14 @@ export default (props) => {
         title="Your Video Templates"
         columns={[
           {
-            title: "Id",
-            field: "id",
-            render: ({ id }) => (
-              <Link component={RouterLink} to={`${path}${id}`} children={id} />
-            ),
-          },
-          {
             title: "Title",
-            field: "title",
+            render: ({ id, title }) => (
+              <Link
+                component={RouterLink}
+                to={`${path}${id}`}
+                children={title}
+              />
+            ),
           },
           {
             title: "Versions",
@@ -92,6 +90,7 @@ export default (props) => {
             render: ({ dateUpdated }) => (
               <span>{timeago.format(dateUpdated)}</span>
             ),
+            defaultSort: "desc",
           },
         ]}
         localization={{
@@ -104,13 +103,13 @@ export default (props) => {
                 children={"retry?"}
               />
             ) : (
-              <Typography>
-                <Link component={RouterLink} to={`${path}add`}>
-                  Click here
+                <Typography>
+                  <Link component={RouterLink} to={`${path}add`}>
+                    Click here
                 </Link>{" "}
                 to create a Video Template😀
-              </Typography>
-            ),
+                </Typography>
+              ),
           },
         }}
         detailPanel={[

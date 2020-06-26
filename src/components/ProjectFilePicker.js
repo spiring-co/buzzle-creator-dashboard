@@ -50,7 +50,7 @@ export default ({
   onError,
 }) => {
   const classes = useStyles();
-  const [edit, setEdit] = useState(isEdit)
+  const [edit, setEdit] = useState(isEdit);
   const [hasPickedFile, setHasPickedFile] = useState(!!value);
   const [hasExtractedData, setHasExtractedData] = useState(
     isEdit ? compositions.length !== 0 : !!value
@@ -87,6 +87,7 @@ export default ({
     }
   }, []);
   const handlePickFile = async (e) => {
+    setMessage(null);
     setHasPickedFile(true);
     setHasExtractedData(false);
     try {
@@ -100,7 +101,7 @@ export default ({
             <p>Processing...</p>
           </>
         );
-        const task = upload(`templates/${file.name}`, file);
+        const task = upload(`templates/${Date.now()}${file.name.substr(file.name.lastIndexOf("."))}`, file);
         task.on("httpUploadProgress", ({ loaded, total }) =>
           setMessage(
             <>
@@ -127,7 +128,9 @@ export default ({
         onError("Could not extract project structure.");
       } else {
         setMessage(
-          <p style={{ color: "green" }}>{getCompositionDetails(compositions)}</p>
+          <p style={{ color: "green" }}>
+            {getCompositionDetails(compositions)}
+          </p>
         );
         setHasExtractedData(true);
         onData({
@@ -145,6 +148,7 @@ export default ({
       setHasPickedFile(false);
       setHasExtractedData(false);
       onTouched(true);
+      setMessage(<p style={{ color: "red" }}>Error: {error.message}</p>);
       onError(error.message);
     }
   };
@@ -190,7 +194,6 @@ export default ({
         )}
         {hasPickedFile && (
           <>
-            {message}
             <br />
             {hasExtractedData && (
               <Button
@@ -200,7 +203,9 @@ export default ({
                 disabled={!hasExtractedData}
                 onClick={() => {
                   // change will work in edit mode
-                  isEdit && setEdit(false)
+                  setMessage(null);
+
+                  isEdit && setEdit(false);
                   setHasPickedFile(false);
                   setHasExtractedData(false);
                 }}
@@ -208,6 +213,7 @@ export default ({
             )}
           </>
         )}
+        {message}
       </Box>
     </Container>
   );

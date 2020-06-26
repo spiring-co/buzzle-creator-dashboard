@@ -45,7 +45,7 @@ export default ({
                     children="back"
                 />
                 <Button
-                    disabled={!videoObj?.versions[activeVersionIndex]?.sample}
+                    //disabled={!videoObj?.versions[activeVersionIndex]?.sample}
                     style={{ marginTop: 10 }}
                     color="primary"
                     variant="contained"
