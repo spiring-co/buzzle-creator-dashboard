@@ -281,7 +281,9 @@ export default () => {
                   icon: "edit",
                   tooltip: "Edit Asset",
                   onClick: (e, rowData) => {
-                    setEditIndex(isStaticVisible ? rowData.tableData.id : rowData.tableData.id + assets?.filter(({ type }) => type === "static").length);
+                    setEditIndex(isStaticVisible
+                      ? rowData.tableData.id
+                      : rowData.tableData.id + assets?.filter(({ type }) => type === "static").length);
                     setIsDialogOpen(true);
                   },
                 },
@@ -328,7 +330,7 @@ export default () => {
                           color="primary"
                         />
                       }
-                      label="Show Static Assets"
+                      label={`Show Static Assets (${assets?.filter(({ type }) => type === "static").length})`}
                     />
                   </div>
                 ),

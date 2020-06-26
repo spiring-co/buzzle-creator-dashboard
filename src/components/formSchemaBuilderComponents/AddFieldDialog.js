@@ -7,8 +7,8 @@ import {
   Button,
   FormControl,
   FormHelperText,
-  InputLabel,
-  FormControlLabel,
+  InputLabel, FormLabel,
+  FormControlLabel, RadioGroup, Radio,
   Switch,
   MenuItem,
   Select,
@@ -16,9 +16,16 @@ import {
 } from "@material-ui/core";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { getUniqueId } from "services/helper"
 
 const validationSchema = Yup.object().shape({
   type: Yup.string().required("Layer type is required!"),
+  propertyType: Yup.string().required("Property Type is required!"),
+  property: Yup.string().when("propertyType", {
+    is: "file",
+    then: Yup.string(),
+    otherwise: Yup.string().required("Property of the layer is required!")
+  }),
   layerName: Yup.string().required("Layer name is required!"),
   label: Yup.string().required("Field Label is required!"),
   maxLength: Yup.number().when("type", {
@@ -42,31 +49,68 @@ export default (props) => {
   const { textLayers = [], imageLayers = [] } = props;
 
   const onSubmit = (data) => {
-    const { type, label, required, maxLength, layerName, width, height } = data;
+    const { key, property, propertyType, type, label, required, maxLength, layerName, width, height } = data;
+
     switch (type) {
       case "data":
-        props.editField
-          ? props.editFieldValue({
-            type,
+        if (props.editField) {
+          props.editFieldValue({
+            key,
+            type: propertyType,
             label,
-            required,
-            maxLength,
-            layerName,
+            constraints: property === "Source Text.text" ? {
+              required,
+              maxLength,
+            } : { required },
+            rendererData: { layerName, property, type }
           })
-          : props.addField({ type, label, required, maxLength, layerName });
+        }
+        else {
+          props.addField({
+            key: getUniqueId(),
+            type: propertyType,
+            label,
+            constraints: property === "Source Text.text" ? {
+              required,
+              maxLength,
+            } : { required },
+            rendererData: { layerName, property, type }
+          });
+        }
         break;
 
       case "image":
-        props.editField
-          ? props.editFieldValue({
-            type,
+        props.editField ? props.editFieldValue({
+          key,
+          type: propertyType,
+          label,
+          constraints: propertyType === "file"
+            ? {
+              required,
+              width,
+              height
+            }
+            : { required },
+          rendererData: propertyType === "file"
+            ? { layerName, type }
+            : { layerName, property, type }
+
+        })
+          : props.addField({
+            key: getUniqueId(),
+            type: propertyType,
             label,
-            required,
-            width,
-            height,
-            layerName,
-          })
-          : props.addField({ type, label, required, width, height, layerName });
+            constraints: propertyType === "file"
+              ? {
+                required,
+                width,
+                height
+              }
+              : { required },
+            rendererData: propertyType === "file"
+              ? { layerName, type }
+              : { layerName, property, type }
+          });
         break;
       default:
         throw new Error();
@@ -88,6 +132,7 @@ export default (props) => {
     onSubmit,
   });
 
+
   const inputTypes = [
     { label: "Text", value: "data" },
     // { label: "Picker", value: "custom_picker" },
@@ -97,6 +142,7 @@ export default (props) => {
   const toggleDialog = (state) => {
     props.toggleDialog(state);
   };
+
   const handleLayerChange = (e) => {
     const value = e.target.value
     setFieldValue('layerName', value)
@@ -112,6 +158,70 @@ export default (props) => {
       setFieldValue('width', imageLayers[layerNames.indexOf(value)]["width"])
 
     }
+
+  }
+  function PropertyPicker({
+    handleBlur,
+    handleChange,
+    value,
+    touched,
+    error,
+  }) {
+    if (!values.type || !values.propertyType || values.propertyType === "file") return <div />;
+    const layerProperties = ["scale", "color"];
+    const propertiesByType = {
+      data: [
+        "Source Text.text",
+        "Source Text.font",
+        "Source Text.fontSize",
+        "Source Text.fillColor",
+      ],
+      image: ["opacity"],
+    };
+
+    const p = layerProperties.concat(propertiesByType[values.type]);
+    return (
+      <FormControl
+        fullWidth
+        margin="dense"
+        variant="outlined"
+        error={touched && error}>
+        <InputLabel id="property-select">Select Property</InputLabel>
+
+        <Select
+          labelId="property-select"
+          id="property-select"
+          onBlur={handleBlur}
+          onChange={handleChange}
+          name="property"
+          value={value}
+          placeholder="Click to Pick Property"
+          label="Select Property">
+          {p.map((item, index) => (
+            <MenuItem
+              key={index}
+              id={index}
+              value={item}
+              children={item}
+              selected={value === item}
+            />
+          ))}
+        </Select>
+        <FormHelperText>{touched && error}</FormHelperText>
+      </FormControl>
+    );
+  }
+  const renderPropertyTypeSelector = () => {
+
+    return (<FormControl component="fieldset">
+      <FormLabel component="legend">Select Property Type</FormLabel>
+      <RadioGroup aria-label="propertyType" name="propertyType" row
+        value={values.propertyType} onChange={handleChange}>
+        <FormControlLabel value="string" control={<Radio />} label="Text" />
+        <FormControlLabel value="file" disabled={values.type === "data"}
+          control={<Radio />} label="File" />
+      </RadioGroup>
+    </FormControl>)
 
   }
   const renderTextInputCreator = () => (
@@ -130,8 +240,7 @@ export default (props) => {
         label="Layer Label"
         placeholder="Layer Label"
       />
-
-      <TextField
+      {values.property === "Source Text.text" && <>   <TextField
         fullWidth
         variant="outlined"
         margin="dense"
@@ -144,7 +253,7 @@ export default (props) => {
         name="maxLength"
         label="Max length"
         placeholder="Max length"
-      />
+      /></>}
       <br />
 
       <FormControlLabel
@@ -179,35 +288,36 @@ export default (props) => {
         placeholder="Layer Label"
       />
 
-      <TextField
-        fullWidth
-        variant="outlined"
-        margin="dense"
-        value={values.width}
-        name="width"
-        onBlur={handleBlur}
-        onChange={handleChange}
-        error={touched.width && errors.width}
-        helperText={touched.width && errors.width}
-        type="number"
-        label="Image Width"
-        placeholder="Enter Width"
-      />
-      <TextField
-        fullWidth
-        variant="outlined"
-        margin="dense"
-        value={values.height}
-        name="height"
-        onBlur={handleBlur}
-        onChange={handleChange}
-        error={touched.height && errors.height}
-        helperText={touched.height && errors.height}
-        type="number"
-        label="Image Height"
-        placeholder="Enter Height"
-      />
-
+      {values.propertyType === "file" && <>
+        <TextField
+          fullWidth
+          variant="outlined"
+          margin="dense"
+          value={values.width}
+          name="width"
+          onBlur={handleBlur}
+          onChange={handleChange}
+          error={touched.width && errors.width}
+          helperText={touched.width && errors.width}
+          type="number"
+          label="Image Width"
+          placeholder="Enter Width"
+        />
+        <TextField
+          fullWidth
+          variant="outlined"
+          margin="dense"
+          value={values.height}
+          name="height"
+          onBlur={handleBlur}
+          onChange={handleChange}
+          error={touched.height && errors.height}
+          helperText={touched.height && errors.height}
+          type="number"
+          label="Image Height"
+          placeholder="Enter Height"
+        /></>
+      }
       <br />
       <FormControlLabel
         control={
@@ -241,7 +351,7 @@ export default (props) => {
         if (textLayers.length) {
           return textLayers.map((item, index) => {
             if (
-              props.usedFields.includes(item.name) &&
+              // props.usedFields.includes(item.name) &&
               values.layerName !== item.name
             ) {
               return false;
@@ -260,7 +370,7 @@ export default (props) => {
         if (imageLayers.length) {
           return imageLayers.map((item, index) => {
             if (
-              props.usedFields.includes(item.name) &&
+              // props.usedFields.includes(item.name) &&
               values.layerName !== item.name
             ) {
               return false;
@@ -349,7 +459,15 @@ export default (props) => {
               {touched.layerName && errors.layerName}
             </FormHelperText>
           </FormControl>
-
+          {renderPropertyTypeSelector()}
+          <PropertyPicker
+            type={values.type}
+            handleBlur={handleBlur}
+            handleChange={handleChange}
+            touched={touched.property}
+            error={touched.property && errors.property}
+            value={values.property}
+          />
           {renderInputForm(values.type)}
         </DialogContent>
         <DialogActions>
