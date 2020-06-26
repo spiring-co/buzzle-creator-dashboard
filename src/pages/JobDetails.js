@@ -139,14 +139,7 @@ export default () => {
   const fetchJob = async () => {
     setError(false);
     setIsLoading(true);
-
-    try {
-      Job.get(id, true).then(setJob);
-    } catch (err) {
-      setError(err);
-    } finally {
-      setIsLoading(false);
-    }
+    Job.get(id, true).then(setJob).catch(setError).finally(() => setIsLoading(false))
   };
 
   const handleUpdateJob = async () => {
@@ -157,7 +150,7 @@ export default () => {
       setRedirect("/home/jobs");
     } catch (err) {
       setIsLoading(false);
-      console.log(err);
+      setError(err);
     }
   };
 
@@ -190,23 +183,20 @@ export default () => {
     "Finished at":
       state === "finished" ? new Date(dateFinished).toLocaleString() : "---",
   };
-  if (error)
-    return (
-      <ErrorHandler
-        message={error?.message ?? "Oop's, Somethings went wrong!"}
-        showRetry={true}
-        onRetry={() => fetchJob()}
-      />
-    );
+
   if (redirect) return <Redirect to="/home/jobs" />;
   if (isLoading) {
-    const classes = useStyles()
     return <Paper className={classes.loading}>
       <CircularProgress />
       <Typography className={classes.loadingText}>loading please wait...</Typography></Paper>
   }
   return (
     <>
+      {error && <ErrorHandler
+        message={error?.message ?? "Oop's, Somethings went wrong!"}
+        showRetry={true}
+        onRetry={() => Object.keys(job).length ? handleUpdateJob() : fetchJob()}
+      />}
       <div className={classes.root}>
         <Box p={1} alignItems="right">
           <Button
@@ -225,7 +215,9 @@ export default () => {
           />
         </Box>
         {state === "finished" ? (
-          <video style={{ height: 320, width: "100%" }} controls src={output} />
+          <video
+            poster={job.videoTemplate.thumbnail}
+            style={{ height: 320, width: "100%" }} controls src={output} />
         ) : (
             <Box
               style={{ background: "gainsboro" }}
@@ -388,6 +380,7 @@ export default () => {
       )}
     </>
   );
+
 };
 
 const getColorFromState = (state) => {
