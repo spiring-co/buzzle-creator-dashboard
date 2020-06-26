@@ -174,8 +174,8 @@ export default ({
           color="primary"
           onClick={() => {
             setEditIndex(null);
-            // usedFields.length !== currentCompositionFields.length
-            //   ? setIsDialogVisible(true)
+            // usedFields.length !== currentCompositionFields.length?
+            setIsDialogVisible(true)
             //   : alert("No layers in the composition");
           }}
           children="Add Field"
