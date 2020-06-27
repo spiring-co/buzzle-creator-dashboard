@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from "react";
+import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
+import UpdateIcon from "@material-ui/icons/Update";
+import PublishIcon from "@material-ui/icons/Publish";
 import {
   Typography,
   Paper,
@@ -59,6 +62,9 @@ const CustomProgress = withStyles({
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
+  },
+  button: {
+    marginRight: 20,
   },
   container: {
     padding: theme.spacing(0),
@@ -185,20 +191,23 @@ export default () => {
         />
       )}
       <div className={classes.root}>
-        <Box p={1} alignItems="right">
+        <Box p={1} justifyItems="stretch" alignItems="right">
           <Button
-            disabled={isLoading}
-            color="secondary"
-            variant="contained"
-            onClick={handleUpdateJob}
-            children="Update Job"
-          />
-          <Button
+            className={classes.button}
             disabled={isLoading}
             color="primary"
             variant="contained"
+            onClick={handleUpdateJob}
+            children="Update Job"
+            startIcon={<PublishIcon />}
+          />
+          <Button
+            disabled={isLoading}
+            color="default"
+            variant="contained"
             onClick={null}
             children="Restart Job"
+            startIcon={<UpdateIcon />}
           />
         </Box>
         {state === "finished" ? (
@@ -247,6 +256,14 @@ export default () => {
                     </Grid>
                   </Grid>
                 ))}
+                <p></p>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={<CloudDownloadIcon />}
+                  href={output}>
+                  Download Output
+                </Button>
               </Box>
             </Grid>
           </TabPanel>

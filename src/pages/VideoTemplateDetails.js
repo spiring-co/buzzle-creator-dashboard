@@ -64,52 +64,64 @@ export default () => {
       {error && <Alert severity="error" children={`${error.message}`} />}
       {/* TODO use material classes, no inline styling */}
       <Paper style={{ padding: 20 }}>
-        <Typography variant="h4" style={{ marginTop: 10 }}>
-          Your Video Template
-        </Typography>
-        <Typography style={{ marginTop: 10 }}>
-          <strong>Sample Video</strong>
-        </Typography>
-        <video
-          id="sample"
-          controls={true}
-          style={{ width: 300, height: 200, marginTop: 10 }}
-          src={data?.versions[0]?.sample}
-        />
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            height: "100%",
+            alignItems: "center",
+          }}>
+          <div>
+            <Typography variant="h4" style={{ marginTop: 10 }}>
+              Your Video Template
+            </Typography>
+            <Typography style={{ marginTop: 10 }}>
+              <strong>Sample Video</strong>
+            </Typography>
+            <video
+              id="sample"
+              controls={true}
+              style={{ width: 300, height: 200, marginTop: 10 }}
+              src={data?.versions[0]?.sample}
+            />
+          </div>
 
-        <Typography style={{ marginTop: 10 }}>
-          <strong>Title</strong>
-        </Typography>
-        <Typography>{data?.title}</Typography>
-        <Typography style={{ marginTop: 10 }}>
-          <strong>Description</strong>
-        </Typography>
-        <Typography>{data?.description}</Typography>
+          <div>
+            <Typography style={{ marginTop: 10 }}>
+              <strong>Title</strong>
+            </Typography>
+            <Typography>{data?.title}</Typography>
+            <Typography style={{ marginTop: 10 }}>
+              <strong>Description</strong>
+            </Typography>
+            <Typography>{data?.description}</Typography>
 
-        <Button
-          style={{ margin: 10, marginLeft: 0 }}
-          variant="contained"
-          color="primary"
-          onClick={handleEdit}>
-          Edit
-        </Button>
-        <Button
-          component={"a"}
-          target="_blank"
-          style={{ margin: 10, marginLeft: 0 }}
-          variant="contained"
-          color="primary"
-          href={data?.src || ""}>
-          Download AEP(X)
-        </Button>
-        <Button
-          style={{ margin: 10 }}
-          disabled={isDeleting}
-          variant="outlined"
-          color="secondary"
-          onClick={handleDelete}>
-          {isDeleting ? "Deleting..." : "Delete"}
-        </Button>
+            <Button
+              style={{ margin: 10, marginLeft: 0 }}
+              variant="contained"
+              color="primary"
+              onClick={handleEdit}>
+              Edit
+            </Button>
+            <Button
+              component={"a"}
+              target="_blank"
+              style={{ margin: 10, marginLeft: 0 }}
+              variant="contained"
+              color="primary"
+              href={data?.src || ""}>
+              Download AEP(X)
+            </Button>
+            <Button
+              style={{ margin: 10 }}
+              disabled={isDeleting}
+              variant="outlined"
+              color="secondary"
+              onClick={handleDelete}>
+              {isDeleting ? "Deleting..." : "Delete"}
+            </Button>
+          </div>
+        </div>
       </Paper>
     </div>
   );
