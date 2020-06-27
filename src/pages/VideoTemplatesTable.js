@@ -103,13 +103,13 @@ export default (props) => {
                 children={"retry?"}
               />
             ) : (
-                <Typography>
-                  <Link component={RouterLink} to={`${path}add`}>
-                    Click here
+              <Typography>
+                <Link component={RouterLink} to={`${path}add`}>
+                  Click here
                 </Link>{" "}
                 to create a Video Template😀
-                </Typography>
-              ),
+              </Typography>
+            ),
           },
         }}
         detailPanel={[
@@ -131,8 +131,12 @@ export default (props) => {
             icon: "alarm-on",
             tooltip: "Render Test Job",
             onClick: async (event, rowData) => {
-              await Job.renderTests(rowData);
-              history.push("/home/jobs");
+              try {
+                await Job.renderTests(rowData);
+                history.push("/home/jobs");
+              } catch (e) {
+                setError(e);
+              }
             },
           },
           {
