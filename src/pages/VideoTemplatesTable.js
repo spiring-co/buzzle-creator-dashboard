@@ -130,8 +130,8 @@ export default (props) => {
           {
             icon: "alarm-on",
             tooltip: "Render Test Job",
-            onClick: (event, rowData) => {
-              Job.renderTests(rowData);
+            onClick: async (event, rowData) => {
+              await Job.renderTests(rowData);
               history.push("/home/jobs");
             },
           },

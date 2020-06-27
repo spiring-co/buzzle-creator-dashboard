@@ -16,13 +16,13 @@ export default (state, action) => {
   switch (action.type) {
     //payload : activeVersionIndex,currentCompositionFields
     case RESTORE_FIELDS:
-      // const editableLayers = state.versions[0].editableLayers.filter((layer) =>
-      //   action.payload.currentCompositionFields.includes(layer.layerName)
-      // );
+      const fields = state.versions[0].fields.filter(({ rendererData }) =>
+        action.payload.currentCompositionFields.includes(rendererData.layerName)
+      );
 
-      // state.versions[
-      //   action.payload.activeVersionIndex
-      // ].editableLayers = editableLayers;
+      state.versions[
+        action.payload.activeVersionIndex
+      ].fields = fields;
 
       return Object.assign({}, state);
 

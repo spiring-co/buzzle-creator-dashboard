@@ -135,7 +135,6 @@ export default (props) => {
 
   const inputTypes = [
     { label: "Text", value: "data" },
-    // { label: "Picker", value: "custom_picker" },
     { label: "Image", value: "image" },
   ];
 
@@ -350,12 +349,7 @@ export default (props) => {
       case "data":
         if (textLayers.length) {
           return textLayers.map((item, index) => {
-            // if (
-            //   // props.usedFields.includes(item.name) &&
-            //   values.layerName !== item.name
-            // ) {
-            //   return false;
-            // }
+
             return (
               <MenuItem key={index} value={item.name}>
                 {item.name}
@@ -369,12 +363,6 @@ export default (props) => {
       case "image":
         if (imageLayers.length) {
           return imageLayers.map((item, index) => {
-            // if (
-            //   // props.usedFields.includes(item.name) &&
-            //   values.layerName !== item.name
-            // ) {
-            //   return false;
-            // }
             return (
               <MenuItem key={index} value={item.name}>
                 {item.name}

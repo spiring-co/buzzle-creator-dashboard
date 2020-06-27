@@ -8,10 +8,8 @@ import { Button, Paper, Typography, Tooltip } from "@material-ui/core";
 import { Wallpaper, TextFields, Add } from "@material-ui/icons";
 export default ({
   compositions,
-  //usedFields,
   editVersion,
   activeVersionIndex,
-  // setUsedFields,
 }) => {
   const [videoObj] = useContext(VideoTemplateContext);
 
@@ -39,7 +37,7 @@ export default ({
       !editVersion &&
       videoObj.versions[0].title !== "" &&
       activeVersionIndex !== 0 &&
-      videoObj.versions[activeVersionIndex]?.editableLayers.length === 0
+      videoObj.versions[activeVersionIndex]?.fields.length === 0
     ) {
       if (
         window.confirm("Do you want to restore fields from previous version")
@@ -51,7 +49,6 @@ export default ({
   }, []);
 
   const handleAddField = (field) => {
-    // setUsedFields([...usedFields, field,aeLayers.layerName]);
     addField(activeVersionIndex, field);
   };
 
@@ -61,28 +58,11 @@ export default ({
   };
 
   const _deleteField = (item, index) => {
-    //setUsedFields(usedFields.filter((i) => i !== item.layerName));
     removeField(activeVersionIndex, index);
   };
 
   const editFieldValue = (field) => {
-    //if user changed field name
-    // if (
-    //   videoObj.versions[activeVersionIndex]?.editableLayers[editIndex]
-    //     .layerName !== value.layerName
-    // ) {
-    //   setUsedFields(
-    //     usedFields.map((item) => {
-    //       if (
-    //         item ===
-    //         videoObj.versions[activeVersionIndex]?.editableLayers[editIndex]
-    //           .layerName
-    //       ) {
-    //         return value.layerName;
-    //       } else return item;
-    //     })
-    //   );
-    // }
+
     updateField(activeVersionIndex, editIndex, field);
     setEditIndex(null);
   };
@@ -174,9 +154,7 @@ export default ({
           color="primary"
           onClick={() => {
             setEditIndex(null);
-            // usedFields.length !== currentCompositionFields.length?
             setIsDialogVisible(true)
-            //   : alert("No layers in the composition");
           }}
           children="Add Field"
         />
@@ -186,7 +164,6 @@ export default ({
       )}
 
       {isDialogVisible &&
-        //usedFields.length !== currentCompositionFields.length &&
         (
           <AddFields
             textLayers={getLayersFromComposition(
@@ -197,7 +174,6 @@ export default ({
               compositions[videoObj?.versions[activeVersionIndex]?.composition],
               "imageLayers"
             )}
-            // usedFields={usedFields}
             initialValue={{
               key: videoObj.versions[activeVersionIndex]?.fields[editIndex]
                 ?.key ?? "",

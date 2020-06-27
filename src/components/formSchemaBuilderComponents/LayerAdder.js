@@ -13,10 +13,7 @@ export default ({
   onCancel
 }) => {
   const [videoObj] = useContext(VideoTemplateContext);
-
-  // const [usedFields, setUsedFields] = useState([]);
   useEffect(() => {
-    // setUsedFields(videoObj.versions[activeVersionIndex]?.editableLayers?.map(layer => layer.layerName) ?? [])
   }, [isEdit])
   return (
     <form
@@ -26,8 +23,6 @@ export default ({
       <LayerBuilder
         compositions={compositions}
         editVersion={editVersion}
-        // usedFields={usedFields}
-        // setUsedFields={setUsedFields}
         activeVersionIndex={activeVersionIndex}
       />
       <div>
