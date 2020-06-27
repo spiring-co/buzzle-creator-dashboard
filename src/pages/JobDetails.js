@@ -107,43 +107,6 @@ export default () => {
   useEffect(() => {
     fetchJob();
   }, []);
-  const handleAssetSubmit = (a) => {
-    if (editIndex !== null) {
-      assets[editIndex] = a;
-    } else {
-      const i = assets.findIndex(
-        (j) => j.layerName == a.layerName && j.property === a.property
-      );
-
-      if (i === -1) {
-        assets.push(a);
-      } else {
-        if (
-          window.confirm(
-            `This will replace the existing asset on layer ${a.layerName}'s property ${a.property} with value: ${a.value}`
-          )
-        ) {
-          assets[i] = a;
-        }
-      }
-    }
-    setEditIndex(null);
-    setJob(job);
-    setIsDialogOpen(false);
-  };
-
-  const handleDeleteAsset = (_, { layerName, property, src }) => {
-    setJob({
-      ...job,
-      assets: assets.filter(
-        (a) =>
-          !(
-            a.layerName == layerName &&
-            (a.property == property || a.src === src)
-          )
-      ),
-    });
-  };
 
   const fetchJob = async () => {
     setError(false);
@@ -169,8 +132,7 @@ export default () => {
   const {
     output,
     state,
-    assets,
-    actions,
+    actions, data,
     videoTemplate: vt,
     idVersion,
     renderTime,
@@ -179,9 +141,9 @@ export default () => {
     dateFinished,
     dateStarted,
   } = job;
+
   const videoTemplate =
     vt?.versions[vt?.versions.map(({ id }) => id).indexOf(idVersion)];
-
   const content = {
     "Job ID": id,
     "Render Time": formatTime(renderTime),
@@ -193,6 +155,19 @@ export default () => {
     "Finished at":
       state === "finished" ? new Date(dateFinished).toLocaleString() : "---",
   };
+
+  const handleUpdateAsset = (index, value) => new Promise((resolve, reject) => {
+    const idArray = Object.keys(data)
+    job.data[idArray[index]] = value
+    setJob({ ...job, data: job.data })
+    resolve(true)
+  })
+  const handleAssetDelete = (index) => new Promise((resolve, reject) => {
+    const idArray = Object.keys(data)
+    delete job.data[idArray[index]]
+    setJob({ ...job, data: job.data })
+    resolve(true)
+  })
 
   if (redirect) return <Redirect to="/home/jobs" />;
   if (isLoading) {
@@ -331,48 +306,32 @@ export default () => {
                   onClick: handleDeleteAsset,
                 },
               ]}
+
+              editable={{
+                onRowUpdate: async (newData, oldData) => {
+                  return await handleUpdateAsset(oldData.tableData.id, newData.value)
+                }
+                ,
+                onRowDelete: async oldData => {
+                  return await handleAssetDelete(oldData.tableData.id)
+                }
+
+              }}
+
               columns={[
-                { title: "Layer Name", field: "layerName" },
-                { title: "Type", field: "type" },
                 {
-                  title: "Property",
-                  render: ({ property }) => property || "Source",
+                  title: "Field Id",
+                  field: "key"
+                  , editable: 'never'
                 },
                 {
-                  title: "Value/Source",
-                  field: "value",
-                  render: ({ value, src }) =>
-                    src ? (
-                      <Link src={src} target="_blank" children={src} />
-                    ) : (
-                      value
-                    ),
+                  title: "Value",
+                  field: "value"
+
                 },
               ]}
-              data={
-                isStaticVisible
-                  ? assets
-                  : assets?.filter(({ type }) => type !== "static")
-              }
-              components={{
-                Toolbar: (props) => (
-                  <div>
-                    <MTableToolbar {...props} />
-                    <FormControlLabel
-                      style={{ paddingLeft: 20 }}
-                      control={
-                        <Checkbox
-                          checked={isStaticVisible}
-                          onChange={(e) => setIsStaticVisible(e.target.checked)}
-                          name="staticAsset"
-                          color="primary"
-                        />
-                      }
-                      label="Show Static Assets"
-                    />
-                  </div>
-                ),
-              }}
+
+              data={Object.keys(data).map(key => ({ key: key, value: data[key] }))}
               title="Assets"
             />
           </TabPanel>
@@ -404,14 +363,14 @@ export default () => {
           </TabPanel>
         </Paper>
       </div>
-      {isDialogOpen && (
+      {/* {isDialogOpen && (
         <AssetDialog
           setIsDialogOpen={setIsDialogOpen}
-          editableLayers={videoTemplate?.editableLayers}
-          initialValues={editIndex !== null && assets[editIndex]}
+          fields={videoTemplate?.fields}
+          initialValues={editIndex !== null && data[editIndex]}
           onSubmit={handleAssetSubmit}
         />
-      )}
+      )} */}
     </>
   );
 };

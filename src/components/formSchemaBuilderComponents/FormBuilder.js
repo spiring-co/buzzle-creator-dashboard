@@ -29,6 +29,7 @@ export default ({ submitForm, isEdit, video }) => {
     }
   }, []);
 
+
   const handleSubmitForm = async () => {
     try {
       setError(null);
