@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Button,
-  CircularProgress,
-  Container,
-  Box,
-  Typography,
-} from "@material-ui/core";
+import { Button, Container, Box, Typography } from "@material-ui/core";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import upload from "services/s3Upload";
@@ -56,9 +50,7 @@ export default ({
     isEdit ? compositions.length !== 0 : !!value
   );
   const [message, setMessage] = useState(
-    compositions.length === 0 ? null : (
-      <p style={{ color: "green" }}>{getCompositionDetails(compositions)}</p>
-    )
+    compositions.length === 0 ? null : getCompositionDetails(compositions)
   );
   useEffect(() => {
     // if template is in edit mode
@@ -87,6 +79,7 @@ export default ({
     }
   }, []);
   const handlePickFile = async (e) => {
+    e && e.preventDefault();
     setMessage(null);
     setHasPickedFile(true);
     setHasExtractedData(false);
@@ -96,30 +89,16 @@ export default ({
           (e?.target?.files ?? [null])[0] ||
           (e?.dataTransfer?.files ?? [null])[0];
         if (!file) return;
-        setMessage(
-          <>
-            <p>Processing...</p>
-          </>
-        );
+        setMessage("Processing...");
         const task = upload(`templates/${file.name}`, file);
         task.on("httpUploadProgress", ({ loaded, total }) =>
-          setMessage(
-            <>
-              <CircularProgress style={{ margin: 10 }} size={28} />
-              <p>{`${parseInt((loaded / total) * 100)}% uploaded`}</p>
-            </>
-          )
+          setMessage(`${parseInt((loaded / total) * 100)}% uploaded`)
         );
         var { Location: uri } = await task.promise();
       } else {
         var uri = value;
       }
-      setMessage(
-        <>
-          <CircularProgress style={{ margin: 10 }} size={28} />
-          <p>Extracting Layer and compositions ...</p>
-        </>
-      );
+      setMessage("Extracting Layer and compositions ...");
       const { compositions, staticAssets } = await extractStructureFromFile(
         uri
       );
@@ -127,11 +106,7 @@ export default ({
       if (!compositions) {
         onError("Could not extract project structure.");
       } else {
-        setMessage(
-          <p style={{ color: "green" }}>
-            {getCompositionDetails(compositions)}
-          </p>
-        );
+        setMessage(getCompositionDetails(compositions));
         setHasExtractedData(true);
         onData({
           compositions,
@@ -148,7 +123,7 @@ export default ({
       setHasPickedFile(false);
       setHasExtractedData(false);
       onTouched(true);
-      setMessage(<p style={{ color: "red" }}>Error: {error.message}</p>);
+      setMessage(`Error: ${error.message}`);
       onError(error.message);
     }
   };
@@ -203,8 +178,7 @@ export default ({
                 disabled={!hasExtractedData}
                 onClick={() => {
                   // change will work in edit mode
-                  setMessage(null);
-
+                  setMessage("");
                   isEdit && setEdit(false);
                   setHasPickedFile(false);
                   setHasExtractedData(false);
@@ -213,7 +187,7 @@ export default ({
             )}
           </>
         )}
-        {message}
+        <Typography>{message}</Typography>
       </Box>
     </Container>
   );

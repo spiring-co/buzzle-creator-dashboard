@@ -12,12 +12,17 @@ import { createStyles, makeStyles, useTheme } from "@material-ui/core/styles";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import AccountCircle from "@material-ui/icons/AccountCircle";
+import BrightnessHigh from "@material-ui/icons/BrightnessHigh";
+import BrightnessLow from "@material-ui/icons/BrightnessLow";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import MenuIcon from "@material-ui/icons/Menu";
+import Notifications from "@material-ui/icons/Notifications";
+import Box from "@material-ui/core/Box";
 import clsx from "clsx";
 import React, { forwardRef, useMemo, useState } from "react";
-import { Link as RouterLink, useHistory, useRouteMatch } from "react-router-dom";
+import { Link as RouterLink, useHistory } from "react-router-dom";
+import { useDarkMode } from "helpers/useDarkMode";
 
 import { useAuth } from "../services/auth";
 
@@ -35,9 +40,12 @@ function ListItemLink(props) {
 
   return (
     <li>
-      <ListItem selected={to === window.location.pathname} button component={renderLink}>
+      <ListItem
+        selected={to === window.location.pathname}
+        button
+        component={renderLink}>
         {icon ? <ListItemIcon>{icon}</ListItemIcon> : null}
-        <ListItemText style={{ fontSize: 700 }} primary={primary} />
+        <ListItemText style={{ fontSize: 500 }} primary={primary} />
       </ListItem>
     </li>
   );
@@ -95,8 +103,8 @@ const useStyles = makeStyles((theme) =>
     toolbar: {
       display: "flex",
       alignItems: "center",
-      justifyContent: "flex-end",
-      padding: theme.spacing(0, 1),
+      justifyContent: "center",
+      padding: theme.spacing(1, 1),
       // necessary for content to be below app bar
       ...theme.mixins.toolbar,
     },
@@ -112,14 +120,16 @@ const useStyles = makeStyles((theme) =>
 );
 
 export default function NavBar({ items }) {
-
   const classes = useStyles();
   const theme = useTheme();
   const [drawerOpen, setDrawerOpen] = useState(true);
   const [anchorEl, setAnchorEl] = useState(null);
   const { logout } = useAuth();
   const history = useHistory();
-
+  const [t, toggleTheme, componentMounted] = useDarkMode();
+  if (!componentMounted) {
+    return <div />;
+  }
   const handleDrawerOpen = () => {
     setDrawerOpen(true);
   };
@@ -155,28 +165,35 @@ export default function NavBar({ items }) {
             })}>
             <MenuIcon />
           </IconButton>
-          <Typography
-            noWrap
-            component={RouterLink}
-            to="/home"
-            variant="h5"
-            style={{
-              textDecoration: "none",
-              color: "white",
-              fontWeight: 800,
-              fontFamily: "Poppins",
-            }}>
-            Buzzle!
-          </Typography>
+
           <div className={classes.menu}>
+            <IconButton
+              aria-label="toggle dark mode"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={() => {
+                toggleTheme();
+              }}
+              color="inherit">
+              {t === "light" ? <BrightnessHigh /> : <BrightnessLow />}
+            </IconButton>
+            <IconButton
+              aria-label="notifications"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={null}
+              color="inherit">
+              <Notifications />
+            </IconButton>
             <IconButton
               aria-label="account of current user"
               aria-controls="menu-appbar"
               aria-haspopup="true"
               onClick={handleMenu}
               color="inherit">
-              <AccountCircle fontSize={"large"} />
+              <AccountCircle />
             </IconButton>
+
             <Menu
               id="menu-appbar"
               anchorEl={anchorEl}
@@ -216,15 +233,32 @@ export default function NavBar({ items }) {
           }),
         }}>
         <div className={classes.toolbar}>
+          <Box flex={1}>
+            <Typography
+              noWrap
+              component={RouterLink}
+              to="/home"
+              variant="h5"
+              style={{
+                paddingLeft: 20,
+                textDecoration: "none",
+                fontWeight: 800,
+                color: "inherit",
+                fontFamily: "Poppins",
+              }}>
+              Buzzle!
+            </Typography>
+          </Box>
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === "rtl" ? (
               <ChevronRightIcon />
             ) : (
-                <ChevronLeftIcon />
-              )}
+              <ChevronLeftIcon />
+            )}
           </IconButton>
         </div>
         <Divider />
+
         <List>
           {items.map((item, index) => (
             <ListItemLink

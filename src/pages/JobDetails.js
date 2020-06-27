@@ -72,6 +72,13 @@ const useStyles = makeStyles((theme) => ({
     top: 16,
     right: 16,
   },
+  valueText: {
+    display: "block",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    maxWidth: 200,
+    textOverflow: "ellipsis",
+  },
 }));
 
 export default () => {
@@ -300,9 +307,15 @@ export default () => {
                   field: "value",
                   render: ({ value, src }) =>
                     src ? (
-                      <Link src={src} target="_blank" children={src} />
+                      <a
+                        className={classes.valueText}
+                        href={src}
+                        target="_blank"
+                        rel="noreferrer"
+                        children={src}
+                      />
                     ) : (
-                      value
+                      <span className={classes.valueText}>{value}</span>
                     ),
                 },
               ]}

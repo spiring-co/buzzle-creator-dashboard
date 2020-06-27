@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Link, Typography, Button } from "@material-ui/core";
+import { Link, Typography, Button, Container } from "@material-ui/core";
 import {
   Link as RouterLink,
   useRouteMatch,
@@ -48,7 +48,7 @@ export default (props) => {
   };
   let { status, err } = deleteStatus;
   return (
-    <>
+    <Container>
       {error && (
         <ErrorHandler
           message={error.message}
@@ -131,8 +131,8 @@ export default (props) => {
           {
             icon: "alarm-on",
             tooltip: "Render Test Job",
-            onClick: (event, rowData) => {
-              Job.renderTests(rowData);
+            onClick: async (event, rowData) => {
+              await Job.renderTests(rowData);
               history.push("/home/jobs");
             },
           },
@@ -195,6 +195,6 @@ export default (props) => {
           actionsColumnIndex: -1,
         }}
       />
-    </>
+    </Container>
   );
 };
