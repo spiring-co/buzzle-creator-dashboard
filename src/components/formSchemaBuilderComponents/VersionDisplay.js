@@ -158,7 +158,7 @@ export default ({
                     </Typography>
                     <Typography>
                       <strong>No of fields: </strong>
-                      {item.editableLayers.length}
+                      {item.fields.length}
                     </Typography>
                     <Button
                       size="small"
