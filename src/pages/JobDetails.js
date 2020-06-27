@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from "react";
+import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
+import UpdateIcon from "@material-ui/icons/Update";
+import PublishIcon from '@material-ui/icons/Publish';
 import {
   Typography,
   Paper,
@@ -8,7 +11,8 @@ import {
   Grid,
   Box,
   Link,
-  AppBar, CircularProgress,
+  AppBar,
+  CircularProgress,
   FormControlLabel,
   Checkbox,
   Tabs,
@@ -63,6 +67,9 @@ const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
   },
+  button:{
+    marginRight:20
+  },
   container: {
     padding: theme.spacing(0),
     position: "relative",
@@ -73,12 +80,15 @@ const useStyles = makeStyles((theme) => ({
     right: 16,
   },
   loading: {
-    height: 400, display: 'flex', flexDirection: "column",
-    justifyContent: 'center',
-    alignItems: 'center'
-  }, loadingText: {
-    marginTop: 20
-  }
+    height: 400,
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: 20,
+  },
 }));
 
 export default () => {
@@ -101,7 +111,10 @@ export default () => {
   const fetchJob = async () => {
     setError(false);
     setIsLoading(true);
-    Job.get(id, true).then(setJob).catch(setError).finally(() => setIsLoading(false))
+    Job.get(id, true)
+      .then(setJob)
+      .catch(setError)
+      .finally(() => setIsLoading(false));
   };
 
   const handleUpdateJob = async () => {
@@ -158,47 +171,62 @@ export default () => {
 
   if (redirect) return <Redirect to="/home/jobs" />;
   if (isLoading) {
-    return <Paper className={classes.loading}>
-      <CircularProgress />
-      <Typography className={classes.loadingText}>loading please wait...</Typography></Paper>
+    return (
+      <Paper className={classes.loading}>
+        <CircularProgress />
+        <Typography className={classes.loadingText}>
+          loading please wait...
+        </Typography>
+      </Paper>
+    );
   }
   return (
     <>
-      {error && <ErrorHandler
-        message={error?.message ?? "Oop's, Somethings went wrong!"}
-        showRetry={true}
-        onRetry={() => Object.keys(job).length ? handleUpdateJob() : fetchJob()}
-      />}
+      {error && (
+        <ErrorHandler
+          message={error?.message ?? "Oop's, Somethings went wrong!"}
+          showRetry={true}
+          onRetry={() =>
+            Object.keys(job).length ? handleUpdateJob() : fetchJob()
+          }
+        />
+      )}
       <div className={classes.root}>
-        <Box p={1} alignItems="right">
-          <Button
-            disabled={isLoading}
-            color="secondary"
-            variant="contained"
-            onClick={handleUpdateJob}
-            children="Update Job"
-          />
-          <Button
-            disabled={isLoading}
-            color="primary"
-            variant="contained"
-            onClick={null}
-            children="Restart Job"
-          />
+        <Box p={1} justifyItems="stretch" alignItems="right">
+              <Button
+                className={classes.button}
+                disabled={isLoading}
+                color="primary"
+                variant="contained"
+                onClick={handleUpdateJob}
+                children="Update Job"
+                startIcon={<PublishIcon />}
+              />
+              <Button
+                disabled={isLoading}
+                color="default"
+                variant="contained"
+                onClick={null}
+                children="Restart Job"
+                startIcon={<UpdateIcon />}
+              />
         </Box>
         {state === "finished" ? (
           <video
             poster={job.videoTemplate.thumbnail}
-            style={{ height: 320, width: "100%" }} controls src={output} />
+            style={{ height: 320, width: "100%" }}
+            controls
+            src={output}
+          />
         ) : (
-            <Box
-              style={{ background: "gainsboro" }}
-              justifyContent="center"
-              textAlign="center"
-              height={320}>
-              <p style={{ padding: 100 }}> No output yet.</p>
-            </Box>
-          )}
+          <Box
+            style={{ background: "gainsboro" }}
+            justifyContent="center"
+            textAlign="center"
+            height={320}>
+            <p style={{ padding: 100 }}> No output yet.</p>
+          </Box>
+        )}
         <Paper>
           <AppBar position="static" color="transparent" elevation={0}>
             <Tabs
@@ -229,6 +257,14 @@ export default () => {
                     </Grid>
                   </Grid>
                 ))}
+                <p></p>
+                <Button
+                  variant="contained"
+                  color ="primary"
+                  startIcon={<CloudDownloadIcon />}
+                  href={output}>
+                  Download Output
+                </Button>
               </Box>
             </Grid>
           </TabPanel>
@@ -240,6 +276,37 @@ export default () => {
                 headerStyle: { fontWeight: 700 },
                 actionsColumnIndex: -1,
               }}
+              actions={[
+                {
+                  icon: "add",
+                  tooltip: "Add Asset",
+                  isFreeAction: true,
+                  onClick: () => {
+                    setEditIndex(null);
+                    setIsDialogOpen(true);
+                  },
+                },
+                {
+                  icon: "edit",
+                  tooltip: "Edit Asset",
+                  onClick: (e, rowData) => {
+                    setEditIndex(
+                      isStaticVisible
+                        ? rowData.tableData.id
+                        : rowData.tableData.id +
+                            assets?.filter(({ type }) => type === "static")
+                              .length
+                    );
+                    setIsDialogOpen(true);
+                  },
+                },
+                {
+                  icon: "delete",
+                  tooltip: "Delete Asset",
+                  onClick: handleDeleteAsset,
+                },
+              ]}
+
               editable={{
                 onRowUpdate: async (newData, oldData) => {
                   return await handleUpdateAsset(oldData.tableData.id, newData.value)
@@ -250,6 +317,7 @@ export default () => {
                 }
 
               }}
+
               columns={[
                 {
                   title: "Field Id",
@@ -259,6 +327,7 @@ export default () => {
                 {
                   title: "Value",
                   field: "value"
+
                 },
               ]}
 
@@ -304,7 +373,6 @@ export default () => {
       )} */}
     </>
   );
-
 };
 
 const getColorFromState = (state) => {
