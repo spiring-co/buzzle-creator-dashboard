@@ -7,23 +7,20 @@ import {
   withStyles,
   Grid,
   Box,
-  Link,
   AppBar,
-  FormControlLabel,
-  Checkbox,
+  CircularProgress,
   Tabs,
   Tab,
 } from "@material-ui/core";
-import { useHistory, Redirect } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 
 import ErrorHandler from "components/ErrorHandler";
-import AssetDialog from "components/AssetDialog";
 import ActionsHandler from "components/ActionsHandler";
 import formatTime from "helpers/formatTime";
 import { Job } from "services/api";
 import { useParams } from "react-router-dom";
-import MaterialTable, { MTableToolbar } from "material-table";
+import MaterialTable from "material-table";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -72,18 +69,20 @@ const useStyles = makeStyles((theme) => ({
     top: 16,
     right: 16,
   },
-  valueText: {
-    display: "block",
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    maxWidth: 200,
-    textOverflow: "ellipsis",
+  loading: {
+    height: 400,
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: 20,
   },
 }));
 
 export default () => {
   const classes = useStyles();
-
   const [job, setJob] = useState({});
   const [error, setError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -98,55 +97,14 @@ export default () => {
   useEffect(() => {
     fetchJob();
   }, []);
-  const handleAssetSubmit = (a) => {
-    if (editIndex !== null) {
-      assets[editIndex] = a;
-    } else {
-      const i = assets.findIndex(
-        (j) => j.layerName == a.layerName && j.property === a.property
-      );
-
-      if (i === -1) {
-        assets.push(a);
-      } else {
-        if (
-          window.confirm(
-            `This will replace the existing asset on layer ${a.layerName}'s property ${a.property} with value: ${a.value}`
-          )
-        ) {
-          assets[i] = a;
-        }
-      }
-    }
-    setEditIndex(null);
-    setJob(job);
-    setIsDialogOpen(false);
-  };
-
-  const handleDeleteAsset = (_, { layerName, property, src }) => {
-    setJob({
-      ...job,
-      assets: assets.filter(
-        (a) =>
-          !(
-            a.layerName == layerName &&
-            (a.property == property || a.src === src)
-          )
-      ),
-    });
-  };
 
   const fetchJob = async () => {
     setError(false);
     setIsLoading(true);
-
-    try {
-      Job.get(id, true).then(setJob);
-    } catch (err) {
-      setError(err);
-    } finally {
-      setIsLoading(false);
-    }
+    Job.get(id, true)
+      .then(setJob)
+      .catch(setError)
+      .finally(() => setIsLoading(false));
   };
 
   const handleUpdateJob = async () => {
@@ -157,24 +115,15 @@ export default () => {
       setRedirect("/home/jobs");
     } catch (err) {
       setIsLoading(false);
-      console.log(err);
+      setError(err);
     }
   };
-
-  if (error)
-    return (
-      <ErrorHandler
-        message={error?.message ?? "Oop's, Somethings went wrong!"}
-        showRetry={true}
-        onRetry={() => fetchJob()}
-      />
-    );
 
   const {
     output,
     state,
-    assets,
     actions,
+    data,
     videoTemplate: vt,
     idVersion,
     renderTime,
@@ -183,9 +132,9 @@ export default () => {
     dateFinished,
     dateStarted,
   } = job;
+
   const videoTemplate =
     vt?.versions[vt?.versions.map(({ id }) => id).indexOf(idVersion)];
-
   const content = {
     "Job ID": id,
     "Render Time": formatTime(renderTime),
@@ -198,10 +147,43 @@ export default () => {
       state === "finished" ? new Date(dateFinished).toLocaleString() : "---",
   };
 
+  const handleUpdateAsset = (index, value) =>
+    new Promise((resolve, reject) => {
+      const idArray = Object.keys(data);
+      job.data[idArray[index]] = value;
+      setJob({ ...job, data: job.data });
+      resolve(true);
+    });
+  const handleAssetDelete = (index) =>
+    new Promise((resolve, reject) => {
+      const idArray = Object.keys(data);
+      delete job.data[idArray[index]];
+      setJob({ ...job, data: job.data });
+      resolve(true);
+    });
+
   if (redirect) return <Redirect to="/home/jobs" />;
-  if (isLoading) return <CustomProgress />;
+  if (isLoading) {
+    return (
+      <Paper className={classes.loading}>
+        <CircularProgress />
+        <Typography className={classes.loadingText}>
+          loading please wait...
+        </Typography>
+      </Paper>
+    );
+  }
   return (
     <>
+      {error && (
+        <ErrorHandler
+          message={error?.message ?? "Oop's, Somethings went wrong!"}
+          showRetry={true}
+          onRetry={() =>
+            Object.keys(job).length ? handleUpdateJob() : fetchJob()
+          }
+        />
+      )}
       <div className={classes.root}>
         <Box p={1} alignItems="right">
           <Button
@@ -220,7 +202,12 @@ export default () => {
           />
         </Box>
         {state === "finished" ? (
-          <video style={{ height: 320, width: "100%" }} controls src={output} />
+          <video
+            poster={job.videoTemplate.thumbnail}
+            style={{ height: 320, width: "100%" }}
+            controls
+            src={output}
+          />
         ) : (
           <Box
             style={{ background: "gainsboro" }}
@@ -271,78 +258,32 @@ export default () => {
                 headerStyle: { fontWeight: 700 },
                 actionsColumnIndex: -1,
               }}
-              actions={[
-                {
-                  icon: "add",
-                  tooltip: "Add Asset",
-                  isFreeAction: true,
-                  onClick: () => {
-                    setEditIndex(null);
-                    setIsDialogOpen(true);
-                  },
+              editable={{
+                onRowUpdate: async (newData, oldData) => {
+                  return await handleUpdateAsset(
+                    oldData.tableData.id,
+                    newData.value
+                  );
                 },
-                {
-                  icon: "edit",
-                  tooltip: "Edit Asset",
-                  onClick: (e, rowData) => {
-                    setEditIndex(rowData.tableData.id);
-                    setIsDialogOpen(true);
-                  },
+                onRowDelete: async (oldData) => {
+                  return await handleAssetDelete(oldData.tableData.id);
                 },
-                {
-                  icon: "delete",
-                  tooltip: "Delete Asset",
-                  onClick: handleDeleteAsset,
-                },
-              ]}
-              columns={[
-                { title: "Layer Name", field: "layerName" },
-                { title: "Type", field: "type" },
-                {
-                  title: "Property",
-                  render: ({ property }) => property || "Source",
-                },
-                {
-                  title: "Value/Source",
-                  field: "value",
-                  render: ({ value, src }) =>
-                    src ? (
-                      <a
-                        className={classes.valueText}
-                        href={src}
-                        target="_blank"
-                        rel="noreferrer"
-                        children={src}
-                      />
-                    ) : (
-                      <span className={classes.valueText}>{value}</span>
-                    ),
-                },
-              ]}
-              data={
-                isStaticVisible
-                  ? assets
-                  : assets?.filter(({ type }) => type !== "static")
-              }
-              components={{
-                Toolbar: (props) => (
-                  <div>
-                    <MTableToolbar {...props} />
-                    <FormControlLabel
-                      style={{ paddingLeft: 20 }}
-                      control={
-                        <Checkbox
-                          checked={isStaticVisible}
-                          onChange={(e) => setIsStaticVisible(e.target.checked)}
-                          name="staticAsset"
-                          color="primary"
-                        />
-                      }
-                      label="Show Static Assets"
-                    />
-                  </div>
-                ),
               }}
+              columns={[
+                {
+                  title: "Field Id",
+                  field: "key",
+                  editable: "never",
+                },
+                {
+                  title: "Value",
+                  field: "value",
+                },
+              ]}
+              data={Object.keys(data).map((key) => ({
+                key: key,
+                value: data[key],
+              }))}
               title="Assets"
             />
           </TabPanel>
@@ -374,14 +315,14 @@ export default () => {
           </TabPanel>
         </Paper>
       </div>
-      {isDialogOpen && (
+      {/* {isDialogOpen && (
         <AssetDialog
           setIsDialogOpen={setIsDialogOpen}
-          editableLayers={videoTemplate?.editableLayers}
-          initialValues={editIndex !== null && assets[editIndex]}
+          fields={videoTemplate?.fields}
+          initialValues={editIndex !== null && data[editIndex]}
           onSubmit={handleAssetSubmit}
         />
-      )}
+      )} */}
     </>
   );
 };

@@ -13,7 +13,6 @@
     "i18next": "^19.4.2",
     "i18next-browser-languagedetector": "^4.1.1",
     "i18next-http-backend": "^1.0.3",
-    "jszip": "^3.4.0",
     "jwt-decode": "^2.2.0",
     "material-table": "^1.57.2",
     "prop-types": "^15.7.2",

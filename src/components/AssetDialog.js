@@ -34,7 +34,9 @@ export default ({
   setIsDialogOpen,
   onSubmit,
 }) => {
-  const [selectedLayerIndex, setSelectedLayerIndex] = useState(0);
+  const [selectedLayerIndex, setSelectedLayerIndex] = useState(editableLayers
+    .map(layer => layer.layerName)
+    .indexOf(initialValues.layerName));
 
   const {
     values,
@@ -282,16 +284,16 @@ export default ({
               />
             </div>
           ) : (
-            <SourceInput
-              errors={errors.src}
-              touched={touched.src}
-              src={values.src}
-              value={values.src}
-              type={values.type}
-              handleChange={handleChange}
-              handleBlur={handleBlur}
-            />
-          )}
+              <SourceInput
+                errors={errors.src}
+                touched={touched.src}
+                src={values.src}
+                value={values.src}
+                type={values.type}
+                handleChange={handleChange}
+                handleBlur={handleBlur}
+              />
+            )}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setIsDialogOpen(false)} color="primary">

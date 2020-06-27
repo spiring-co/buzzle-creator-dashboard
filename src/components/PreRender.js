@@ -16,7 +16,7 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
     actionName === "installFonts"
       ? actionValue
       : {
-          module: "install-fonts",
+          module: "action-install-fonts",
           fonts: [{ name: "", src: "" }],
         }
   );

@@ -14,6 +14,7 @@ export default ({
   onTouched,
 }) => {
   const [progress, setProgress] = useState("0%");
+  const [taskController, setTaskController] = useState(null);
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState(
     value ? value.substring(value.lastIndexOf("/") + 1) : "No file chosen"
@@ -35,7 +36,13 @@ export default ({
       }
       setName(file.name);
       setLoading(true);
-      const task = upload(`${fieldName}s/${file.name}`, file);
+      const task = upload(
+        `${fieldName}s/${Date.now()}${file.name.substr(
+          file.name.lastIndexOf(".")
+        )}`,
+        file
+      );
+      setTaskController(task);
       task.on("httpUploadProgress", ({ loaded, total }) =>
         setProgress(`${parseInt((loaded * 100) / total)}%`)
       );
@@ -44,10 +51,25 @@ export default ({
 
       onChange(uri);
     } catch (err) {
+      setName(
+        value ? value.substring(value.lastIndexOf("/") + 1) : "No file choosen"
+      );
+      setLoading(false);
       onError(err.message);
     }
   };
 
+  const handleUploadCancel = async () => {
+    try {
+      await taskController?.abort();
+    } catch (err) {
+      setName(
+        value ? value.substring(value.lastIndexOf("/") + 1) : "No file choosen"
+      );
+      setLoading(false);
+      onError(err.message);
+    }
+  };
   return (
     <Box m={1}>
       <Typography>{label}</Typography>

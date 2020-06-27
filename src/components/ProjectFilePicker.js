@@ -90,7 +90,12 @@ export default ({
           (e?.dataTransfer?.files ?? [null])[0];
         if (!file) return;
         setMessage("Processing...");
-        const task = upload(`templates/${file.name}`, file);
+        const task = upload(
+          `templates/${Date.now()}${file.name.substr(
+            file.name.lastIndexOf(".")
+          )}`,
+          file
+        );
         task.on("httpUploadProgress", ({ loaded, total }) =>
           setMessage(`${parseInt((loaded / total) * 100)}% uploaded`)
         );
