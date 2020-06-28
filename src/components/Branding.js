@@ -1,10 +1,11 @@
 import React from "react";
-import { Typography, Box, useMediaQuery } from "@material-ui/core";
-import spiring from "assets/spiring.svg";
-import spiring_grey from "assets/spiring_grey.svg";
+import { Typography, Box } from "@material-ui/core";
+import spiring_black from "assets/spiring.svg";
+import spiring_white from "assets/spiring_grey.svg";
+import { useDarkMode } from "helpers/useDarkMode";
 
 export default ({ mt }) => {
-  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
+  const [theme] = useDarkMode();
   return (
     <Box
       style={{
@@ -18,7 +19,7 @@ export default ({ mt }) => {
       }}>
       <img
         style={{ height: 36 }}
-        src={prefersDarkMode ? spiring_grey : spiring}
+        src={theme === "light" ? spiring_black : spiring_white}
       />
       <Typography
         style={{
