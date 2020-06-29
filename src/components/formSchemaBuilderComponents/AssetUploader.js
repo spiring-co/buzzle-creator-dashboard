@@ -69,6 +69,8 @@ export default function AssetUploader({
     } catch (err) {
       setLoading(false)
       setError(err)
+      setTaskController(null)
+
     }
   }
   const handleUploadCancel = async () => {
@@ -78,6 +80,8 @@ export default function AssetUploader({
     catch (err) {
       setLoading(false)
       setError(err)
+      setTaskController(null)
+
     }
   }
   return (

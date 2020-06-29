@@ -17,10 +17,10 @@ export default ({ submitForm, isEdit, video }) => {
   const [videoObj] = useContext(VideoTemplateContext);
   const { resetVideo, editVideoKeys, loadVideo } = useActions();
   const [loading, setLoading] = useState(false);
-  const [activeDisplayIndex, setActiveDisplayIndex] = useState(3);
+  const [activeDisplayIndex, setActiveDisplayIndex] = useState(0);
   const [compositions, setCompositions] = useState([]);
   const [error, setError] = useState(null);
-  const [assets, setAssets] = useState([{ name: 'watermarked.png', src: '', type: 'static' }, { name: 'watermark.mp4', src: '', type: 'static' }]);
+  const [assets, setAssets] = useState([]);
 
   useEffect(() => {
     if (isEdit) {

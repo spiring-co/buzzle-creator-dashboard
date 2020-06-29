@@ -52,6 +52,7 @@ export default ({
 
       onChange(uri);
     } catch (err) {
+      setTaskController(null)
       setFilename(value ? value.substring(value.lastIndexOf("/") + 1) : "");
       setLoading(false);
       onError(err.message);
@@ -65,6 +66,8 @@ export default ({
       setFilename(value ? value.substring(value.lastIndexOf("/") + 1) : "");
       setLoading(false);
       onError(err.message);
+      setTaskController(null)
+
     }
   };
 
