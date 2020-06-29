@@ -66,17 +66,18 @@ export const Job = {
 };
 
 export const VideoTemplate = {
-  get: async () => { },
+  get: async () => {},
   create: async (data) => {
-
-    const response = await fetch(process.env.REACT_APP_API_URL + `/videoTemplates`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(data),
-    });
+    const response = await fetch(
+      process.env.REACT_APP_API_URL + `/videoTemplates`,
+      {
+        method: "POST",
+        headers,
+        body: JSON.stringify(data),
+      }
+    );
     if (!response.ok) throw new Error((await response.json()).message);
     return await response.json();
-
   },
   update: async (id, data) => {
     const response = await fetch(`${baseUrl}/videoTemplates/${id}`, {
@@ -100,33 +101,32 @@ export const VideoTemplate = {
 export const Fonts = {
   getStatus: async (name) => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/fonts?name=${name}`)
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/fonts?name=${name}`
+      );
       if (response.ok) {
-        const result = await response.json()
-        return result
+        const result = await response.json();
+        return result;
+      } else {
+        return { name, src: "" };
       }
-      else {
-        return ({ name, src: "" })
-      }
-    }
-    catch (err) {
-      console.log(err)
-      return ({ name, src: "" })
+    } catch (err) {
+      console.log(err);
+      return { name, src: "" };
     }
   },
   addFont: async (fontObj) => {
     try {
       await fetch(`${process.env.REACT_APP_API_URL}/fonts`, {
-        method: 'POST',
+        method: "POST",
         headers,
-        body: JSON.stringify(fontObj)
-      })
+        body: JSON.stringify(fontObj),
+      });
     } catch (err) {
-      console.log(err)
+      console.log(err);
     }
-  }
-
-}
+  },
+};
 export const Creator = {
   get: async (id) => {
     const response = await fetch(`${baseUrl}/creators/${id}`, {
@@ -144,7 +144,15 @@ export const Creator = {
     if (!response.ok) throw new Error((await response.json()).message);
     return await response.json();
   },
-  update: async () => { },
+  update: async (data) => {
+    const response = await fetch(`${baseUrl}/creators`, {
+      method: "PUT",
+      headers,
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error((await response.json()).message);
+    return await response.json();
+  },
 };
 
 //TODO move to auth

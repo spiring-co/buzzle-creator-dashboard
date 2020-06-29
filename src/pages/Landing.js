@@ -40,8 +40,6 @@ function Landing() {
   const classes = useStyles();
   return (
     <Box>
-
-
       <Box>
         <Grid
           style={{ alignItems: "stretch", height: "-webkit-fill-available" }}

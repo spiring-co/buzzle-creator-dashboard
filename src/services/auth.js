@@ -41,7 +41,6 @@ function AuthProvider(props) {
     if (!response.ok) {
       throw new Error((await response.json()).message);
     }
-
     const { token } = await response.json();
     localStorage.setItem("jwtoken", token);
 
