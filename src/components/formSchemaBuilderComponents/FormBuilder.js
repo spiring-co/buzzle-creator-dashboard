@@ -21,6 +21,7 @@ export default ({ submitForm, isEdit, video }) => {
   const [compositions, setCompositions] = useState([]);
   const [error, setError] = useState(null)
   const [assets, setAssets] = useState([])
+
   useEffect(() => {
     if (isEdit) {
       loadVideo(video);
