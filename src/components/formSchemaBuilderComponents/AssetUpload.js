@@ -1,32 +1,28 @@
 import React, { useState, useEffect, useContext } from "react";
 import {
   Button,
-  Radio,
-  FormControlLabel,
-  FormControl,
   Typography,
+  Box,
+  FormControl, FormControlLabel, Radio,
+  List,
+  ListItem, RadioGroup, FormLabel,
+  ListItemText,
+  Divider, makeStyles, CircularProgress,
+  ListItemSecondaryAction,
 } from "@material-ui/core";
-
 import AssetUploader from "./AssetUploader";
-import { makeStyles, CircularProgress } from "@material-ui/core";
 import useActions from "contextStore/actions";
 import { VideoTemplateContext } from "contextStore/store";
-import { ArrowBack } from "@material-ui/icons";
+import { getLayersFromComposition } from "services/helper";
+// TODO split into individuals
+import { ArrowForward, ArrowBack, Done } from "@material-ui/icons";
 
-const useStyles = makeStyles(() => ({
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    backgroundColor: "white",
-    marginTop: 30,
-    marginBottom: 50,
-    padding: 50,
-  },
-  rowWrapped: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    width: "100%",
+    // borderRadius: 4,
+    border: `1px solid ${theme.palette.divider}`,
   },
 }));
 
@@ -39,7 +35,6 @@ export default function AssetUpload({
   handleSubmitForm,
 }) {
   const classes = useStyles();
-  console.log(staticAssets);
 
   const [isValid, setIsValid] = useState(false);
   const [videoObj] = useContext(VideoTemplateContext);
@@ -60,7 +55,7 @@ export default function AssetUpload({
     setIsValid(assets.every((i) => !!i.src));
   }, [assets]);
 
-  useEffect(() => {}, [isValid]);
+  useEffect(() => { }, [isValid]);
 
   const handleChange = (e) => {
     setUploadType(e.target.value);
@@ -68,29 +63,39 @@ export default function AssetUpload({
 
   const renderAssetFileUploader = () => {
     return (
-      <div className={classes.rowWrapped}>
-        {assets?.length !== 0 ? (
-          assets?.map((asset, index) => (
-            <AssetUploader
-              key={index}
-              handleDelete={() => {
-                setAssets(assets.filter((a, i) => i !== index));
-              }}
-              setAssets={(src) => {
-                setAssets(
-                  assets?.map((asset, i) =>
-                    i === index ? { ...asset, src } : asset
-                  )
-                );
-              }}
-              asset={asset}
-              isFolderResolved={isFolderResolved}
-            />
-          ))
-        ) : (
-          <p>No Assets Found!</p>
-        )}
-      </div>
+      <Box mt={2}>
+        <List className={classes.root}>
+          {assets?.length !== 0 ? (
+            assets?.map((asset, index) => (
+              <>
+                <AssetUploader
+                  key={index}
+                  handleDelete={() => {
+                    setAssets(assets.filter((a, i) => i !== index));
+                  }}
+                  setAssets={(src) => {
+                    setAssets(
+                      assets?.map((asset, i) =>
+                        i === index ? { ...asset, src } : asset
+                      )
+                    );
+                  }}
+                  asset={asset}
+                  isFolderResolved={isFolderResolved}
+                />
+                {index !== assets.length - 1 && <Divider />}</>
+            ))
+          ) : (
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                minHeight={200}>
+                <Typography>No Assets Found!</Typography>
+              </Box>
+            )}
+        </List>
+      </Box>
     );
   };
 
@@ -98,24 +103,25 @@ export default function AssetUpload({
     switch (uploadType) {
       case "folder":
         return (
-          <AssetUploader
-            type={uploadType}
-            assetsName={assets.map(({ name }) => name)}
-            setAssets={(data) => {
-              const resolvedAssetNames = data.map(({ name }) => name);
-              setAssets(
-                assets.map((asset, index) =>
-                  resolvedAssetNames.includes(asset?.name)
-                    ? data[resolvedAssetNames.indexOf(asset?.name)]
-                    : asset
-                )
-              );
-              setIsFolderResolved(true);
-              setUploadType("file");
-            }}
-            asset={{ name: "Asset Folder" }}
-            isFolderResolved={isFolderResolved}
-          />
+          <List className={classes.root}>
+            <AssetUploader
+              type={uploadType}
+              assetsName={assets.map(({ name }) => name)}
+              setAssets={(data) => {
+                const resolvedAssetNames = data.map(({ name }) => name);
+                setAssets(
+                  assets.map((asset, index) =>
+                    resolvedAssetNames.includes(asset?.name)
+                      ? data[resolvedAssetNames.indexOf(asset?.name)]
+                      : asset
+                  )
+                );
+                setIsFolderResolved(true);
+                setUploadType("file");
+              }}
+              asset={{ name: "Asset Folder" }}
+              isFolderResolved={isFolderResolved}
+            /></List>
         );
       case "file":
         return renderAssetFileUploader();
@@ -126,47 +132,31 @@ export default function AssetUpload({
   };
 
   return (
-    <div className={classes.container}>
-      <Typography variant="h4">Upload Asset Files</Typography>
-      <p style={{ color: "grey" }}>
-        Assets Files includes, files which are not associated with user input,
-        and used in template
-      </p>
+    <Box>
+      <Typography variant="h5">Upload Asset Files</Typography>
+
       {!isFolderResolved && (
-        <>
-          <p>
-            <b>Choose Asset Upload Structure</b>
-          </p>
-          <FormControl component="fieldset">
+        <FormControl style={{ marginTop: 5 }} component="fieldset" >
+          <FormLabel component="legend">Choose Asset Upload Structure</FormLabel>
+          <RadioGroup value={uploadType} onChange={handleChange} row>
             <FormControlLabel
               value="folder"
-              control={
-                <Radio
-                  onChange={handleChange}
-                  checked={uploadType === "folder"}
-                  color="primary"
-                />
-              }
+              control={<Radio />}
               label="Complete Assets Folder"
               labelPlacement="end"
             />
             <FormControlLabel
               value="file"
-              control={
-                <Radio
-                  onChange={handleChange}
-                  checked={uploadType === "file"}
-                  color="primary"
-                />
-              }
+              control={<Radio />}
               label="Individual Assets"
               labelPlacement="end"
             />
-          </FormControl>
-        </>
+          </RadioGroup>
+        </FormControl>
+
       )}
       {renderAssetUploader(uploadType)}
-      <div style={{ display: "flex", justifyContent: "center" }}>
+      <Box display="flex" justifyContent="space-between" mt={4}>
         <Button
           startIcon={<ArrowBack />}
           style={{ margin: 10 }}
@@ -186,7 +176,88 @@ export default function AssetUpload({
           }
           onClick={() => handleSubmitForm(videoObj)}
         />
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }
+{/*
+export default function FontUpload({
+  compositions,
+  setActiveDisplayIndex,
+  activeDisplayIndex,
+}) {
+  const { editVideoKeys } = useActions();
+  const [fontList, setFontList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [isValid, setIsValid] = useState(false);
+  const classes = useStyles();
+  // takes all font used in template
+  useEffect(() => {
+    const allTextLayers = Object.values(compositions)
+      .map((c) => getLayersFromComposition(c, "textLayers"))
+      .flat();
+
+    const fontNames = Array.from(new Set(allTextLayers.map((l) => l.font)));
+    // this is without checking font Status
+    Promise.all(fontNames.map((f) => Fonts.getStatus(f))).then((data) => {
+      setFontList(data);
+      setLoading(false);
+    });
+  }, [compositions]);
+
+  useEffect(() => {
+    editVideoKeys({ fonts: fontList });
+    setIsValid(fontList.every((i) => !!i.src));
+  }, [fontList]);
+
+  return (
+    <Box>
+      <Typography variant="h5">Upload Font Files</Typography>
+      <Typography color="textSecondary">
+        We will try to resolve your fonts automatically, if not resolved, Upload
+        your Font File
+      </Typography>
+      {loading ? (
+        <Box mt={4}>
+          <CircularProgress size={20} />
+          <Typography>Resolving Fonts...</Typography>
+        </Box>
+      ) : (
+         
+              {fontList && fontList.length ? (
+                fontList.map((font, index) => (
+                 
+                ))
+              ) : (
+                  <Box
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    minHeight={200}>
+                    <Typography>No Fonts Found!</Typography>
+                  </Box>
+                )}
+         
+        )}
+      <Box display="flex" justifyContent="space-between" mt={4}>
+        <Button
+          startIcon={<ArrowBack />}
+          color="primary"
+          variant="outlined"
+          onClick={() => setActiveDisplayIndex(activeDisplayIndex - 1)}>
+          Back
+        </Button>
+
+        <Button
+          disabled={!isValid}
+          endIcon={<ArrowForward />}
+          color="primary"
+          variant="contained"
+          onClick={() => setActiveDisplayIndex(activeDisplayIndex + 1)}>
+          Next
+        </Button>
+      </Box>
+    </Box>
+  );
+}
+*/}

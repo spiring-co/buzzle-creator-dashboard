@@ -52,6 +52,7 @@ export default ({
 
       onChange(uri);
     } catch (err) {
+      setTaskController(null)
       setFilename(value ? value.substring(value.lastIndexOf("/") + 1) : "");
       setLoading(false);
       onError(err.message);
@@ -65,6 +66,8 @@ export default ({
       setFilename(value ? value.substring(value.lastIndexOf("/") + 1) : "");
       setLoading(false);
       onError(err.message);
+      setTaskController(null)
+
     }
   };
 
@@ -91,7 +94,7 @@ export default ({
             {value ? `Change` : `Upload`}
           </Button>
         </label>
-        <Typography variant="body2" component={"span"} color="textSecondary">
+        <Typography style={{ marginLeft: 10 }} variant="body2" component={"span"} color="textSecondary">
           {loading ? ` Uploading: ${progress}% ` : ` ${filename} `}
         </Typography>
         {loading && (

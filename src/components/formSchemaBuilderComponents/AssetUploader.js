@@ -1,20 +1,36 @@
 import React, { useState, useEffect } from "react";
-import { Tooltip, FormHelperText, Button } from "@material-ui/core"
+import {
+  Button,
+  Typography,
+  Box,
+  FormControl, FormControlLabel, Radio,
+  List,
+  ListItem, RadioGroup, FormLabel,
+  ListItemText, FormHelperText,
+  Divider, makeStyles, CircularProgress,
+  ListItemIcon,
+  ListItemSecondaryAction,
+} from "@material-ui/core";
+import { CloudUpload, Done } from "@material-ui/icons";
 import upload from "services/s3Upload";
-import { Close } from "@material-ui/icons"
+import { OndemandVideo, MusicVideo, Folder, Image } from "@material-ui/icons"
 export default function AssetUploader({
   asset,
   handleDelete,
   setAssets,
-  accept,
-  type, assetsName, isFolderResolved
+  type,
+  assetsName,
+  isFolderResolved
 }) {
   const [loading, setLoading] = useState(false);
   const [src, setSrc] = useState(Boolean(asset?.src));
   const [progress, setProgress] = useState('0%')
   const [error, setError] = useState(null)
   const [taskController, setTaskController] = useState(null)
-
+  const extension = asset?.name.substr(asset?.name.lastIndexOf("."))
+  const audioExtensions = [".opus", ".flac", ".webm", ".weba", ".wav", ".ogg", ".m4a", ".mp3", ".oga", ".mid", ".amr", ".aiff", ".wma", ".au", ".aac"]
+  const videoExtensions = [".ogm", ".wmp", ".mpg", ".webm", ".ogv", ".mov", ".asx", ".mpeg", ".mp4", ".m4v", ".avi"]
+  const imageExtensions = [".tiff", ".pjp", ".pjpeg", ".jfif", ".tif", ".gif", ".svg", ".bmp", ".png", ".jpeg", ".svgz", ".jpg", ".webp", ".ico", ".xbm", ".dib"]
   useEffect(() => {
     if (isFolderResolved && typeof asset?.src === "object") {
       handleUpload(asset.src)
@@ -53,6 +69,8 @@ export default function AssetUploader({
     } catch (err) {
       setLoading(false)
       setError(err)
+      setTaskController(null)
+
     }
   }
   const handleUploadCancel = async () => {
@@ -62,34 +80,46 @@ export default function AssetUploader({
     catch (err) {
       setLoading(false)
       setError(err)
+      setTaskController(null)
+
     }
   }
   return (
-    <div style={{ display: 'flex', flexDirection: "column" }}>
-      <div
-        style={{
-          display: "flex",
-          marginTop: 4,
-          paddingLeft: 5, paddingRight: 5,
-          background: "lightgrey", alignItems: "center"
-        }}
-      ><label
-        style={{
-          padding: 5,
-          margin: 5,
-          marginTop: 0, marginBottom: 0,
-          paddingTop: 0,
-          paddingBottom: 0,
-          background: "white",
-          border: "1px solid grey",
-          fontSize: "13.3333px",
-          fontFamily: "Arial",
-          borderRadius: 5
-        }}
-      >
-          {src ? 'Change Asset' : "Upload Asset"}
-
+    <Box>
+      <ListItem> <ListItemIcon>
+        {videoExtensions.includes(extension)
+          ? <OndemandVideo fontSize="large" />
+          : audioExtensions.includes(extension) ?
+            <MusicVideo fontSize="large" />
+            : imageExtensions.includes(extension)
+              ? <Image fontSize="large" />
+              : <Folder fontSize="large" />}
+      </ListItemIcon>
+        <ListItemText
+          primary={asset.name}
+          secondary={
+            src ? (
+              <>
+                <Done style={{ paddingTop: 10 }} color={'green'} size="small" />
+                <Typography variant="span" style={{ color: 'green' }}>Uploaded</Typography>
+              </>
+            ) : (
+                "Upload or Ignore to continue"
+              )
+          }
+        />
+        <ListItemSecondaryAction>
+          <Button
+            onClick={handleDelete}
+            color="secondary">
+            Ignore
+  </Button>
+        </ListItemSecondaryAction>
+      </ListItem>
+      <Box m={1}>
+        <Box my={1}>
           {type === "folder" ? <input
+            id={asset?.name}
             style={{ display: "none" }}
             type="file"
             name={asset?.name}
@@ -98,54 +128,43 @@ export default function AssetUploader({
             onChange={handleAssetUpload}
           />
             : <input
+              id={asset?.name}
               style={{ display: "none" }}
               type="file"
               name={asset?.name}
-              accept={asset?.name.substr(asset?.name.lastIndexOf("."))}
+              accept={extension}
               onChange={handleAssetUpload}
             />}
-
-        </label>
-
-        <p style={{ fontSize: 13, marginLeft: 5, marginRight: 5, color: src ? "#3742fa" : "black" }}>
-          <b>{asset?.name} {loading && `(${progress})`}</b>
-        </p>
-        {loading ?
-          <>
-            <div
-              style={{
-                height: 13,
-                width: 80,
-                margin: 5,
-                marginTop: 0,
-                marginBottom: 0,
-                border: "1px solid white",
-                transition: "background-color 0.5s ease",
-                background: `linear-gradient(90deg, #3742fa ${progress}, #fff ${progress})`
-              }} />
+          <label htmlFor={asset?.name}>
             <Button
-              color="secondary"
+              disabled={loading}
+              variant="contained"
               size="small"
-              onClick={handleUploadCancel}>cancel</Button></>
-          :
-          type !== "folder" &&
-          <Tooltip
-            arrow={true}
-            placement="right"
-            title="Remove Asset">
-            <Close
-              onClick={handleDelete}
-              align="right"
-              style={{
-                margin: 5,
-                marginTop: 0,
-                marginBottom: 0,
-                color: "grey"
-              }} fontSize="small" />
-          </Tooltip>}
+              color="primary"
+              startIcon={<CloudUpload />}
+              component="span">
+              {src ? `Change` : `Upload`}
+            </Button>
+          </label>
+          <Typography style={{ marginLeft: 10 }} variant="body2" component={"span"} color="textSecondary">
+            {loading ? ` Uploading: ${progress} ` : `${type === "folder"
+              ? 'Asset Folder'
+              : asset?.name}`}
+          </Typography>
+          {loading && (
+            <Button
+              onClick={handleUploadCancel}
+              size="small"
+              color="secondary"
+              component="span">
+              Cancel
+            </Button>
+          )}
+        </Box>
+        {error && <FormHelperText error={true} children={error?.message} />}
+      </Box>
+    </Box>
 
-      </div>
-      {error && <FormHelperText error={true} children={error?.message} />}
-    </div>
+
   );
 }
