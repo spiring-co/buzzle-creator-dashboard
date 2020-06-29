@@ -123,7 +123,8 @@ export default () => {
             title: "Version",
             render: ({ videoTemplate, idVersion }) => (
               <span>
-                {videoTemplate?.versions.find((v) => v?.id === idVersion)?.title ?? ""}
+                {videoTemplate?.versions.find((v) => v?.id === idVersion)
+                  ?.title ?? ""}
               </span>
             ),
           },
@@ -202,9 +203,9 @@ export default () => {
           {
             icon: "repeat",
             tooltip: "Restart Job",
-            onClick: async (e, { id, assets, actions }) => {
+            onClick: async (e, { id, data }) => {
               try {
-                await Job.update(id, { assets, actions });
+                await Job.update(id, { data });
               } catch (err) {
                 setError(err);
               }
@@ -213,7 +214,7 @@ export default () => {
           },
           {
             icon: "delete",
-            tooltip: "Delete Template",
+            tooltip: "Delete Job",
             onClick: async (event, rowData) => {
               const action = window.confirm("Are you sure, you want to delete");
               if (!action) return;

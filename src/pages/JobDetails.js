@@ -5,15 +5,14 @@ import PublishIcon from "@material-ui/icons/Publish";
 import {
   Typography,
   Paper,
-  LinearProgress,
   Button,
-  withStyles,
   Grid,
   Box,
   AppBar,
   CircularProgress,
   Tabs,
   Tab,
+  Divider,
 } from "@material-ui/core";
 import { Redirect } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
@@ -22,7 +21,7 @@ import ErrorHandler from "components/ErrorHandler";
 import ActionsHandler from "components/ActionsHandler";
 import formatTime from "helpers/formatTime";
 import { Job } from "services/api";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import MaterialTable from "material-table";
 
 function TabPanel(props) {
@@ -49,15 +48,6 @@ function a11yProps(index) {
     "aria-controls": `simple-tabpanel-${index}`,
   };
 }
-
-const CustomProgress = withStyles({
-  colorPrimary: {
-    backgroundColor: "#b2dfdb",
-  },
-  barColorPrimary: {
-    backgroundColor: "#00695c",
-  },
-})(LinearProgress);
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -93,11 +83,9 @@ export default () => {
   const [error, setError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [redirect, setRedirect] = useState(null);
-  const [isStaticVisible, setIsStaticVisible] = useState(false);
   const { id } = useParams();
+  const history = useHistory();
 
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editIndex, setEditIndex] = useState(null);
   const [activeTabIndex, setActiveTabIndex] = useState(0);
 
   useEffect(() => {
@@ -115,8 +103,9 @@ export default () => {
 
   const handleUpdateJob = async () => {
     try {
+      const { data, actions, id } = job;
       setIsLoading(true);
-      await Job.update(id, job);
+      await Job.update(id, { data, actions });
       setIsLoading(false);
       setRedirect("/home/jobs");
     } catch (err) {
@@ -130,8 +119,6 @@ export default () => {
     state,
     actions,
     data,
-    videoTemplate: vt,
-    idVersion,
     renderTime,
     queueTime,
     dateCreated,
@@ -139,8 +126,6 @@ export default () => {
     dateStarted,
   } = job;
 
-  const videoTemplate =
-    vt?.versions[vt?.versions.map(({ id }) => id).indexOf(idVersion)];
   const content = {
     "Job ID": id,
     "Render Time": formatTime(renderTime),
@@ -153,29 +138,26 @@ export default () => {
       state === "finished" ? new Date(dateFinished).toLocaleString() : "---",
   };
 
-  const handleUpdateAsset = (index, value) =>
-    new Promise((resolve, reject) => {
-      const idArray = Object.keys(data);
-      job.data[idArray[index]] = value;
-      setJob({ ...job, data: job.data });
-      resolve(true);
-    });
-  const handleAssetDelete = (index) =>
-    new Promise((resolve, reject) => {
-      const idArray = Object.keys(data);
-      delete job.data[idArray[index]];
-      setJob({ ...job, data: job.data });
-      resolve(true);
-    });
+  const handleUpdateAsset = async (index, key, value) => {
+    console.log(key, value);
+    const idArray = Object.keys(data);
+    job.data[idArray[index]] = value;
+    console.log(job);
+    setJob({ ...job, data: job.data });
+  };
+
+  const handleAssetDelete = async (index) => {
+    const idArray = Object.keys(data);
+    delete job.data[idArray[index]];
+    setJob({ ...job, data: job.data });
+  };
 
   if (redirect) return <Redirect to="/home/jobs" />;
   if (isLoading) {
     return (
       <Paper className={classes.loading}>
         <CircularProgress />
-        <Typography className={classes.loadingText}>
-          loading please wait...
-        </Typography>
+        <Typography className={classes.loadingText}>Loading...</Typography>
       </Paper>
     );
   }
@@ -205,28 +187,37 @@ export default () => {
             disabled={isLoading}
             color="default"
             variant="contained"
-            onClick={null}
+            onClick={async () => {
+              try {
+                await Job.update(id, { data });
+                history.push("/home/jobs");
+              } catch (err) {
+                setError(err);
+              }
+            }}
             children="Restart Job"
             startIcon={<UpdateIcon />}
           />
         </Box>
-        {state === "finished" ? (
-          <video
-            poster={job.videoTemplate.thumbnail}
-            style={{ height: 320, width: "100%" }}
-            controls
-            src={output}
-          />
-        ) : (
-          <Box
-            style={{ background: "gainsboro" }}
-            justifyContent="center"
-            textAlign="center"
-            height={320}>
-            <p style={{ padding: 100 }}> No output yet.</p>
-          </Box>
-        )}
         <Paper>
+          {state === "finished" ? (
+            <video
+              poster={job.videoTemplate.thumbnail}
+              style={{ height: 320, width: "100%" }}
+              controls
+              src={output}
+            />
+          ) : (
+            <>
+              <Box justifyContent="center" textAlign="center" height={320}>
+                <Typography style={{ padding: 100 }}>
+                  {" "}
+                  No output yet.
+                </Typography>
+              </Box>
+              <Divider />
+            </>
+          )}
           <AppBar position="static" color="transparent" elevation={0}>
             <Tabs
               value={activeTabIndex}
@@ -271,7 +262,7 @@ export default () => {
             <MaterialTable
               style={{ boxShadow: "none" }}
               options={{
-                pageSize: 5,
+                pageSize: 10,
                 headerStyle: { fontWeight: 700 },
                 actionsColumnIndex: -1,
               }}
@@ -279,6 +270,7 @@ export default () => {
                 onRowUpdate: async (newData, oldData) => {
                   return await handleUpdateAsset(
                     oldData.tableData.id,
+                    newData.key,
                     newData.value
                   );
                 },
@@ -298,7 +290,7 @@ export default () => {
                 },
               ]}
               data={Object.keys(data).map((key) => ({
-                key: key,
+                key,
                 value: data[key],
               }))}
               title="Assets"
@@ -332,25 +324,6 @@ export default () => {
           </TabPanel>
         </Paper>
       </div>
-      {/* {isDialogOpen && (
-        <AssetDialog
-          setIsDialogOpen={setIsDialogOpen}
-          fields={videoTemplate?.fields}
-          initialValues={editIndex !== null && data[editIndex]}
-          onSubmit={handleAssetSubmit}
-        />
-      )} */}
     </>
   );
-};
-
-const getColorFromState = (state) => {
-  switch (state) {
-    case "finished":
-      return "#4caf50";
-    case "error":
-      return "#f44336";
-    default:
-      return "grey";
-  }
 };
