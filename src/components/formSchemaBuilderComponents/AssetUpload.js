@@ -182,7 +182,7 @@ export default function AssetUpload({
           color={submitError ? "secondary" : "primary"}
           variant={submitError ? "outlined" : "contained"}
           children={
-            submitError ? "Retry?" : isSubmitting ? "Submitting" : "Submit"
+            submitError ? "Retry" : isSubmitting ? "Submitting" : "Submit"
           }
           onClick={() => handleSubmitForm(videoObj)}
         />

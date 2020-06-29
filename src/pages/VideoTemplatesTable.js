@@ -97,7 +97,7 @@ export default (props) => {
                 onClick={handleRetry}
                 color="secondary"
                 variant="outlined"
-                children={"retry?"}
+                children={"Retry"}
               />
             ) : (
               <Typography>

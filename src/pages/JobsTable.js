@@ -142,7 +142,7 @@ export default () => {
                 onClick={handleRetry}
                 color="secondary"
                 variant="outlined"
-                children={"retry?"}
+                children={"Retry"}
               />
             ),
           },
