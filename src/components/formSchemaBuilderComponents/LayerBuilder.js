@@ -8,10 +8,8 @@ import { Button, Paper, Typography, Tooltip } from "@material-ui/core";
 import { Wallpaper, TextFields, Add } from "@material-ui/icons";
 export default ({
   compositions,
-  usedFields,
   editVersion,
   activeVersionIndex,
-  setUsedFields,
 }) => {
   const [videoObj] = useContext(VideoTemplateContext);
 
@@ -39,7 +37,7 @@ export default ({
       !editVersion &&
       videoObj.versions[0].title !== "" &&
       activeVersionIndex !== 0 &&
-      videoObj.versions[activeVersionIndex]?.editableLayers.length === 0
+      videoObj.versions[activeVersionIndex]?.fields.length === 0
     ) {
       if (
         window.confirm("Do you want to restore fields from previous version")
@@ -50,9 +48,8 @@ export default ({
     }
   }, []);
 
-  const handleAddField = (value) => {
-    setUsedFields([...usedFields, value.layerName]);
-    addField(activeVersionIndex, value);
+  const handleAddField = (field) => {
+    addField(activeVersionIndex, field);
   };
 
   const _editField = (index) => {
@@ -61,29 +58,12 @@ export default ({
   };
 
   const _deleteField = (item, index) => {
-    setUsedFields(usedFields.filter((i) => i !== item.layerName));
     removeField(activeVersionIndex, index);
   };
 
-  const editFieldValue = (value) => {
-    //if user changed field name
-    if (
-      videoObj.versions[activeVersionIndex]?.editableLayers[editIndex]
-        .layerName !== value.layerName
-    ) {
-      setUsedFields(
-        usedFields.map((item) => {
-          if (
-            item ===
-            videoObj.versions[activeVersionIndex]?.editableLayers[editIndex]
-              .layerName
-          ) {
-            return value.layerName;
-          } else return item;
-        })
-      );
-    }
-    updateField(activeVersionIndex, editIndex, value);
+  const editFieldValue = (field) => {
+
+    updateField(activeVersionIndex, editIndex, field);
     setEditIndex(null);
   };
 
@@ -96,7 +76,7 @@ export default ({
         children={
           <div
             style={{ display: "flex", alignItems: "center", flexWrap: "wrap" }}>
-            {item.type === "data" ? (
+            {item?.rendererData?.type === "data" ? (
               <>
                 <TextFields
                   style={{
@@ -106,20 +86,24 @@ export default ({
                     border: "1px solid grey",
                   }}
                 />
+                {item?.constraints?.maxLength && <Typography>
+                  <strong>Max Length:</strong> {item?.constraints?.maxLength}, &nbsp;{" "}
+                </Typography>}
                 <Typography>
-                  <strong>Max Length:</strong> {item.maxLength}, &nbsp;{" "}
+                  {" "}
+                  <strong>Label:</strong> {item?.label}, &nbsp;{" "}
                 </Typography>
                 <Typography>
                   {" "}
-                  <strong>Label:</strong> {item.label}, &nbsp;{" "}
+                  <strong>Layer name:</strong> {item?.rendererData?.layerName},&nbsp;
                 </Typography>
                 <Typography>
                   {" "}
-                  <strong>Layer name:</strong> {item.layerName},&nbsp;
+                  <strong>Property:</strong> {item?.rendererData?.property},&nbsp;
                 </Typography>
                 <Typography>
                   {" "}
-                  <strong>Required:</strong> {item.required ? "true" : "false"}
+                  <strong>Required:</strong> {item?.constraints?.required ? "true" : "false"}
                 </Typography>
               </>
             ) : (
@@ -132,20 +116,24 @@ export default ({
                       border: "1px solid grey",
                     }}
                   />
-                  <Typography>
-                    <strong>Width:</strong> {item.width}, &nbsp;{" "}
-                  </Typography>
+                  {item?.constraints?.width && <Typography>
+                    <strong>Width:</strong> {item?.constraints?.width}, &nbsp;{" "}
+                  </Typography>}
+                  {item?.constraints?.height && <Typography>
+                    {" "}
+                    <strong>Height:</strong> {item?.constraints?.height}, &nbsp;{" "}
+                  </Typography>}
                   <Typography>
                     {" "}
-                    <strong>Height:</strong> {item.height}, &nbsp;{" "}
+                    <strong>Layer name:</strong> {item?.rendererData?.layerName}, &nbsp;{" "}
                   </Typography>
+                  {item?.rendererData?.property && <Typography>
+                    {" "}
+                    <strong>Property:</strong> {item?.rendererData?.property},&nbsp;
+                </Typography>}
                   <Typography>
                     {" "}
-                    <strong>Layer name:</strong> {item.layerName}, &nbsp;{" "}
-                  </Typography>
-                  <Typography>
-                    {" "}
-                    <strong>Required:</strong> {item.required ? "true" : "false"}
+                    <strong>Required:</strong> {item?.constraints?.required ? "true" : "false"}
                   </Typography>
                 </>
               )}
@@ -166,19 +154,17 @@ export default ({
           color="primary"
           onClick={() => {
             setEditIndex(null);
-            usedFields.length !== currentCompositionFields.length
-              ? setIsDialogVisible(true)
-              : alert("No layers in the composition");
+            setIsDialogVisible(true)
           }}
           children="Add Field"
         />
       </Tooltip>
-      {videoObj.versions[activeVersionIndex]?.editableLayers?.map(
+      {videoObj.versions[activeVersionIndex]?.fields?.map(
         renderFieldPreview
       )}
 
       {isDialogVisible &&
-        usedFields.length !== currentCompositionFields.length && (
+        (
           <AddFields
             textLayers={getLayersFromComposition(
               compositions[videoObj?.versions[activeVersionIndex]?.composition],
@@ -188,28 +174,34 @@ export default ({
               compositions[videoObj?.versions[activeVersionIndex]?.composition],
               "imageLayers"
             )}
-            usedFields={usedFields}
             initialValue={{
+              key: videoObj.versions[activeVersionIndex]?.fields[editIndex]
+                ?.key ?? "",
+              property: videoObj.versions[activeVersionIndex]?.fields[editIndex]?.rendererData
+                ?.property ?? "",
+              propertyType:
+                videoObj.versions[activeVersionIndex]?.fields[editIndex]
+                  ?.type ?? "",
               type:
-                videoObj.versions[activeVersionIndex]?.editableLayers[editIndex]
+                videoObj.versions[activeVersionIndex]?.fields[editIndex]?.rendererData
                   ?.type ?? "",
               layerName:
-                videoObj.versions[activeVersionIndex]?.editableLayers[editIndex]
+                videoObj.versions[activeVersionIndex]?.fields[editIndex]?.rendererData
                   ?.layerName ?? "",
               label:
-                videoObj.versions[activeVersionIndex]?.editableLayers[editIndex]
+                videoObj.versions[activeVersionIndex]?.fields[editIndex]
                   ?.label ?? "",
               required:
-                videoObj.versions[activeVersionIndex]?.editableLayers[editIndex]
+                videoObj.versions[activeVersionIndex]?.fields[editIndex]?.constraints
                   ?.required ?? false,
               width:
-                videoObj.versions[activeVersionIndex]?.editableLayers[editIndex]
+                videoObj.versions[activeVersionIndex]?.fields[editIndex]?.constraints
                   ?.width ?? 400,
               height:
-                videoObj.versions[activeVersionIndex]?.editableLayers[editIndex]
+                videoObj.versions[activeVersionIndex]?.fields[editIndex]?.constraints
                   ?.height ?? 400,
               maxLength:
-                videoObj.versions[activeVersionIndex]?.editableLayers[editIndex]
+                videoObj.versions[activeVersionIndex]?.fields[editIndex]?.constraints
                   ?.maxLength ?? 50,
             }}
             editField={editIndex !== null}

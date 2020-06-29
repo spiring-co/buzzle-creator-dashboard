@@ -80,11 +80,12 @@ export default ({
         value={values.thumbnail}
         onError={(e) => setFieldError(e)}
         onChange={(value) => setFieldValue("thumbnail", value)}
-        fieldName={"thumbnail"}
+        uploadDirectory={"thumbnails"}
         label="Template Thumbnail"
         onTouched={setFieldTouched}
         error={errors.thumbnail}
-        helperText={"Thumbnails are presenters of your template"}
+        helperText={"Thumbnails "}
+        name={"thumbnail"}
       />
       <TextField
         fullWidth

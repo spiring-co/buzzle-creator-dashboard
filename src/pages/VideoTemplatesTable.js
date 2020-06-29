@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Link, Typography, Button } from "@material-ui/core";
+import { Link, Typography, Button, Container } from "@material-ui/core";
 import {
   Link as RouterLink,
   useRouteMatch,
@@ -47,7 +47,7 @@ export default (props) => {
   };
   let { status, err } = deleteStatus;
   return (
-    <>
+    <Container>
       {error && (
         <ErrorHandler
           message={error.message}
@@ -68,16 +68,13 @@ export default (props) => {
       <MaterialTable
         tableRef={tableRef}
         title="Your Video Templates"
+        onRowClick={(e, { id }) => {
+          history.push(`${path}${id}`);
+        }}
         columns={[
           {
             title: "Title",
-            render: ({ id, title }) => (
-              <Link
-                component={RouterLink}
-                to={`${path}${id}`}
-                children={title}
-              />
-            ),
+            field: "title",
           },
           {
             title: "Versions",
@@ -103,13 +100,13 @@ export default (props) => {
                 children={"retry?"}
               />
             ) : (
-                <Typography>
-                  <Link component={RouterLink} to={`${path}add`}>
-                    Click here
+              <Typography>
+                <Link component={RouterLink} to={`${path}add`}>
+                  Click here
                 </Link>{" "}
                 to create a Video Template😀
-                </Typography>
-              ),
+              </Typography>
+            ),
           },
         }}
         detailPanel={[
@@ -130,9 +127,13 @@ export default (props) => {
           {
             icon: "alarm-on",
             tooltip: "Render Test Job",
-            onClick: (event, rowData) => {
-              Job.renderTests(rowData);
-              history.push("/home/jobs");
+            onClick: async (event, rowData) => {
+              try {
+                await Job.renderTests(rowData);
+                history.push("/home/jobs");
+              } catch (e) {
+                setError(e);
+              }
             },
           },
           {
@@ -194,6 +195,6 @@ export default (props) => {
           actionsColumnIndex: -1,
         }}
       />
-    </>
+    </Container>
   );
 };
