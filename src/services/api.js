@@ -146,7 +146,16 @@ export const Creator = {
     if (!response.ok) throw new Error((await response.json()).message);
     return await response.json();
   },
-  update: async () => {},
+  update: async (data) => {
+    const response = await fetch(`${baseUrl}/creators`, {
+      method: "PUT",
+      headers,
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error((await response.json()).message);
+    return await response.json();
+  },
+
 };
 
 //TODO move to auth
