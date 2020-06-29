@@ -91,7 +91,7 @@ export default ({
             {value ? `Change` : `Upload`}
           </Button>
         </label>
-        <Typography variant="body2" component={"span"} color="textSecondary">
+        <Typography style={{ marginLeft: 10 }} variant="body2" component={"span"} color="textSecondary">
           {loading ? ` Uploading: ${progress}% ` : ` ${filename} `}
         </Typography>
         {loading && (

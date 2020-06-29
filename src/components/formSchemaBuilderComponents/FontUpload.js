@@ -72,63 +72,63 @@ export default function FontUpload({
           <Typography>Resolving Fonts...</Typography>
         </Box>
       ) : (
-        <Box mt={2}>
-          <List className={classes.root}>
-            {fontList && fontList.length ? (
-              fontList.map((font, index) => (
-                <Box key={font.name}>
-                  <ListItem>
-                    <ListItemText
-                      primary={font.name}
-                      secondary={
-                        font.src ? (
-                          <>
-                            <DoneIcon style={{ paddingTop: 10 }} size="small" />
-                            <Typography variant="span"> Resolved</Typography>
-                          </>
-                        ) : (
-                          "Upload or Ignore to continue"
-                        )
-                      }
-                    />
-                    <ListItemSecondaryAction>
-                      <Button
-                        onClick={() => {
-                          setFontList(fontList.filter((a, i) => i !== index));
-                        }}
-                        color="secondary">
-                        Ignore
+          <Box mt={2}>
+            <List className={classes.root}>
+              {fontList && fontList.length ? (
+                fontList.map((font, index) => (
+                  <Box key={font.name}>
+                    <ListItem>
+                      <ListItemText
+                        primary={font.name}
+                        secondary={
+                          font.src ? (
+                            <>
+                              <DoneIcon style={{ paddingTop: 10 }} color={'green'} size="small" />
+                              <Typography variant="span" style={{ color: 'green' }}> Resolved</Typography>
+                            </>
+                          ) : (
+                              "Upload or Ignore to continue"
+                            )
+                        }
+                      />
+                      <ListItemSecondaryAction>
+                        <Button
+                          onClick={() => {
+                            setFontList(fontList.filter((a, i) => i !== index));
+                          }}
+                          color="secondary">
+                          Ignore
                       </Button>
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                  <FileUploader
-                    value={font.src}
-                    name={font.name}
-                    uploadDirectory={"fonts"}
-                    onChange={(value) => {
-                      setFontList((fl) => {
-                        fl[index]["src"] = value;
-                        return Array.from(fl);
-                      });
-                    }}
-                    accept={".ttf,.otf"}
-                    onError={console.log}
-                  />
-                  {index !== fontList.length - 1 && <Divider />}
-                </Box>
-              ))
-            ) : (
-              <Box
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                minHeight={200}>
-                <Typography>No Fonts Found!</Typography>
-              </Box>
-            )}
-          </List>
-        </Box>
-      )}
+                      </ListItemSecondaryAction>
+                    </ListItem>
+                    <FileUploader
+                      value={font.src}
+                      name={font.name}
+                      uploadDirectory={"fonts"}
+                      onChange={(value) => {
+                        setFontList((fl) => {
+                          fl[index]["src"] = value;
+                          return Array.from(fl);
+                        });
+                      }}
+                      accept={".ttf,.otf"}
+                      onError={console.log}
+                    />
+                    {index !== fontList.length - 1 && <Divider />}
+                  </Box>
+                ))
+              ) : (
+                  <Box
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    minHeight={200}>
+                    <Typography>No Fonts Found!</Typography>
+                  </Box>
+                )}
+            </List>
+          </Box>
+        )}
       <Box display="flex" justifyContent="space-between" mt={4}>
         <Button
           startIcon={<ArrowBack />}
