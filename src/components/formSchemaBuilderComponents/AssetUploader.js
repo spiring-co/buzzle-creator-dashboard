@@ -34,7 +34,6 @@ export default function AssetUploader({
         temp.filter(({ name }) => assetsName.includes(name))
           .map(file => ({ name: file?.name, type: "static", src: file })))
     }
-
   };
 
   const handleUpload = async (file) => {
