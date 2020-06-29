@@ -49,12 +49,6 @@ const AppChild = () => {
       },
     },
     overrides: {
-      MuiListItemText: {
-        primary: {
-          fontSize: 15,
-          fontWeight: 700,
-        },
-      },
       MuiLink: {
         root: {
           fontWeight: 600,
@@ -71,12 +65,6 @@ const AppChild = () => {
       MuiButton: {
         label: {
           fontWeight: 700,
-        },
-      },
-      MuiTab: {
-        wrapper: {
-          fontWeight: 700,
-          color: "white",
         },
       },
     },
@@ -108,12 +96,6 @@ const AppChild = () => {
       },
     },
     overrides: {
-      MuiListItemText: {
-        primary: {
-          fontSize: 15,
-          fontWeight: 700,
-        },
-      },
       MuiLink: {
         root: {
           fontWeight: 600,

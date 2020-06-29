@@ -45,7 +45,7 @@ function ListItemLink(props) {
         button
         component={renderLink}>
         {icon ? <ListItemIcon>{icon}</ListItemIcon> : null}
-        <ListItemText style={{ fontSize: 500 }} primary={primary} />
+        <ListItemText primary={primary} />
       </ListItem>
     </li>
   );
@@ -239,11 +239,11 @@ export default function NavBar({ items }) {
               component={RouterLink}
               to="/home"
               variant="h5"
+              color="textPrimary"
               style={{
                 paddingLeft: 20,
                 textDecoration: "none",
                 fontWeight: 800,
-                color: "inherit",
                 fontFamily: "Poppins",
               }}>
               Buzzle!

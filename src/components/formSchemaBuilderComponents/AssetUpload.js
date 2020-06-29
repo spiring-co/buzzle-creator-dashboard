@@ -13,7 +13,6 @@ import useActions from "contextStore/actions";
 import { VideoTemplateContext } from "contextStore/store";
 import { ArrowBack } from "@material-ui/icons";
 
-
 const useStyles = makeStyles(() => ({
   container: {
     display: "flex",
@@ -26,7 +25,7 @@ const useStyles = makeStyles(() => ({
   },
   rowWrapped: {
     display: "flex",
-    flexDirection: 'column',
+    flexDirection: "column",
     justifyContent: "center",
   },
 }));
@@ -40,29 +39,28 @@ export default function AssetUpload({
   handleSubmitForm,
 }) {
   const classes = useStyles();
-  console.log(staticAssets)
-  const [isValid, setIsValid] = useState(false)
+  console.log(staticAssets);
+
+  const [isValid, setIsValid] = useState(false);
   const [videoObj] = useContext(VideoTemplateContext);
   const [uploadType, setUploadType] = useState(
     (staticAssets[0]?.src ?? false) === "" ? null : "file"
   );
-  const [assets, setAssets] = useState(
-    staticAssets
-  );
+  const [assets, setAssets] = useState(staticAssets);
   const { editVideoKeys } = useActions();
   const [isFolderResolved, setIsFolderResolved] = useState(
-    (typeof staticAssets[0]?.src === "object" || staticAssets[0]?.src !== "")
+    typeof staticAssets[0]?.src === "object" || staticAssets[0]?.src !== ""
       ? true
-      : false)
+      : false
+  );
 
   useEffect(() => {
     // set the value to global state of videoTemplate
     editVideoKeys({ staticAssets: assets });
-    setIsValid(assets.every(i => !!i.src))
+    setIsValid(assets.every((i) => !!i.src));
   }, [assets]);
 
-  useEffect(() => {
-  }, [isValid])
+  useEffect(() => {}, [isValid]);
 
   const handleChange = (e) => {
     setUploadType(e.target.value);
@@ -71,25 +69,30 @@ export default function AssetUpload({
   const renderAssetFileUploader = () => {
     return (
       <div className={classes.rowWrapped}>
-        {assets?.length !== 0 ? assets?.map((asset, index) => (
-          <AssetUploader
-            key={index}
-            handleDelete={() => {
-              setAssets(assets.filter((a, i) => i !== index))
-            }}
-            setAssets={src => {
-              setAssets(assets?.map((asset, i) => i === index
-                ? ({ ...asset, src })
-                : asset))
-            }}
-            asset={asset}
-            isFolderResolved={isFolderResolved}
-          />
-        )) : <p>No Assets Found!</p>}
+        {assets?.length !== 0 ? (
+          assets?.map((asset, index) => (
+            <AssetUploader
+              key={index}
+              handleDelete={() => {
+                setAssets(assets.filter((a, i) => i !== index));
+              }}
+              setAssets={(src) => {
+                setAssets(
+                  assets?.map((asset, i) =>
+                    i === index ? { ...asset, src } : asset
+                  )
+                );
+              }}
+              asset={asset}
+              isFolderResolved={isFolderResolved}
+            />
+          ))
+        ) : (
+          <p>No Assets Found!</p>
+        )}
       </div>
     );
   };
-
 
   const renderAssetUploader = () => {
     switch (uploadType) {
@@ -99,17 +102,19 @@ export default function AssetUpload({
             type={uploadType}
             assetsName={assets.map(({ name }) => name)}
             setAssets={(data) => {
-              const resolvedAssetNames = data.map(({ name }) => name)
-              setAssets(assets.map((asset, index) =>
-                resolvedAssetNames.includes(asset?.name)
-                  ? data[resolvedAssetNames.indexOf(asset?.name)]
-                  : asset))
-              setIsFolderResolved(true)
-              setUploadType("file")
+              const resolvedAssetNames = data.map(({ name }) => name);
+              setAssets(
+                assets.map((asset, index) =>
+                  resolvedAssetNames.includes(asset?.name)
+                    ? data[resolvedAssetNames.indexOf(asset?.name)]
+                    : asset
+                )
+              );
+              setIsFolderResolved(true);
+              setUploadType("file");
             }}
             asset={{ name: "Asset Folder" }}
             isFolderResolved={isFolderResolved}
-
           />
         );
       case "file":
@@ -127,36 +132,39 @@ export default function AssetUpload({
         Assets Files includes, files which are not associated with user input,
         and used in template
       </p>
-      {!isFolderResolved && <><p>
-        <b>Choose Asset Upload Structure</b>
-      </p>
-        <FormControl component="fieldset">
-
-          <FormControlLabel
-            value="folder"
-            control={
-              <Radio
-                onChange={handleChange}
-                checked={uploadType === "folder"}
-                color="primary"
-              />
-            }
-            label="Complete Assets Folder"
-            labelPlacement="end"
-          />
-          <FormControlLabel
-            value="file"
-            control={
-              <Radio
-                onChange={handleChange}
-                checked={uploadType === "file"}
-                color="primary"
-              />
-            }
-            label="Individual Assets"
-            labelPlacement="end"
-          />
-        </FormControl></>}
+      {!isFolderResolved && (
+        <>
+          <p>
+            <b>Choose Asset Upload Structure</b>
+          </p>
+          <FormControl component="fieldset">
+            <FormControlLabel
+              value="folder"
+              control={
+                <Radio
+                  onChange={handleChange}
+                  checked={uploadType === "folder"}
+                  color="primary"
+                />
+              }
+              label="Complete Assets Folder"
+              labelPlacement="end"
+            />
+            <FormControlLabel
+              value="file"
+              control={
+                <Radio
+                  onChange={handleChange}
+                  checked={uploadType === "file"}
+                  color="primary"
+                />
+              }
+              label="Individual Assets"
+              labelPlacement="end"
+            />
+          </FormControl>
+        </>
+      )}
       {renderAssetUploader(uploadType)}
       <div style={{ display: "flex", justifyContent: "center" }}>
         <Button

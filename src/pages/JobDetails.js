@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import UpdateIcon from "@material-ui/icons/Update";
 import PublishIcon from "@material-ui/icons/Publish";
+import DeleteIcon from "@material-ui/icons/Delete";
+import DownloadIcon from "@material-ui/icons/GetApp";
+
 import {
   Typography,
   Paper,
@@ -13,6 +16,7 @@ import {
   Tabs,
   Tab,
   Divider,
+  IconButton,
 } from "@material-ui/core";
 import { Redirect } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
@@ -114,6 +118,19 @@ export default () => {
     }
   };
 
+  const handleDeleteJob = async () => {
+    try {
+      const { id } = job;
+      setIsLoading(true);
+      await Job.delete(id);
+      setIsLoading(false);
+      setRedirect("/home/jobs");
+    } catch (err) {
+      setIsLoading(false);
+      setError(err);
+    }
+  };
+
   const {
     output,
     state,
@@ -173,31 +190,47 @@ export default () => {
         />
       )}
       <div className={classes.root}>
-        <Box p={1} justifyItems="stretch" alignItems="right">
-          <Button
-            className={classes.button}
-            disabled={isLoading}
-            color="primary"
-            variant="contained"
-            onClick={handleUpdateJob}
-            children="Update Job"
-            startIcon={<PublishIcon />}
-          />
-          <Button
-            disabled={isLoading}
-            color="default"
-            variant="contained"
-            onClick={async () => {
-              try {
-                await Job.update(id, { data });
-                history.push("/home/jobs");
-              } catch (err) {
-                setError(err);
-              }
-            }}
-            children="Restart Job"
-            startIcon={<UpdateIcon />}
-          />
+        <Box display="flex">
+          <Box p={1} justifyItems="stretch" alignItems="right" flex={1}>
+            <Button
+              className={classes.button}
+              disabled={isLoading}
+              color="primary"
+              variant="contained"
+              onClick={handleUpdateJob}
+              children="Update Job"
+              startIcon={<PublishIcon />}
+            />
+            <Button
+              disabled={isLoading}
+              color="default"
+              variant="contained"
+              onClick={async () => {
+                try {
+                  await Job.update(id, { data });
+                  history.push("/home/jobs");
+                } catch (err) {
+                  setError(err);
+                }
+              }}
+              children="Restart Job"
+              startIcon={<UpdateIcon />}
+            />
+          </Box>
+          <Box>
+            <IconButton
+              onClick={handleDeleteJob}
+              aria-label="delete"
+              className={classes.margin}>
+              <DeleteIcon fontSize="inherit" />
+            </IconButton>
+            <IconButton
+              aria-label="delete"
+              className={classes.margin}
+              href={output}>
+              <DownloadIcon fontSize="inherit" />
+            </IconButton>
+          </Box>
         </Box>
         <Paper>
           {state === "finished" ? (
@@ -247,14 +280,6 @@ export default () => {
                     </Grid>
                   </Grid>
                 ))}
-                <p></p>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  startIcon={<CloudDownloadIcon />}
-                  href={output}>
-                  Download Output
-                </Button>
               </Box>
             </Grid>
           </TabPanel>
@@ -262,7 +287,7 @@ export default () => {
             <MaterialTable
               style={{ boxShadow: "none" }}
               options={{
-                pageSize: 10,
+                pageSize: 5,
                 headerStyle: { fontWeight: 700 },
                 actionsColumnIndex: -1,
               }}

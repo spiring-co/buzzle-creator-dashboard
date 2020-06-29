@@ -1,15 +1,35 @@
+import React, { useEffect, useState } from "react";
 import {
   Button,
-  Container,
   Typography,
   CircularProgress,
+  Box,
+  List,
+  ListItem,
+  ListItemText,
+  Divider,
+  ListItemSecondaryAction,
 } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+
+import { makeStyles } from "@material-ui/core/styles";
 import { getLayersFromComposition } from "services/helper";
+
+// TODO split into individuals
 import { ArrowForward, ArrowBack } from "@material-ui/icons";
-import FontUploader from "./FontUploader";
+import DoneIcon from "@material-ui/icons/Done";
+
 import useActions from "contextStore/actions";
 import { Fonts } from "services/api";
+import FileUploader from "components/FileUploader";
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    width: "100%",
+    // borderRadius: 4,
+    border: `1px solid ${theme.palette.divider}`,
+  },
+}));
+
 export default function FontUpload({
   compositions,
   setActiveDisplayIndex,
@@ -18,7 +38,8 @@ export default function FontUpload({
   const { editVideoKeys } = useActions();
   const [fontList, setFontList] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isValid, setIsValid] = useState(false)
+  const [isValid, setIsValid] = useState(false);
+  const classes = useStyles();
   // takes all font used in template
   useEffect(() => {
     const allTextLayers = Object.values(compositions)
@@ -31,60 +52,86 @@ export default function FontUpload({
       setFontList(data);
       setLoading(false);
     });
-
   }, [compositions]);
 
   useEffect(() => {
     editVideoKeys({ fonts: fontList });
-    setIsValid(fontList.every(i => !!i.src))
+    setIsValid(fontList.every((i) => !!i.src));
   }, [fontList]);
 
   return (
-    <div style={{ textAlign: "center" }}>
+    <Box>
       <Typography variant="h5">Upload Font Files</Typography>
-      <Typography style={{ color: "grey" }}>
+      <Typography color="textSecondary">
         We will try to resolve your fonts automatically, if not resolved, Upload
         your Font File
       </Typography>
       {loading ? (
-        <>
-          <CircularProgress size={20} style={{ marginTop: 30 }} />
-          <p>Resolving Font...</p>
-        </>
+        <Box mt={4}>
+          <CircularProgress size={20} />
+          <Typography>Resolving Fonts...</Typography>
+        </Box>
       ) : (
-          <Container
-            style={{
-              display: "flex", flexDirection: 'column',
-              justifyContent: "center", alignItems: "center",
-              flexWrap: "wrap",
-              marginBottom: 20,
-              marginTop: 20,
-            }}>
-            {fontList.length !== 0 ? (
+        <Box mt={2}>
+          <List className={classes.root}>
+            {fontList && fontList.length ? (
               fontList.map((font, index) => (
-                <FontUploader
-                  key={index}
-                  font={font}
-                  handleDelete={() => {
-                    setFontList(fontList.filter((a, i) => i !== index));
-                  }}
-                  setFont={(value) => {
-                    fontList[index] = { ...fontList[index], ...value };
-                    setFontList(fontList.map((font, i) => i === index
-                      ? ({ ...font, ...value })
-                      : font));
-                  }}
-                />
+                <Box key={font.name}>
+                  <ListItem>
+                    <ListItemText
+                      primary={font.name}
+                      secondary={
+                        font.src ? (
+                          <>
+                            <DoneIcon style={{ paddingTop: 10 }} size="small" />
+                            <Typography variant="span"> Resolved</Typography>
+                          </>
+                        ) : (
+                          "Upload or Ignore to continue"
+                        )
+                      }
+                    />
+                    <ListItemSecondaryAction>
+                      <Button
+                        onClick={() => {
+                          setFontList(fontList.filter((a, i) => i !== index));
+                        }}
+                        color="secondary">
+                        Ignore
+                      </Button>
+                    </ListItemSecondaryAction>
+                  </ListItem>
+                  <FileUploader
+                    value={font.src}
+                    name={font.name}
+                    uploadDirectory={"fonts"}
+                    onChange={(value) => {
+                      setFontList((fl) => {
+                        fl[index]["src"] = value;
+                        return Array.from(fl);
+                      });
+                    }}
+                    accept={".ttf,.otf"}
+                    onError={console.log}
+                  />
+                  {index !== fontList.length - 1 && <Divider />}
+                </Box>
               ))
             ) : (
-                <p>No Font Found!</p>
-              )}
-          </Container>
-        )}
-      <div style={{ display: "flex", justifyContent: "center" }}>
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                minHeight={200}>
+                <Typography>No Fonts Found!</Typography>
+              </Box>
+            )}
+          </List>
+        </Box>
+      )}
+      <Box display="flex" justifyContent="space-between" mt={4}>
         <Button
           startIcon={<ArrowBack />}
-          style={{ margin: 10 }}
           color="primary"
           variant="outlined"
           onClick={() => setActiveDisplayIndex(activeDisplayIndex - 1)}>
@@ -94,13 +141,12 @@ export default function FontUpload({
         <Button
           disabled={!isValid}
           endIcon={<ArrowForward />}
-          style={{ margin: 10 }}
           color="primary"
           variant="contained"
           onClick={() => setActiveDisplayIndex(activeDisplayIndex + 1)}>
           Next
         </Button>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }

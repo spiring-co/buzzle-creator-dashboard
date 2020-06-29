@@ -68,16 +68,13 @@ export default (props) => {
       <MaterialTable
         tableRef={tableRef}
         title="Your Video Templates"
+        onRowClick={(e, { id }) => {
+          history.push(`${path}${id}`);
+        }}
         columns={[
           {
             title: "Title",
-            render: ({ id, title }) => (
-              <Link
-                component={RouterLink}
-                to={`${path}${id}`}
-                children={title}
-              />
-            ),
+            field: "title",
           },
           {
             title: "Versions",

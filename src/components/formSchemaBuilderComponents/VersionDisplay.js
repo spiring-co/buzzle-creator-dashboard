@@ -4,6 +4,7 @@ import {
   ExpansionPanelDetails,
   ExpansionPanelSummary,
   Typography,
+  Box,
   Paper,
 } from "@material-ui/core";
 import useActions from "contextStore/actions";
@@ -14,7 +15,7 @@ import CompositionPicker from "./CompositionPicker";
 import LayerAdder from "./LayerAdder";
 import VersionMeta from "./VersionMeta";
 import VersionStepper from "./VersionStepper";
-import VersionSampleField from "./VersionSampleField"
+import VersionSampleField from "./VersionSampleField";
 export default ({
   isEdit,
   compositions,
@@ -35,20 +36,21 @@ export default ({
 
   const handleCancel = () => {
     if (editVersion) {
-      openVersionDisplay()
-    }
-    else {
+      openVersionDisplay();
+    } else {
       removeVersion(activeVersionIndex);
-      openVersionDisplay()
+      openVersionDisplay();
     }
-  }
+  };
 
   const openVersionMeta = (index, fromEdit = false) => {
     if (fromEdit) {
       setEditIndex(index);
       setEditVersion(true);
     } else {
-      editversionKeys(editVersion ? editIndex : activeVersionIndex, { composition });
+      editversionKeys(editVersion ? editIndex : activeVersionIndex, {
+        composition,
+      });
     }
     setActiveStep(activeStep + 1);
   };
@@ -75,8 +77,11 @@ export default ({
         return (
           <VersionMeta
             onBack={() => {
-              setComposition(videoObj?.versions[editVersion ? editIndex : activeVersionIndex]?.composition)
-              setActiveStep(activeStep - 1)
+              setComposition(
+                videoObj?.versions[editVersion ? editIndex : activeVersionIndex]
+                  ?.composition
+              );
+              setActiveStep(activeStep - 1);
             }}
             onSubmit={(data) => {
               editversionKeys(editVersion ? editIndex : activeVersionIndex, {
@@ -85,13 +90,14 @@ export default ({
               });
               setActiveStep(activeStep + 1);
             }}
-            initialValue={
-              {
-                title: videoObj?.versions[editVersion ? editIndex : activeVersionIndex]?.title,
-                description: videoObj?.versions[editVersion ? editIndex : activeVersionIndex]?.description,
-              }
-            }
-
+            initialValue={{
+              title:
+                videoObj?.versions[editVersion ? editIndex : activeVersionIndex]
+                  ?.title,
+              description:
+                videoObj?.versions[editVersion ? editIndex : activeVersionIndex]
+                  ?.description,
+            }}
           />
         );
       case 2:
@@ -107,14 +113,17 @@ export default ({
           />
         );
       case 3:
-        return <VersionSampleField
-          onBack={() => setActiveStep(activeStep - 1)}
-          onClick={() => console.log(videoObj)}
-          isEdit={isEdit}
-          editVersion={editVersion}
-          activeVersionIndex={editVersion ? editIndex : activeVersionIndex}
-          setActiveVersionIndex={setActiveVersionIndex}
-          openVersionDisplay={openVersionDisplay} />
+        return (
+          <VersionSampleField
+            onBack={() => setActiveStep(activeStep - 1)}
+            onClick={() => console.log(videoObj)}
+            isEdit={isEdit}
+            editVersion={editVersion}
+            activeVersionIndex={editVersion ? editIndex : activeVersionIndex}
+            setActiveVersionIndex={setActiveVersionIndex}
+            openVersionDisplay={openVersionDisplay}
+          />
+        );
       default:
         return;
     }
@@ -138,85 +147,84 @@ export default ({
               </Typography>
             </div>
           ) : (
-              videoObj?.versions?.map((item, index) => {
-                if (index === activeVersionIndex) {
-                  return <div></div>;
-                }
+            videoObj?.versions?.map((item, index) => {
+              if (index === activeVersionIndex) {
+                return <div></div>;
+              }
 
-                if (index === editIndex) {
-                  return <div></div>;
-                }
-                return (
-                  <Paper key={index} style={{ padding: 10, margin: 10 }}>
-                    <Typography>
-                      <strong>Title: </strong>
-                      {item.title}
-                    </Typography>
-                    <Typography>
-                      <strong>Description: </strong>
-                      {item.description}
-                    </Typography>
-                    <Typography>
-                      <strong>No of fields: </strong>
-                      {item.fields.length}
-                    </Typography>
-                    <Button
-                      size="small"
-                      disabled={activeStep !== 0}
-                      style={{ margin: 8 }}
-                      variant="contained"
-                      color="primary"
-                      onClick={() => openVersionMeta(index, true)}
-                      children="Edit"
-                    />
+              if (index === editIndex) {
+                return <div></div>;
+              }
+              return (
+                <Paper key={index} style={{ padding: 10, margin: 10 }}>
+                  <Typography>
+                    <strong>Title: </strong>
+                    {item.title}
+                  </Typography>
+                  <Typography>
+                    <strong>Description: </strong>
+                    {item.description}
+                  </Typography>
+                  <Typography>
+                    <strong>No of fields: </strong>
+                    {item.fields.length}
+                  </Typography>
+                  <Button
+                    size="small"
+                    disabled={activeStep !== 0}
+                    style={{ margin: 8 }}
+                    variant="contained"
+                    color="primary"
+                    onClick={() => openVersionMeta(index, true)}
+                    children="Edit"
+                  />
 
-                    <Button
-                      disabled={activeStep !== 0}
-                      size="small"
-                      style={{ margin: 8 }}
-                      variant="outlined"
-                      color="secondary"
-                      onClick={() => {
-                        setActiveVersionIndex(activeVersionIndex - 1);
-                        removeVersion(index);
-                      }}
-                      children="Delete"
-                    />
-                  </Paper>
-                );
-              })
-            )}
+                  <Button
+                    disabled={activeStep !== 0}
+                    size="small"
+                    style={{ margin: 8 }}
+                    variant="outlined"
+                    color="secondary"
+                    onClick={() => {
+                      setActiveVersionIndex(activeVersionIndex - 1);
+                      removeVersion(index);
+                    }}
+                    children="Delete"
+                  />
+                </Paper>
+              );
+            })
+          )}
         </ExpansionPanelDetails>
       </ExpansionPanel>
-      {activeStep !== 0 && <Button
-        onClick={handleCancel}
-        style={{ justifyContent: 'flex-start', width: 'fit-content' }} variant="outlined" color="secondary">Discard</Button>}
+      {activeStep !== 0 && (
+        <Button
+          onClick={handleCancel}
+          style={{ justifyContent: "flex-start", width: "fit-content" }}
+          variant="outlined"
+          color="secondary">
+          Discard
+        </Button>
+      )}
       <VersionStepper activeStep={activeStep} renderStep={renderStep} />
-      <div style={{ display: "flex", justifyContent: "center" }}>
+      <Box display="flex" justifyContent="space-between" mt={4}>
         <Button
           startIcon={<ArrowBack />}
-          style={{ margin: 10 }}
           color="primary"
           variant="outlined"
-          onClick={() =>
-            activeDisplayIndex === 2
-              ? setActiveDisplayIndex(1)
-              : setActiveDisplayIndex(0)
-          }
-          disabled={!activeDisplayIndex === 2 && !activeDisplayIndex === 1}>
+          onClick={() => setActiveDisplayIndex(activeDisplayIndex - 1)}>
           Back
         </Button>
 
         <Button
+          disabled={videoObj.versions.length === 0 || activeStep !== 0}
           endIcon={<ArrowForward />}
-          style={{ margin: 10 }}
           color="primary"
           variant="contained"
-          disabled={videoObj.versions.length === 0 || activeStep !== 0}
           onClick={() => setActiveDisplayIndex(activeDisplayIndex + 1)}>
           Next
         </Button>
-      </div>
+      </Box>
     </div>
   );
 };

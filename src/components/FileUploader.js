@@ -1,23 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { FormHelperText, Typography, Box, Button } from "@material-ui/core";
+import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import upload from "services/s3Upload";
-
 export default ({
+  name,
   value,
   onChange,
   label,
   accept,
-  fieldName,
+  uploadDirectory,
   onError,
   error,
   helperText,
   onTouched,
 }) => {
-  const [progress, setProgress] = useState("0%");
+  const [progress, setProgress] = useState(0);
   const [taskController, setTaskController] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [name, setName] = useState(
-    value ? value.substring(value.lastIndexOf("/") + 1) : "No file chosen"
+  const [filename, setFilename] = useState(
+    value ? value.substring(value.lastIndexOf("/") + 1) : ""
   );
 
   useEffect(() => {
@@ -34,26 +35,24 @@ export default ({
       if (!file) {
         return;
       }
-      setName(file.name);
+      setFilename(file.name);
       setLoading(true);
       const task = upload(
-        `${fieldName}s/${Date.now()}${file.name.substr(
+        `${uploadDirectory}s/${Date.now()}${file.name.substr(
           file.name.lastIndexOf(".")
         )}`,
         file
       );
       setTaskController(task);
       task.on("httpUploadProgress", ({ loaded, total }) =>
-        setProgress(`${parseInt((loaded * 100) / total)}%`)
+        setProgress(parseInt((loaded * 100) / total))
       );
       const { Location: uri } = await task.promise();
       setLoading(false);
 
       onChange(uri);
     } catch (err) {
-      setName(
-        value ? value.substring(value.lastIndexOf("/") + 1) : "No file choosen"
-      );
+      setFilename(value ? value.substring(value.lastIndexOf("/") + 1) : "");
       setLoading(false);
       onError(err.message);
     }
@@ -63,38 +62,47 @@ export default ({
     try {
       await taskController?.abort();
     } catch (err) {
-      setName(
-        value ? value.substring(value.lastIndexOf("/") + 1) : "No file choosen"
-      );
+      setFilename(value ? value.substring(value.lastIndexOf("/") + 1) : "");
       setLoading(false);
       onError(err.message);
     }
   };
+
   return (
     <Box m={1}>
       <Typography>{label}</Typography>
-      <Box p={1}>
+      <Box my={1}>
         <input
           accept={accept}
-          id="contained-button-file"
+          id={name}
           type="file"
           onFocus={() => onTouched(true)}
           onChange={uploadFile}
           style={{ display: "none" }}
         />
-        <label htmlFor="contained-button-file" style={{ paddingRight: 10 }}>
+        <label htmlFor={name}>
           <Button
             disabled={loading}
-            variant="outlined"
+            variant="contained"
             size="small"
             color="primary"
+            startIcon={<CloudUploadIcon />}
             component="span">
             {value ? `Change` : `Upload`}
           </Button>
         </label>
-        <Typography component={"span"}>
-          {loading ? `Uploading: ${progress}` : name}
+        <Typography variant="body2" component={"span"} color="textSecondary">
+          {loading ? ` Uploading: ${progress}% ` : ` ${filename} `}
         </Typography>
+        {loading && (
+          <Button
+            onClick={handleUploadCancel}
+            size="small"
+            color="secondary"
+            component="span">
+            Cancel
+          </Button>
+        )}
       </Box>
       <FormHelperText error={error}>
         {error ? error : helperText}

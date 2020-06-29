@@ -6,7 +6,7 @@ import {
   Select,
   MenuItem,
 } from "@material-ui/core";
-import FontUploader from "./formSchemaBuilderComponents/FontUploader";
+// import FontUploader from "./formSchemaBuilderComponents/FontUploader";
 
 export default ({ initialValue, onSubmit, handleEdit }) => {
   const actionName = Object.keys(initialValue)[0];
@@ -21,17 +21,18 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
         }
   );
   const renderFontInstall = () => {
-    return (
-      <>
-        {fonts.fonts.map((font, index) => (
-          <FontUploader
-            font={font}
-            handleDelete={() => handleDelete(index)}
-            setFont={(value) => handleFontInput(index, value)}
-          />
-        ))}
-      </>
-    );
+    return null;
+    // return (
+    //   <>
+    //     {fonts.fonts.map((font, index) => (
+    //       <FontUploader
+    //         font={font}
+    //         handleDelete={() => handleDelete(index)}
+    //         setFont={(value) => handleFontInput(index, value)}
+    //       />
+    //     ))}
+    //   </>
+    // );
   };
   const actions = {
     installFonts: renderFontInstall(),
