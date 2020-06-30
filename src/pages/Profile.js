@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import Paper from "@material-ui/core/Paper";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
-import { SaveIcon } from "@material-ui/icons";
-import EditIcon from "@material-ui/icons/Edit";
 import { useFormik } from "formik";
 import {
   Typography,
