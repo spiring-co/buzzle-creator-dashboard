@@ -19,7 +19,6 @@ export default () => {
   const { path } = useRouteMatch();
   const tableRef = useRef(null);
   const [darkModeTheme] = useDarkMode();
-
   const { user } = useAuth();
   const history = useHistory();
 
@@ -55,12 +54,13 @@ export default () => {
     };
   }, [jobIds]);
 
+
   return (
     <Container>
       {error && (
         <ErrorHandler
           message={error.message}
-          showRetry={true}
+          showRetry={jobIds.length === 0}
           onRetry={handleRetry}
         />
       )}
@@ -98,6 +98,7 @@ export default () => {
           },
           {
             title: "Version",
+            searchable: false,
             render: ({ videoTemplate, idVersion }) => (
               <span>
                 {videoTemplate?.versions.find((v) => v?.id === idVersion)
@@ -106,6 +107,7 @@ export default () => {
             ),
           },
           {
+            searchable: false,
             title: "Last Updated",
             field: "dateUpdated",
             type: "datetime",
@@ -115,6 +117,7 @@ export default () => {
             defaultSort: "desc",
           },
           {
+            searchable: false,
             title: "State",
             field: "state",
             render: function ({ id, state }) {
@@ -160,9 +163,15 @@ export default () => {
               if (message) {
                 setError(new Error(message));
               }
-
               setJobIds(jobs.map(({ id }) => id));
-              return { data: jobs, page: query.page, totalCount };
+              return {
+                data: query.search
+                  ? jobs.filter(({ videoTemplate }) => videoTemplate.title.toLowerCase().startsWith(query.search.toLowerCase()))
+                  : jobs,
+                page: query.page, totalCount: query.search
+                  ? jobs.filter(({ videoTemplate }) => videoTemplate.title.toLowerCase().startsWith(query.search.toLowerCase())).length
+                  : jobs.length
+              };
             })
             .catch((e) => {
               setError(e);
