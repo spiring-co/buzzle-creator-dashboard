@@ -182,6 +182,9 @@ export default ({
               propertyType:
                 videoObj.versions[activeVersionIndex]?.fields[editIndex]
                   ?.type ?? "",
+              placeholder:
+                videoObj.versions[activeVersionIndex]?.fields[editIndex]
+                  ?.placeholder ?? "",
               type:
                 videoObj.versions[activeVersionIndex]?.fields[editIndex]?.rendererData
                   ?.type ?? "",
@@ -197,6 +200,9 @@ export default ({
               width:
                 videoObj.versions[activeVersionIndex]?.fields[editIndex]?.constraints
                   ?.width ?? 400,
+              extension:
+                videoObj.versions[activeVersionIndex]?.fields[editIndex]?.rendererData
+                  ?.extension ?? ".png",
               height:
                 videoObj.versions[activeVersionIndex]?.fields[editIndex]?.constraints
                   ?.height ?? 400,
@@ -206,8 +212,7 @@ export default ({
             }}
             editField={editIndex !== null}
             toggleDialog={setIsDialogVisible}
-            editFieldValue={editFieldValue}
-            addField={handleAddField}
+            handleChange={editIndex !== null ? editFieldValue : handleAddField}
           />
         )}
     </Paper>

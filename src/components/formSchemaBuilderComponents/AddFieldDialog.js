@@ -26,6 +26,7 @@ const validationSchema = Yup.object().shape({
     then: Yup.string(),
     otherwise: Yup.string().required("Property of the layer is required!")
   }),
+  placeholder: Yup.string().required('Placeholder is required!'),
   layerName: Yup.string().required("Layer name is required!"),
   label: Yup.string().required("Field Label is required!"),
   maxLength: Yup.number().when("type", {
@@ -49,39 +50,25 @@ export default (props) => {
   const { textLayers = [], imageLayers = [] } = props;
 
   const onSubmit = (data) => {
-    const { key, property, propertyType, type, label, required, maxLength, layerName, width, height } = data;
+    const { key, property, placeholder, extension, propertyType, type, label, required, maxLength, layerName, width, height } = data;
 
     switch (type) {
       case "data":
-        if (props.editField) {
-          props.editFieldValue({
-            key,
-            type: propertyType,
-            label,
-            constraints: property === "Source Text.text" ? {
-              required,
-              maxLength,
-            } : { required },
-            rendererData: { layerName, property, type }
-          })
-        }
-        else {
-          props.addField({
-            key: getUniqueId(),
-            type: propertyType,
-            label,
-            constraints: property === "Source Text.text" ? {
-              required,
-              maxLength,
-            } : { required },
-            rendererData: { layerName, property, type }
-          });
-        }
+        props.handleChange({
+          key: props.editField ? key : getUniqueId(),
+          type: propertyType,
+          label, placeholder,
+          constraints: property === "Source Text.text" ? {
+            required,
+            maxLength,
+          } : { required },
+          rendererData: { layerName, property, type }
+        })
         break;
 
       case "image":
-        props.editField ? props.editFieldValue({
-          key,
+        props.handleChange({
+          key: props.editField ? key : getUniqueId(),
           type: propertyType,
           label,
           constraints: propertyType === "file"
@@ -92,25 +79,10 @@ export default (props) => {
             }
             : { required },
           rendererData: propertyType === "file"
-            ? { layerName, type }
+            ? { layerName, type, extension }
             : { layerName, property, type }
 
         })
-          : props.addField({
-            key: getUniqueId(),
-            type: propertyType,
-            label,
-            constraints: propertyType === "file"
-              ? {
-                required,
-                width,
-                height
-              }
-              : { required },
-            rendererData: propertyType === "file"
-              ? { layerName, type }
-              : { layerName, property, type }
-          });
         break;
       default:
         throw new Error();
@@ -126,9 +98,8 @@ export default (props) => {
     handleChange,
     setFieldValue,
   } = useFormik({
-    initialValues: props.initialValue
-    ,
-    validationSchema,
+    initialValues: props.initialValue.
+      validationSchema,
     onSubmit,
   });
 
@@ -155,6 +126,7 @@ export default (props) => {
       const layerNames = imageLayers.map(({ name }) => name)
       setFieldValue('height', imageLayers[layerNames.indexOf(value)]["height"])
       setFieldValue('width', imageLayers[layerNames.indexOf(value)]["width"])
+      setFieldValue('extension', imageLayers[layerNames.indexOf(value)]?.extension ?? ".png")
 
     }
 
@@ -238,6 +210,20 @@ export default (props) => {
         type="text"
         label="Layer Label"
         placeholder="Layer Label"
+      />
+      <TextField
+        fullWidth
+        variant="outlined"
+        margin="dense"
+        value={values.placeholder}
+        name="placeholder"
+        onBlur={handleBlur}
+        onChange={handleChange}
+        error={touched.placeholder && errors.placeholder}
+        helperText={touched.placeholder && errors.placeholder}
+        type="text"
+        label="Layer Placeholder"
+        placeholder="Enter Placeholder Text"
       />
       {values.property === "Source Text.text" && <>   <TextField
         fullWidth
