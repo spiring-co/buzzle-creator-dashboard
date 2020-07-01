@@ -20,9 +20,7 @@ export default (state, action) => {
         action.payload.currentCompositionFields.includes(rendererData.layerName)
       );
 
-      state.versions[
-        action.payload.activeVersionIndex
-      ].fields = fields;
+      state.versions[action.payload.activeVersionIndex].fields = fields;
 
       return Object.assign({}, state);
 
@@ -44,9 +42,7 @@ export default (state, action) => {
     case EDIT_VERSION_KEYS:
       state.versions[action.payload.activeVersionIndex] = {
         ...state.versions[action.payload.activeVersionIndex],
-        fields:
-          state.versions[action.payload.activeVersionIndex]?.fields ??
-          [],
+        fields: state.versions[action.payload.activeVersionIndex]?.fields ?? [],
         ...action.payload.value,
       };
       return Object.assign({}, state);
@@ -63,7 +59,6 @@ export default (state, action) => {
               fields: item.fields.filter(
                 (field, fieldIndex) => action.payload.fieldIndex !== fieldIndex
               ),
-
             };
           } else return item;
         }),
@@ -84,7 +79,7 @@ export default (state, action) => {
       state.versions[action.payload.activeVersionIndex].fields[
         action.payload.fieldIndex
       ] = action.payload.field;
-      console.log(action.payload.field)
+      console.log(action.payload.field);
       return Object.assign({}, state);
 
     // load segments to edit , payload = video object
@@ -102,7 +97,6 @@ export default (state, action) => {
         staticAssets: [],
         fonts: [],
         thumbnail: "",
-        isDeleted: false,
       };
     default:
       throw new Error("Action not recognized");

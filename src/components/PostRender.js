@@ -123,7 +123,6 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
       <>
         <TextField
           fullWidth
-          fullWidth
           variant="outlined"
           margin="dense"
           value={upload.input}
@@ -136,7 +135,6 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
           placeholder={"Enter Input filename"}
         />
         <TextField
-          fullWidth
           fullWidth
           variant="outlined"
           margin="dense"
@@ -167,7 +165,6 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
     return (
       <>
         <TextField
-          fullWidth
           fullWidth
           variant="outlined"
           margin="dense"
@@ -220,7 +217,6 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
       <>
         <TextField
           fullWidth
-          fullWidth
           variant="outlined"
           margin="dense"
           value={mergeVideos.input}
@@ -254,7 +250,6 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
         />
         <TextField
           fullWidth
-          fullWidth
           variant="outlined"
           margin="dense"
           value={mergeVideos.output}
@@ -275,7 +270,6 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
     return (
       <>
         <TextField
-          fullWidth
           fullWidth
           variant="outlined"
           margin="dense"
@@ -303,7 +297,6 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
           helperText={"Choose Audio file."}
         />
         <TextField
-          fullWidth
           fullWidth
           variant="outlined"
           margin="dense"

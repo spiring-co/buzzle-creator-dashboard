@@ -6,7 +6,6 @@ import DownloadIcon from "@material-ui/icons/GetApp";
 
 import {
   Typography,
-  InputLabel,
   Paper,
   Button,
   Grid,

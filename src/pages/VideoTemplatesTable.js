@@ -100,13 +100,13 @@ export default (props) => {
                 children={"Retry"}
               />
             ) : (
-              <Typography>
-                <Link component={RouterLink} to={`${path}add`}>
-                  Click here
+                <Typography>
+                  <Link component={RouterLink} to={`${path}add`}>
+                    Click here
                 </Link>{" "}
                 to create a Video Template😀
-              </Typography>
-            ),
+                </Typography>
+              ),
           },
         }}
         detailPanel={[
@@ -174,9 +174,13 @@ export default (props) => {
             .then((response) => response.json())
             .then((result) => {
               return {
-                data: result.data.filter((item) => !item.isDeleted),
+                data: query.search
+                  ? result.data.filter(({ title }) => title.toLowerCase().startsWith(query.search.toLowerCase()))
+                  : result.data,
                 page: query.page,
-                totalCount: result.count,
+                totalCount: query.search
+                  ? result.data.filter(({ title }) => title.toLowerCase().startsWith(query.search.toLowerCase())).length
+                  : result.count,
               };
             })
             .catch((err) => {
