@@ -1,20 +1,10 @@
 import React, { useState } from "react";
 import {
-  DialogActions,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Button,
   FormControl,
-  FormHelperText,
   InputLabel,
   MenuItem,
   Select,
   TextField,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  FormLabel,
 } from "@material-ui/core";
 import FileUploader from "components/FileUploader";
 
@@ -193,6 +183,7 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
           placeholder={"Enter Input filename"}
         />
         <FileUploader
+          name={"watermarkFile"}
           value={watermark.watermark}
           onError={(e) => setFileError(e.message)}
           onChange={(url) => {
@@ -200,14 +191,13 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
             handleEdit({ watermark: { ...watermark, watermark: url } });
           }}
           accept={"image/*"}
-          fieldName={"watermarks"}
+          uploadDirectory={"watermarks"}
           label="Watermark"
           onTouched={() => setFileError(null)}
           error={fileError}
           helperText={"Watermark should be transparent."}
         />
         <TextField
-          fullWidth
           fullWidth
           variant="outlined"
           margin="dense"
