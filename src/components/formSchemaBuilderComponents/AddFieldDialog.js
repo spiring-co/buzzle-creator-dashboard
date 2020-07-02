@@ -26,7 +26,11 @@ const validationSchema = Yup.object().shape({
     then: Yup.string(),
     otherwise: Yup.string().required("Property of the layer is required!")
   }),
-  placeholder: Yup.string().required('Placeholder is required!'),
+  placeholder: Yup.string().when('type', {
+    is: 'data',
+    then: Yup.string().required('Placeholder is required!'),
+    otherwise: Yup.string()
+  }),
   layerName: Yup.string().required("Layer name is required!"),
   label: Yup.string().required("Field Label is required!"),
   maxLength: Yup.number().when("type", {
@@ -69,7 +73,7 @@ export default (props) => {
       case "image":
         props.handleChange({
           key: props.editField ? key : getUniqueId(),
-          type: propertyType,
+          type: propertyType === "file" ? "image" : propertyType,
           label,
           constraints: propertyType === "file"
             ? {
@@ -126,10 +130,8 @@ export default (props) => {
       const layerNames = imageLayers.map(({ name }) => name)
       setFieldValue('height', imageLayers[layerNames.indexOf(value)]["height"])
       setFieldValue('width', imageLayers[layerNames.indexOf(value)]["width"])
-      setFieldValue('extension', imageLayers[layerNames.indexOf(value)]?.extension ?? ".png")
-
+      setFieldValue('extension', `.${imageLayers[layerNames.indexOf(value)]?.extension}` ?? ".png")
     }
-
   }
   function PropertyPicker({
     handleBlur,
@@ -188,9 +190,9 @@ export default (props) => {
       <FormLabel component="legend">Select Property Type</FormLabel>
       <RadioGroup aria-label="propertyType" name="propertyType" row
         value={values?.propertyType} onChange={handleChange}>
-        <FormControlLabel value="string" control={<Radio />} label="Text" />
+        <FormControlLabel value="string" control={<Radio />} label="Data" />
         <FormControlLabel value="file" disabled={values?.type === "data"}
-          control={<Radio />} label="File" />
+          control={<Radio />} label="Image" />
       </RadioGroup>
     </FormControl>)
 
