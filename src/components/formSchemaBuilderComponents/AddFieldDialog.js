@@ -98,8 +98,8 @@ export default (props) => {
     handleChange,
     setFieldValue,
   } = useFormik({
-    initialValues: props.initialValue.
-      validationSchema,
+    initialValues: props.initialValue,
+    validationSchema,
     onSubmit,
   });
 
@@ -117,7 +117,7 @@ export default (props) => {
     const value = e.target.value
     setFieldValue('layerName', value)
     // set default text value to label
-    if (values.type === "data") {
+    if (values?.type === "data") {
       const layerNames = textLayers.map(({ name }) => name)
       setFieldValue('label', textLayers[layerNames.indexOf(value)].text)
     }
@@ -138,7 +138,7 @@ export default (props) => {
     touched,
     error,
   }) {
-    if (!values.type || !values.propertyType || values.propertyType === "file") return <div />;
+    if (!values?.type || !values?.propertyType || values?.propertyType === "file") return <div />;
     const layerProperties = ["scale", "color"];
     const propertiesByType = {
       data: [
@@ -150,7 +150,7 @@ export default (props) => {
       image: ["opacity"],
     };
 
-    const p = layerProperties.concat(propertiesByType[values.type]);
+    const p = layerProperties.concat(propertiesByType[values?.type]);
     return (
       <FormControl
         fullWidth
@@ -187,9 +187,9 @@ export default (props) => {
     return (<FormControl component="fieldset">
       <FormLabel component="legend">Select Property Type</FormLabel>
       <RadioGroup aria-label="propertyType" name="propertyType" row
-        value={values.propertyType} onChange={handleChange}>
+        value={values?.propertyType} onChange={handleChange}>
         <FormControlLabel value="string" control={<Radio />} label="Text" />
-        <FormControlLabel value="file" disabled={values.type === "data"}
+        <FormControlLabel value="file" disabled={values?.type === "data"}
           control={<Radio />} label="File" />
       </RadioGroup>
     </FormControl>)
@@ -201,7 +201,7 @@ export default (props) => {
         fullWidth
         variant="outlined"
         margin="dense"
-        value={values.label}
+        value={values?.label}
         name="label"
         onBlur={handleBlur}
         onChange={handleChange}
@@ -215,7 +215,7 @@ export default (props) => {
         fullWidth
         variant="outlined"
         margin="dense"
-        value={values.placeholder}
+        value={values?.placeholder}
         name="placeholder"
         onBlur={handleBlur}
         onChange={handleChange}
@@ -225,13 +225,13 @@ export default (props) => {
         label="Layer Placeholder"
         placeholder="Enter Placeholder Text"
       />
-      {values.property === "Source Text.text" && <>   <TextField
+      {values?.property === "Source Text.text" && <>   <TextField
         fullWidth
         variant="outlined"
         margin="dense"
         onBlur={handleBlur}
         onChange={handleChange}
-        value={values.maxLength}
+        value={values?.maxLength}
         error={touched.maxLength && errors.maxLength}
         helperText={touched.maxLength && errors.maxLength}
         type="number"
@@ -244,7 +244,7 @@ export default (props) => {
       <FormControlLabel
         control={
           <Switch
-            checked={values.required}
+            checked={values?.required}
             onBlur={handleBlur}
             name="required"
             onChange={handleChange}
@@ -262,7 +262,7 @@ export default (props) => {
         fullWidth
         variant="outlined"
         margin="dense"
-        value={values.label}
+        value={values?.label}
         name="label"
         onBlur={handleBlur}
         onChange={handleChange}
@@ -273,12 +273,12 @@ export default (props) => {
         placeholder="Layer Label"
       />
 
-      {values.propertyType === "file" && <>
+      {values?.propertyType === "file" && <>
         <TextField
           fullWidth
           variant="outlined"
           margin="dense"
-          value={values.width}
+          value={values?.width}
           name="width"
           onBlur={handleBlur}
           onChange={handleChange}
@@ -292,7 +292,7 @@ export default (props) => {
           fullWidth
           variant="outlined"
           margin="dense"
-          value={values.height}
+          value={values?.height}
           name="height"
           onBlur={handleBlur}
           onChange={handleChange}
@@ -307,7 +307,7 @@ export default (props) => {
       <FormControlLabel
         control={
           <Switch
-            checked={values.required}
+            checked={values?.required}
             onBlur={handleBlur}
             name="required"
             onChange={handleChange}
@@ -319,7 +319,7 @@ export default (props) => {
     </div>
   );
   const renderInputForm = () => {
-    switch (values.type) {
+    switch (values?.type) {
       case "data":
         return renderTextInputCreator();
 
@@ -331,7 +331,7 @@ export default (props) => {
     }
   };
   const fieldsSelector = () => {
-    switch (values.type) {
+    switch (values?.type) {
       case "data":
         if (textLayers.length) {
           return textLayers.map((item, index) => {
@@ -389,7 +389,7 @@ export default (props) => {
               onBlur={handleBlur}
               onChange={handleChange}
               name="type"
-              value={values.type}
+              value={values?.type}
               placeholder="Select Layer Type"
               label="Layer Type"
             >
@@ -398,10 +398,10 @@ export default (props) => {
                   <MenuItem
                     key={index}
                     id={index}
-                    disabled={values.type === item.value}
+                    disabled={values?.type === item.value}
                     value={item.value}
                     children={item.label}
-                    selected={values.type === item.value}
+                    selected={values?.type === item.value}
                   />
                 );
               })}
@@ -423,7 +423,7 @@ export default (props) => {
               onBlur={handleBlur}
               onChange={handleLayerChange}
               name="layerName"
-              value={values.layerName}
+              value={values?.layerName}
               placeholder="Select Layer"
               label="Select Layer"
             >
@@ -435,14 +435,14 @@ export default (props) => {
           </FormControl>
           {renderPropertyTypeSelector()}
           <PropertyPicker
-            type={values.type}
+            type={values?.type}
             handleBlur={handleBlur}
             handleChange={handleChange}
             touched={touched.property}
             error={touched.property && errors.property}
-            value={values.property}
+            value={values?.property}
           />
-          {renderInputForm(values.type)}
+          {renderInputForm(values?.type)}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => toggleDialog(false)} color="primary">

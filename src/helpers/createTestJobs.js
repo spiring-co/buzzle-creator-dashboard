@@ -7,8 +7,8 @@ export default ({ versions, id }) => {
       ...v.fields.map((field) =>
         field.type === "file"
           ? {
-              [field.key]: `https://dummyimage.com/${field.constraints.width}x${field.constraints.height}/0011ff/fff`,
-            }
+            [field.key]: `https://dummyimage.com/${field.constraints.width}x${field.constraints.height}/0011ff/fff`,
+          }
           : { [field.key]: field?.label }
       )
     ),
