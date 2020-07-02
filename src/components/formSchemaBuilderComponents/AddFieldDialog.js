@@ -107,7 +107,6 @@ export default (props) => {
     onSubmit,
   });
 
-
   const inputTypes = [
     { label: "Text", value: "data" },
     { label: "Image", value: "image" },
@@ -130,7 +129,7 @@ export default (props) => {
       const layerNames = imageLayers.map(({ name }) => name)
       setFieldValue('height', imageLayers[layerNames.indexOf(value)]["height"])
       setFieldValue('width', imageLayers[layerNames.indexOf(value)]["width"])
-      setFieldValue('extension', `.${imageLayers[layerNames.indexOf(value)]?.extension}` ?? ".png")
+      setFieldValue('extension', imageLayers[layerNames.indexOf(value)]?.extension ?? "png")
     }
   }
   function PropertyPicker({
