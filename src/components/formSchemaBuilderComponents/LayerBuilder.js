@@ -6,11 +6,7 @@ import { getLayersFromComposition } from "services/helper";
 import AddFields from "./AddFieldDialog";
 import { Button, Paper, Typography, Tooltip } from "@material-ui/core";
 import { Wallpaper, TextFields, Add } from "@material-ui/icons";
-export default ({
-  compositions,
-  editVersion,
-  activeVersionIndex,
-}) => {
+export default ({ compositions, editVersion, activeVersionIndex }) => {
   const [videoObj] = useContext(VideoTemplateContext);
 
   const {
@@ -62,7 +58,6 @@ export default ({
   };
 
   const editFieldValue = (field) => {
-
     updateField(activeVersionIndex, editIndex, field);
     setEditIndex(null);
   };
@@ -86,57 +81,72 @@ export default ({
                     border: "1px solid grey",
                   }}
                 />
-                {item?.constraints?.maxLength && <Typography>
-                  <strong>Max Length:</strong> {item?.constraints?.maxLength}, &nbsp;{" "}
-                </Typography>}
+                {item?.constraints?.maxLength && (
+                  <Typography>
+                    <strong>Max Length:</strong> {item?.constraints?.maxLength},
+                    &nbsp;{" "}
+                  </Typography>
+                )}
                 <Typography>
                   {" "}
                   <strong>Label:</strong> {item?.label}, &nbsp;{" "}
                 </Typography>
                 <Typography>
                   {" "}
-                  <strong>Layer name:</strong> {item?.rendererData?.layerName},&nbsp;
+                  <strong>Layer name:</strong> {item?.rendererData?.layerName}
+                  ,&nbsp;
                 </Typography>
                 <Typography>
                   {" "}
-                  <strong>Property:</strong> {item?.rendererData?.property},&nbsp;
+                  <strong>Property:</strong> {item?.rendererData?.property}
+                  ,&nbsp;
                 </Typography>
                 <Typography>
                   {" "}
-                  <strong>Required:</strong> {item?.constraints?.required ? "true" : "false"}
+                  <strong>Required:</strong>{" "}
+                  {item?.constraints?.required ? "true" : "false"}
                 </Typography>
               </>
             ) : (
-                <>
-                  <Wallpaper
-                    style={{
-                      fontSize: 40,
-                      margin: 10,
-                      padding: 5,
-                      border: "1px solid grey",
-                    }}
-                  />
-                  {item?.constraints?.width && <Typography>
+              <>
+                <Wallpaper
+                  style={{
+                    fontSize: 40,
+                    margin: 10,
+                    padding: 5,
+                    border: "1px solid grey",
+                  }}
+                />
+                {item?.constraints?.width && (
+                  <Typography>
                     <strong>Width:</strong> {item?.constraints?.width}, &nbsp;{" "}
-                  </Typography>}
-                  {item?.constraints?.height && <Typography>
+                  </Typography>
+                )}
+                {item?.constraints?.height && (
+                  <Typography>
                     {" "}
                     <strong>Height:</strong> {item?.constraints?.height}, &nbsp;{" "}
-                  </Typography>}
+                  </Typography>
+                )}
+                <Typography>
+                  {" "}
+                  <strong>Layer name:</strong> {item?.rendererData?.layerName},
+                  &nbsp;{" "}
+                </Typography>
+                {item?.rendererData?.property && (
                   <Typography>
                     {" "}
-                    <strong>Layer name:</strong> {item?.rendererData?.layerName}, &nbsp;{" "}
+                    <strong>Property:</strong> {item?.rendererData?.property}
+                    ,&nbsp;
                   </Typography>
-                  {item?.rendererData?.property && <Typography>
-                    {" "}
-                    <strong>Property:</strong> {item?.rendererData?.property},&nbsp;
-                </Typography>}
-                  <Typography>
-                    {" "}
-                    <strong>Required:</strong> {item?.constraints?.required ? "true" : "false"}
-                  </Typography>
-                </>
-              )}
+                )}
+                <Typography>
+                  {" "}
+                  <strong>Required:</strong>{" "}
+                  {item?.constraints?.required ? "true" : "false"}
+                </Typography>
+              </>
+            )}
           </div>
         }
       />
@@ -154,67 +164,66 @@ export default ({
           color="primary"
           onClick={() => {
             setEditIndex(null);
-            setIsDialogVisible(true)
+            setIsDialogVisible(true);
           }}
           children="Add Field"
         />
       </Tooltip>
-      {videoObj.versions[activeVersionIndex]?.fields?.map(
-        renderFieldPreview
-      )}
+      {videoObj.versions[activeVersionIndex]?.fields?.map(renderFieldPreview)}
 
-      {isDialogVisible &&
-        (
-          <AddFields
-            textLayers={getLayersFromComposition(
-              compositions[videoObj?.versions[activeVersionIndex]?.composition],
-              "textLayers"
-            )}
-            imageLayers={getLayersFromComposition(
-              compositions[videoObj?.versions[activeVersionIndex]?.composition],
-              "imageLayers"
-            )}
-            initialValue={{
-              key: videoObj.versions[activeVersionIndex]?.fields[editIndex]
-                ?.key ?? "",
-              property: videoObj.versions[activeVersionIndex]?.fields[editIndex]?.rendererData
-                ?.property ?? "",
-              propertyType:
-                videoObj.versions[activeVersionIndex]?.fields[editIndex]
-                  ?.type ?? "",
-              placeholder:
-                videoObj.versions[activeVersionIndex]?.fields[editIndex]
-                  ?.placeholder ?? "",
-              type:
-                videoObj.versions[activeVersionIndex]?.fields[editIndex]?.rendererData
-                  ?.type ?? "",
-              layerName:
-                videoObj.versions[activeVersionIndex]?.fields[editIndex]?.rendererData
-                  ?.layerName ?? "",
-              label:
-                videoObj.versions[activeVersionIndex]?.fields[editIndex]
-                  ?.label ?? "",
-              required:
-                videoObj.versions[activeVersionIndex]?.fields[editIndex]?.constraints
-                  ?.required ?? false,
-              width:
-                videoObj.versions[activeVersionIndex]?.fields[editIndex]?.constraints
-                  ?.width ?? 400,
-              extension:
-                videoObj.versions[activeVersionIndex]?.fields[editIndex]?.rendererData
-                  ?.extension ?? ".png",
-              height:
-                videoObj.versions[activeVersionIndex]?.fields[editIndex]?.constraints
-                  ?.height ?? 400,
-              maxLength:
-                videoObj.versions[activeVersionIndex]?.fields[editIndex]?.constraints
-                  ?.maxLength ?? 50,
-            }}
-            editField={editIndex !== null}
-            toggleDialog={setIsDialogVisible}
-            handleChange={editIndex !== null ? editFieldValue : handleAddField}
-          />
-        )}
+      {isDialogVisible && (
+        <AddFields
+          textLayers={getLayersFromComposition(
+            compositions[videoObj?.versions[activeVersionIndex]?.composition],
+            "textLayers"
+          )}
+          imageLayers={getLayersFromComposition(
+            compositions[videoObj?.versions[activeVersionIndex]?.composition],
+            "imageLayers"
+          )}
+          initialValue={{
+            key:
+              videoObj.versions[activeVersionIndex]?.fields[editIndex]?.key ??
+              "",
+            property:
+              videoObj.versions[activeVersionIndex]?.fields[editIndex]
+                ?.rendererData?.property ?? "",
+            propertyType:
+              videoObj.versions[activeVersionIndex]?.fields[editIndex]?.type ??
+              "",
+            placeholder:
+              videoObj.versions[activeVersionIndex]?.fields[editIndex]
+                ?.placeholder ?? "",
+            type:
+              videoObj.versions[activeVersionIndex]?.fields[editIndex]
+                ?.rendererData?.type ?? "",
+            layerName:
+              videoObj.versions[activeVersionIndex]?.fields[editIndex]
+                ?.rendererData?.layerName ?? "",
+            label:
+              videoObj.versions[activeVersionIndex]?.fields[editIndex]?.label ??
+              "",
+            required:
+              videoObj.versions[activeVersionIndex]?.fields[editIndex]
+                ?.constraints?.required ?? false,
+            width:
+              videoObj.versions[activeVersionIndex]?.fields[editIndex]
+                ?.constraints?.width ?? 400,
+            extension:
+              videoObj.versions[activeVersionIndex]?.fields[editIndex]
+                ?.rendererData?.extension ?? ".png",
+            height:
+              videoObj.versions[activeVersionIndex]?.fields[editIndex]
+                ?.constraints?.height ?? 400,
+            maxLength:
+              videoObj.versions[activeVersionIndex]?.fields[editIndex]
+                ?.constraints?.maxLength ?? 50,
+          }}
+          editField={editIndex !== null}
+          toggleDialog={setIsDialogVisible}
+          handleChange={editIndex !== null ? editFieldValue : handleAddField}
+        />
+      )}
     </Paper>
   );
 };

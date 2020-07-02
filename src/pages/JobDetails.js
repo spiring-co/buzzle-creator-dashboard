@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import UpdateIcon from "@material-ui/icons/Update";
 import PublishIcon from "@material-ui/icons/Publish";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -16,6 +15,8 @@ import {
   Tabs,
   Tab,
   Divider,
+  MenuItem,
+  Select,
   IconButton,
 } from "@material-ui/core";
 import { Redirect } from "react-router-dom";
@@ -27,6 +28,7 @@ import formatTime from "helpers/formatTime";
 import { Job } from "services/api";
 import { useParams, useHistory } from "react-router-dom";
 import MaterialTable from "material-table";
+import * as timeago from "timeago.js";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -89,12 +91,15 @@ export default () => {
   const [redirect, setRedirect] = useState(null);
   const { id } = useParams();
   const history = useHistory();
+  const [selectedOutputIndex, setSelectedOutputIndex] = useState(0);
 
   const [activeTabIndex, setActiveTabIndex] = useState(0);
 
   useEffect(() => {
     fetchJob();
   }, []);
+
+  useEffect(() => {}, [selectedOutputIndex]);
 
   const fetchJob = async () => {
     setError(false);
@@ -203,8 +208,9 @@ export default () => {
             />
             <Button
               disabled={isLoading}
-              color="default"
+              color="white"
               variant="contained"
+              className={classes.button}
               onClick={async () => {
                 try {
                   await Job.update(id, { data });
@@ -217,7 +223,30 @@ export default () => {
               startIcon={<UpdateIcon />}
             />
           </Box>
+
           <Box>
+            <Select
+              margin="dense"
+              variant="outlined"
+              className={classes.button}
+              value={selectedOutputIndex}
+              autoWidth
+              onChange={(e) => {
+                console.log(e.target.value);
+                setSelectedOutputIndex(e.target.value);
+              }}>
+              {output.map((o, i) => (
+                <MenuItem key={i} value={i}>
+                  {o.label}
+                  <Typography
+                    component="span"
+                    variant="body2"
+                    color="textSecondary">
+                    {" " + timeago.format(new Date(o.dateCreated))}
+                  </Typography>
+                </MenuItem>
+              ))}
+            </Select>
             <IconButton
               onClick={handleDeleteJob}
               aria-label="delete"
@@ -227,7 +256,7 @@ export default () => {
             <IconButton
               aria-label="delete"
               className={classes.margin}
-              href={output}>
+              href={output[selectedOutputIndex].src}>
               <DownloadIcon fontSize="inherit" />
             </IconButton>
           </Box>
@@ -238,7 +267,7 @@ export default () => {
               poster={job.videoTemplate.thumbnail}
               style={{ height: 320, width: "100%" }}
               controls
-              src={output}
+              src={output[selectedOutputIndex].src}
             />
           ) : (
             <>
@@ -260,7 +289,7 @@ export default () => {
               onChange={(_, i) => setActiveTabIndex(i)}
               aria-label="simple tabs example">
               <Tab label="Output" {...a11yProps(0)} />
-              <Tab label="Assets" {...a11yProps(1)} />
+              <Tab label="Data" {...a11yProps(1)} />
               <Tab label="Actions" {...a11yProps(2)} />
             </Tabs>
           </AppBar>
@@ -305,8 +334,25 @@ export default () => {
               }}
               columns={[
                 {
-                  title: "Field Id",
-                  field: "key",
+                  title: "Label",
+                  render: ({ key }) => {
+                    const version = job.videoTemplate.versions.find(
+                      (v) => v.id === job.idVersion
+                    );
+                    const field = version.fields.find((f) => f.key === key);
+                    return <span>{field.label}</span>;
+                  },
+                  editable: "never",
+                },
+                {
+                  title: "Type",
+                  render: ({ key }) => {
+                    const version = job.videoTemplate.versions.find(
+                      (v) => v.id === job.idVersion
+                    );
+                    const field = version.fields.find((f) => f.key === key);
+                    return <span>{field.type}</span>;
+                  },
                   editable: "never",
                 },
                 {
@@ -318,7 +364,7 @@ export default () => {
                 key,
                 value: data[key],
               }))}
-              title="Assets"
+              title="Data"
             />
           </TabPanel>
           <TabPanel value={activeTabIndex} index={2}>

@@ -10,11 +10,10 @@ export default ({
   compositions,
   onSubmit,
   onBack,
-  onCancel
+  onCancel,
 }) => {
   const [videoObj] = useContext(VideoTemplateContext);
-  useEffect(() => {
-  }, [isEdit])
+  useEffect(() => {}, [isEdit]);
   return (
     <form
       onSubmit={(e) => {
@@ -29,7 +28,7 @@ export default ({
         <Button
           onClick={onBack}
           size="small"
-          style={{ width: 'fit-content', marginTop: 10 }}
+          style={{ width: "fit-content", marginTop: 10 }}
           children="back"
         />
         <Button
