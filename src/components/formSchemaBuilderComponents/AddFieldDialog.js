@@ -116,10 +116,10 @@ export default (props) => {
   const handleLayerChange = (e) => {
     const value = e.target.value
     setFieldValue('layerName', value)
-    // set default text value to label
+    // set default text value to placeholder
     if (values?.type === "data") {
       const layerNames = textLayers.map(({ name }) => name)
-      setFieldValue('label', textLayers[layerNames.indexOf(value)].text)
+      setFieldValue('placeholder', textLayers[layerNames.indexOf(value)].text)
     }
     //set height and width coming from layer
     else {
