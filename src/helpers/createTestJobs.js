@@ -5,7 +5,7 @@ export default ({ versions, id }) => {
     data: Object.assign(
       {},
       ...v.fields.map((field) =>
-        field.type === "file"
+        field.type === "image"
           ? {
             [field.key]: `https://dummyimage.com/${field.constraints.width}x${field.constraints.height}/0011ff/fff`,
           }

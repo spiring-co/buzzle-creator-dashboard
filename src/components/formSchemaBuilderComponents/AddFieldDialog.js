@@ -22,7 +22,7 @@ const validationSchema = Yup.object().shape({
   type: Yup.string().required("Layer type is required!"),
   propertyType: Yup.string().required("Property Type is required!"),
   property: Yup.string().when("propertyType", {
-    is: "file",
+    is: "image",
     then: Yup.string(),
     otherwise: Yup.string().required("Property of the layer is required!")
   }),
@@ -73,16 +73,16 @@ export default (props) => {
       case "image":
         props.handleChange({
           key: props.editField ? key : getUniqueId(),
-          type: propertyType === "file" ? "image" : propertyType,
+          type: propertyType,
           label,
-          constraints: propertyType === "file"
+          constraints: propertyType === "image"
             ? {
               required,
               width,
               height
             }
             : { required },
-          rendererData: propertyType === "file"
+          rendererData: propertyType === "image"
             ? { layerName, type, extension }
             : { layerName, property, type }
 
@@ -139,7 +139,7 @@ export default (props) => {
     touched,
     error,
   }) {
-    if (!values?.type || !values?.propertyType || values?.propertyType === "file") return <div />;
+    if (!values?.type || !values?.propertyType || values?.propertyType === "image") return <div />;
     const layerProperties = ["scale", "color"];
     const propertiesByType = {
       data: [
@@ -190,7 +190,7 @@ export default (props) => {
       <RadioGroup aria-label="propertyType" name="propertyType" row
         value={values?.propertyType} onChange={handleChange}>
         <FormControlLabel value="string" control={<Radio />} label="Data" />
-        <FormControlLabel value="file" disabled={values?.type === "data"}
+        <FormControlLabel value="image" disabled={values?.type === "data"}
           control={<Radio />} label="Image" />
       </RadioGroup>
     </FormControl>)
@@ -274,7 +274,7 @@ export default (props) => {
         placeholder="Layer Label"
       />
 
-      {values?.propertyType === "file" && <>
+      {values?.propertyType === "image" && <>
         <TextField
           fullWidth
           variant="outlined"
