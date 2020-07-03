@@ -254,9 +254,9 @@ export default () => {
               <DeleteIcon fontSize="inherit" />
             </IconButton>
             <IconButton
-              aria-label="delete"
+              aria-label="download"
               className={classes.margin}
-              href={output[selectedOutputIndex].src}>
+              href={output.length && output[selectedOutputIndex].src}>
               <DownloadIcon fontSize="inherit" />
             </IconButton>
           </Box>
@@ -267,7 +267,7 @@ export default () => {
               poster={job.videoTemplate.thumbnail}
               style={{ height: 320, width: "100%" }}
               controls
-              src={output[selectedOutputIndex].src}
+              src={output.length && output[selectedOutputIndex].src}
             />
           ) : (
             <>
