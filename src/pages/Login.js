@@ -128,6 +128,7 @@ export default () => {
           {message && <Alert severity="info" children={message} />}
 
           <TextField
+            required
             name={"email"}
             margin="dense"
             value={values.email}
@@ -144,7 +145,9 @@ export default () => {
                 : t("wontShareEmail")
             }
           />
-          <FormControl fullWidth margin="dense" variant="outlined">
+          <FormControl
+            required
+            fullWidth margin="dense" variant="outlined">
             <InputLabel htmlFor="outlined-adornment-password">
               Password
             </InputLabel>

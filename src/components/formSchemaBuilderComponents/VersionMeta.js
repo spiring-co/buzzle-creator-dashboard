@@ -9,7 +9,6 @@ const validationSchema = Yup.object().shape({
     .max(80, "Length Too Long!")
     .required("Version title is required!"),
   description: Yup.string()
-    .min(3, "Lenght Too Short!")
     .max(200, "Lenght Too Long!"),
 });
 
@@ -37,6 +36,7 @@ export default ({ onSubmit, initialValue, onBack }) => {
       }}
     >
       <TextField
+        required
         variant="outlined"
         name="title"
         value={values.title}

@@ -99,6 +99,7 @@ export default () => {
             <Alert severity="error" children={error.message || t("wrong")} />
           )}
           <TextField
+            required
             fullWidth
             margin={"dense"}
             variant={"outlined"}
@@ -113,6 +114,7 @@ export default () => {
             helperText={errors?.name ?? ""}
           />
           <TextField
+            required
             fullWidth
             margin={"dense"}
             variant={"outlined"}
@@ -127,6 +129,7 @@ export default () => {
             helperText={errors?.email ?? t("wontShareEmail")}
           />
           <TextField
+            required
             fullWidth
             margin={"dense"}
             variant={"outlined"}
@@ -141,6 +144,7 @@ export default () => {
             helperText={errors?.password ?? t("passwordMust")}
           />
           <TextField
+            required
             fullWidth
             margin={"dense"}
             variant={"outlined"}
@@ -154,6 +158,7 @@ export default () => {
             helperText={errors?.confirmPassword}
           />
           <FormControl
+            required
             fullWidth
             margin="dense"
             error={touched.gender && !!errors.gender}
@@ -181,6 +186,7 @@ export default () => {
             </FormHelperText>
           </FormControl>
           <TextField
+            required
             fullWidth
             margin={"dense"}
             variant={"outlined"}
@@ -195,6 +201,7 @@ export default () => {
             helperText={errors?.phoneNumber ?? ""}
           />
           <TextField
+            required
             fullWidth
             margin={"dense"}
             variant={"outlined"}
@@ -209,6 +216,7 @@ export default () => {
             helperText={errors?.birthDate ?? ""}
           />
           <TextField
+            required
             fullWidth
             margin={"dense"}
             variant={"outlined"}
@@ -224,6 +232,7 @@ export default () => {
             helperText={errors.countryCode ?? ""}
           />
           <FormControl
+            required
             fullWidth
             margin="dense"
             error={touched.country && !!errors.country}

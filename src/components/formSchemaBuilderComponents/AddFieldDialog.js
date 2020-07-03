@@ -154,6 +154,7 @@ export default (props) => {
     const p = layerProperties.concat(propertiesByType[values?.type]);
     return (
       <FormControl
+        required={values?.propertyType === 'image' ? false : true}
         fullWidth
         margin="dense"
         variant="outlined"
@@ -185,7 +186,9 @@ export default (props) => {
   }
   const renderPropertyTypeSelector = () => {
 
-    return (<FormControl component="fieldset">
+    return (<FormControl
+      required
+      component="fieldset">
       <FormLabel component="legend">Select Property Type</FormLabel>
       <RadioGroup aria-label="propertyType" name="propertyType" row
         value={values?.propertyType} onChange={handleChange}>
@@ -199,6 +202,7 @@ export default (props) => {
   const renderTextInputCreator = () => (
     <div>
       <TextField
+        required
         fullWidth
         variant="outlined"
         margin="dense"
@@ -213,6 +217,7 @@ export default (props) => {
         placeholder="Layer Label"
       />
       <TextField
+        required={values?.type === 'data' ? true : false}
         fullWidth
         variant="outlined"
         margin="dense"
@@ -228,6 +233,7 @@ export default (props) => {
       />
       {values?.property === "Source Text.text" && <>   <TextField
         fullWidth
+        required={values?.type === 'data' ? true : false}
         variant="outlined"
         margin="dense"
         onBlur={handleBlur}
@@ -260,6 +266,7 @@ export default (props) => {
   const renderImageCreator = () => (
     <div>
       <TextField
+        required
         fullWidth
         variant="outlined"
         margin="dense"
@@ -276,6 +283,7 @@ export default (props) => {
 
       {values?.propertyType === "image" && <>
         <TextField
+          required={values?.type === "image" ? true : false}
           fullWidth
           variant="outlined"
           margin="dense"
@@ -290,6 +298,7 @@ export default (props) => {
           placeholder="Enter Width"
         />
         <TextField
+          required={values?.type === "image" ? true : false}
           fullWidth
           variant="outlined"
           margin="dense"
@@ -419,6 +428,7 @@ export default (props) => {
               Select Layer
             </InputLabel>
             <Select
+              required
               labelId="demo-simple-select-outlined-label"
               id="demo-simple-select-outlined"
               onBlur={handleBlur}

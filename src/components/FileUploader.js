@@ -3,6 +3,7 @@ import { FormHelperText, Typography, Box, Button } from "@material-ui/core";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import upload from "services/s3Upload";
 export default ({
+  required,
   name,
   value,
   onChange,
@@ -73,7 +74,7 @@ export default ({
 
   return (
     <Box m={1}>
-      <Typography>{label}</Typography>
+      <Typography>{label}{required && " *"}</Typography>
       <Box my={1}>
         <input
           accept={accept}
