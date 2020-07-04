@@ -16,13 +16,11 @@ export default (state, action) => {
   switch (action.type) {
     //payload : activeVersionIndex,currentCompositionFields
     case RESTORE_FIELDS:
-      const editableLayers = state.versions[0].editableLayers.filter((layer) =>
-        action.payload.currentCompositionFields.includes(layer.layerName)
+      const fields = state.versions[0].fields.filter(({ rendererData }) =>
+        action.payload.currentCompositionFields.includes(rendererData.layerName)
       );
 
-      state.versions[
-        action.payload.activeVersionIndex
-      ].editableLayers = editableLayers;
+      state.versions[action.payload.activeVersionIndex].fields = fields;
 
       return Object.assign({}, state);
 
@@ -44,9 +42,7 @@ export default (state, action) => {
     case EDIT_VERSION_KEYS:
       state.versions[action.payload.activeVersionIndex] = {
         ...state.versions[action.payload.activeVersionIndex],
-        editableLayers:
-          state.versions[action.payload.activeVersionIndex]?.editableLayers ??
-          [],
+        fields: state.versions[action.payload.activeVersionIndex]?.fields ?? [],
         ...action.payload.value,
       };
       return Object.assign({}, state);
@@ -60,7 +56,7 @@ export default (state, action) => {
           if (index === action.payload.activeVersionIndex) {
             return {
               ...item,
-              editableLayers: item.editableLayers.filter(
+              fields: item.fields.filter(
                 (field, fieldIndex) => action.payload.fieldIndex !== fieldIndex
               ),
             };
@@ -69,21 +65,21 @@ export default (state, action) => {
       };
       return state;
 
-    //payload: {value,activeVersionIndex}
-    // value is field Obj
+    //payload: {field,activeVersionIndex}
     case ADD_FIELD:
-      state.versions[action.payload.activeVersionIndex].editableLayers.push(
-        action.payload.value
+      state.versions[action.payload.activeVersionIndex].fields.push(
+        action.payload.field
       );
+
       console.log("field added :)", state);
       return Object.assign({}, state);
 
-    //payload: {value,activeVersionIndex,fieldIndex}
-    // value is field Obj
+    //payload: {field,activeVersionIndex,fieldIndex}
     case UPDATE_FIELD:
-      state.versions[action.payload.activeVersionIndex].editableLayers[
+      state.versions[action.payload.activeVersionIndex].fields[
         action.payload.fieldIndex
-      ] = action.payload.value;
+      ] = action.payload.field;
+      console.log(action.payload.field);
       return Object.assign({}, state);
 
     // load segments to edit , payload = video object
@@ -101,7 +97,6 @@ export default (state, action) => {
         staticAssets: [],
         fonts: [],
         thumbnail: "",
-        isDeleted: false,
       };
     default:
       throw new Error("Action not recognized");

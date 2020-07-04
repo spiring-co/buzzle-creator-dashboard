@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import Paper from "@material-ui/core/Paper";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
-import { SaveIcon } from "@material-ui/icons";
-import EditIcon from "@material-ui/icons/Edit";
 import { useFormik } from "formik";
 import {
   Typography,
@@ -12,17 +10,33 @@ import {
   Box,
   Button,
   TextField,
-  FormControl,
 } from "@material-ui/core";
 import { Creator } from "services/api";
 import { Alert } from "@material-ui/lab";
 import { useAuth } from "services/auth";
 
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}>
+      {value === index && (
+        <Box p={3}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
 function ProfileEdit({ creator }) {
   const [isEditing, setIsEditing] = useState(false);
   const handleUpdate = (data) => {
     setIsEditing(false);
-    Creator.update(data)
+    Creator.update(data);
     console.log(data);
   };
   const { handleChange, values, handleSubmit } = useFormik({
@@ -30,7 +44,7 @@ function ProfileEdit({ creator }) {
       name: creator.name,
       email: creator.email,
     },
-    validationSchema:null,
+    validationSchema: null,
     onSubmit: handleUpdate,
   });
 
@@ -44,9 +58,11 @@ function ProfileEdit({ creator }) {
         <Box style={{ marginBottom: 20 }} display="flex" flexDirection="column">
           <div style={{ marginBottom: 10 }}>
             <TextField
+              variant="outlined"
               onChange={handleChange}
               label="Name"
               name="name"
+              margin="dense"
               value={values.name}
               inputProps={{
                 readOnly: !isEditing,
@@ -54,9 +70,11 @@ function ProfileEdit({ creator }) {
           </div>
           <div>
             <TextField
+              variant="outlined"
               onChange={handleChange}
               label="Email"
               name="email"
+              margin="dense"
               value={values.email}
               inputProps={{
                 readOnly: !isEditing,
@@ -66,8 +84,8 @@ function ProfileEdit({ creator }) {
         <Button
           style={
             isEditing
-              ? { marginRight: 20, color: "green" }
-              : { marginRight: 20, color: "blue" }
+              ? { marginRight: 20, background: "green" }
+              : { marginRight: 20, background: "blue" }
           }
           onClick={isEditing ? handleSubmit : toggleEditMode}
           size="small"
@@ -80,7 +98,7 @@ function ProfileEdit({ creator }) {
 }
 
 export default function DisabledTabs() {
-  const [value, setValue] = useState(0);
+  const [activeTabIndex, setActiveTabIndex] = useState(0);
   const [creator, setCreator] = useState({});
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -100,7 +118,7 @@ export default function DisabledTabs() {
   }
 
   const handleTabChange = (event, newValue) => {
-    setValue(newValue);
+    setActiveTabIndex(newValue);
   };
 
   return (
@@ -110,7 +128,7 @@ export default function DisabledTabs() {
       <Divider />
       <Paper square>
         <Tabs
-          value={value}
+          value={activeTabIndex}
           indicatorColor="primary"
           textColor="primary"
           onChange={handleTabChange}
@@ -118,7 +136,9 @@ export default function DisabledTabs() {
           <Tab label="Profile" />
           <Tab label="Settings" />
         </Tabs>
-        <ProfileEdit creator={creator} />
+        <TabPanel value={activeTabIndex} index={0}>
+          <ProfileEdit creator={creator} />
+        </TabPanel>
       </Paper>
     </Container>
   );

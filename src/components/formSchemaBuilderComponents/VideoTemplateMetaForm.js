@@ -8,7 +8,7 @@ import * as Yup from "yup";
 import FileUploader from "components/FileUploader";
 const validationSchema = Yup.object({
   title: Yup.string().required("Title is Required"),
-  // projectFile: Yup.string().required("Project File is required"),
+  projectFile: Yup.object().required("Project File is required"),
   thumbnail: Yup.string().required("Thumbnail is required!"),
 });
 
@@ -76,17 +76,20 @@ export default ({
         )}
       </div>
       <FileUploader
+        required={true}
         accept={"image/*"}
         value={values.thumbnail}
         onError={(e) => setFieldError(e)}
         onChange={(value) => setFieldValue("thumbnail", value)}
-        fieldName={"thumbnail"}
+        uploadDirectory={"thumbnails"}
         label="Template Thumbnail"
         onTouched={setFieldTouched}
         error={errors.thumbnail}
-        helperText={"Thumbnails are presenters of your template"}
+        helperText={"Thumbnails "}
+        name={"thumbnail"}
       />
       <TextField
+        required
         fullWidth
         margin={"dense"}
         variant={"outlined"}
