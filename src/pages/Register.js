@@ -14,6 +14,9 @@ import {
   FormControl,
   Paper,
   InputLabel,
+  IconButton,
+  InputAdornment,
+  OutlinedInput,
   Select,
   Link,
   Container,
@@ -21,6 +24,8 @@ import {
   Box,
 } from "@material-ui/core";
 
+import Visibility from "@material-ui/icons/Visibility";
+import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import { countryList } from "components/CountryList";
 import Branding from "components/Branding";
 
@@ -46,7 +51,18 @@ export default () => {
   const history = useHistory();
 
   const [error, setError] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword2, setShowPassword2] = useState(false);
 
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+  const handleClickShowPassword2 = () => {
+    setShowPassword2(!showPassword2);
+  };
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
   const {
     handleChange,
     handleSubmit,
@@ -128,7 +144,7 @@ export default () => {
             error={touched.email && !!errors.email}
             helperText={errors?.email ?? t("wontShareEmail")}
           />
-          <TextField
+          <OutlinedInput
             required
             fullWidth
             margin={"dense"}
@@ -139,11 +155,23 @@ export default () => {
             name={"password"}
             type="password"
             placeholder="Password"
-            label="Password"
             error={touched.password && !!errors.password}
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={handleClickShowPassword}
+                  onMouseDown={handleMouseDownPassword}
+                  edge="end">
+                  {showPassword ? <Visibility /> : <VisibilityOff />}
+                </IconButton>
+              </InputAdornment>
+            }
+            type={showPassword ? "text" : "password"}
             helperText={errors?.password ?? t("passwordMust")}
           />
-          <TextField
+          <p style={{ margin: 10 }}> </p>
+          <OutlinedInput
             required
             fullWidth
             margin={"dense"}
@@ -152,9 +180,21 @@ export default () => {
             onBlur={handleBlur}
             value={values.confirmPassword}
             name={"confirmPassword"}
+            type="password"
             placeholder="Confirm Password"
-            label="Confirm Password"
             error={touched.confirmPassword && !!errors.confirmPassword}
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={handleClickShowPassword2}
+                  onMouseDown={handleMouseDownPassword}
+                  edge="end">
+                  {showPassword2 ? <Visibility /> : <VisibilityOff />}
+                </IconButton>
+              </InputAdornment>
+            }
+            type={showPassword2 ? "text" : "password"}
             helperText={errors?.confirmPassword}
           />
           <FormControl
@@ -270,7 +310,8 @@ export default () => {
             </Link>
           </Typography>
         </Paper>
-      </Container> <Branding dark />
+      </Container>{" "}
+      <Branding dark />
     </Box>
   );
 };
