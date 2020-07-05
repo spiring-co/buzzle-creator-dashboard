@@ -122,6 +122,7 @@ export default (props) => {
     // set default text value to placeholder
     if (values?.type === "data") {
       const layerNames = textLayers.map(({ name }) => name)
+      setFieldValue('property', 'Source Text.text')
       setFieldValue('placeholder', textLayers[layerNames.indexOf(value)].text)
     }
     //set height and width coming from layer
@@ -191,6 +192,7 @@ export default (props) => {
       component="fieldset">
       <FormLabel component="legend">Select Property Type</FormLabel>
       <RadioGroup aria-label="propertyType" name="propertyType" row
+        defaultValue={'string'}
         value={values?.propertyType} onChange={handleChange}>
         <FormControlLabel value="string" control={<Radio />} label="Data" />
         <FormControlLabel value="image" disabled={values?.type === "data"}
