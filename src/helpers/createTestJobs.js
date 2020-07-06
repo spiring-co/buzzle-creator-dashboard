@@ -7,7 +7,7 @@ export default ({ versions, id }) => {
       ...v.fields.map((field) =>
         field.type === "image"
           ? {
-            [field.key]: `https://dummyimage.com/${field.constraints.width}x${field.constraints.height}/0011ff/fff`,
+            [field.key]: `https://via.placeholder.com/${field.constraints.width}x${field.constraints.height}/0011ff/fff.${field.rendererData.extension}/?text=Spiring`,
           }
           : { [field.key]: field?.label }
       )

@@ -15,6 +15,7 @@ export default ({
   helperText,
   onTouched,
 }) => {
+  const [isError, setIsError] = useState(error)
   const [progress, setProgress] = useState(0);
   const [taskController, setTaskController] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -39,7 +40,7 @@ export default ({
       setFilename(file.name);
       setLoading(true);
       const task = upload(
-        `${uploadDirectory}s/${Date.now()}${file.name.substr(
+        `${uploadDirectory}/${Date.now()}${file.name.substr(
           file.name.lastIndexOf(".")
         )}`,
         file
@@ -56,19 +57,18 @@ export default ({
       setTaskController(null)
       setFilename(value ? value.substring(value.lastIndexOf("/") + 1) : "");
       setLoading(false);
-      onError(err.message);
+      onError ? onError(err.message) : setIsError(err.message)
     }
   };
 
   const handleUploadCancel = async () => {
     try {
-      await taskController?.abort();
+      await taskController?.abort().bind(taskController);
     } catch (err) {
       setFilename(value ? value.substring(value.lastIndexOf("/") + 1) : "");
       setLoading(false);
-      onError(err.message);
+      onError ? onError(err.message) : setIsError(err.message)
       setTaskController(null)
-
     }
   };
 
@@ -77,6 +77,9 @@ export default ({
       <Typography>{label}{required && " *"}</Typography>
       <Box my={1}>
         <input
+          onClick={(event) => {
+            event.target.value = null
+          }}
           accept={accept}
           id={name}
           type="file"
@@ -108,8 +111,8 @@ export default ({
           </Button>
         )}
       </Box>
-      <FormHelperText error={error}>
-        {error ? error : helperText}
+      <FormHelperText error={isError}>
+        {isError ? isError : helperText}
       </FormHelperText>
     </Box>
   );
