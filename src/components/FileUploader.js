@@ -37,6 +37,7 @@ export default ({
       if (!file) {
         return;
       }
+      onError({})
       setFilename(file.name);
       setLoading(true);
       const task = upload(
@@ -51,7 +52,6 @@ export default ({
       );
       const { Location: uri } = await task.promise();
       setLoading(false);
-
       onChange(uri);
     } catch (err) {
       setTaskController(null)

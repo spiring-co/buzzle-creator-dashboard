@@ -23,7 +23,7 @@ export default function AssetUploader({
   isFolderResolved
 }) {
   const [loading, setLoading] = useState(false);
-  const [src, setSrc] = useState(Boolean(asset?.src));
+  const [src, setSrc] = useState(typeof asset?.src === 'object' ? false : Boolean(asset?.src));
   const [progress, setProgress] = useState('0%')
   const [error, setError] = useState(null)
   const [taskController, setTaskController] = useState(null)
@@ -54,6 +54,7 @@ export default function AssetUploader({
 
   const handleUpload = async (file) => {
     try {
+      setError(null)
       setLoading(true)
       const task = upload(
         `staticAssets/${Date.now()}${file.name.substr(file.name.lastIndexOf("."))}`,
