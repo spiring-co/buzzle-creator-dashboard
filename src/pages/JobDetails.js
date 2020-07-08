@@ -30,7 +30,7 @@ import { Job } from "services/api";
 import { useParams, useHistory } from "react-router-dom";
 import MaterialTable from "material-table";
 import * as timeago from "timeago.js";
-import FileUploader from "components/FileUploader"
+import FileUploader from "components/FileUploader";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -101,7 +101,7 @@ export default () => {
     fetchJob();
   }, []);
 
-  useEffect(() => { }, [selectedOutputIndex]);
+  useEffect(() => {}, [selectedOutputIndex]);
 
   const fetchJob = async () => {
     setError(false);
@@ -272,16 +272,16 @@ export default () => {
               src={output.length && output[selectedOutputIndex].src}
             />
           ) : (
-              <>
-                <Box justifyContent="center" textAlign="center" height={320}>
-                  <Typography style={{ padding: 100 }}>
-                    {" "}
+            <>
+              <Box justifyContent="center" textAlign="center" height={320}>
+                <Typography style={{ padding: 100 }}>
+                  {" "}
                   No output yet.
                 </Typography>
-                </Box>
-                <Divider />
-              </>
-            )}
+              </Box>
+              <Divider />
+            </>
+          )}
           <AppBar position="static" color="transparent" elevation={0}>
             <Tabs
               value={activeTabIndex}
@@ -349,32 +349,41 @@ export default () => {
                 {
                   title: "Type",
                   render: ({ value }) => {
-                    return <span>{(value.startsWith('http://') || value.startsWith('https://')) ? 'image' : 'string'}</span>;
+                    return (
+                      <span>
+                        {value.startsWith("http://") ||
+                        value.startsWith("https://")
+                          ? "image"
+                          : "string"}
+                      </span>
+                    );
                   },
                   editable: "never",
                 },
                 {
                   title: "Value",
                   field: "value",
-                  editComponent: ({ rowData: { key }, onChange, value, }) => {
-                    if (value.startsWith('http://') || value.startsWith('https://')) {
-                      return <>
-                        <FileUploader
-                          value={value}
-                          onChange={onChange}
-                          uploadDirectory={'jobImages'}
-                          onError={null}
-                          name={key}
-                        />
-                      </>
-                    }
-                    else {
-                      return <TextField
+                  editComponent: ({ rowData: { key }, onChange, value }) => {
+                    // if (value.startsWith('http://') || value.startsWith('https://')) {
+                    //   return <>
+                    //     <FileUploader
+                    //       value={value}
+                    //       onChange={onChange}
+                    //       uploadDirectory={'jobImages'}
+                    //       onError={null}
+                    //       name={key}
+                    //     />
+                    //   </>
+                    // }
+                    // else {
+                    return (
+                      <TextField
                         value={value}
-                        onChange={(e) => onChange(e?.target?.value)} />
-                    }
-
-                  }
+                        onChange={(e) => onChange(e?.target?.value)}
+                      />
+                    );
+                    // }
+                  },
                 },
               ]}
               data={Object.keys(data).map((key) => ({
