@@ -348,7 +348,14 @@ export default () => {
                 {
                   title: "Type",
                   render: ({ value }) => {
-                    return <span>{(value.startsWith('http://') || value.startsWith('https://')) ? 'image' : 'string'}</span>;
+                    return (
+                      <span>
+                        {value.startsWith("http://") ||
+                          value.startsWith("https://")
+                          ? "image"
+                          : "string"}
+                      </span>
+                    );
                   },
                   editable: "never",
                 },
@@ -360,12 +367,13 @@ export default () => {
                       return <ImageEditRow value={value} onChange={onChange} />
                     }
                     else {
-                      return <TextField
+                      return (<TextField
+                        fullWidth
                         value={value}
-                        onChange={(e) => onChange(e?.target?.value)} />
+                        onChange={(e) => onChange(e?.target?.value)}
+                      />)
                     }
-
-                  }
+                  },
                 },
               ]}
               data={Object.keys(data).map((key) => ({

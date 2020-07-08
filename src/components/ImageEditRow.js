@@ -18,6 +18,7 @@ const imageEditComponent = {
     },
     text: function (value, onChange) {
         return (<TextField
+            fullWidth
             value={value}
             onChange={(e) => onChange(e?.target?.value)} />)
     }
