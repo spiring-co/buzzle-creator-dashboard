@@ -22,7 +22,7 @@ import {
 } from "@material-ui/core";
 import { Redirect } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
-
+import ImageEditRow from "components/ImageEditRow"
 import ErrorHandler from "components/ErrorHandler";
 import ActionsHandler from "components/ActionsHandler";
 import formatTime from "helpers/formatTime";
@@ -30,7 +30,6 @@ import { Job } from "services/api";
 import { useParams, useHistory } from "react-router-dom";
 import MaterialTable from "material-table";
 import * as timeago from "timeago.js";
-import FileUploader from "components/FileUploader"
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -94,7 +93,6 @@ export default () => {
   const { id } = useParams();
   const history = useHistory();
   const [selectedOutputIndex, setSelectedOutputIndex] = useState(0);
-
   const [activeTabIndex, setActiveTabIndex] = useState(0);
 
   useEffect(() => {
@@ -175,6 +173,7 @@ export default () => {
     delete job.data[idArray[index]];
     setJob({ ...job, data: job.data });
   };
+
 
   if (redirect) return <Redirect to="/home/jobs" />;
   if (isLoading) {
@@ -358,15 +357,7 @@ export default () => {
                   field: "value",
                   editComponent: ({ rowData: { key }, onChange, value, }) => {
                     if (value.startsWith('http://') || value.startsWith('https://')) {
-                      return <>
-                        <FileUploader
-                          value={value}
-                          onChange={onChange}
-                          uploadDirectory={'jobImages'}
-                          onError={null}
-                          name={key}
-                        />
-                      </>
+                      return <ImageEditRow value={value} onChange={onChange} />
                     }
                     else {
                       return <TextField

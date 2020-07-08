@@ -37,7 +37,7 @@ export default ({
       if (!file) {
         return;
       }
-      onError({})
+      onError ? onError({}) : setIsError(null)
       setFilename(file.name);
       setLoading(true);
       const task = upload(
