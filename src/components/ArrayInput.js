@@ -6,10 +6,10 @@ import { Button, TextField, Chip, FormHelperText } from "@material-ui/core";
 
 export default ({ disabled,
     onChange,
-    tags,
-    placeholder = "Enter Tags",
-    label = "Tags",
-    maxTags,
+    keywords,
+    placeholder = "Enter Value",
+    label = "Value",
+    maxKeywords,
     variant = "outlined"
 }) => {
     const [tagInput, setTagInput] = useState("")
@@ -19,7 +19,7 @@ export default ({ disabled,
             value.substr(0, 1) !== " " &&
             value.substr(0, 1) !== ","
         ) {
-            onChange([...tags, value.substr(0, value.length - 1)]);
+            onChange([...keywords, value.substr(0, value.length - 1)]);
             setTagInput("");
         } else {
             setTagInput(value);
@@ -27,12 +27,12 @@ export default ({ disabled,
     };
     const handleDelete = (tagValue) => {
         // delete the tag
-        onChange(tags.filter((tag) => tag !== tagValue));
+        onChange(keywords.filter((tag) => tag !== tagValue));
     };
     return (<TextField
         fullWidth
         margin={"dense"}
-        disabled={disabled ? disabled : maxTags ? tags.length >= maxTags : false}
+        disabled={disabled ? disabled : maxKeywords ? keywords.length >= maxKeywords : false}
         variant={variant}
         onChange={({ target: { value } }) => handleTagInput(value)}
         value={tagInput}
@@ -40,17 +40,17 @@ export default ({ disabled,
         placeholder={placeholder}
         label={label}
         error={
-            (maxTags && tags.length > maxTags) ||
+            (maxKeywords && keywords.length > maxKeywords) ||
             tagInput.substr(0, 1) === " " ||
             tagInput.substr(0, 1) === ","
         }
         helperText={
             tagInput.substr(0, 1) === " " || tagInput.substr(0, 1) === ","
-                ? "Invalid Tag Value"
-                : maxTags ? `You can add maximum of ${maxTags} tags` : ""
+                ? "Invalid Keyword Value"
+                : maxKeywords ? `You can add maximum of ${maxKeywords} keywords` : ""
         }
         InputProps={{
-            startAdornment: tags.map((tag, index) => {
+            startAdornment: keywords.map((tag, index) => {
                 return (
                     <Chip
                         key={index}

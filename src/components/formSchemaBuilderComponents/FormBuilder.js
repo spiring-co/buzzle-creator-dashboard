@@ -44,7 +44,7 @@ export default ({ submitForm, isEdit, video }) => {
 
   const handleVideoTemplateMetaSubmit = async (data) => {
     const {
-      tags,
+      keywords,
       title,
       description,
       thumbnail,
@@ -53,7 +53,7 @@ export default ({ submitForm, isEdit, video }) => {
     setCompositions(compositions);
     console.log(compositions);
     setAssets(isEdit ? video?.staticAssets : staticAssets);
-    editVideoKeys({ tags, title, description, src: fileUrl, thumbnail });
+    editVideoKeys({ keywords, title, description, src: fileUrl, thumbnail });
     setActiveDisplayIndex(1);
   };
 

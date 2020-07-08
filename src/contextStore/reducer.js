@@ -93,7 +93,7 @@ export default (state, action) => {
         src: "",
         versions: [],
         description: "",
-        tags: [],
+        keywords: [],
         staticAssets: [],
         fonts: [],
         thumbnail: "",

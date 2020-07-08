@@ -6,7 +6,7 @@ import {
   Select,
   MenuItem,
 } from "@material-ui/core";
-// import FontUploader from "./formSchemaBuilderComponents/FontUploader";
+import FontUploader from "./formSchemaBuilderComponents/FontUploader";
 
 export default ({ initialValue, onSubmit, handleEdit }) => {
   const actionName = Object.keys(initialValue)[0];
@@ -16,24 +16,21 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
     actionName === "installFonts"
       ? actionValue
       : {
-          module: "action-install-fonts",
-          fonts: [{ name: "", src: "" }],
-        }
+        module: "action-install-fonts",
+        fonts: [{ name: "", src: "" }],
+      }
   );
-  const renderFontInstall = () => {
-    return null;
-    // return (
-    //   <>
-    //     {fonts.fonts.map((font, index) => (
-    //       <FontUploader
-    //         font={font}
-    //         handleDelete={() => handleDelete(index)}
-    //         setFont={(value) => handleFontInput(index, value)}
-    //       />
-    //     ))}
-    //   </>
-    // );
-  };
+  const renderFontInstall = () => (
+    <>
+      {fonts.fonts.map((font, index) => (
+        <FontUploader
+          font={font}
+          handleDelete={() => handleDelete(index)}
+          setFont={(value) => handleFontInput(index, value)}
+        />
+      ))}
+    </>
+  );
   const actions = {
     installFonts: renderFontInstall(),
   };
@@ -56,16 +53,8 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
   };
   return (
     <>
-      <Button
-        variant="outlined"
-        color="primary"
-        onClick={handleAddFont}
-        children={"Add Font"}
-      />
-
       <FormControl fullWidth margin="dense" variant="outlined">
         <InputLabel id="property-select">Action Name</InputLabel>
-
         <Select
           labelId="property-select"
           id="property-select"
@@ -85,6 +74,12 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
           ))}
         </Select>
       </FormControl>
+      {action === "installFonts" && <Button
+        variant="outlined"
+        color="primary"
+        onClick={handleAddFont}
+        children={"Add Font"}
+      />}
       {actions[action]}
     </>
   );

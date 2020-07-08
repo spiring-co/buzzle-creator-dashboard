@@ -32,7 +32,7 @@ export default ({
             sample: url,
           })
         }
-        fieldName={"sample"}
+        name={"sample"}
         label="Version Sample Video"
         onTouched={() => setError(null)}
         error={error}
@@ -67,8 +67,8 @@ export default ({
             isEdit
               ? "Save Edits"
               : editVersion
-              ? "Save Edits"
-              : "Create Version"
+                ? "Save Edits"
+                : "Create Version"
           }
         />
       </div>

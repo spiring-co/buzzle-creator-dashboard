@@ -7,12 +7,13 @@ import {
   makeStyles,
   Container,
 } from "@material-ui/core";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import Branding from "components/Branding";
 import { useTranslation } from "react-i18next";
 import landingIllustration from "assets/landing.svg";
 import otherIllustration from "assets/404.svg";
 import videoIllustration from "assets/video.svg";
+import { useAuth } from "services/auth";
 
 const useStyles = makeStyles({
   hoverHighlight: {
@@ -70,8 +71,12 @@ const useStyles = makeStyles({
 });
 
 function Landing() {
+  const { user } = useAuth()
+
   const { t } = useTranslation();
   const classes = useStyles();
+  if (user) return <Redirect to="/home" />;
+
   return (
     <Container className={classes.heightInherit} maxWidth="md">
       <Grid

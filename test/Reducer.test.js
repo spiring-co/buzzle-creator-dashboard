@@ -23,7 +23,7 @@ const BLANK_FIELD = {
 const initalState = {
   //fetch from localStorage
   creatorId: localStorage.getItem("creatorId"),
-  tags: [],
+  keywords: [],
   versions: [],
   title: "",
   description: "",
