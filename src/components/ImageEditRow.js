@@ -7,9 +7,12 @@ import {
 import FileUploader from "components/FileUploader"
 
 const imageEditComponent = {
-    image: function (value, onChange, uploadDirectory, onError, key) {
+    image: function (value, onChange, uploadDirectory, onError, key, height, width) {
         return <FileUploader
             value={value}
+            cropEnabled={true}
+            height={height}
+            width={width}
             onChange={onChange}
             uploadDirectory={'jobImages'}
             onError={null}
@@ -23,7 +26,7 @@ const imageEditComponent = {
             onChange={(e) => onChange(e?.target?.value)} />)
     }
 }
-export default ({ onChange, value }) => {
+export default ({ onChange, value, height, width }) => {
     const [imageEditType, setImageEditType] = useState("image")
     return (<>
         <FormControl component="fieldset" >
@@ -41,6 +44,6 @@ export default ({ onChange, value }) => {
                 />
             </RadioGroup>
         </FormControl>
-        {imageEditComponent[imageEditType](value, onChange, 'jobImages', null, Date.now())}
+        {imageEditComponent[imageEditType](value, onChange, 'jobImages', null, Date.now(), height, width)}
     </>)
 }

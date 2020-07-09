@@ -363,8 +363,14 @@ export default () => {
                   title: "Value",
                   field: "value",
                   editComponent: ({ rowData: { key }, onChange, value, }) => {
+
                     if (value.startsWith('http://') || value.startsWith('https://')) {
-                      return <ImageEditRow value={value} onChange={onChange} />
+                      const version = job.videoTemplate.versions.find(
+                        (v) => v.id === job.idVersion
+                      );
+                      const { constraints: { height = 100, width = 100 } } = version.fields.find((f) => f.key === key);
+                      console.log(height, width)
+                      return <ImageEditRow value={value} onChange={onChange} height={height} width={width} />
                     }
                     else {
                       return (<TextField

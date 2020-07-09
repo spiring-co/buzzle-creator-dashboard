@@ -2,6 +2,10 @@ import React, { useState, useEffect } from "react";
 import { FormHelperText, Typography, Box, Button } from "@material-ui/core";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import upload from "services/s3Upload";
+import { readFile, ORIENTATION_TO_ANGLE, getRotatedImage } from "helpers/CreateImage"
+import { getOrientation } from 'get-orientation/browser'
+import ImageCropperDialog from "components/ImageCropperDialog"
+
 export default ({
   required,
   name,
@@ -11,39 +15,45 @@ export default ({
   accept,
   uploadDirectory,
   onError,
+  cropEnabled = false,
   error,
   helperText,
+  height = 400, width = 600,
   onTouched,
 }) => {
   const [isError, setIsError] = useState(error)
   const [progress, setProgress] = useState(0);
   const [taskController, setTaskController] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [cropImage, setCropImage] = useState("")
   const [filename, setFilename] = useState(
     value ? value.substring(value.lastIndexOf("/") + 1) : ""
   );
-
+  const [isCropperOpen, setIsCropperOpen] = useState(false)
   useEffect(() => {
     if (value) {
       onChange(value);
     }
   }, []);
 
-  const uploadFile = async (e) => {
+  const handleFile = async (e) => {
+    const file =
+      (e?.target?.files ?? [null])[0] ||
+      (e?.dataTransfer?.files ?? [null])[0];
+    if (!file) {
+      return;
+    }
+    onError ? onError({}) : setIsError(null)
+    setFilename(file.name);
+    await handleUpload(file, file.name.substr(
+      file.name.lastIndexOf(".")
+    ))
+  }
+  const handleUpload = async (file, extension) => {
     try {
-      const file =
-        (e?.target?.files ?? [null])[0] ||
-        (e?.dataTransfer?.files ?? [null])[0];
-      if (!file) {
-        return;
-      }
-      onError ? onError({}) : setIsError(null)
-      setFilename(file.name);
       setLoading(true);
       const task = upload(
-        `${uploadDirectory}/${Date.now()}${file.name.substr(
-          file.name.lastIndexOf(".")
-        )}`,
+        `${uploadDirectory}/${Date.now()}${extension}`,
         file
       );
       setTaskController(task);
@@ -59,8 +69,8 @@ export default ({
       setLoading(false);
       onError ? onError(err.message) : setIsError(err.message)
     }
-  };
 
+  }
   const handleUploadCancel = async () => {
     try {
       await taskController?.abort().bind(taskController);
@@ -71,7 +81,20 @@ export default ({
       setTaskController(null)
     }
   };
-
+  const handleCropImage = async e => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0]
+      setFilename(file.name);
+      let imageDataUrl = await readFile(file)
+      const orientation = await getOrientation(file)
+      const rotation = ORIENTATION_TO_ANGLE[orientation]
+      if (rotation) {
+        imageDataUrl = await getRotatedImage(imageDataUrl, rotation)
+      }
+      setCropImage(imageDataUrl)
+      setIsCropperOpen(true)
+    }
+  }
   return (
     <Box m={1}>
       <Typography>{label}{required && " *"}</Typography>
@@ -84,7 +107,7 @@ export default ({
           id={name}
           type="file"
           onFocus={() => onTouched(true)}
-          onChange={uploadFile}
+          onChange={cropEnabled ? handleCropImage : handleFile}
           style={{ display: "none" }}
         />
         <label htmlFor={name}>
@@ -114,6 +137,21 @@ export default ({
       <FormHelperText error={isError}>
         {isError ? isError : helperText}
       </FormHelperText>
+      {isCropperOpen && <ImageCropperDialog
+        image={cropImage}
+        cropSize={{ height, width }}
+        setIsCropperOpen={setIsCropperOpen}
+        onUpload={base64 => {
+          setIsCropperOpen(false)
+          const base64Data = new Buffer.from(base64.replace(/^data:image\/\w+;base64,/, ""), 'base64');
+          handleUpload(base64Data, ".png")
+        }
+        }
+        onCancel={() => {
+          setFilename(value ? value.substring(value.lastIndexOf("/") + 1) : "");
+          setIsCropperOpen(false)
+        }} />
+      }
     </Box>
   );
 };
