@@ -1,37 +1,40 @@
-import React, { useEffect, useState } from "react";
-import UpdateIcon from "@material-ui/icons/Update";
-import PublishIcon from "@material-ui/icons/Publish";
+import {
+  AppBar,
+  Box,
+  Button,
+  CircularProgress,
+  Divider,
+  FormControl,
+  Grid,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Paper,
+  Select,
+  Tab,
+  Tabs,
+  TextField,
+  Typography,
+} from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import DeleteIcon from "@material-ui/icons/Delete";
 import DownloadIcon from "@material-ui/icons/GetApp";
-
-import {
-  Typography,
-  Paper,
-  Button,
-  Grid,
-  Box,
-  TextField,
-  AppBar,
-  CircularProgress,
-  Tabs,
-  Tab,
-  Divider,
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
-  IconButton,
-} from "@material-ui/core";
-import { Redirect } from "react-router-dom";
-import { makeStyles } from "@material-ui/core/styles";
-import ImageEditRow from "components/ImageEditRow";
-import ErrorHandler from "components/ErrorHandler";
+import PublishIcon from "@material-ui/icons/Publish";
+import UpdateIcon from "@material-ui/icons/Update";
+import { apiClient } from "buzzle-sdk";
 import ActionsHandler from "components/ActionsHandler";
+import ErrorHandler from "components/ErrorHandler";
+import ImageEditRow from "components/ImageEditRow";
 import formatTime from "helpers/formatTime";
-import { Job } from "services/api";
-import { useParams, useHistory } from "react-router-dom";
 import MaterialTable from "material-table";
+import React, { useEffect, useState } from "react";
+import { Redirect, useHistory, useParams } from "react-router-dom";
 import * as timeago from "timeago.js";
+
+const { Job } = apiClient({
+  baseUrl: process.env.REACT_APP_API_URL,
+  authToken: localStorage.getItem("jwtoken"),
+});
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -465,7 +468,6 @@ export default () => {
               </FormControl>
               <TextField
                 value={job.renderPrefs.incrementFrame || ""}
-                onChange={(e) => {}}
                 id="incrementFrame"
                 label="Increment Frame"
                 type="number"

@@ -1,25 +1,28 @@
-import React from "react";
-import { useFormik } from "formik";
-import { Job } from "services/api";
-import * as Yup from "yup";
-import createTestJobs from "helpers/createTestJobs";
 import {
   Box,
-  Dialog,
-  Select,
   Button,
-  MenuItem,
-  TextField,
-  InputLabel,
+  Dialog,
   DialogTitle,
   FormControl,
-  FormLabel,
-  RadioGroup,
   FormControlLabel,
+  FormLabel,
+  InputLabel,
+  MenuItem,
   Radio,
+  RadioGroup,
+  Select,
+  TextField,
 } from "@material-ui/core";
-
+import { apiClient } from "buzzle-sdk";
+import { useFormik } from "formik";
+import createTestJobs from "helpers/createTestJobs";
+import React from "react";
 import { useHistory } from "react-router-dom";
+
+const { Job } = apiClient({
+  baseUrl: process.env.REACT_APP_API_URL,
+  authToken: localStorage.getItem("jwtoken"),
+});
 
 export default ({ onClose, open, idVideoTemplate }) => {
   const handleClose = () => {

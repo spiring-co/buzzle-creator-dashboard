@@ -1,26 +1,28 @@
-import React, { useEffect, useState } from "react";
 import {
-  Button,
-  Typography,
-  CircularProgress,
   Box,
+  Button,
+  CircularProgress,
+  Divider,
   List,
   ListItem,
-  ListItemText,
-  Divider,
   ListItemSecondaryAction,
+  ListItemText,
+  Typography,
 } from "@material-ui/core";
-
 import { makeStyles } from "@material-ui/core/styles";
+// TODO split into individuals
+import { ArrowBack, ArrowForward } from "@material-ui/icons";
+import DoneIcon from "@material-ui/icons/Done";
+import { apiClient } from "buzzle-sdk";
+import FileUploader from "components/FileUploader";
+import useActions from "contextStore/actions";
+import React, { useEffect, useState } from "react";
 import { getLayersFromComposition } from "services/helper";
 
-// TODO split into individuals
-import { ArrowForward, ArrowBack } from "@material-ui/icons";
-import DoneIcon from "@material-ui/icons/Done";
-
-import useActions from "contextStore/actions";
-import { Fonts } from "services/api";
-import FileUploader from "components/FileUploader";
+const { Fonts } = apiClient({
+  baseUrl: process.env.REACT_APP_API_URL,
+  authToken: localStorage.getItem("jwtoken"),
+});
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -72,62 +74,72 @@ export default function FontUpload({
           <Typography>Resolving Fonts...</Typography>
         </Box>
       ) : (
-          <Box mt={2}>
-            <List className={classes.root}>
-              {fontList && fontList.length ? (
-                fontList.map((font, index) => (
-                  <Box key={font.name}>
-                    <ListItem>
-                      <ListItemText
-                        primary={font.name}
-                        secondary={
-                          font.src ? (
-                            <>
-                              <DoneIcon style={{ paddingTop: 10 }} color={'green'} size="small" />
-                              <Typography variant="span" style={{ color: 'green' }}> Resolved</Typography>
-                            </>
-                          ) : (
-                              "Upload or Ignore to continue"
-                            )}
-                      />
-                      <ListItemSecondaryAction>
-                        <Button
-                          onClick={() => {
-                            setFontList(fontList.filter((a, i) => i !== index));
-                          }}
-                          color="secondary">
-                          Ignore
-                      </Button>
-                      </ListItemSecondaryAction>
-                    </ListItem>
-                    <FileUploader
-                      value={font.src}
-                      name={font.name}
-                      uploadDirectory={"fonts"}
-                      onChange={(value) => {
-                        setFontList((fl) => {
-                          fl[index]["src"] = value;
-                          return Array.from(fl);
-                        });
-                      }}
-                      accept={".ttf,.otf"}
-                      onError={null}
+        <Box mt={2}>
+          <List className={classes.root}>
+            {fontList && fontList.length ? (
+              fontList.map((font, index) => (
+                <Box key={font.name}>
+                  <ListItem>
+                    <ListItemText
+                      primary={font.name}
+                      secondary={
+                        font.src ? (
+                          <>
+                            <DoneIcon
+                              style={{ paddingTop: 10 }}
+                              color={"green"}
+                              size="small"
+                            />
+                            <Typography
+                              variant="span"
+                              style={{ color: "green" }}>
+                              {" "}
+                              Resolved
+                            </Typography>
+                          </>
+                        ) : (
+                          "Upload or Ignore to continue"
+                        )
+                      }
                     />
-                    {index !== fontList.length - 1 && <Divider />}
-                  </Box>
-                ))
-              ) : (
-                  <Box
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    minHeight={200}>
-                    <Typography>No Fonts Found!</Typography>
-                  </Box>
-                )}
-            </List>
-          </Box>
-        )}
+                    <ListItemSecondaryAction>
+                      <Button
+                        onClick={() => {
+                          setFontList(fontList.filter((a, i) => i !== index));
+                        }}
+                        color="secondary">
+                        Ignore
+                      </Button>
+                    </ListItemSecondaryAction>
+                  </ListItem>
+                  <FileUploader
+                    value={font.src}
+                    name={font.name}
+                    uploadDirectory={"fonts"}
+                    onChange={(value) => {
+                      setFontList((fl) => {
+                        fl[index]["src"] = value;
+                        return Array.from(fl);
+                      });
+                    }}
+                    accept={".ttf,.otf"}
+                    onError={null}
+                  />
+                  {index !== fontList.length - 1 && <Divider />}
+                </Box>
+              ))
+            ) : (
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                minHeight={200}>
+                <Typography>No Fonts Found!</Typography>
+              </Box>
+            )}
+          </List>
+        </Box>
+      )}
       <Box display="flex" justifyContent="space-between" mt={4}>
         <Button
           startIcon={<ArrowBack />}

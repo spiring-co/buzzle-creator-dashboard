@@ -1,10 +1,14 @@
-import React, { useState } from "react";
-import { StateProvider } from "contextStore/store";
-
-import FormBuilder from "components/formSchemaBuilderComponents/FormBuilder";
-import { Prompt, useHistory } from "react-router-dom";
-import { VideoTemplate } from "services/api";
 import { Alert } from "@material-ui/lab";
+import { apiClient } from "buzzle-sdk";
+import FormBuilder from "components/formSchemaBuilderComponents/FormBuilder";
+import { StateProvider } from "contextStore/store";
+import React, { useState } from "react";
+import { Prompt, useHistory } from "react-router-dom";
+
+const { VideoTemplate } = apiClient({
+  baseUrl: process.env.REACT_APP_API_URL,
+  authToken: localStorage.getItem("jwtoken"),
+});
 
 export default ({ location }) => {
   const [isBlocking, setIsBlocking] = useState(true);
@@ -15,7 +19,7 @@ export default ({ location }) => {
   const history = useHistory();
 
   const handleSubmit = async (data) => {
-    console.log(data)
+    console.log(data);
     try {
       isEdit
         ? await VideoTemplate.update(data.id, data)
@@ -29,7 +33,7 @@ export default ({ location }) => {
             status: {
               message: `Video Template ${
                 isEdit ? "Edited" : "Added"
-                } Successfully.`,
+              } Successfully.`,
             },
             err: false,
           },

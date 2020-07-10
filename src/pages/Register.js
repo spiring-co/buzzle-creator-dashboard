@@ -1,33 +1,36 @@
-import { useFormik } from "formik";
-import React, { useState } from "react";
-import { Link as RouterLink, useHistory } from "react-router-dom";
-import * as Yup from "yup";
-import { useTranslation } from "react-i18next";
-import { Alert } from "@material-ui/lab";
-import { createStyles, makeStyles } from "@material-ui/core/styles";
-import { Creator } from "services/api";
 import {
-  TextField,
+  Box,
   Button,
-  Typography,
-  FormHelperText,
+  Container,
   FormControl,
-  Paper,
-  InputLabel,
+  FormHelperText,
   IconButton,
   InputAdornment,
-  OutlinedInput,
-  Select,
+  InputLabel,
   Link,
-  Container,
   MenuItem,
-  Box,
+  OutlinedInput,
+  Paper,
+  Select,
+  TextField,
+  Typography,
 } from "@material-ui/core";
-
+import { createStyles, makeStyles } from "@material-ui/core/styles";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import { countryList } from "components/CountryList";
+import { Alert } from "@material-ui/lab";
+import { apiClient } from "buzzle-sdk";
 import Branding from "components/Branding";
+import { countryList } from "components/CountryList";
+import { useFormik } from "formik";
+import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Link as RouterLink, useHistory } from "react-router-dom";
+import * as Yup from "yup";
+const { Creator } = apiClient({
+  baseUrl: process.env.REACT_APP_API_URL,
+  authToken: localStorage.getItem("jwtoken"),
+});
 
 function renderCountryMenuItem(country) {
   return <MenuItem value={country}>{country}</MenuItem>;
@@ -153,7 +156,6 @@ export default () => {
             onBlur={handleBlur}
             value={values.password}
             name={"password"}
-            type="password"
             placeholder="Password"
             error={touched.password && !!errors.password}
             endAdornment={
@@ -180,7 +182,6 @@ export default () => {
             onBlur={handleBlur}
             value={values.confirmPassword}
             name={"confirmPassword"}
-            type="password"
             placeholder="Confirm Password"
             error={touched.confirmPassword && !!errors.confirmPassword}
             endAdornment={

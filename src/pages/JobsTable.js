@@ -1,15 +1,19 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Chip, Button, Container } from "@material-ui/core";
-import MaterialTable from "material-table";
-import { useRouteMatch, useHistory } from "react-router-dom";
+import { Button, Chip, Container } from "@material-ui/core";
+import { apiClient } from "buzzle-sdk";
 import ErrorHandler from "components/ErrorHandler";
-import { useAuth } from "services/auth";
-
-import { Job } from "services/api";
+import { useDarkMode } from "helpers/useDarkMode";
+import MaterialTable from "material-table";
+import React, { useEffect, useRef, useState } from "react";
 import ReactJson from "react-json-view";
+import { useHistory, useRouteMatch } from "react-router-dom";
+import { useAuth } from "services/auth";
 import io from "socket.io-client";
 import * as timeago from "timeago.js";
-import { useDarkMode } from "helpers/useDarkMode";
+
+const { Job } = apiClient({
+  baseUrl: process.env.REACT_APP_API_URL,
+  authToken: localStorage.getItem("jwtoken"),
+});
 
 export default () => {
   const [error, setError] = useState(null);
@@ -53,7 +57,6 @@ export default () => {
       unsubscribeFromProgress();
     };
   }, [jobIds]);
-
 
   return (
     <Container>
@@ -159,18 +162,27 @@ export default () => {
           })
             .then((response) => response.json())
             .then((result) => {
-              const { jobs = [], message = "", totalCount } = result;
+              const { jobs = [], message = "" } = result;
               if (message) {
                 setError(new Error(message));
               }
               setJobIds(jobs.map(({ id }) => id));
               return {
                 data: query.search
-                  ? jobs.filter(({ videoTemplate }) => videoTemplate.title.toLowerCase().startsWith(query.search.toLowerCase()))
+                  ? jobs.filter(({ videoTemplate }) =>
+                      videoTemplate.title
+                        .toLowerCase()
+                        .startsWith(query.search.toLowerCase())
+                    )
                   : jobs,
-                page: query.page, totalCount: query.search
-                  ? jobs.filter(({ videoTemplate }) => videoTemplate.title.toLowerCase().startsWith(query.search.toLowerCase())).length
-                  : jobs.length
+                page: query.page,
+                totalCount: query.search
+                  ? jobs.filter(({ videoTemplate }) =>
+                      videoTemplate.title
+                        .toLowerCase()
+                        .startsWith(query.search.toLowerCase())
+                    ).length
+                  : jobs.length,
               };
             })
             .catch((e) => {
