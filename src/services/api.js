@@ -24,8 +24,8 @@ export const Job = {
     actions = {},
     data = {},
     renderPrefs = {},
-    videoTemplateId,
-    versionId,
+    idVideoTemplate,
+    idVersion,
   }) => {
     const response = await fetch(`${baseUrl}/jobs`, {
       method: "POST",
@@ -33,8 +33,8 @@ export const Job = {
       body: JSON.stringify({
         actions,
         data,
-        videoTemplateId,
-        versionId,
+        idVideoTemplate,
+        idVersion,
         renderPrefs,
       }),
     });

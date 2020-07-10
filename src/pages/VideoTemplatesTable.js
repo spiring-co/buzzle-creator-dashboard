@@ -1,5 +1,13 @@
 import React, { useState, useRef } from "react";
-import { Link, Typography, Button, Container } from "@material-ui/core";
+import {
+  Link,
+  Typography,
+  Button,
+  Container,
+  Dialog,
+  DialogTitle,
+} from "@material-ui/core";
+
 import {
   Link as RouterLink,
   useRouteMatch,
@@ -9,6 +17,7 @@ import MaterialTable from "material-table";
 import { VideoTemplate, Job } from "services/api";
 import ErrorHandler from "components/ErrorHandler";
 import SnackAlert from "components/SnackAlert";
+import TestJobDialog from "components/TestJobDialog";
 import ReactJson from "react-json-view";
 import * as timeago from "timeago.js";
 import { useAuth } from "services/auth";
@@ -18,6 +27,8 @@ export default (props) => {
   const history = useHistory();
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState(null);
+  const [testJobTemplateId, setTestJobTemplateId] = useState(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const tableRef = useRef(null);
   const { user } = useAuth();
@@ -46,6 +57,7 @@ export default (props) => {
     tableRef.current && tableRef.current.onQueryChange();
   };
   let { status, err } = deleteStatus;
+
   return (
     <Container>
       {error && (
@@ -100,13 +112,13 @@ export default (props) => {
                 children={"Retry"}
               />
             ) : (
-                <Typography>
-                  <Link component={RouterLink} to={`${path}add`}>
-                    Click here
+              <Typography>
+                <Link component={RouterLink} to={`${path}add`}>
+                  Click here
                 </Link>{" "}
                 to create a Video Template😀
-                </Typography>
-              ),
+              </Typography>
+            ),
           },
         }}
         detailPanel={[
@@ -127,13 +139,9 @@ export default (props) => {
           {
             icon: "alarm-on",
             tooltip: "Render Test Job",
-            onClick: async (event, rowData) => {
-              try {
-                await Job.renderTests(rowData);
-                history.push("/home/jobs");
-              } catch (e) {
-                setError(e);
-              }
+            onClick: (e, { id }) => {
+              setTestJobTemplateId(id);
+              setIsDialogOpen(true);
             },
           },
           {
@@ -175,11 +183,15 @@ export default (props) => {
             .then((result) => {
               return {
                 data: query.search
-                  ? result.data.filter(({ title }) => title.toLowerCase().startsWith(query.search.toLowerCase()))
+                  ? result.data.filter(({ title }) =>
+                      title.toLowerCase().startsWith(query.search.toLowerCase())
+                    )
                   : result.data,
                 page: query.page,
                 totalCount: query.search
-                  ? result.data.filter(({ title }) => title.toLowerCase().startsWith(query.search.toLowerCase())).length
+                  ? result.data.filter(({ title }) =>
+                      title.toLowerCase().startsWith(query.search.toLowerCase())
+                    ).length
                   : result.count,
               };
             })
@@ -198,6 +210,11 @@ export default (props) => {
           minBodyHeight: 500,
           actionsColumnIndex: -1,
         }}
+      />
+      <TestJobDialog
+        open={isDialogOpen}
+        idVideoTemplate={testJobTemplateId}
+        onClose={() => setIsDialogOpen(false)}
       />
     </Container>
   );
