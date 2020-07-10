@@ -24,7 +24,7 @@ import {
 } from "@material-ui/core";
 import { Redirect } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
-
+import ImageEditRow from "components/ImageEditRow"
 import ErrorHandler from "components/ErrorHandler";
 import ActionsHandler from "components/ActionsHandler";
 import formatTime from "helpers/formatTime";
@@ -32,7 +32,6 @@ import { Job } from "services/api";
 import { useParams, useHistory } from "react-router-dom";
 import MaterialTable from "material-table";
 import * as timeago from "timeago.js";
-import FileUploader from "components/FileUploader";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -96,14 +95,13 @@ export default () => {
   const { id } = useParams();
   const history = useHistory();
   const [selectedOutputIndex, setSelectedOutputIndex] = useState(0);
-
   const [activeTabIndex, setActiveTabIndex] = useState(0);
 
   useEffect(() => {
     fetchJob();
   }, []);
 
-  useEffect(() => {}, [selectedOutputIndex]);
+  useEffect(() => { }, [selectedOutputIndex]);
 
   const fetchJob = async () => {
     setError(false);
@@ -177,6 +175,7 @@ export default () => {
     delete job.data[idArray[index]];
     setJob({ ...job, data: job.data });
   };
+
 
   if (redirect) return <Redirect to="/home/jobs" />;
   if (isLoading) {
@@ -275,16 +274,16 @@ export default () => {
               src={output.length && output[selectedOutputIndex].src}
             />
           ) : (
-            <>
-              <Box justifyContent="center" textAlign="center" height={320}>
-                <Typography style={{ padding: 100 }}>
-                  {" "}
+              <>
+                <Box justifyContent="center" textAlign="center" height={320}>
+                  <Typography style={{ padding: 100 }}>
+                    {" "}
                   No output yet.
                 </Typography>
-              </Box>
-              <Divider />
-            </>
-          )}
+                </Box>
+                <Divider />
+              </>
+            )}
           <AppBar position="static" color="transparent" elevation={0}>
             <Tabs
               value={activeTabIndex}
@@ -356,7 +355,7 @@ export default () => {
                     return (
                       <span>
                         {value.startsWith("http://") ||
-                        value.startsWith("https://")
+                          value.startsWith("https://")
                           ? "image"
                           : "string"}
                       </span>
@@ -367,26 +366,23 @@ export default () => {
                 {
                   title: "Value",
                   field: "value",
-                  editComponent: ({ rowData: { key }, onChange, value }) => {
-                    // if (value.startsWith('http://') || value.startsWith('https://')) {
-                    //   return <>
-                    //     <FileUploader
-                    //       value={value}
-                    //       onChange={onChange}
-                    //       uploadDirectory={'jobImages'}
-                    //       onError={null}
-                    //       name={key}
-                    //     />
-                    //   </>
-                    // }
-                    // else {
-                    return (
-                      <TextField
+                  editComponent: ({ rowData: { key }, onChange, value, }) => {
+
+                    if (value.startsWith('http://') || value.startsWith('https://')) {
+                      const version = job.videoTemplate.versions.find(
+                        (v) => v.id === job.idVersion
+                      );
+                      const { constraints: { height = 100, width = 100 } } = version.fields.find((f) => f.key === key);
+                      console.log(height, width)
+                      return <ImageEditRow value={value} onChange={onChange} height={height} width={width} />
+                    }
+                    else {
+                      return (<TextField
+                        fullWidth
                         value={value}
                         onChange={(e) => onChange(e?.target?.value)}
-                      />
-                    );
-                    // }
+                      />)
+                    }
                   },
                 },
               ]}

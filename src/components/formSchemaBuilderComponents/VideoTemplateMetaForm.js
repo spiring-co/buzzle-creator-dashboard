@@ -19,7 +19,7 @@ export default ({
   compositions,
   onSubmit,
 }) => {
-  const [tags, setTags] = useState(initialValues?.tags ?? []);
+  const [keywords, setKeywords] = useState(initialValues?.keywords ?? []);
   const {
     handleChange,
     handleBlur,
@@ -35,7 +35,7 @@ export default ({
     initialValues,
     validationSchema,
     onSubmit: (values) => {
-      onSubmit({ ...values, tags });
+      onSubmit({ ...values, keywords });
     },
   });
 
@@ -112,11 +112,11 @@ export default ({
       />
       <ArrayInput
         fullWidth
-        maxTags={5}
-        onChange={setTags}
-        placeholder="Enter tags"
-        label="Tags"
-        tags={tags}
+        maxKeywords={5}
+        onChange={setKeywords}
+        placeholder="Enter Keywords"
+        label="Keywords"
+        keywords={keywords}
       />
 
       <Button

@@ -9,7 +9,7 @@ export const REMOVE_FIELD = "REMOVE_FIELD";
 export const RESET_STATE = "RESET_STATE";
 export const LOAD_STATE = "LOAD_STATE";
 export const RESTORE_FIELDS = "RESTORE_FIELDS";
-
+export const SWAP_FIELDS = "SWAP_FIELDS";
 export default (state, action) => {
   // const { user } = useAuth();
 
@@ -23,6 +23,16 @@ export default (state, action) => {
       state.versions[action.payload.activeVersionIndex].fields = fields;
 
       return Object.assign({}, state);
+    //payload:action.payload.activeVersionIndex,action.payload.swapIndex,action.payload.targetSwapIndex
+    case SWAP_FIELDS:
+      [
+        state.versions[action.payload.activeVersionIndex].fields[action.payload.swapIndex],
+        state.versions[action.payload.activeVersionIndex].fields[action.payload.targetSwapIndex],
+      ] = [
+          state.versions[action.payload.activeVersionIndex].fields[action.payload.targetSwapIndex],
+          state.versions[action.payload.activeVersionIndex].fields[action.payload.swapIndex],
+        ];
+      return state;
 
     //payload: action.payload.value={key:action.payload.value}
     case EDIT_VIDEO_KEYS:
@@ -93,7 +103,7 @@ export default (state, action) => {
         src: "",
         versions: [],
         description: "",
-        tags: [],
+        keywords: [],
         staticAssets: [],
         fonts: [],
         thumbnail: "",

@@ -88,8 +88,7 @@ export default function FontUpload({
                             </>
                           ) : (
                               "Upload or Ignore to continue"
-                            )
-                        }
+                            )}
                       />
                       <ListItemSecondaryAction>
                         <Button
@@ -112,7 +111,7 @@ export default function FontUpload({
                         });
                       }}
                       accept={".ttf,.otf"}
-                      onError={console.log}
+                      onError={null}
                     />
                     {index !== fontList.length - 1 && <Divider />}
                   </Box>

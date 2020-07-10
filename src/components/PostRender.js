@@ -15,58 +15,58 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
     actionName === "compress"
       ? actionValue
       : {
-          module: "@nexrender/action-encode",
-          preset: null,
-          output: "encoded.mp4",
-        }
+        module: "@nexrender/action-encode",
+        preset: null,
+        output: "encoded.mp4",
+      }
   );
   const [watermark, setWaterMark] = useState(
     actionName === "addWaterMark"
       ? actionValue
       : {
-          module: "action-watermark",
-          input: "encoded.mp4",
-          watermark: null,
-          output: "watermarked.mp4",
-        }
+        module: "action-watermark",
+        input: "encoded.mp4",
+        watermark: null,
+        output: "watermarked.mp4",
+      }
   );
   const [upload, setUpload] = useState(
     actionName === "upload"
       ? actionValue
       : {
-          module: "@nexrender/action-upload",
-          input: "encoded.mp4",
-          provider: "s3",
-          params: {
-            region: "us-east-1",
-            bucket: "bulaava-assets",
-            key: `outputs/${Date.now()}.mp4`,
-            //TODO better acl policy
-            acl: "public-read",
-          },
-        }
+        module: "@nexrender/action-upload",
+        input: "encoded.mp4",
+        provider: "s3",
+        params: {
+          region: "us-east-1",
+          bucket: "bulaava-assets",
+          key: `outputs/${Date.now()}.mp4`,
+          //TODO better acl policy
+          acl: "public-read",
+        },
+      }
   );
   const [mergeVideos, setMergeVideos] = useState(
     actionName === "mergeVideos"
       ? actionValue
       : {
-          module: "action-mergeVideos",
-          input: "encoded.mp4",
-          f1: ".mp4",
-          input1: "",
-          f2: "",
-          output: "",
-        }
+        module: "action-mergeVideos",
+        input: "encoded.mp4",
+        f1: ".mp4",
+        input1: "",
+        f2: "",
+        output: "",
+      }
   );
   const [addAudio, setAddAudio] = useState(
     actionName === "action-addAudio"
       ? actionValue
       : {
-          module: "action-addAudio",
-          inputV: "encoded.mp4",
-          inputA: "",
-          output: "",
-        }
+        module: "action-addAudio",
+        inputV: "encoded.mp4",
+        inputA: "",
+        output: "",
+      }
   );
 
   const [fileError, setFileError] = useState(null);
@@ -242,7 +242,7 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
             handleEdit({ mergeVideos: { ...mergeVideos, input1: url, f2 } });
           }}
           accept={"video/*"}
-          fieldName={"input1"}
+          name={"input1"}
           label="Video File To be Merged"
           onTouched={() => setFileError(null)}
           error={fileError}
@@ -290,7 +290,7 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
             handleEdit({ addAudio: { ...addAudio, inputA: url } });
           }}
           accept={"audio/*"}
-          fieldName={"inputA"}
+          name={"inputA"}
           label="Audio File"
           onTouched={() => setFileError(null)}
           error={fileError}

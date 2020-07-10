@@ -10,6 +10,7 @@ import {
   REMOVE_VERSION,
   LOAD_STATE,
   RESET_STATE,
+  SWAP_FIELDS,
   RESTORE_FIELDS
 } from "./reducer";
 import { VideoTemplateContext } from "./store";
@@ -71,7 +72,20 @@ export default function useActions() {
         },
       });
     },
-
+    swapFields: function (
+      activeVersionIndex,
+      swapIndex,
+      targetSwapIndex
+    ) {
+      dispatch({
+        type: SWAP_FIELDS,
+        payload: {
+          activeVersionIndex,
+          swapIndex,
+          targetSwapIndex,
+        }
+      })
+    },
     removeField: function (activeVersionIndex, fieldIndex) {
       dispatch({
         type: REMOVE_FIELD,

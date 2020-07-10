@@ -6,6 +6,22 @@ import { getLayersFromComposition } from "services/helper";
 import AddFields from "./AddFieldDialog";
 import { Button, Paper, Typography, Tooltip } from "@material-ui/core";
 import { Wallpaper, TextFields, Add } from "@material-ui/icons";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+
+
+const getItemStyle = (isDragging, draggableStyle, style) => ({
+  // styles we need to apply on draggables
+  ...draggableStyle,
+  ...(isDragging && {
+    background: "rgb(235,235,235)",
+  }),
+  ...style
+});
+
+const getListStyle = (isDraggingOver) => ({
+  background: !isDraggingOver ? 'white' : '#e8ffcf',
+});
+
 export default ({ compositions, editVersion, activeVersionIndex }) => {
   const [videoObj] = useContext(VideoTemplateContext);
 
@@ -14,6 +30,7 @@ export default ({ compositions, editVersion, activeVersionIndex }) => {
     addField,
     removeField,
     restoreFieldsFromPreviousVersion,
+    swapFields
   } = useActions();
   const [currentCompositionFields, setCurrentCompositionFields] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
@@ -61,95 +78,110 @@ export default ({ compositions, editVersion, activeVersionIndex }) => {
     updateField(activeVersionIndex, editIndex, field);
     setEditIndex(null);
   };
-
+  const onDragEnd = (result) => {
+    console.log(result)
+    // dropped outside the list
+    if (!result.destination) {
+      return;
+    }
+    swapFields(activeVersionIndex, result.source.index, result.destination.index)
+  };
   const renderFieldPreview = (item, index) => {
     return (
-      <FieldPreviewContainer
-        _editField={() => _editField(index)}
-        _deleteField={() => _deleteField(item, index)}
-        index={index}
-        children={
-          <div
-            style={{ display: "flex", alignItems: "center", flexWrap: "wrap" }}>
-            {item?.rendererData?.type === "data" ? (
-              <>
-                <TextFields
-                  style={{
-                    fontSize: 40,
-                    margin: 10,
-                    padding: 5,
-                    border: "1px solid grey",
-                  }}
-                />
-                {item?.constraints?.maxLength && (
-                  <Typography>
-                    <strong>Max Length:</strong> {item?.constraints?.maxLength},
-                    &nbsp;{" "}
-                  </Typography>
-                )}
-                <Typography>
-                  {" "}
-                  <strong>Label:</strong> {item?.label}, &nbsp;{" "}
-                </Typography>
-                <Typography>
-                  {" "}
-                  <strong>Layer name:</strong> {item?.rendererData?.layerName}
-                  ,&nbsp;
-                </Typography>
-                <Typography>
-                  {" "}
-                  <strong>Property:</strong> {item?.rendererData?.property}
-                  ,&nbsp;
-                </Typography>
-                <Typography>
-                  {" "}
-                  <strong>Required:</strong>{" "}
-                  {item?.constraints?.required ? "true" : "false"}
-                </Typography>
-              </>
-            ) : (
-              <>
-                <Wallpaper
-                  style={{
-                    fontSize: 40,
-                    margin: 10,
-                    padding: 5,
-                    border: "1px solid grey",
-                  }}
-                />
-                {item?.constraints?.width && (
-                  <Typography>
-                    <strong>Width:</strong> {item?.constraints?.width}, &nbsp;{" "}
-                  </Typography>
-                )}
-                {item?.constraints?.height && (
-                  <Typography>
-                    {" "}
-                    <strong>Height:</strong> {item?.constraints?.height}, &nbsp;{" "}
-                  </Typography>
-                )}
-                <Typography>
-                  {" "}
-                  <strong>Layer name:</strong> {item?.rendererData?.layerName},
-                  &nbsp;{" "}
-                </Typography>
-                {item?.rendererData?.property && (
-                  <Typography>
-                    {" "}
-                    <strong>Property:</strong> {item?.rendererData?.property}
-                    ,&nbsp;
-                  </Typography>
-                )}
-                <Typography>
-                  {" "}
-                  <strong>Required:</strong>{" "}
-                  {item?.constraints?.required ? "true" : "false"}
-                </Typography>
-              </>
+      <Draggable key={item.key} draggableId={item.key} index={index}>
+        {(provided, snapshot) => (
+          <FieldPreviewContainer
+            provided={provided}
+
+            style={getItemStyle(
+              snapshot.isDragging,
+              provided.draggableProps.style, styles.fieldPreview
             )}
-          </div>
-        }
-      />
+            _editField={() => _editField(index)}
+            _deleteField={() => _deleteField(item, index)}
+            index={index}
+            children={
+              <div
+                style={{ display: "flex", alignItems: "center", flexWrap: "wrap" }}>
+                {item?.rendererData?.type === "data" ? (
+                  <>
+                    <TextFields
+                      style={{
+                        fontSize: 40,
+                        margin: 10,
+                        padding: 5,
+                        border: "1px solid grey",
+                      }}
+                    />
+                    {item?.constraints?.maxLength && (
+                      <Typography>
+                        <strong>Max Length:</strong> {item?.constraints?.maxLength},
+                    &nbsp;{" "}
+                      </Typography>
+                    )}
+                    <Typography>
+                      {" "}
+                      <strong>Label:</strong> {item?.label}, &nbsp;{" "}
+                    </Typography>
+                    <Typography>
+                      {" "}
+                      <strong>Layer name:</strong> {item?.rendererData?.layerName}
+                  ,&nbsp;
+                </Typography>
+                    <Typography>
+                      {" "}
+                      <strong>Property:</strong> {item?.rendererData?.property}
+                  ,&nbsp;
+                </Typography>
+                    <Typography>
+                      {" "}
+                      <strong>Required:</strong>{" "}
+                      {item?.constraints?.required ? "true" : "false"}
+                    </Typography>
+                  </>
+                ) : (
+                    <>
+                      <Wallpaper
+                        style={{
+                          fontSize: 40,
+                          margin: 10,
+                          padding: 5,
+                          border: "1px solid grey",
+                        }}
+                      />
+                      {item?.constraints?.width && (
+                        <Typography>
+                          <strong>Width:</strong> {item?.constraints?.width}, &nbsp;{" "}
+                        </Typography>
+                      )}
+                      {item?.constraints?.height && (
+                        <Typography>
+                          {" "}
+                          <strong>Height:</strong> {item?.constraints?.height}, &nbsp;{" "}
+                        </Typography>
+                      )}
+                      <Typography>
+                        {" "}
+                        <strong>Layer name:</strong> {item?.rendererData?.layerName},
+                  &nbsp;{" "}
+                      </Typography>
+                      {item?.rendererData?.property && (
+                        <Typography>
+                          {" "}
+                          <strong>Property:</strong> {item?.rendererData?.property}
+                    ,&nbsp;
+                        </Typography>
+                      )}
+                      <Typography>
+                        {" "}
+                        <strong>Required:</strong>{" "}
+                        {item?.constraints?.required ? "true" : "false"}
+                      </Typography>
+                    </>
+                  )}
+              </div>
+            }
+          />)}</Draggable>
     );
   };
 
@@ -169,7 +201,14 @@ export default ({ compositions, editVersion, activeVersionIndex }) => {
           children="Add Field"
         />
       </Tooltip>
-      {videoObj.versions[activeVersionIndex]?.fields?.map(renderFieldPreview)}
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Droppable droppableId="droppable" >
+          {(provided, snapshot) => (
+            <div style={getListStyle(snapshot.isDraggingOver)} ref={provided.innerRef}
+            >{videoObj.versions[activeVersionIndex]?.fields?.map(renderFieldPreview)}</div>
+          )}
+        </Droppable>
+      </DragDropContext>
 
       {isDialogVisible && (
         <AddFields
@@ -231,13 +270,18 @@ export default ({ compositions, editVersion, activeVersionIndex }) => {
 const FieldPreviewContainer = ({
   _editField,
   _deleteField,
-
-  index,
-  children,
+  ref,
+  index, provided,
+  children, style,
   ...props
 }) => {
   return (
-    <Paper style={styles.fieldPreview} {...props}>
+    <Paper
+      ref={provided.innerRef}
+      {...provided.draggableProps}
+      {...provided.dragHandleProps}
+      style={style}
+      {...props}>
       {children}
       <Button
         size="small"
@@ -256,6 +300,7 @@ const FieldPreviewContainer = ({
         Delete
       </Button>
     </Paper>
+
   );
 };
 
