@@ -1,5 +1,15 @@
-import React, { useState, useRef } from "react";
-import { Link, Typography, Button, Container } from "@material-ui/core";
+
+import React, { useState, useRef, useEffect } from "react";
+import { Link, Typography, Button } from "@material-ui/core";
+
+import { makeStyles } from "@material-ui/core/styles";
+import GridList from "@material-ui/core/GridList";
+import GridListTile from "@material-ui/core/GridListTile";
+import GridListTileBar from "@material-ui/core/GridListTileBar";
+import ListSubheader from "@material-ui/core/ListSubheader";
+import IconButton from "@material-ui/core/IconButton";
+import InfoIcon from "@material-ui/icons/Info";
+
 import {
   Link as RouterLink,
   useRouteMatch,
@@ -15,9 +25,11 @@ import { useAuth } from "services/auth";
 
 export default (props) => {
   let { url, path } = useRouteMatch();
+  var PROJECT_URL = "https://wozlstmqvqfktdb.form.io";
   const history = useHistory();
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState(null);
+  const [data, setData] = useState([]);
 
   const tableRef = useRef(null);
   const { user } = useAuth();
@@ -36,10 +48,36 @@ export default (props) => {
       setIsDeleting(false);
     }
   };
+  const useStyles = makeStyles((theme) => ({
+    root: {
+      display: "flex",
+      justifyContent: "space-around",
+      overflow: "hidden",
+      backgroundColor: theme.palette.background.paper,
+    },
+    gridList: {
+      width: 850,
+    },
+    icon: {
+      color: "rgba(255, 255, 255, 0.54)",
+    },
+  }));
+  const classes = useStyles();
 
   const [deleteStatus, setDeleteStatus] = useState(
     props?.location?.state?.statusObj ?? { status: false, err: false }
   );
+  useEffect(() => {
+    const data = async () => {
+      const response = await fetch(`${uri}?page=${1}&size=${10}`);
+      if (response.ok) {
+        const result = await response.json();
+        console.log(result);
+        setData(result.data);
+      }
+    };
+    data();
+  }, []);
 
   const handleRetry = () => {
     setError(false);
@@ -61,11 +99,39 @@ export default (props) => {
         message={
           status
             ? status?.message ?? "Deleted Sucessfully"
-            : err?.message ?? "Oop's, something went wrong, action failed !"
+            : err?.message ?? "Oops, something went wrong, action failed !"
         }
         onClose={() => setDeleteStatus({ status: false, err: false })}
       />
-      <MaterialTable
+      <div className={classes.root}>
+        <GridList cellHeight={250} className={classes.gridList}>
+          <GridListTile
+            key="Subheader"
+            cols={2}
+            style={{ height: "auto" }}></GridListTile>
+          {data.map((tile) => (
+            <GridListTile key={tile.thumbnail}>
+              <img src={tile.thumbnail} alt={tile.title} />
+              <GridListTileBar
+                title={tile.title}
+                subtitle={<span>by: {tile.idCreator}</span>}
+                actionIcon={
+                  <IconButton
+                    onClick={() => {
+                      history.push(`${path}${tile.id}`);
+                    }}
+                    aria-label={`info about ${tile.title}`}
+                    className={classes.icon}>
+                    <InfoIcon />
+                  </IconButton>
+                }
+              />
+            </GridListTile>
+          ))}
+        </GridList>
+      </div>
+
+      {/* <MaterialTable
         tableRef={tableRef}
         title="Your Video Templates"
         onRowClick={(e, { id }) => {
@@ -100,13 +166,13 @@ export default (props) => {
                 children={"Retry"}
               />
             ) : (
-                <Typography>
-                  <Link component={RouterLink} to={`${path}add`}>
-                    Click here
+              <Typography>
+                <Link component={RouterLink} to={`${path}add`}>
+                  Click here
                 </Link>{" "}
                 to create a Video Template😀
-                </Typography>
-              ),
+              </Typography>
+            ),
           },
         }}
         detailPanel={[
@@ -198,7 +264,9 @@ export default (props) => {
           minBodyHeight: 500,
           actionsColumnIndex: -1,
         }}
-      />
-    </Container>
+
+      /> */}
+    </>
+
   );
 };
