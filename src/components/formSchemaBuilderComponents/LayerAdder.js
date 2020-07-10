@@ -10,14 +10,10 @@ export default ({
   compositions,
   onSubmit,
   onBack,
-  onCancel
+  onCancel,
 }) => {
   const [videoObj] = useContext(VideoTemplateContext);
-
-  const [usedFields, setUsedFields] = useState([]);
-  useEffect(() => {
-    setUsedFields(videoObj.versions[activeVersionIndex]?.editableLayers?.map(layer => layer.layerName) ?? [])
-  }, [isEdit])
+  useEffect(() => {}, [isEdit]);
   return (
     <form
       onSubmit={(e) => {
@@ -26,15 +22,13 @@ export default ({
       <LayerBuilder
         compositions={compositions}
         editVersion={editVersion}
-        usedFields={usedFields}
-        setUsedFields={setUsedFields}
         activeVersionIndex={activeVersionIndex}
       />
       <div>
         <Button
           onClick={onBack}
           size="small"
-          style={{ width: 'fit-content', marginTop: 10 }}
+          style={{ width: "fit-content", marginTop: 10 }}
           children="back"
         />
         <Button

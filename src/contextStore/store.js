@@ -15,7 +15,6 @@ const StateProvider = ({ children }) => {
     staticAssets: [],
     fonts: [],
     thumbnail: "",
-    isDeleted: false,
   });
 
   return (

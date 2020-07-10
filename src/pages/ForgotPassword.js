@@ -102,6 +102,7 @@ export default () => {
                 {error && <Alert severity="error" children={error.message} />}
                 {otpEmailSent && <Alert severity="info">{t("checkEmail")}</Alert>}
                 <TextField
+                  required
                   fullWidth
                   margin={"dense"}
                   variant={"outlined"}

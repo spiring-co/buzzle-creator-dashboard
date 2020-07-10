@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { Link, Typography, Button } from "@material-ui/core";
 
@@ -8,6 +9,7 @@ import GridListTileBar from "@material-ui/core/GridListTileBar";
 import ListSubheader from "@material-ui/core/ListSubheader";
 import IconButton from "@material-ui/core/IconButton";
 import InfoIcon from "@material-ui/icons/Info";
+
 import {
   Link as RouterLink,
   useRouteMatch,
@@ -83,7 +85,7 @@ export default (props) => {
   };
   let { status, err } = deleteStatus;
   return (
-    <>
+    <Container>
       {error && (
         <ErrorHandler
           message={error.message}
@@ -132,16 +134,13 @@ export default (props) => {
       {/* <MaterialTable
         tableRef={tableRef}
         title="Your Video Templates"
+        onRowClick={(e, { id }) => {
+          history.push(`${path}${id}`);
+        }}
         columns={[
           {
             title: "Title",
-            render: ({ id, title }) => (
-              <Link
-                component={RouterLink}
-                to={`${path}${id}`}
-                children={title}
-              />
-            ),
+            field: "title",
           },
           {
             title: "Versions",
@@ -164,7 +163,7 @@ export default (props) => {
                 onClick={handleRetry}
                 color="secondary"
                 variant="outlined"
-                children={"retry?"}
+                children={"Retry"}
               />
             ) : (
               <Typography>
@@ -194,9 +193,13 @@ export default (props) => {
           {
             icon: "alarm-on",
             tooltip: "Render Test Job",
-            onClick: (event, rowData) => {
-              Job.renderTests(rowData);
-              history.push("/home/jobs");
+            onClick: async (event, rowData) => {
+              try {
+                await Job.renderTests(rowData);
+                history.push("/home/jobs");
+              } catch (e) {
+                setError(e);
+              }
             },
           },
           {
@@ -237,9 +240,13 @@ export default (props) => {
             .then((response) => response.json())
             .then((result) => {
               return {
-                data: result.data.filter((item) => !item.isDeleted),
+                data: query.search
+                  ? result.data.filter(({ title }) => title.toLowerCase().startsWith(query.search.toLowerCase()))
+                  : result.data,
                 page: query.page,
-                totalCount: result.count,
+                totalCount: query.search
+                  ? result.data.filter(({ title }) => title.toLowerCase().startsWith(query.search.toLowerCase())).length
+                  : result.count,
               };
             })
             .catch((err) => {
@@ -257,7 +264,9 @@ export default (props) => {
           minBodyHeight: 500,
           actionsColumnIndex: -1,
         }}
+
       /> */}
     </>
+
   );
 };

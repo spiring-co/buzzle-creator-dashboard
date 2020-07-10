@@ -111,7 +111,6 @@ export default () => {
             variant="h4"
             style={{
               textAlign: "center",
-              color: "#747d8c",
               marginBottom: 16,
               fontWeight: 800,
               fontSize: "2.5rem",
@@ -129,6 +128,7 @@ export default () => {
           {message && <Alert severity="info" children={message} />}
 
           <TextField
+            required
             name={"email"}
             margin="dense"
             value={values.email}
@@ -137,7 +137,6 @@ export default () => {
             onChange={handleChange}
             error={touched.email && !!errors.email}
             fullWidth
-
             variant={"outlined"}
             placeholder="Enter email"
             helperText={
@@ -146,9 +145,9 @@ export default () => {
                 : t("wontShareEmail")
             }
           />
-          <FormControl fullWidth
-            margin="dense"
-            variant="outlined">
+          <FormControl
+            required
+            fullWidth margin="dense" variant="outlined">
             <InputLabel htmlFor="outlined-adornment-password">
               Password
             </InputLabel>
@@ -180,11 +179,7 @@ export default () => {
           </FormControl>
 
           <Box textAlign="end">
-            <Button
-              color={"primary"}
-              size={"small"}
-              component={RouterLink}
-              to="/forgotPassword">
+            <Button size={"small"} component={RouterLink} to="/forgotPassword">
               Forgot Password
             </Button>
           </Box>

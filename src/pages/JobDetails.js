@@ -1,33 +1,37 @@
 import React, { useEffect, useState } from "react";
-import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import UpdateIcon from "@material-ui/icons/Update";
-import PublishIcon from '@material-ui/icons/Publish';
+import PublishIcon from "@material-ui/icons/Publish";
+import DeleteIcon from "@material-ui/icons/Delete";
+import DownloadIcon from "@material-ui/icons/GetApp";
+
 import {
   Typography,
   Paper,
-  LinearProgress,
   Button,
-  withStyles,
   Grid,
   Box,
-  Link,
+  TextField,
   AppBar,
   CircularProgress,
-  FormControlLabel,
-  Checkbox,
   Tabs,
   Tab,
+  Divider,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+  IconButton,
 } from "@material-ui/core";
-import { useHistory, Redirect } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
-
+import ImageEditRow from "components/ImageEditRow"
 import ErrorHandler from "components/ErrorHandler";
-import AssetDialog from "components/AssetDialog";
 import ActionsHandler from "components/ActionsHandler";
 import formatTime from "helpers/formatTime";
 import { Job } from "services/api";
-import { useParams } from "react-router-dom";
-import MaterialTable, { MTableToolbar } from "material-table";
+import { useParams, useHistory } from "react-router-dom";
+import MaterialTable from "material-table";
+import * as timeago from "timeago.js";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -54,21 +58,12 @@ function a11yProps(index) {
   };
 }
 
-const CustomProgress = withStyles({
-  colorPrimary: {
-    backgroundColor: "#b2dfdb",
-  },
-  barColorPrimary: {
-    backgroundColor: "#00695c",
-  },
-})(LinearProgress);
-
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
   },
-  button:{
-    marginRight:20
+  button: {
+    marginRight: 20,
   },
   container: {
     padding: theme.spacing(0),
@@ -97,53 +92,16 @@ export default () => {
   const [error, setError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [redirect, setRedirect] = useState(null);
-  const [isStaticVisible, setIsStaticVisible] = useState(false);
   const { id } = useParams();
-
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editIndex, setEditIndex] = useState(null);
+  const history = useHistory();
+  const [selectedOutputIndex, setSelectedOutputIndex] = useState(0);
   const [activeTabIndex, setActiveTabIndex] = useState(0);
 
   useEffect(() => {
     fetchJob();
   }, []);
-  const handleAssetSubmit = (a) => {
-    if (editIndex !== null) {
-      assets[editIndex] = a;
-    } else {
-      const i = assets.findIndex(
-        (j) => j.layerName == a.layerName && j.property === a.property
-      );
 
-      if (i === -1) {
-        assets.push(a);
-      } else {
-        if (
-          window.confirm(
-            `This will replace the existing asset on layer ${a.layerName}'s property ${a.property} with value: ${a.value}`
-          )
-        ) {
-          assets[i] = a;
-        }
-      }
-    }
-    setEditIndex(null);
-    setJob(job);
-    setIsDialogOpen(false);
-  };
-
-  const handleDeleteAsset = (_, { layerName, property, src }) => {
-    setJob({
-      ...job,
-      assets: assets.filter(
-        (a) =>
-          !(
-            a.layerName == layerName &&
-            (a.property == property || a.src === src)
-          )
-      ),
-    });
-  };
+  useEffect(() => { }, [selectedOutputIndex]);
 
   const fetchJob = async () => {
     setError(false);
@@ -156,8 +114,22 @@ export default () => {
 
   const handleUpdateJob = async () => {
     try {
+      const { data, actions, id } = job;
       setIsLoading(true);
-      await Job.update(id, job);
+      await Job.update(id, { data, actions });
+      setIsLoading(false);
+      setRedirect("/home/jobs");
+    } catch (err) {
+      setIsLoading(false);
+      setError(err);
+    }
+  };
+
+  const handleDeleteJob = async () => {
+    try {
+      const { id } = job;
+      setIsLoading(true);
+      await Job.delete(id);
       setIsLoading(false);
       setRedirect("/home/jobs");
     } catch (err) {
@@ -169,18 +141,14 @@ export default () => {
   const {
     output,
     state,
-    assets,
     actions,
-    videoTemplate: vt,
-    idVersion,
+    data,
     renderTime,
     queueTime,
     dateCreated,
     dateFinished,
     dateStarted,
   } = job;
-  const videoTemplate =
-    vt?.versions[vt?.versions.map(({ id }) => id).indexOf(idVersion)];
 
   const content = {
     "Job ID": id,
@@ -194,17 +162,31 @@ export default () => {
       state === "finished" ? new Date(dateFinished).toLocaleString() : "---",
   };
 
+  const handleUpdateAsset = async (index, key, value) => {
+    console.log(key, value);
+    const idArray = Object.keys(data);
+    job.data[idArray[index]] = value;
+    console.log(job);
+    setJob({ ...job, data: job.data });
+  };
+
+  const handleAssetDelete = async (index) => {
+    const idArray = Object.keys(data);
+    delete job.data[idArray[index]];
+    setJob({ ...job, data: job.data });
+  };
+
+
   if (redirect) return <Redirect to="/home/jobs" />;
   if (isLoading) {
     return (
       <Paper className={classes.loading}>
         <CircularProgress />
-        <Typography className={classes.loadingText}>
-          loading please wait...
-        </Typography>
+        <Typography className={classes.loadingText}>Loading...</Typography>
       </Paper>
     );
   }
+
   return (
     <>
       {error && (
@@ -217,42 +199,91 @@ export default () => {
         />
       )}
       <div className={classes.root}>
-        <Box p={1} justifyItems="stretch" alignItems="right">
-              <Button
-                className={classes.button}
-                disabled={isLoading}
-                color="primary"
-                variant="contained"
-                onClick={handleUpdateJob}
-                children="Update Job"
-                startIcon={<PublishIcon />}
-              />
-              <Button
-                disabled={isLoading}
-                color="default"
-                variant="contained"
-                onClick={null}
-                children="Restart Job"
-                startIcon={<UpdateIcon />}
-              />
-        </Box>
-        {state === "finished" ? (
-          <video
-            poster={job.videoTemplate.thumbnail}
-            style={{ height: 320, width: "100%" }}
-            controls
-            src={output}
-          />
-        ) : (
-          <Box
-            style={{ background: "gainsboro" }}
-            justifyContent="center"
-            textAlign="center"
-            height={320}>
-            <p style={{ padding: 100 }}> No output yet.</p>
+        <Box display="flex">
+          <Box p={1} justifyItems="stretch" alignItems="right" flex={1}>
+            <Button
+              className={classes.button}
+              disabled={isLoading}
+              color="primary"
+              variant="contained"
+              onClick={handleUpdateJob}
+              children="Update Job"
+              startIcon={<PublishIcon />}
+            />
+            <Button
+              disabled={isLoading}
+              color="white"
+              variant="contained"
+              className={classes.button}
+              onClick={async () => {
+                try {
+                  await Job.update(id, { data });
+                  history.push("/home/jobs");
+                } catch (err) {
+                  setError(err);
+                }
+              }}
+              children="Restart Job"
+              startIcon={<UpdateIcon />}
+            />
           </Box>
-        )}
+
+          <Box>
+            <Select
+              margin="dense"
+              variant="outlined"
+              className={classes.button}
+              value={selectedOutputIndex}
+              autoWidth
+              onChange={(e) => {
+                console.log(e.target.value);
+                setSelectedOutputIndex(e.target.value);
+              }}>
+              {output.map((o, i) => (
+                <MenuItem key={i} value={i}>
+                  {o.label}
+                  <Typography
+                    component="span"
+                    variant="body2"
+                    color="textSecondary">
+                    {" " + timeago.format(new Date(o.dateCreated))}
+                  </Typography>
+                </MenuItem>
+              ))}
+            </Select>
+            <IconButton
+              onClick={handleDeleteJob}
+              aria-label="delete"
+              className={classes.margin}>
+              <DeleteIcon fontSize="inherit" />
+            </IconButton>
+            <IconButton
+              aria-label="download"
+              className={classes.margin}
+              href={output.length && output[selectedOutputIndex].src}>
+              <DownloadIcon fontSize="inherit" />
+            </IconButton>
+          </Box>
+        </Box>
         <Paper>
+          {state === "finished" ? (
+            <video
+              poster={job.videoTemplate.thumbnail}
+              style={{ height: 320, width: "100%" }}
+              controls
+              src={output.length && output[selectedOutputIndex].src}
+            />
+          ) : (
+              <>
+                <Box justifyContent="center" textAlign="center" height={320}>
+                  <Typography style={{ padding: 100 }}>
+                    {" "}
+                  No output yet.
+                </Typography>
+                </Box>
+                <Divider />
+              </>
+            )}
           <AppBar position="static" color="transparent" elevation={0}>
             <Tabs
               value={activeTabIndex}
@@ -262,8 +293,9 @@ export default () => {
               onChange={(_, i) => setActiveTabIndex(i)}
               aria-label="simple tabs example">
               <Tab label="Output" {...a11yProps(0)} />
-              <Tab label="Assets" {...a11yProps(1)} />
+              <Tab label="Data" {...a11yProps(1)} />
               <Tab label="Actions" {...a11yProps(2)} />
+              <Tab label="Render Prefs" {...a11yProps(3)} />
             </Tabs>
           </AppBar>
 
@@ -282,14 +314,6 @@ export default () => {
                     </Grid>
                   </Grid>
                 ))}
-                <p></p>
-                <Button
-                  variant="contained"
-                  color ="primary"
-                  startIcon={<CloudDownloadIcon />}
-                  href={output}>
-                  Download Output
-                </Button>
               </Box>
             </Grid>
           </TabPanel>
@@ -301,79 +325,72 @@ export default () => {
                 headerStyle: { fontWeight: 700 },
                 actionsColumnIndex: -1,
               }}
-              actions={[
-                {
-                  icon: "add",
-                  tooltip: "Add Asset",
-                  isFreeAction: true,
-                  onClick: () => {
-                    setEditIndex(null);
-                    setIsDialogOpen(true);
-                  },
+              editable={{
+                onRowUpdate: async (newData, oldData) => {
+                  return await handleUpdateAsset(
+                    oldData.tableData.id,
+                    newData.key,
+                    newData.value
+                  );
                 },
-                {
-                  icon: "edit",
-                  tooltip: "Edit Asset",
-                  onClick: (e, rowData) => {
-                    setEditIndex(
-                      isStaticVisible
-                        ? rowData.tableData.id
-                        : rowData.tableData.id +
-                            assets?.filter(({ type }) => type === "static")
-                              .length
-                    );
-                    setIsDialogOpen(true);
-                  },
+                onRowDelete: async (oldData) => {
+                  return await handleAssetDelete(oldData.tableData.id);
                 },
-                {
-                  icon: "delete",
-                  tooltip: "Delete Asset",
-                  onClick: handleDeleteAsset,
-                },
-              ]}
-              columns={[
-                { title: "Layer Name", field: "layerName" },
-                { title: "Type", field: "type" },
-                {
-                  title: "Property",
-                  render: ({ property }) => property || "Source",
-                },
-                {
-                  title: "Value/Source",
-                  field: "value",
-                  render: ({ value, src }) =>
-                    src ? (
-                      <Link src={src} target="_blank" children={src} />
-                    ) : (
-                      value
-                    ),
-                },
-              ]}
-              data={
-                isStaticVisible
-                  ? assets
-                  : assets?.filter(({ type }) => type !== "static")
-              }
-              components={{
-                Toolbar: (props) => (
-                  <div>
-                    <MTableToolbar {...props} />
-                    <FormControlLabel
-                      style={{ paddingLeft: 20 }}
-                      control={
-                        <Checkbox
-                          checked={isStaticVisible}
-                          onChange={(e) => setIsStaticVisible(e.target.checked)}
-                          name="staticAsset"
-                          color="primary"
-                        />
-                      }
-                      label="Show Static Assets"
-                    />
-                  </div>
-                ),
               }}
-              title="Assets"
+              columns={[
+                {
+                  title: "Label",
+                  render: ({ key }) => {
+                    const version = job.videoTemplate.versions.find(
+                      (v) => v.id === job.idVersion
+                    );
+                    const field = version.fields.find((f) => f.key === key);
+                    return <span>{field.label}</span>;
+                  },
+                  editable: "never",
+                },
+                {
+                  title: "Type",
+                  render: ({ value }) => {
+                    return (
+                      <span>
+                        {value.startsWith("http://") ||
+                          value.startsWith("https://")
+                          ? "image"
+                          : "string"}
+                      </span>
+                    );
+                  },
+                  editable: "never",
+                },
+                {
+                  title: "Value",
+                  field: "value",
+                  editComponent: ({ rowData: { key }, onChange, value, }) => {
+
+                    if (value.startsWith('http://') || value.startsWith('https://')) {
+                      const version = job.videoTemplate.versions.find(
+                        (v) => v.id === job.idVersion
+                      );
+                      const { constraints: { height = 100, width = 100 } } = version.fields.find((f) => f.key === key);
+                      console.log(height, width)
+                      return <ImageEditRow value={value} onChange={onChange} height={height} width={width} />
+                    }
+                    else {
+                      return (<TextField
+                        fullWidth
+                        value={value}
+                        onChange={(e) => onChange(e?.target?.value)}
+                      />)
+                    }
+                  },
+                },
+              ]}
+              data={Object.keys(data || {}).map((key) => ({
+                key,
+                value: data[key],
+              }))}
+              title="Data"
             />
           </TabPanel>
           <TabPanel value={activeTabIndex} index={2}>
@@ -402,27 +419,71 @@ export default () => {
               }
             />
           </TabPanel>
+          <TabPanel value={activeTabIndex} index={3}>
+            <Box display="flex" flexDirection="column" px={8}>
+              <FormControl>
+                <InputLabel htmlFor="settingsTemplate">
+                  Settings Template
+                </InputLabel>
+                <Select
+                  value={job.renderPrefs.settingsTemplate || ""}
+                  // onChange={v => setJob({})}
+                  inputProps={{
+                    name: "settingsTemplate",
+                    id: "settingsTemplate",
+                  }}>
+                  <MenuItem aria-label="None" value="" />
+                  <MenuItem value={"half"}>Half</MenuItem>
+                  <MenuItem value={"full"}>Full</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl>
+                <InputLabel htmlFor="outputModule">
+                  Settings Template
+                </InputLabel>
+                <Select
+                  value={job.renderPrefs.outputModule || ""}
+                  // onChange={v => setJob({})}
+                  inputProps={{
+                    name: "outputModule",
+                    id: "outputModule",
+                  }}>
+                  <MenuItem aria-label="None" value="" />
+                  <MenuItem value={"h264"}>H264</MenuItem>
+                </Select>
+              </FormControl>
+              <TextField
+                value={job.renderPrefs.incrementFrame || ""}
+                onChange={(e) => {}}
+                id="incrementFrame"
+                label="Increment Frame"
+                type="number"
+              />
+              <TextField
+                value={job.renderPrefs.frameStart || ""}
+                // onChange={}
+                id="frameStart"
+                label="Start Frame"
+                type="number"
+              />
+              <TextField
+                value={job.renderPrefs.frameEnd || ""}
+                // onChange={}
+                id="frameEnd"
+                label="End Frame"
+                type="number"
+              />
+            </Box>
+            {/* onSubmit={(values) => setJob({ ...job, renderPrefs: values })} */}
+          </TabPanel>
         </Paper>
       </div>
-      {isDialogOpen && (
-        <AssetDialog
-          setIsDialogOpen={setIsDialogOpen}
-          editableLayers={videoTemplate?.editableLayers}
-          initialValues={editIndex !== null && assets[editIndex]}
-          onSubmit={handleAssetSubmit}
-        />
-      )}
     </>
   );
 };
-
-const getColorFromState = (state) => {
-  switch (state) {
-    case "finished":
-      return "#4caf50";
-    case "error":
-      return "#f44336";
-    default:
-      return "grey";
-  }
-};
+// settingsTemplate,
+// outputModule,
+// outputExt,
+// frameEnd,
+// frameStart,
+// incrementFrame,

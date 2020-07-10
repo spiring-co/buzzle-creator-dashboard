@@ -1,161 +1,157 @@
 import React, { useState, useEffect } from "react";
-import {
-  Button,
-  FormHelperText,
-} from "@material-ui/core";
+import { FormHelperText, Typography, Box, Button } from "@material-ui/core";
+import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import upload from "services/s3Upload";
+import { readFile, ORIENTATION_TO_ANGLE, getRotatedImage } from "helpers/CreateImage"
+import { getOrientation } from 'get-orientation/browser'
+import ImageCropperDialog from "components/ImageCropperDialog"
 
 export default ({
+  required,
+  name,
   value,
   onChange,
   label,
   accept,
-  fieldName,
+  uploadDirectory,
   onError,
+  cropEnabled = false,
   error,
   helperText,
+  height = 400, width = 600,
   onTouched,
 }) => {
-  const [progress, setProgress] = useState("0%");
-  const [taskController, setTaskController] = useState(null)
+  const [isError, setIsError] = useState(error)
+  const [progress, setProgress] = useState(0);
+  const [taskController, setTaskController] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [name, setName] = useState(value
-    ? value.substring(value.lastIndexOf("/") + 1) : "No file choosen")
+  const [cropImage, setCropImage] = useState("")
+  const [filename, setFilename] = useState(
+    value ? value.substring(value.lastIndexOf("/") + 1) : ""
+  );
+  const [isCropperOpen, setIsCropperOpen] = useState(false)
   useEffect(() => {
     if (value) {
       onChange(value);
     }
   }, []);
-  const uploadFile = async (e) => {
-    try {
-      const file =
-        (e?.target?.files ?? [null])[0] ||
-        (e?.dataTransfer?.files ?? [null])[0];
-      if (!file) {
 
-        return;
-      }
-      setName(file.name)
+  const handleFile = async (e) => {
+    const file =
+      (e?.target?.files ?? [null])[0] ||
+      (e?.dataTransfer?.files ?? [null])[0];
+    if (!file) {
+      return;
+    }
+    onError ? onError({}) : setIsError(null)
+    setFilename(file.name);
+    await handleUpload(file, file.name.substr(
+      file.name.lastIndexOf(".")
+    ))
+  }
+  const handleUpload = async (file, extension) => {
+    try {
       setLoading(true);
-      const task = upload(`${fieldName}s/${Date.now()}${file.name.substr(file.name.lastIndexOf("."))}`, file);
-      setTaskController(task)
+      const task = upload(
+        `${uploadDirectory}/${Date.now()}${extension}`,
+        file
+      );
+      setTaskController(task);
       task.on("httpUploadProgress", ({ loaded, total }) =>
-        setProgress(`${parseInt((loaded * 100) / total)}%`)
+        setProgress(parseInt((loaded * 100) / total))
       );
       const { Location: uri } = await task.promise();
       setLoading(false);
-
       onChange(uri);
     } catch (err) {
-      setName(value
-        ? value.substring(value.lastIndexOf("/") + 1) : "No file choosen")
+      setTaskController(null)
+      setFilename(value ? value.substring(value.lastIndexOf("/") + 1) : "");
       setLoading(false);
-      onError(err.message);
+      onError ? onError(err.message) : setIsError(err.message)
     }
-  };
 
+  }
   const handleUploadCancel = async () => {
     try {
-      await taskController?.abort()
+      await taskController?.abort().bind(taskController);
+    } catch (err) {
+      setFilename(value ? value.substring(value.lastIndexOf("/") + 1) : "");
+      setLoading(false);
+      onError ? onError(err.message) : setIsError(err.message)
+      setTaskController(null)
     }
-    catch (err) {
-      setName(value
-        ? value.substring(value.lastIndexOf("/") + 1) : "No file choosen")
-      setLoading(false)
-      onError(err.message);
+  };
+  const handleCropImage = async e => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0]
+      setFilename(file.name);
+      let imageDataUrl = await readFile(file)
+      const orientation = await getOrientation(file)
+      const rotation = ORIENTATION_TO_ANGLE[orientation]
+      if (rotation) {
+        imageDataUrl = await getRotatedImage(imageDataUrl, rotation)
+      }
+      setCropImage(imageDataUrl)
+      setIsCropperOpen(true)
     }
   }
   return (
-    <><p style={{ marginBottom: 0, }}>
-      {label}
-    </p>
-      <div
-        style={{
-          display: "flex",
-          paddingLeft: 5,
-          paddingRight: 5,
-          alignItems: "center"
-        }}
-      >
-
-        <label
-          style={{
-            padding: 5,
-            margin: 5,
-            marginTop: 0, marginBottom: 0,
-            paddingTop: 0,
-            paddingBottom: 0,
-            background: "white",
-            border: "1px solid grey",
-            fontFamily: "Arial",
-            borderRadius: 5
+    <Box m={1}>
+      <Typography>{label}{required && " *"}</Typography>
+      <Box my={1}>
+        <input
+          onClick={(event) => {
+            event.target.value = null
           }}
-        >
-          {value ? `Change` : `Upload`}
-
-          <input
-            onFocus={() => onTouched(true)}
-            accept={accept}
-            style={{ display: "none" }}
-            type="file"
-            onChange={uploadFile}
-          />
-
+          accept={accept}
+          id={name}
+          type="file"
+          onFocus={() => onTouched(true)}
+          onChange={cropEnabled ? handleCropImage : handleFile}
+          style={{ display: "none" }}
+        />
+        <label htmlFor={name}>
+          <Button
+            disabled={loading}
+            variant="contained"
+            size="small"
+            color="primary"
+            startIcon={<CloudUploadIcon />}
+            component="span">
+            {value ? `Change` : `Upload`}
+          </Button>
         </label>
-        <p style={{
-          fontSize: 13,
-          marginLeft: 5,
-          marginRight: 5,
-          color: value ? "#3742fa" : "black"
-        }}>
-          <b>{name} {loading && `(${progress})`}</b>
-        </p>
-        {
-          loading &&
-          <>
-            <div
-              style={{
-                height: 13,
-                width: 80,
-                margin: 5,
-                marginTop: 0,
-                marginBottom: 0,
-                border: "1px solid black",
-                transition: "background-color 0.5s ease",
-                background: `linear-gradient(90deg, #3742fa ${progress}, #fff ${progress})`
-              }} />
-            <Button
-              color="secondary"
-              size="small"
-              onClick={handleUploadCancel}>cancel</Button>
-          </>
+        <Typography style={{ marginLeft: 10 }} variant="body2" component={"span"} color="textSecondary">
+          {loading ? ` Uploading: ${progress}% ` : ` ${filename} `}
+        </Typography>
+        {loading && (
+          <Button
+            onClick={handleUploadCancel}
+            size="small"
+            color="secondary"
+            component="span">
+            Cancel
+          </Button>
+        )}
+      </Box>
+      <FormHelperText error={isError}>
+        {isError ? isError : helperText}
+      </FormHelperText>
+      {isCropperOpen && <ImageCropperDialog
+        image={cropImage}
+        cropSize={{ height, width }}
+        setIsCropperOpen={setIsCropperOpen}
+        onUpload={base64 => {
+          setIsCropperOpen(false)
+          const base64Data = new Buffer.from(base64.replace(/^data:image\/\w+;base64,/, ""), 'base64');
+          handleUpload(base64Data, ".png")
         }
-      </div >
-      <FormHelperText style={{ marginBottom: 10, marginTop: 0 }} error={error}>{error ? error : helperText}</FormHelperText>
-    </>
-    // <TextField
-    //   InputProps={{
-    //     startAdornment: loading && (
-    //       <InputAdornment position="start">
-    //         <CircularProgress size={18} />
-    //         <p style={{ color: "grey", marginLeft: 10, fontSize: 15 }}>
-    //           Uploading - {progress}
-    //         </p>
-    //       </InputAdornment>
-    //     ),
-    //   }}
-    //   accept="image/*"
-    //   type="file"
-    //   fullWidth={fullWidth}
-    //   margin={"dense"}
-    //   variant={"outlined"}
-    //   label={label}
-    //   onChange={uploadFile}
-    //   InputLabelProps={{
-    //     shrink: true,
-    //   }}
-    //   error={error}
-    //   helperText={}
-    // />
+        }
+        onCancel={() => {
+          setFilename(value ? value.substring(value.lastIndexOf("/") + 1) : "");
+          setIsCropperOpen(false)
+        }} />
+      }
+    </Box>
   );
 };

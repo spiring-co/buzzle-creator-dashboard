@@ -1,28 +1,22 @@
-export default ({ versions, id, staticAssets, }) => {
+export default ({ versions, id }) => {
   return versions.map((v) => ({
     idVideoTemplate: id,
     idVersion: v.id,
-    assets: [...staticAssets, ...v.editableLayers.map(
-      ({ type, label, layerName, width, height }) => {
-        switch (type) {
-          case "data":
-            return {
-              type,
-              value: label,
-              layerName,
-              property: "Source Text.text",
-            };
-          case "image":
-            return {
-              type,
-              layerName,
-              src: `https://dummyimage.com/${width}x${height}/0011ff/fff`,
-              extension: "png",
-            };
-          default:
-            return;
-        }
-      }
-    )],
+    renderPrefs: {
+      settingsTemplate: "full",
+      incrementFrame: 4,
+      frameStart: 0,
+      // frameEnd: 120,
+    },
+    data: Object.assign(
+      {},
+      ...v.fields.map((field) =>
+        field.type === "image"
+          ? {
+              [field.key]: `https://dummyimage.com/${field.constraints.width}x${field.constraints.height}/3742fa/fff.${field.rendererData.extension}`,
+            }
+          : { [field.key]: field?.label }
+      )
+    ),
   }));
 };
