@@ -1,6 +1,6 @@
 import { Button, TextField, Chip, FormHelperText } from "@material-ui/core";
 import ProjectFilePicker from "components/ProjectFilePicker";
-import ArrayInput from "components/ArrayInput"
+import ArrayInput from "components/ArrayInput";
 import { ArrowForward } from "@material-ui/icons";
 import { useFormik } from "formik";
 import React, { useState } from "react";
@@ -8,7 +8,7 @@ import * as Yup from "yup";
 import FileUploader from "components/FileUploader";
 const validationSchema = Yup.object({
   title: Yup.string().required("Title is Required"),
-  projectFile: Yup.object().required("Project File is required"),
+  projectFile: Yup.object().required("Project File is required").nullable(),
   thumbnail: Yup.string().required("Thumbnail is required!"),
 });
 

@@ -18,6 +18,8 @@ import {
   Divider,
   MenuItem,
   Select,
+  FormControl,
+  InputLabel,
   IconButton,
 } from "@material-ui/core";
 import { Redirect } from "react-router-dom";
@@ -185,6 +187,7 @@ export default () => {
       </Paper>
     );
   }
+
   return (
     <>
       {error && (
@@ -293,6 +296,7 @@ export default () => {
               <Tab label="Output" {...a11yProps(0)} />
               <Tab label="Data" {...a11yProps(1)} />
               <Tab label="Actions" {...a11yProps(2)} />
+              <Tab label="Render Prefs" {...a11yProps(3)} />
             </Tabs>
           </AppBar>
 
@@ -386,7 +390,7 @@ export default () => {
                   },
                 },
               ]}
-              data={Object.keys(data).map((key) => ({
+              data={Object.keys(data || {}).map((key) => ({
                 key,
                 value: data[key],
               }))}
@@ -419,8 +423,71 @@ export default () => {
               }
             />
           </TabPanel>
+          <TabPanel value={activeTabIndex} index={3}>
+            <Box display="flex" flexDirection="column" px={8}>
+              <FormControl>
+                <InputLabel htmlFor="settingsTemplate">
+                  Settings Template
+                </InputLabel>
+                <Select
+                  value={job.renderPrefs.settingsTemplate || ""}
+                  // onChange={v => setJob({})}
+                  inputProps={{
+                    name: "settingsTemplate",
+                    id: "settingsTemplate",
+                  }}>
+                  <MenuItem aria-label="None" value="" />
+                  <MenuItem value={"half"}>Half</MenuItem>
+                  <MenuItem value={"full"}>Full</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl>
+                <InputLabel htmlFor="outputModule">
+                  Settings Template
+                </InputLabel>
+                <Select
+                  value={job.renderPrefs.outputModule || ""}
+                  // onChange={v => setJob({})}
+                  inputProps={{
+                    name: "outputModule",
+                    id: "outputModule",
+                  }}>
+                  <MenuItem aria-label="None" value="" />
+                  <MenuItem value={"h264"}>H264</MenuItem>
+                </Select>
+              </FormControl>
+              <TextField
+                value={job.renderPrefs.incrementFrame || ""}
+                onChange={(e) => {}}
+                id="incrementFrame"
+                label="Increment Frame"
+                type="number"
+              />
+              <TextField
+                value={job.renderPrefs.frameStart || ""}
+                // onChange={}
+                id="frameStart"
+                label="Start Frame"
+                type="number"
+              />
+              <TextField
+                value={job.renderPrefs.frameEnd || ""}
+                // onChange={}
+                id="frameEnd"
+                label="End Frame"
+                type="number"
+              />
+            </Box>
+            {/* onSubmit={(values) => setJob({ ...job, renderPrefs: values })} */}
+          </TabPanel>
         </Paper>
       </div>
     </>
   );
 };
+// settingsTemplate,
+// outputModule,
+// outputExt,
+// frameEnd,
+// frameStart,
+// incrementFrame,
