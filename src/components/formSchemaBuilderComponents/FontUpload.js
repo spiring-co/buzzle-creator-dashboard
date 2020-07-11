@@ -19,7 +19,7 @@ import useActions from "contextStore/actions";
 import React, { useEffect, useState } from "react";
 import { getLayersFromComposition } from "services/helper";
 
-const { Fonts } = apiClient({
+const { Font } = apiClient({
   baseUrl: process.env.REACT_APP_API_URL,
   authToken: localStorage.getItem("jwtoken"),
 });
@@ -50,7 +50,18 @@ export default function FontUpload({
 
     const fontNames = Array.from(new Set(allTextLayers.map((l) => l.font)));
     // this is without checking font Status
-    Promise.all(fontNames.map((f) => Fonts.getStatus(f))).then((data) => {
+    Promise.all(
+      fontNames.map(async (f) => {
+        try {
+          return await Font.get(f);
+        } catch (e) {
+          return {
+            name: f,
+            src: "",
+          };
+        }
+      })
+    ).then((data) => {
       setFontList(data);
       setLoading(false);
     });
@@ -134,7 +145,7 @@ export default function FontUpload({
                 alignItems="center"
                 justifyContent="center"
                 minHeight={200}>
-                <Typography>No Fonts Found!</Typography>
+                <Typography>No Font Found!</Typography>
               </Box>
             )}
           </List>
