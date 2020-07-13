@@ -52,6 +52,7 @@ export default function AssetUpload({
   useEffect(() => {
     // set the value to global state of videoTemplate
     editVideoKeys({ staticAssets: assets });
+    console.log(assets)
     setIsValid(assets.every((i) => !!i.src));
   }, [assets]);
 
@@ -69,12 +70,13 @@ export default function AssetUpload({
             assets?.map((asset, index) => (
               <>
                 <AssetUploader
-                  key={index}
+                  key={asset.name}
                   handleDelete={() => {
                     setAssets(assets.filter((a, i) => i !== index));
                   }}
                   setAssets={(src) => {
-                    setAssets(
+                    console.log(src)
+                    setAssets(assets =>
                       assets?.map((asset, i) =>
                         i === index ? { ...asset, src } : asset
                       )
