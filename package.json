@@ -9,6 +9,7 @@
     "@material-ui/lab": "^4.0.0-alpha.53",
     "aws-sdk": "^2.693.0",
     "axios": "^0.19.2",
+    "buzzle-sdk": "^1.0.0",
     "formik": "^2.1.4",
     "get-orientation": "^1.1.2",
     "i18next": "^19.4.2",

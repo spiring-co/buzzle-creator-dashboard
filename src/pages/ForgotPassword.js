@@ -13,14 +13,12 @@ import {
   Link,
 } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
-import { sendOtp } from 'services/api'
-
 export default () => {
   const { t } = useTranslation();
   const [error, setError] = useState(null);
   const [otpEmailSent, setOtpEmailSent] = useState(false);
   const [passwordResetSuccess, setPasswordResetSuccess] = useState(false);
-  const history = useHistory()
+  const history = useHistory();
   const {
     handleChange,
     handleBlur,
@@ -65,9 +63,9 @@ export default () => {
     }
   };
 
-  const sendPasswordResetOtp = async (email) => {
+  const sendPasswordResetOtp = async () => {
     try {
-      const response = await sendOtp(email)
+      // const response = await sendOtp(email);
       // console.log(await response.json());
       setOtpEmailSent(true);
     } catch (e) {
@@ -95,87 +93,87 @@ export default () => {
             <Confetti active={passwordResetSuccess} config={confettiConfig} />
           </>
         ) : (
-            <>
-              <Box component="form" onSubmit={handleSubmit} noValidate>
-                <Typography variant="h4">Forgot Password</Typography>
-                <Typography>{t("noWorries")}</Typography>
-                {error && <Alert severity="error" children={error.message} />}
-                {otpEmailSent && <Alert severity="info">{t("checkEmail")}</Alert>}
-                <TextField
-                  required
-                  fullWidth
-                  margin={"dense"}
-                  variant={"outlined"}
-                  disabled={otpEmailSent}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={values.email}
-                  name={"email"}
-                  type="email"
-                  readOnly={otpEmailSent}
-                  plaintext={otpEmailSent}
-                  placeholder="Enter email"
-                  label="Email Address"
-                  error={touched.email && !!errors.email}
-                  helperText={touched.email && errors?.email}
-                />
+          <>
+            <Box component="form" onSubmit={handleSubmit} noValidate>
+              <Typography variant="h4">Forgot Password</Typography>
+              <Typography>{t("noWorries")}</Typography>
+              {error && <Alert severity="error" children={error.message} />}
+              {otpEmailSent && <Alert severity="info">{t("checkEmail")}</Alert>}
+              <TextField
+                required
+                fullWidth
+                margin={"dense"}
+                variant={"outlined"}
+                disabled={otpEmailSent}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.email}
+                name={"email"}
+                type="email"
+                readOnly={otpEmailSent}
+                plaintext={otpEmailSent}
+                placeholder="Enter email"
+                label="Email Address"
+                error={touched.email && !!errors.email}
+                helperText={touched.email && errors?.email}
+              />
 
-                {otpEmailSent && (
-                  <>
-                    <TextField
-                      fullWidth
-                      margin={"dense"}
-                      variant={"outlined"}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.OTP}
-                      name={"otp"}
-                      type="otp"
-                      placeholder="Enter otp"
-                      label="OTP"
-                      error={touched.otp && !!errors.otp}
-                      helperText={errors?.otp}
-                    />{" "}
-                    <TextField
-                      fullWidth
-                      margin={"dense"}
-                      variant={"outlined"}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.password}
-                      name={"password"}
-                      type="password"
-                      placeholder="Enter password"
-                      label="New Password"
-                      error={touched.password && !!errors.password}
-                      helperText={errors.password}
-                    />
-                  </>
-                )}
-                <Button
-                  variant="contained"
-                  color="primary"
-                  type="submit"
-                  children={
-                    otpEmailSent
-                      ? isSubmitting
-                        ? "Resetting password..."
-                        : "Reset"
-                      : isSubmitting
-                        ? "Sending OTP..."
-                        : "Proceed"
-                  }
-                  disabled={isSubmitting}
-                />
-                <Typography>
-                  {t("dontHave")}{" "}
-                  <Link component={RouterLink} to="/register">
-                    Sign up.
+              {otpEmailSent && (
+                <>
+                  <TextField
+                    fullWidth
+                    margin={"dense"}
+                    variant={"outlined"}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.OTP}
+                    name={"otp"}
+                    type="otp"
+                    placeholder="Enter otp"
+                    label="OTP"
+                    error={touched.otp && !!errors.otp}
+                    helperText={errors?.otp}
+                  />{" "}
+                  <TextField
+                    fullWidth
+                    margin={"dense"}
+                    variant={"outlined"}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.password}
+                    name={"password"}
+                    type="password"
+                    placeholder="Enter password"
+                    label="New Password"
+                    error={touched.password && !!errors.password}
+                    helperText={errors.password}
+                  />
+                </>
+              )}
+              <Button
+                variant="contained"
+                color="primary"
+                type="submit"
+                children={
+                  otpEmailSent
+                    ? isSubmitting
+                      ? "Resetting password..."
+                      : "Reset"
+                    : isSubmitting
+                    ? "Sending OTP..."
+                    : "Proceed"
+                }
+                disabled={isSubmitting}
+              />
+              <Typography>
+                {t("dontHave")}{" "}
+                <Link component={RouterLink} to="/register">
+                  Sign up.
                 </Link>
-                </Typography>
-              </Box>
-            </>
-          )}
+              </Typography>
+            </Box>
+          </>
+        )}
       </Container>
     </Box>
   );

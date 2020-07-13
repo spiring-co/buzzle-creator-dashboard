@@ -60,10 +60,12 @@ function AuthProvider(props) {
     return true;
   };
 
+  const sendOtp = async () => {};
   const value = useMemo(() => {
     return {
       login,
       logout,
+      sendOtp,
       user,
     };
   }, [login, logout, user]);

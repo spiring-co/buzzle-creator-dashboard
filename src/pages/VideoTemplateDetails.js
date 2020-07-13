@@ -1,17 +1,20 @@
-import React, { useState } from "react";
-import { useHistory, useRouteMatch, useParams } from "react-router-dom";
-
-import { VideoTemplate } from "services/api";
-import useApi from "services/apiHook";
 import {
   Button,
-  Typography,
-  Paper,
   LinearProgress,
+  Paper,
+  Typography,
   withStyles,
 } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
+import { apiClient } from "buzzle-sdk";
+import React, { useState } from "react";
+import { useHistory, useParams, useRouteMatch } from "react-router-dom";
+import useApi from "services/apiHook";
 
+const { VideoTemplate } = apiClient({
+  baseUrl: process.env.REACT_APP_API_URL,
+  authToken: localStorage.getItem("jwtoken"),
+});
 const CustomProgress = withStyles({
   colorPrimary: {
     backgroundColor: "#b2dfdb",

@@ -1,35 +1,40 @@
-import React, { useEffect, useState } from "react";
-import UpdateIcon from "@material-ui/icons/Update";
-import PublishIcon from "@material-ui/icons/Publish";
+import {
+  AppBar,
+  Box,
+  Button,
+  CircularProgress,
+  Divider,
+  FormControl,
+  Grid,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Paper,
+  Select,
+  Tab,
+  Tabs,
+  TextField,
+  Typography,
+} from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import DeleteIcon from "@material-ui/icons/Delete";
 import DownloadIcon from "@material-ui/icons/GetApp";
-
-import {
-  Typography,
-  Paper,
-  Button,
-  Grid,
-  Box,
-  TextField,
-  AppBar,
-  CircularProgress,
-  Tabs,
-  Tab,
-  Divider,
-  MenuItem,
-  Select,
-  IconButton,
-} from "@material-ui/core";
-import { Redirect } from "react-router-dom";
-import { makeStyles } from "@material-ui/core/styles";
-import ImageEditRow from "components/ImageEditRow"
-import ErrorHandler from "components/ErrorHandler";
+import PublishIcon from "@material-ui/icons/Publish";
+import UpdateIcon from "@material-ui/icons/Update";
+import { apiClient } from "buzzle-sdk";
 import ActionsHandler from "components/ActionsHandler";
+import ErrorHandler from "components/ErrorHandler";
+import ImageEditRow from "components/ImageEditRow";
 import formatTime from "helpers/formatTime";
-import { Job } from "services/api";
-import { useParams, useHistory } from "react-router-dom";
 import MaterialTable from "material-table";
+import React, { useEffect, useState } from "react";
+import { Redirect, useHistory, useParams } from "react-router-dom";
 import * as timeago from "timeago.js";
+
+const { Job } = apiClient({
+  baseUrl: process.env.REACT_APP_API_URL,
+  authToken: localStorage.getItem("jwtoken"),
+});
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -99,7 +104,7 @@ export default () => {
     fetchJob();
   }, []);
 
-  useEffect(() => { }, [selectedOutputIndex]);
+  useEffect(() => {}, [selectedOutputIndex]);
 
   const fetchJob = async () => {
     setError(false);
@@ -174,7 +179,6 @@ export default () => {
     setJob({ ...job, data: job.data });
   };
 
-
   if (redirect) return <Redirect to="/home/jobs" />;
   if (isLoading) {
     return (
@@ -184,6 +188,7 @@ export default () => {
       </Paper>
     );
   }
+
   return (
     <>
       {error && (
@@ -271,16 +276,16 @@ export default () => {
               src={output.length && output[selectedOutputIndex].src}
             />
           ) : (
-              <>
-                <Box justifyContent="center" textAlign="center" height={320}>
-                  <Typography style={{ padding: 100 }}>
-                    {" "}
+            <>
+              <Box justifyContent="center" textAlign="center" height={320}>
+                <Typography style={{ padding: 100 }}>
+                  {" "}
                   No output yet.
                 </Typography>
-                </Box>
-                <Divider />
-              </>
-            )}
+              </Box>
+              <Divider />
+            </>
+          )}
           <AppBar position="static" color="transparent" elevation={0}>
             <Tabs
               value={activeTabIndex}
@@ -292,6 +297,7 @@ export default () => {
               <Tab label="Output" {...a11yProps(0)} />
               <Tab label="Data" {...a11yProps(1)} />
               <Tab label="Actions" {...a11yProps(2)} />
+              <Tab label="Render Prefs" {...a11yProps(3)} />
             </Tabs>
           </AppBar>
 
@@ -351,7 +357,7 @@ export default () => {
                     return (
                       <span>
                         {value.startsWith("http://") ||
-                          value.startsWith("https://")
+                        value.startsWith("https://")
                           ? "image"
                           : "string"}
                       </span>
@@ -362,27 +368,39 @@ export default () => {
                 {
                   title: "Value",
                   field: "value",
-                  editComponent: ({ rowData: { key }, onChange, value, }) => {
-
-                    if (value.startsWith('http://') || value.startsWith('https://')) {
+                  editComponent: ({ rowData: { key }, onChange, value }) => {
+                    if (
+                      value.startsWith("http://") ||
+                      value.startsWith("https://")
+                    ) {
                       const version = job.videoTemplate.versions.find(
                         (v) => v.id === job.idVersion
                       );
-                      const { constraints: { height = 100, width = 100 } } = version.fields.find((f) => f.key === key);
-                      console.log(height, width)
-                      return <ImageEditRow value={value} onChange={onChange} height={height} width={width} />
-                    }
-                    else {
-                      return (<TextField
-                        fullWidth
-                        value={value}
-                        onChange={(e) => onChange(e?.target?.value)}
-                      />)
+                      const {
+                        constraints: { height = 100, width = 100 },
+                      } = version.fields.find((f) => f.key === key);
+                      console.log(height, width);
+                      return (
+                        <ImageEditRow
+                          value={value}
+                          onChange={onChange}
+                          height={height}
+                          width={width}
+                        />
+                      );
+                    } else {
+                      return (
+                        <TextField
+                          fullWidth
+                          value={value}
+                          onChange={(e) => onChange(e?.target?.value)}
+                        />
+                      );
                     }
                   },
                 },
               ]}
-              data={Object.keys(data).map((key) => ({
+              data={Object.keys(data || {}).map((key) => ({
                 key,
                 value: data[key],
               }))}
@@ -415,8 +433,70 @@ export default () => {
               }
             />
           </TabPanel>
+          <TabPanel value={activeTabIndex} index={3}>
+            <Box display="flex" flexDirection="column" px={8}>
+              <FormControl>
+                <InputLabel htmlFor="settingsTemplate">
+                  Settings Template
+                </InputLabel>
+                <Select
+                  value={job.renderPrefs.settingsTemplate || ""}
+                  // onChange={v => setJob({})}
+                  inputProps={{
+                    name: "settingsTemplate",
+                    id: "settingsTemplate",
+                  }}>
+                  <MenuItem aria-label="None" value="" />
+                  <MenuItem value={"half"}>Half</MenuItem>
+                  <MenuItem value={"full"}>Full</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl>
+                <InputLabel htmlFor="outputModule">
+                  Settings Template
+                </InputLabel>
+                <Select
+                  value={job.renderPrefs.outputModule || ""}
+                  // onChange={v => setJob({})}
+                  inputProps={{
+                    name: "outputModule",
+                    id: "outputModule",
+                  }}>
+                  <MenuItem aria-label="None" value="" />
+                  <MenuItem value={"h264"}>H264</MenuItem>
+                </Select>
+              </FormControl>
+              <TextField
+                value={job.renderPrefs.incrementFrame || ""}
+                id="incrementFrame"
+                label="Increment Frame"
+                type="number"
+              />
+              <TextField
+                value={job.renderPrefs.frameStart || ""}
+                // onChange={}
+                id="frameStart"
+                label="Start Frame"
+                type="number"
+              />
+              <TextField
+                value={job.renderPrefs.frameEnd || ""}
+                // onChange={}
+                id="frameEnd"
+                label="End Frame"
+                type="number"
+              />
+            </Box>
+            {/* onSubmit={(values) => setJob({ ...job, renderPrefs: values })} */}
+          </TabPanel>
         </Paper>
       </div>
     </>
   );
 };
+// settingsTemplate,
+// outputModule,
+// outputExt,
+// frameEnd,
+// frameStart,
+// incrementFrame,
