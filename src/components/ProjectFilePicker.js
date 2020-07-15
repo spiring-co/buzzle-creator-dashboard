@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Button, Container, Box, Typography } from "@material-ui/core";
+import {
+  Button, Container, Box,
+  RadioGroup, Radio,
+  Paper,
+  FormHelperText,
+  Snackbar,
+  TextField,
+  Typography, FormControl, FormControlLabel, FormLabel,
+} from "@material-ui/core";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import upload from "services/s3Upload";
@@ -34,7 +42,7 @@ const useStyles = makeStyles((theme) =>
   })
 );
 export default ({
-  value,
+  value: v,
   compositions,
   assets,
   isEdit,
@@ -44,19 +52,22 @@ export default ({
   onError,
 }) => {
   const classes = useStyles();
+  const [value, setValue] = useState(v)
   const [edit, setEdit] = useState(isEdit);
-  const [hasPickedFile, setHasPickedFile] = useState(!!value);
+  const [type, setType] = useState('file')
+  const [hasPickedFile, setHasPickedFile] = useState(!!v);
   const [hasExtractedData, setHasExtractedData] = useState(
-    isEdit ? compositions.length !== 0 : !!value
+    isEdit ? compositions.length !== 0 : !!v
   );
   const [message, setMessage] = useState(
     compositions.length === 0 ? null : getCompositionDetails(compositions)
   );
   useEffect(() => {
     // if template is in edit mode
-    if (isEdit) {
+    if (edit) {
       // in edit mode and no composition is extracted till yet
       if (compositions.length === 0) {
+        setType('file')
         handlePickFile();
       }
       // in edit mode but compositions are already extracted (i.e. when  user press back button)
@@ -77,7 +88,8 @@ export default ({
         });
       }
     }
-  }, []);
+  }, [edit]);
+
   const handlePickFile = async (e) => {
     e && e.preventDefault();
     setMessage(null);
@@ -142,13 +154,40 @@ export default ({
         .flat();
       return `${Object.keys(c).length} compositions & ${
         allLayers.length
-      } layers found`;
+        } layers found`;
     } catch (err) {
       onError(err);
     }
   }
-  return (
-    <Container
+
+  const render = {
+    url: <><div style={{ display: 'flex', alignItems: 'center' }}>
+      <TextField
+        label="File URL"
+        placeholder="Paste URL here"
+        margin="dense"
+        style={{ marginRight: 20 }}
+        variant="outlined"
+        value={value}
+        onChange={({ target: { value } }) => setValue(value)}
+
+      />
+      <Button
+        disabled={(hasExtractedData && hasPickedFile) ? false : hasPickedFile ? true : false}
+        size="small"
+        variant="outlined"
+        color="primary"
+        children={(hasExtractedData && hasPickedFile) ? 'Change' : hasPickedFile ? 'Extracting ...' : 'Extract'}
+        onClick={() => {
+          setEdit(true)
+        }}
+
+      />
+    </div>
+      <FormHelperText style={{ color: 'green' }}>{hasExtractedData && hasPickedFile ? message
+        : ""}</FormHelperText>
+    </>,
+    file: <Container
       onDragOver={(e) => e.preventDefault()}
       onDrop={hasPickedFile ? null : handlePickFile}
       onChange={hasPickedFile ? null : handlePickFile}
@@ -159,10 +198,10 @@ export default ({
           <label className={classes.label}>
             <Typography>
               Drag Your File Here
-              <br /> OR
-            </Typography>
+            <br /> OR
+          </Typography>
             <CloudUploadIcon fontSize={"large"} />
-            Pick File
+          Pick File
             <input
               className={classes.invisible}
               id={name}
@@ -193,7 +232,19 @@ export default ({
           </>
         )}
         <Typography>{message}</Typography>
-      </Box>
-    </Container>
+      </Box></Container>
+  }
+
+  return (
+    <>
+      <FormControl component="fieldset">
+        <FormLabel component="legend">Select file input type</FormLabel>
+        <RadioGroup aria-label="type" name="type" value={type} onChange={({ target: { value } }) => setType(value)} row>
+          <FormControlLabel value="file" control={<Radio />} label="File" />
+          <FormControlLabel value="url" control={<Radio />} label="URL" />
+        </RadioGroup>
+      </FormControl>
+      {render[type]}
+    </>
   );
 };
