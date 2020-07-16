@@ -16,7 +16,8 @@ AWS.config.update({
  */
 export default (Key, Body) => {
   var upload = new AWS.S3.ManagedUpload({
-    partSize: 25 * 1024 * 1024, queueSize: 1,
+    partSize: 15 * 1024 * 1024, queueSize: 1,
+    httpOptions: {timeout: 0}, 
     params: {
       Bucket: bucketName,
       Key: Key,
