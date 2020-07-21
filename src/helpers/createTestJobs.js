@@ -42,12 +42,23 @@ function fieldsToData(fields, dataFillType) {
             data[f.key] = f.placeholder;
             break;
           case "maxLength":
-            data[f.key] = f.label
-              .repeat(f.constraints?.maxLength || 80)
-              .substr(0, f.constraints?.maxLength || 80);
+            data[f.key] = getNumberPalindrome(
+              f.label,
+              f.constraints?.maxLength || 80
+            );
             break;
         }
     }
   });
   return data;
 }
+
+const getNumberPalindrome = (len, label) => {
+  const n = len - label?.length || 0;
+  const s1 = Array.from({ length: 10 }, (v, k) => k + 1)
+    .join("-")
+    .substr(0, n / 2);
+
+  const s2 = s1.split("").reverse().join("");
+  return s1 + label + s2;
+};

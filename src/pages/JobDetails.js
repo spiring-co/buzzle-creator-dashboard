@@ -440,7 +440,7 @@ export default () => {
                   Settings Template
                 </InputLabel>
                 <Select
-                  value={job.renderPrefs.settingsTemplate || ""}
+                  value={job.renderPrefs?.settingsTemplate || ""}
                   // onChange={v => setJob({})}
                   inputProps={{
                     name: "settingsTemplate",
@@ -456,7 +456,7 @@ export default () => {
                   Settings Template
                 </InputLabel>
                 <Select
-                  value={job.renderPrefs.outputModule || ""}
+                  value={job.renderPrefs?.outputModule || ""}
                   // onChange={v => setJob({})}
                   inputProps={{
                     name: "outputModule",
@@ -467,20 +467,20 @@ export default () => {
                 </Select>
               </FormControl>
               <TextField
-                value={job.renderPrefs.incrementFrame || ""}
+                value={job.renderPrefs?.incrementFrame || ""}
                 id="incrementFrame"
                 label="Increment Frame"
                 type="number"
               />
               <TextField
-                value={job.renderPrefs.frameStart || ""}
+                value={job.renderPrefs?.frameStart || ""}
                 // onChange={}
                 id="frameStart"
                 label="Start Frame"
                 type="number"
               />
               <TextField
-                value={job.renderPrefs.frameEnd || ""}
+                value={job.renderPrefs?.frameEnd || ""}
                 // onChange={}
                 id="frameEnd"
                 label="End Frame"

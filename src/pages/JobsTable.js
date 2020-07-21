@@ -201,9 +201,9 @@ export default () => {
           {
             icon: "repeat",
             tooltip: "Restart Job",
-            onClick: async (e, { id, data }) => {
+            onClick: async (e, { id, data, actions }) => {
               try {
-                await Job.update(id, { data });
+                await Job.update(id, { data, actions });
               } catch (err) {
                 setError(err);
               }

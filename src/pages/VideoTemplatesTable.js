@@ -11,6 +11,7 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import GridOnIcon from "@material-ui/icons/GridOn";
+import AddIcon from "@material-ui/icons/Add";
 import InfoIcon from "@material-ui/icons/Info";
 import ListIcon from "@material-ui/icons/List";
 import ToggleButton from "@material-ui/lab/ToggleButton";
@@ -111,12 +112,25 @@ export default (props) => {
         type={status ? "success" : "error"}
         message={
           status
-            ? status?.message ?? "Deleted Sucessfully"
+            ? status?.message ?? "Deleted Successfully"
             : err?.message ?? "Oops, something went wrong, action failed !"
         }
         onClose={() => setDeleteStatus({ status: false, err: false })}
       />
-      <Box display="flex" alignItems="flex-end" flexDirection="column" p={1}>
+      <Box
+        display="flex"
+        alignItems="end"
+        justifyContent="space-between"
+        flexDirection="row"
+        p={1}>
+        <Button
+          color="primary"
+          variant="contained"
+          className={classes.button}
+          onClick={() => history.push(`${url}/add`)}
+          children="Add Template"
+          startIcon={<AddIcon />}
+        />
         <ToggleButtonGroup
           size="small"
           value={view}
@@ -133,12 +147,8 @@ export default (props) => {
       </Box>
 
       {view === "grid" ? (
-        <div className={classes.root}>
+        <Box className={classes.root}>
           <GridList cellHeight={250} className={classes.gridList}>
-            <GridListTile
-              key="Subheader"
-              cols={2}
-              style={{ height: "auto" }}></GridListTile>
             {data.map((tile) => (
               <GridListTile key={tile.thumbnail}>
                 <img src={tile.thumbnail} alt={tile.title} />
@@ -159,7 +169,7 @@ export default (props) => {
               </GridListTile>
             ))}
           </GridList>
-        </div>
+        </Box>
       ) : (
         <MaterialTable
           tableRef={tableRef}
