@@ -31,7 +31,7 @@ function fieldsToData(fields, dataFillType) {
       case "image":
         data[
           f.key
-        ] = `https://dummyimage.com/${f.constraints.width}x${f.constraints.height}/3742fa/fff.${f.rendererData.extension}`;
+        ] = `https://dummyimage.com/${f.constraints.width}x${f.constraints.height}/3742fa/fff.${f.rendererData.extension}&text=${f.label}`;
         break;
       default:
         switch (dataFillType) {
@@ -43,8 +43,8 @@ function fieldsToData(fields, dataFillType) {
             break;
           case "maxLength":
             data[f.key] = getNumberPalindrome(
-              f.label,
-              f.constraints?.maxLength || 80
+              f.constraints?.maxLength || 80,
+              f.label
             );
             break;
         }
