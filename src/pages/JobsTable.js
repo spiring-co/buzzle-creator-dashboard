@@ -162,27 +162,15 @@ export default () => {
           })
             .then((response) => response.json())
             .then((result) => {
-              const { jobs = [], message = "" } = result;
+              const { jobs = [], message = "", totalCount } = result;
               if (message) {
-                setError(new Error(message));
+                return setError(new Error(message));
               }
               setJobIds(jobs.map(({ id }) => id));
               return {
-                data: query.search
-                  ? jobs.filter(({ videoTemplate }) =>
-                      videoTemplate.title
-                        .toLowerCase()
-                        .startsWith(query.search.toLowerCase())
-                    )
-                  : jobs,
+                data: jobs,
                 page: query.page,
-                totalCount: query.search
-                  ? jobs.filter(({ videoTemplate }) =>
-                      videoTemplate.title
-                        .toLowerCase()
-                        .startsWith(query.search.toLowerCase())
-                    ).length
-                  : jobs.length,
+                totalCount,
               };
             })
             .catch((e) => {
