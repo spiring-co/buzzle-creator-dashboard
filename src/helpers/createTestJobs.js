@@ -29,9 +29,9 @@ function fieldsToData(fields, dataFillType) {
   fields.map((f) => {
     switch (f.type) {
       case "image":
-        data[
-          f.key
-        ] = `https://dummyimage.com/${f.constraints.width}x${f.constraints.height}/3742fa/fff.${f.rendererData.extension}&text=${f.label}`;
+        data[f.key] = `https://dummyimage.com/${f.constraints.width}x${
+          f.constraints.height
+        }/3742fa/fff.${f.rendererData.extension}&text=${encodeURI(f.label)}`;
         break;
       default:
         switch (dataFillType) {
