@@ -66,7 +66,7 @@ export default ({ submitForm, isEdit, video }) => {
     VideoTemplateMetaForm: (
       <VideoTemplateMetaForm
         isEdit={isEdit}
-        assets={assets}
+        assets={videoObj.staticAssets}
         compositions={compositions}
         initialValues={
           isEdit
