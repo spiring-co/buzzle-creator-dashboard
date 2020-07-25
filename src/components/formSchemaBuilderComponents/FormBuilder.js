@@ -51,7 +51,10 @@ export default ({ submitForm, isEdit, video }) => {
       projectFile: { fileUrl = "", staticAssets = [], compositions = [] },
     } = data;
     setCompositions(compositions);
-    console.log(compositions);
+    console.log(staticAssets,staticAssets.map((a, index) =>
+      video?.staticAssets.map(({ name }) => name).includes(a.name)
+        ? video?.staticAssets[video?.staticAssets.map(({ name }) => name).indexOf(a.name)]
+        : a));
     setAssets(isEdit ? staticAssets.map((a, index) =>
       video?.staticAssets.map(({ name }) => name).includes(a.name)
         ? video?.staticAssets[video?.staticAssets.map(({ name }) => name).indexOf(a.name)]
