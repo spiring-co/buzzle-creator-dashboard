@@ -52,7 +52,11 @@ export default ({ submitForm, isEdit, video }) => {
     } = data;
     setCompositions(compositions);
     console.log(compositions);
-    setAssets(isEdit ? video?.staticAssets : staticAssets);
+    setAssets(isEdit ? staticAssets.map((a, index) =>
+      video?.staticAssets.map(({ name }) => name).includes(a.name)
+        ? video?.staticAssets[video?.staticAssets.map(({ name }) => name).indexOf(a.name)]
+        : a)
+      : staticAssets);
     editVideoKeys({ keywords, title, description, src: fileUrl, thumbnail });
     setActiveDisplayIndex(1);
   };
