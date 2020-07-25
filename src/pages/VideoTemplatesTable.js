@@ -53,6 +53,7 @@ export default (props) => {
 
     try {
       setIsDeleting(true);
+  console.log("delete ",id)
       await VideoTemplate.delete(id);
     } catch (err) {
       setError(err);
