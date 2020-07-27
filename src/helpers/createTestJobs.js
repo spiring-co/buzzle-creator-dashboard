@@ -55,7 +55,7 @@ function fieldsToData(fields, dataFillType) {
 
 const getNumberPalindrome = (len, label) => {
   const n = len - label?.length || 0;
-  const s1 = Array.from({ length: 10 }, (v, k) => k + 1)
+  const s1 = Array.from({ length: len / 2 }, (v, k) => k + 1)
     .join("-")
     .substr(0, n / 2);
 
