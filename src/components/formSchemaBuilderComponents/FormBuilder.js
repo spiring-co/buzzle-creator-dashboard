@@ -19,8 +19,9 @@ export default ({ submitForm, isEdit, video }) => {
   const [loading, setLoading] = useState(false);
   const [activeDisplayIndex, setActiveDisplayIndex] = useState(0);
   const [compositions, setCompositions] = useState([]);
-  const [error, setError] = useState(null)
-  const [assets, setAssets] = useState([])
+  const [error, setError] = useState(null);
+  const [assets, setAssets] = useState([]);
+
   useEffect(() => {
     if (isEdit) {
       loadVideo(video);
@@ -42,11 +43,17 @@ export default ({ submitForm, isEdit, video }) => {
   };
 
   const handleVideoTemplateMetaSubmit = async (data) => {
-    const { tags, title, description, thumbnail, projectFile: { fileUrl = "", staticAssets = [], compositions = [] } } = data;
+    const {
+      keywords,
+      title,
+      description,
+      thumbnail,
+      projectFile: { fileUrl = "", staticAssets = [], compositions = [] },
+    } = data;
     setCompositions(compositions);
-    console.log(compositions)
-    setAssets(isEdit ? video?.staticAssets : staticAssets)
-    editVideoKeys({ tags, title, description, src: fileUrl, thumbnail });
+    console.log(compositions);
+    setAssets(isEdit ? video?.staticAssets : staticAssets);
+    editVideoKeys({ keywords, title, description, src: fileUrl, thumbnail });
     setActiveDisplayIndex(1);
   };
 
@@ -56,9 +63,11 @@ export default ({ submitForm, isEdit, video }) => {
         isEdit={isEdit}
         assets={assets}
         compositions={compositions}
-        initialValues={isEdit
-          ? { ...video, projectFile: video.src }
-          : { ...videoObj, projectFile: videoObj?.src ?? "" }}
+        initialValues={
+          isEdit
+            ? { ...video, projectFile: video.src }
+            : { ...videoObj, projectFile: videoObj?.src ?? "" }
+        }
         onSubmit={handleVideoTemplateMetaSubmit}
       />
     ),
@@ -84,15 +93,15 @@ export default ({ submitForm, isEdit, video }) => {
         setActiveDisplayIndex={setActiveDisplayIndex}
         activeDisplayIndex={activeDisplayIndex}
         handleSubmitForm={handleSubmitForm}
-        staticAssets={videoObj?.staticAssets.length !== 0
-          ? videoObj?.staticAssets
-          : assets}
+        staticAssets={
+          videoObj?.staticAssets.length !== 0 ? videoObj?.staticAssets : assets
+        }
       />
     ),
   };
 
   return (
-    <Container fluid>
+    <Container>
       <SnackAlert
         message={
           error?.message ?? "Oop's, something went wrong, action failed !"

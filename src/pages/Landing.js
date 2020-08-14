@@ -1,9 +1,19 @@
 import React from "react";
-import { Button, Typography, Box, Grid, makeStyles } from "@material-ui/core";
-import { Link } from "react-router-dom";
+import {
+  Button,
+  Typography,
+  Box,
+  Grid,
+  makeStyles,
+  Container,
+} from "@material-ui/core";
+import { Link, Redirect } from "react-router-dom";
 import Branding from "components/Branding";
 import { useTranslation } from "react-i18next";
 import landingIllustration from "assets/landing.svg";
+import otherIllustration from "assets/404.svg";
+import videoIllustration from "assets/video.svg";
+import { useAuth } from "services/auth";
 
 const useStyles = makeStyles({
   hoverHighlight: {
@@ -33,84 +43,131 @@ const useStyles = makeStyles({
       backgroundSize: "100%",
     },
   },
+  logo: {
+    marginBottom: 16,
+    fontWeight: 800,
+    fontFamily: "Poppins",
+  },
+  heightInherit: {
+    height: "inherit",
+  },
+  viewportHeight: {
+    height: "90vh",
+  },
+  background: {
+    height: "100%",
+    width: "200%",
+    position: "absolute",
+    top: 0,
+    left: "-50%",
+    zIndex: -999,
+  },
+  whiteText: {
+    color: "white",
+  },
+  whiteBg: {
+    backgroundColor: "white",
+  },
 });
 
 function Landing() {
+  const { user } = useAuth()
+
   const { t } = useTranslation();
   const classes = useStyles();
+  if (user) return <Redirect to="/home" />;
+
   return (
-    <Box>
-      <Box>
-        <Grid
-          style={{ alignItems: "stretch", height: "-webkit-fill-available" }}
-          container
-          direction="row">
-          <Grid
-            md={6}
-            sm={6}
-            item
-            style={{ display: "flex", alignItems: "center" }}>
-            <img style={{ width: "100%" }} src={landingIllustration} />
-          </Grid>
-          <Grid
-            md={6}
-            sm={6}
-            item
-            style={{ display: "flex", alignItems: "center" }}>
-            <Box mb={4}>
-              <Typography
-                color=""
-                variant="h1"
-                style={{
-                  color: "#2f3542",
-                  marginBottom: 16,
-                  fontWeight: 800,
-                  fontFamily: "Poppins",
-                }}>
-                <span className={classes.hoverHighlight}>Buzzle!</span>
+    <Container className={classes.heightInherit} maxWidth="md">
+      <Grid
+        container
+        direction="row"
+        justify="center"
+        alignItems="center"
+        className={classes.viewportHeight}>
+        <Grid md={6} sm={6} item style={{ flex: 1, padding: "5%" }}>
+          <img src={landingIllustration} />
+        </Grid>
+        <Grid md={6} sm={6} item>
+          <Box mb={4} p={4}>
+            <Typography variant="h1" className={classes.logo}>
+              <span className={classes.hoverHighlight}>Buzzle!</span>
+            </Typography>
+            <Box mt={2}>
+              <Typography>
+                <span className={classes.hoverUnderline}>{t("welcome")}🥳</span>
               </Typography>
-              <Box mt={2}>
-                <Typography
-                  style={{ fontWeight: 700, width: 350, color: "#2f3542" }}>
-                  <span className={classes.hoverUnderline}>
-                    {t("welcome")}🥳
-                  </span>
-                </Typography>
+            </Box>
+            <Box mt={6}>
+              <Box display="inline-block" m={1}>
+                <Button
+                  component={Link}
+                  to="/login"
+                  style={{ background: "white" }}
+                  variant="contained">
+                  Login
+                </Button>
               </Box>
-              <Box mt={6}>
-                <Box display="inline-block" m={1}>
-                  <Button
-                    component={Link}
-                    to="/login"
-                    style={{ background: "white" }}
-                    variant="contained">
-                    Login
-                  </Button>
-                </Box>
-                <Box display="inline-block" m={1}>
-                  <Button component={Link} to="/register" variant="outlined">
-                    Register
-                  </Button>
-                </Box>
+              <Box display="inline-block" m={1}>
+                <Button
+                  component={Link}
+                  to="/register"
+                  variant="contained"
+                  color="primary">
+                  Register
+                </Button>
               </Box>
             </Box>
-          </Grid>
+          </Box>
         </Grid>
-      </Box>  <Box
-        style={{
-          height: "30vh",
-          width: "100vw",
-          zIndex: -999,
-          position: "absolute",
-          left: 0,
-          bottom: 0,
-          background: "#394afa",
-        }}
-      >
-        <Branding mt={50} />
-      </Box>
-
-    </Box>
+      </Grid>
+      <Grid
+        container
+        direction="row"
+        justify="center"
+        alignItems="center"
+        style={{ position: "relative" }}>
+        <Box bgcolor="primary.main" className={classes.background} />
+        <Grid md={6} sm={6} item>
+          <Box mb={4} p={4}>
+            <Box mt={2}>
+              <Typography className={classes.whiteText}>
+                <span className={classes.hoverUnderline}>{t("welcome")}</span>
+              </Typography>
+            </Box>
+            <Box mt={6}>
+              <Box display="inline-block" m={1}>
+                <Button
+                  component={Link}
+                  to="/register"
+                  className={classes.whiteBg}
+                  variant="contained">
+                  Register
+                </Button>
+              </Box>
+            </Box>
+          </Box>
+        </Grid>
+        <Grid md={6} sm={6} item style={{ flex: 1, padding: "5%" }}>
+          <img src={otherIllustration} />
+        </Grid>
+      </Grid>
+      <Grid container direction="row" justify="center" alignItems="center">
+        <Grid md={6} sm={6} item style={{ flex: 1, padding: "5%" }}>
+          <img src={videoIllustration} />
+        </Grid>
+        <Grid md={6} sm={6} item>
+          <Box mb={4} p={4}>
+            <Box mt={2}>
+              <Typography>
+                <span className={classes.hoverUnderline}>{t("welcome")}🥳</span>
+              </Typography>
+            </Box>
+          </Box>
+        </Grid>
+      </Grid>
+      <Branding />
+    </Container>
   );
 }
 export default Landing;

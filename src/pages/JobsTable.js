@@ -1,11 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Chip, Link, Button, Container } from "@material-ui/core";
+import { Chip, Button, Container } from "@material-ui/core";
 import MaterialTable from "material-table";
-import {
-  useRouteMatch,
-  useHistory,
-  Link as RouterLink,
-} from "react-router-dom";
+import { useRouteMatch, useHistory } from "react-router-dom";
 import ErrorHandler from "components/ErrorHandler";
 import { useAuth } from "services/auth";
 
@@ -13,6 +9,7 @@ import { Job } from "services/api";
 import ReactJson from "react-json-view";
 import io from "socket.io-client";
 import * as timeago from "timeago.js";
+import { useDarkMode } from "helpers/useDarkMode";
 
 export default () => {
   const [error, setError] = useState(null);
@@ -21,7 +18,7 @@ export default () => {
   const [jobIds, setJobIds] = useState([]);
   const { path } = useRouteMatch();
   const tableRef = useRef(null);
-
+  const [darkModeTheme] = useDarkMode();
   const { user } = useAuth();
   const history = useHistory();
 
@@ -57,12 +54,13 @@ export default () => {
     };
   }, [jobIds]);
 
+
   return (
-    <Container fluid>
+    <Container>
       {error && (
         <ErrorHandler
           message={error.message}
-          showRetry={true}
+          showRetry={jobIds.length === 0}
           onRetry={handleRetry}
         />
       )}
@@ -70,7 +68,7 @@ export default () => {
         tableRef={tableRef}
         title="Your Jobs"
         options={{
-          pageSize: 10,
+          pageSize: 20,
           headerStyle: { fontWeight: 700 },
           actionsColumnIndex: -1,
         }}
@@ -86,6 +84,7 @@ export default () => {
                 name={rowData.id}
                 collapsed={1}
                 src={rowData}
+                theme={darkModeTheme === "dark" ? "ocean" : "rjv-default"}
               />
             ),
             icon: "code",
@@ -93,41 +92,22 @@ export default () => {
           },
         ]}
         columns={[
-          // {
-          //   title: "Job Id",
-          //   field: "id",
-          //   render: ({ id, state }) => {
-          //     state = rtProgressData[id]?.state || state;
-
-          //     if (state !== "finished") return <span>{id}</span>;
-          //     return (
-          //       <Link component={RouterLink} to={`${path}${id}`}>
-          //         {id}
-          //       </Link>
-          //     );
-          //   },
-          // },
           {
             title: "Video Template",
-            render: ({ videoTemplate }) => (
-              <span>
-                <Link
-                  component={RouterLink}
-                  to={`/home/videoTemplates/${videoTemplate?.id}`}>
-                  {videoTemplate?.title}
-                </Link>
-              </span>
-            ),
+            field: "videoTemplate.title",
           },
           {
             title: "Version",
+            searchable: false,
             render: ({ videoTemplate, idVersion }) => (
               <span>
-                {videoTemplate?.versions.find((v) => v?.id === idVersion)?.title ?? ""}
+                {videoTemplate?.versions.find((v) => v?.id === idVersion)
+                  ?.title ?? ""}
               </span>
             ),
           },
           {
+            searchable: false,
             title: "Last Updated",
             field: "dateUpdated",
             type: "datetime",
@@ -137,6 +117,7 @@ export default () => {
             defaultSort: "desc",
           },
           {
+            searchable: false,
             title: "State",
             field: "state",
             render: function ({ id, state }) {
@@ -164,7 +145,7 @@ export default () => {
                 onClick={handleRetry}
                 color="secondary"
                 variant="outlined"
-                children={"retry?"}
+                children={"Retry"}
               />
             ),
           },
@@ -182,9 +163,15 @@ export default () => {
               if (message) {
                 setError(new Error(message));
               }
-
               setJobIds(jobs.map(({ id }) => id));
-              return { data: jobs, page: query.page, totalCount };
+              return {
+                data: query.search
+                  ? jobs.filter(({ videoTemplate }) => videoTemplate.title.toLowerCase().startsWith(query.search.toLowerCase()))
+                  : jobs,
+                page: query.page, totalCount: query.search
+                  ? jobs.filter(({ videoTemplate }) => videoTemplate.title.toLowerCase().startsWith(query.search.toLowerCase())).length
+                  : jobs.length
+              };
             })
             .catch((e) => {
               setError(e);
@@ -202,9 +189,9 @@ export default () => {
           {
             icon: "repeat",
             tooltip: "Restart Job",
-            onClick: async (e, { id, assets, actions }) => {
+            onClick: async (e, { id, data }) => {
               try {
-                await Job.update(id, { assets, actions });
+                await Job.update(id, { data });
               } catch (err) {
                 setError(err);
               }
@@ -213,7 +200,7 @@ export default () => {
           },
           {
             icon: "delete",
-            tooltip: "Delete Template",
+            tooltip: "Delete Job",
             onClick: async (event, rowData) => {
               const action = window.confirm("Are you sure, you want to delete");
               if (!action) return;

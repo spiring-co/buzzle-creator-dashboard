@@ -257,7 +257,8 @@ export default ({
               <TextField
                 key={"valueInput"}
                 fullWidth
-                variant="outlined"
+                varia
+                nt="outlined"
                 margin="dense"
                 multiline
                 value={values.value}

@@ -1,6 +1,6 @@
 import { Button, TextField, Chip, FormHelperText } from "@material-ui/core";
 import ProjectFilePicker from "components/ProjectFilePicker";
-
+import ArrayInput from "components/ArrayInput";
 import { ArrowForward } from "@material-ui/icons";
 import { useFormik } from "formik";
 import React, { useState } from "react";
@@ -8,7 +8,7 @@ import * as Yup from "yup";
 import FileUploader from "components/FileUploader";
 const validationSchema = Yup.object({
   title: Yup.string().required("Title is Required"),
-  // projectFile: Yup.string().required("Project File is required"),
+  projectFile: Yup.object().required("Project File is required").nullable(),
   thumbnail: Yup.string().required("Thumbnail is required!"),
 });
 
@@ -19,8 +19,7 @@ export default ({
   compositions,
   onSubmit,
 }) => {
-  const [tagInput, setTagInput] = useState("");
-  const [tags, setTags] = useState(initialValues?.tags ?? []);
+  const [keywords, setKeywords] = useState(initialValues?.keywords ?? []);
   const {
     handleChange,
     handleBlur,
@@ -36,26 +35,10 @@ export default ({
     initialValues,
     validationSchema,
     onSubmit: (values) => {
-      onSubmit({ ...values, tags });
+      onSubmit({ ...values, keywords });
     },
   });
 
-  const handleTagInput = (value) => {
-    if (
-      (value.substr(-1) === "," || value.substr(-1) === " ") &&
-      value.substr(0, 1) !== " " &&
-      value.substr(0, 1) !== ","
-    ) {
-      setTags([...tags, value.substr(0, value.length - 1)]);
-      setTagInput("");
-    } else {
-      setTagInput(value);
-    }
-  };
-  const handleDelete = (tagValue) => {
-    // delete the tag
-    setTags(tags.filter((tag) => tag !== tagValue));
-  };
   return (
     <form onSubmit={handleSubmit} noValidate>
       <div style={{ marginBottom: 20 }}>
@@ -76,17 +59,20 @@ export default ({
         )}
       </div>
       <FileUploader
+        required={true}
         accept={"image/*"}
         value={values.thumbnail}
         onError={(e) => setFieldError(e)}
         onChange={(value) => setFieldValue("thumbnail", value)}
-        fieldName={"thumbnail"}
+        uploadDirectory={"thumbnails"}
         label="Template Thumbnail"
         onTouched={setFieldTouched}
         error={errors.thumbnail}
-        helperText={"Thumbnails are presenters of your template"}
+        helperText={"Thumbnails "}
+        name={"thumbnail"}
       />
       <TextField
+        required
         fullWidth
         margin={"dense"}
         variant={"outlined"}
@@ -124,41 +110,13 @@ export default ({
             : "Keep your description short and simple."
         }
       />
-
-      {/* TODO should be a separate component */}
-      <TextField
+      <ArrayInput
         fullWidth
-        margin={"dense"}
-        disabled={tags.length >= 5}
-        variant={"outlined"}
-        onChange={({ target: { value } }) => handleTagInput(value)}
-        value={tagInput}
-        type="text"
-        placeholder="Enter tags"
-        label="Tags"
-        error={
-          tags.length > 5 ||
-          tagInput.substr(0, 1) === " " ||
-          tagInput.substr(0, 1) === ","
-        }
-        helperText={
-          tagInput.substr(0, 1) === " " || tagInput.substr(0, 1) === ","
-            ? "Invalid Tag Value"
-            : "You can add maximum of 5 tags"
-        }
-        InputProps={{
-          startAdornment: tags.map((tag, index) => {
-            return (
-              <Chip
-                key={index}
-                style={{ margin: 6 }}
-                size="small"
-                label={tag}
-                onDelete={() => handleDelete(tag)}
-              />
-            );
-          }),
-        }}
+        maxKeywords={5}
+        onChange={setKeywords}
+        placeholder="Enter Keywords"
+        label="Keywords"
+        keywords={keywords}
       />
 
       <Button

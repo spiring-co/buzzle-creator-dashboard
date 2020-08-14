@@ -10,24 +10,23 @@ import segmentReducer, {
   EDIT_VERSION_KEYS,
   ADD_VERSION,
   REMOVE_VERSION,
-  SWAP_SEGMENT_FIELDS
+  SWAP_SEGMENT_FIELDS,
 } from "../contextStore/Reducer";
 
 const BLANK_FIELD = {
   type: "test",
   name: "test",
   maxLength: "edit",
-  required: true
+  required: true,
 };
 
 const initalState = {
   //fetch from localStorage
-  creatorId: localStorage.getItem('creatorId'),
-  tags: [],
+  creatorId: localStorage.getItem("creatorId"),
+  keywords: [],
   versions: [],
-  isDeleted: false,
   title: "",
-  description: ""
+  description: "",
 };
 
 //edit_video_keys
@@ -35,7 +34,7 @@ test("Edit Video Title Correctly", () => {
   expect(
     segmentReducer(initalState, {
       type: EDIT_VIDEO_KEYS,
-      payload: { value: { title: "Video Title" } }
+      payload: { value: { title: "Video Title" } },
     }).title
   ).toBe("Video Title");
 });
@@ -45,7 +44,7 @@ test("Add Version 0 Correctly", () => {
   expect(
     segmentReducer(initalState, {
       type: ADD_VERSION,
-      payload: { composition: "main" }
+      payload: { composition: "main" },
     }).versions[0].composition
   ).toBe("main");
 });
@@ -54,7 +53,7 @@ test("Add Version 1 Correctly", () => {
   expect(
     segmentReducer(initalState, {
       type: ADD_VERSION,
-      payload: { composition: "second" }
+      payload: { composition: "second" },
     }).versions[1].composition
   ).toBe("second");
 });
@@ -66,8 +65,8 @@ test("Edit price of version 0", () => {
       type: EDIT_VERSION_KEYS,
       payload: {
         value: { price: "900" },
-        activeVersionIndex: 0
-      }
+        activeVersionIndex: 0,
+      },
     }).versions[0].price
   ).toBe("900");
 });
@@ -78,8 +77,8 @@ test("Edit price of version 1", () => {
       type: EDIT_VERSION_KEYS,
       payload: {
         value: { price: "70" },
-        activeVersionIndex: 1
-      }
+        activeVersionIndex: 1,
+      },
     }).versions[1].price
   ).toBe("70");
 });
@@ -90,8 +89,8 @@ test("Remove version at index 0", () => {
     segmentReducer(initalState, {
       type: REMOVE_VERSION,
       payload: {
-        activeVersionIndex: 0
-      }
+        activeVersionIndex: 0,
+      },
     }).versions.length
   ).toBe(1);
 });
@@ -100,7 +99,7 @@ test("Add segments correctly in version 0", () => {
   expect(
     segmentReducer(initalState, {
       type: ADD_SEGMENT,
-      payload: { activeVersionIndex: 0 }
+      payload: { activeVersionIndex: 0 },
     }).versions[0].form.segments.length
   ).toBe(2);
 });
@@ -110,7 +109,7 @@ test("Remove segments correctly in version 0 and segment 1", () => {
   expect(
     segmentReducer(initalState, {
       type: REMOVE_SEGMENT,
-      payload: { activeVersionIndex: 0, segmentIndex: 1 }
+      payload: { activeVersionIndex: 0, segmentIndex: 1 },
     }).versions[0].form.segments.length
   ).toBe(1);
 });
@@ -123,8 +122,8 @@ test("Edit Segment keys correctly", () => {
       payload: {
         activeVersionIndex: 0,
         activeIndex: 0,
-        value: { subtitle: "editedSubtitle" }
-      }
+        value: { subtitle: "editedSubtitle" },
+      },
     }).versions[0].form.segments[0].subtitle
   ).toBe("editedSubtitle");
 });
@@ -138,9 +137,9 @@ test("Add Fields correctly", () => {
         activeVersionIndex: 0,
         activeIndex: 0,
         value: {
-          fields: [BLANK_FIELD]
-        }
-      }
+          fields: [BLANK_FIELD],
+        },
+      },
     }).versions[0].form.segments[0].fields.length
   ).toBe(1);
 });
@@ -155,10 +154,10 @@ test("Add Fields correctly", () => {
         value: {
           fields: [
             ...initalState.versions[0].form.segments[0].fields,
-            BLANK_FIELD
-          ]
-        }
-      }
+            BLANK_FIELD,
+          ],
+        },
+      },
     }).versions[0].form.segments[0].fields.length
   ).toBe(2);
 });
@@ -177,13 +176,13 @@ test("Edit Fields Value at index 1 correctly", () => {
               if (index === 1) {
                 return {
                   ...initalState.versions[0].form.segments[0].fields[1],
-                  maxLength: "edit Max Length Success"
+                  maxLength: "edit Max Length Success",
                 };
               } else return item;
             }
-          )
-        }
-      }
+          ),
+        },
+      },
     }).versions[0].form.segments[0].fields[1].maxLength
   ).toBe("edit Max Length Success");
 });
@@ -196,14 +195,14 @@ test("Remove Field at index 1 correctly", () => {
       payload: {
         fieldIndex: 1,
         activeVersionIndex: 0,
-        activeIndex: 0
-      }
+        activeIndex: 0,
+      },
     }).versions[0].form.segments[0].fields[0]
   ).toMatchObject({
     type: "test",
     name: "test",
     maxLength: "edit",
-    required: true
+    required: true,
   });
 });
 
@@ -214,13 +213,13 @@ test("Remove Field at index 1 Not correctly", () => {
       payload: {
         fieldIndex: 1,
         activeVersionIndex: 0,
-        activeIndex: 0
-      }
+        activeIndex: 0,
+      },
     }).versions[0].form.segments[0].fields[0]
   ).not.toMatchObject({
     type: "wrong Info",
     name: "test",
     maxLength: "edit",
-    required: true
+    required: true,
   });
 });

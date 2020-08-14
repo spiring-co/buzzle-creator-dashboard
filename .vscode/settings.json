@@ -8,6 +8,9 @@
         "buzzle",
         "labelledby",
         "mixins",
+        "prefs",
+        "render",
+        "render prefs",
         "tabpanel"
     ],
     "eslint.enable": true
