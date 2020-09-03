@@ -122,7 +122,7 @@ export default () => {
               Download AEP(X)
             </Button>
             <Button
-
+              disabled={isLoading}
               style={{ margin: 10, marginLeft: 0 }}
               variant="contained"
               color="primary"
