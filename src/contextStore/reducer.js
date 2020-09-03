@@ -10,6 +10,15 @@ export const RESET_STATE = "RESET_STATE";
 export const LOAD_STATE = "LOAD_STATE";
 export const RESTORE_FIELDS = "RESTORE_FIELDS";
 export const SWAP_FIELDS = "SWAP_FIELDS";
+
+const shiftValueByIndex = (array, dropIndex, dragIndex) => {
+  const startPart = array.slice(0, dropIndex)
+  startPart.push(array[dragIndex])
+  const endPart = array.slice(dropIndex)
+  const shifted = startPart.concat(endPart)
+  return shifted.filter((it, i) => i !== dragIndex + 1)
+}
+
 export default (state, action) => {
   // const { user } = useAuth();
 
@@ -23,17 +32,11 @@ export default (state, action) => {
       state.versions[action.payload.activeVersionIndex].fields = fields;
 
       return Object.assign({}, state);
+
     //payload:action.payload.activeVersionIndex,action.payload.swapIndex,action.payload.targetSwapIndex
     case SWAP_FIELDS:
-      [
-        state.versions[action.payload.activeVersionIndex].fields[action.payload.swapIndex],
-        state.versions[action.payload.activeVersionIndex].fields[action.payload.targetSwapIndex],
-      ] = [
-          state.versions[action.payload.activeVersionIndex].fields[action.payload.targetSwapIndex],
-          state.versions[action.payload.activeVersionIndex].fields[action.payload.swapIndex],
-        ];
-      return state;
-
+      state.versions[action.payload.activeVersionIndex].fields = shiftValueByIndex(state.versions[action.payload.activeVersionIndex].fields, action.payload.targetSwapIndex, action.payload.swapIndex)
+      return Object.assign({}, state);
     //payload: action.payload.value={key:action.payload.value}
     case EDIT_VIDEO_KEYS:
       return { ...state, ...action.payload.value };
