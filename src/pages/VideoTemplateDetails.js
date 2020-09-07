@@ -10,6 +10,7 @@ import { apiClient } from "buzzle-sdk";
 import React, { useState } from "react";
 import { useHistory, useParams, useRouteMatch } from "react-router-dom";
 import useApi from "services/apiHook";
+import { zipMaker } from "helpers/downloadTemplateHelper"
 
 const { VideoTemplate } = apiClient({
   baseUrl: process.env.REACT_APP_API_URL,
@@ -30,11 +31,16 @@ export default () => {
   const history = useHistory();
 
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null);
   const { data, loading, err } = useApi(
     `${process.env.REACT_APP_API_URL}/videoTemplates/${id}`
   );
-
+  const handleDownload = async () => {
+    setIsLoading(true)
+    await zipMaker(data?.staticAssets, data?.src)
+    setIsLoading(false)
+  }
   const handleEdit = async () => {
     history.push({
       pathname: `${url}/edit`,
@@ -114,6 +120,14 @@ export default () => {
               color="primary"
               href={data?.src || ""}>
               Download AEP(X)
+            </Button>
+            <Button
+              disabled={isLoading}
+              style={{ margin: 10, marginLeft: 0 }}
+              variant="contained"
+              color="primary"
+              onClick={handleDownload}>
+              {isLoading ? 'Preparing...' : 'Download template with assets'}
             </Button>
             <Button
               style={{ margin: 10 }}

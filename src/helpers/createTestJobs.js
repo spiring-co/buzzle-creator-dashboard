@@ -31,7 +31,7 @@ function fieldsToData(fields, dataFillType) {
       case "image":
         data[f.key] = `https://dummyimage.com/${f.constraints.width}x${
           f.constraints.height
-        }/3742fa/fff.${f.rendererData.extension}&text=${encodeURI(f.label)}`;
+          }/3742fa/fff.${f.rendererData.extension}&text=${encodeURI(f.label)}`;
         break;
       default:
         switch (dataFillType) {
@@ -54,6 +54,9 @@ function fieldsToData(fields, dataFillType) {
 }
 
 const getNumberPalindrome = (len, label) => {
+  if (label?.length > len) {
+    return label.substr(0, len)
+  }
   const n = len - label?.length || 0;
   const s1 = Array.from({ length: len / 2 }, (v, k) => k + 1)
     .join("-")

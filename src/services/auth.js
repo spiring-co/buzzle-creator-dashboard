@@ -60,7 +60,7 @@ function AuthProvider(props) {
     return true;
   };
 
-  const sendOtp = async () => {};
+  const sendOtp = async () => { };
   const value = useMemo(() => {
     return {
       login,
