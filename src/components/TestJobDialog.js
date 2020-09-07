@@ -9,7 +9,7 @@ import {
   InputLabel,
   MenuItem,
   Radio,
-  RadioGroup,
+  RadioGroup, FormHelperText,
   Select,
   TextField,
 } from "@material-ui/core";
@@ -18,13 +18,17 @@ import { useFormik } from "formik";
 import createTestJobs from "helpers/createTestJobs";
 import React from "react";
 import { useHistory } from "react-router-dom";
+import * as Yup from "yup";
 
 const { Job } = apiClient({
   baseUrl: process.env.REACT_APP_API_URL,
   authToken: localStorage.getItem("jwtoken"),
 });
+const validationSchema = Yup.object().shape({
+  versionId: Yup.string().required("version is required!"),
 
-export default ({ onClose, open, idVideoTemplate }) => {
+});
+export default ({ onClose, open, idVideoTemplate, versions = [] }) => {
   const handleClose = () => {
     onClose();
   };
@@ -40,16 +44,17 @@ export default ({ onClose, open, idVideoTemplate }) => {
     isSubmitting,
   } = useFormik({
     initialValues: {
+      versionId: "",
       dataFillType: "maxLength",
       incrementFrame: 1,
       renderSettings: "h264",
       settingsTemplate: "half",
     },
+    validationSchema,
     onSubmit: async (options) => {
       console.log(idVideoTemplate, options);
-      const jobs = await createTestJobs(idVideoTemplate, options);
-      console.log(jobs);
-      await Promise.all(jobs.map(Job.create));
+      const job = await createTestJobs(idVideoTemplate, options);
+      await Job.create(job)
       history.push("/home/jobs");
     },
   });
@@ -86,6 +91,33 @@ export default ({ onClose, open, idVideoTemplate }) => {
           </RadioGroup>
         </FormControl>
         <FormControl fullWidth margin="dense" variant="outlined">
+          <InputLabel id="demo-simple-select-outlined-label">
+            Select Version
+        </InputLabel>
+          <Select
+            labelId="demo-simple-select-outlined-label"
+            id="demo-simple-select-outlined"
+            onBlur={handleBlur}
+            onChange={handleChange}
+            error={touched.versionId && errors.versionId}
+            value={values.versionId}
+            name="versionId"
+            placeholder="Select Version"
+            label="Select Version">
+            {versions.length === 0 && (
+              <MenuItem disabled={true}>No version</MenuItem>
+            )}
+            {versions.map(({ id, title }, index) => {
+              return (
+                <MenuItem key={id} id={index} value={id}>
+                  {title}
+                </MenuItem>
+              );
+            })}
+          </Select>
+          <FormHelperText error={touched.versionId && errors.versionId}>{errors.versionId}</FormHelperText>
+        </FormControl>
+        <FormControl fullWidth margin="dense" variant="outlined">
           <InputLabel htmlFor="settingsTemplate">Output Module</InputLabel>
           <Select
             name={"settingsTemplate"}
@@ -96,6 +128,7 @@ export default ({ onClose, open, idVideoTemplate }) => {
             error={touched.settingsTemplate && !!errors.settingsTemplate}
             fullWidth
             placeholder={"Settings Template"}
+            label="Output Module"
             variant={"outlined"}
             inputProps={{
               name: "settingsTemplate",
@@ -117,6 +150,7 @@ export default ({ onClose, open, idVideoTemplate }) => {
             onBlur={handleBlur}
             onChange={handleChange}
             placeholder={"Render Settings"}
+            label="Render Settings Template"
             error={touched.renderSettings && !!errors.renderSettings}
             fullWidth
             variant={"outlined"}

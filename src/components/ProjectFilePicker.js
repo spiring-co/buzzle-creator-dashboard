@@ -119,6 +119,7 @@ export default ({
       const { compositions, staticAssets } = await extractStructureFromFile(
         uri
       );
+      console.log(staticAssets)
       setHasExtractedData(true);
       if (!compositions) {
         onError("Could not extract project structure.");
