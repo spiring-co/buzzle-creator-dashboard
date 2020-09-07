@@ -20,7 +20,6 @@ export default ({ submitForm, isEdit, video }) => {
   const [activeDisplayIndex, setActiveDisplayIndex] = useState(0);
   const [compositions, setCompositions] = useState([]);
   const [error, setError] = useState(null);
-  const [assets, setAssets] = useState([]);
 
   useEffect(() => {
     if (isEdit) {
@@ -51,9 +50,15 @@ export default ({ submitForm, isEdit, video }) => {
       projectFile: { fileUrl = "", staticAssets = [], compositions = [] },
     } = data;
     setCompositions(compositions);
-    console.log(compositions);
-    setAssets(isEdit ? video?.staticAssets : staticAssets);
-    editVideoKeys({ keywords, title, description, src: fileUrl, thumbnail });
+    console.log(staticAssets,staticAssets.map((a, index) =>
+      video?.staticAssets.map(({ name }) => name).includes(a.name)
+        ? video?.staticAssets[video?.staticAssets.map(({ name }) => name).indexOf(a.name)]
+        : a));
+    editVideoKeys({ keywords, title, description, src: fileUrl, thumbnail,staticAssets:isEdit ? staticAssets.map((a, index) =>
+      video?.staticAssets.map(({ name }) => name).includes(a.name)
+        ? video?.staticAssets[video?.staticAssets.map(({ name }) => name).indexOf(a.name)]
+        : a)
+      : staticAssets });
     setActiveDisplayIndex(1);
   };
 
@@ -61,7 +66,7 @@ export default ({ submitForm, isEdit, video }) => {
     VideoTemplateMetaForm: (
       <VideoTemplateMetaForm
         isEdit={isEdit}
-        assets={assets}
+        assets={videoObj.staticAssets}
         compositions={compositions}
         initialValues={
           isEdit
@@ -93,9 +98,7 @@ export default ({ submitForm, isEdit, video }) => {
         setActiveDisplayIndex={setActiveDisplayIndex}
         activeDisplayIndex={activeDisplayIndex}
         handleSubmitForm={handleSubmitForm}
-        staticAssets={
-          videoObj?.staticAssets.length !== 0 ? videoObj?.staticAssets : assets
-        }
+        staticAssets={videoObj?.staticAssets}
       />
     ),
   };

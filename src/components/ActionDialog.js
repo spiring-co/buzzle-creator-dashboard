@@ -1,53 +1,33 @@
-import React, { useState, useEffect } from "react";
 import {
-    DialogActions,
-    Typography,
-    Dialog,
-    DialogContent,
-    DialogTitle,
-    Button,
-    FormControl,
-    FormHelperText,
-    InputLabel,
-    MenuItem,
-    Select,
-    TextField,
-    RadioGroup,
-    FormControlLabel,
-    Radio,
-    FormLabel,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
 } from "@material-ui/core";
-import { useFormik } from "formik";
-import * as Yup from "yup";
+import React from "react";
 
-const validationSchema = null;
+export default ({ title, handleClose, children, onSubmit }) => {
+  return (
+    <Dialog
+      fullWidth
+      open
+      onClose={handleClose}
+      aria-labelledby="form-dialog-title">
+      <DialogTitle id="form-dialog-title">{title}</DialogTitle>
+      <DialogContent children={children} />
 
-export default ({
-    title,
-    handleClose,
-    children,
-    onSubmit,
-}) => {
-    return (
-        <Dialog
-            fullWidth
-            open
-            onClose={handleClose}
-            aria-labelledby="form-dialog-title">
-            <DialogTitle id="form-dialog-title">{title}</DialogTitle>
-            <DialogContent children={children} />
-
-            <DialogActions>
-                <Button onClick={handleClose} color="primary">
-                    Cancel
-          </Button>
-                <Button
-                    variant="contained"
-                    onClick={onSubmit}
-                    color="primary"
-                    children={"Save Action"}
-                />
-            </DialogActions>
-        </Dialog>
-    );
+      <DialogActions>
+        <Button onClick={handleClose} color="primary">
+          Cancel
+        </Button>
+        <Button
+          variant="contained"
+          onClick={onSubmit}
+          color="primary"
+          children={"Save Action"}
+        />
+      </DialogActions>
+    </Dialog>
+  );
 };

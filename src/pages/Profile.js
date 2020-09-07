@@ -1,19 +1,23 @@
-import React, { useState, useEffect } from "react";
-import Paper from "@material-ui/core/Paper";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import { useFormik } from "formik";
 import {
-  Typography,
-  Container,
-  Divider,
   Box,
   Button,
+  Container,
+  Divider,
   TextField,
+  Typography,
 } from "@material-ui/core";
-import { Creator } from "services/api";
+import Paper from "@material-ui/core/Paper";
+import Tab from "@material-ui/core/Tab";
+import Tabs from "@material-ui/core/Tabs";
 import { Alert } from "@material-ui/lab";
+import { apiClient } from "buzzle-sdk";
+import { useFormik } from "formik";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "services/auth";
+const { Creator } = apiClient({
+  baseUrl: process.env.REACT_APP_API_URL,
+  authToken: localStorage.getItem("jwtoken"),
+});
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
