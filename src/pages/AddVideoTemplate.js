@@ -15,8 +15,7 @@ const AddTemplate = ({ location }) => {
   const [error, setError] = useState(null);
   const [videoObj] = useContext(VideoTemplateContext);
 
-  const { video, isEdit } = location?.state ?? {};
-  console.log(isEdit)
+  const { video, isEdit, draftIndex = null } = location?.state ?? {};
   const history = useHistory();
 
   const handleSubmit = async (data) => {
@@ -54,14 +53,19 @@ const AddTemplate = ({ location }) => {
           const confirm = window.confirm("Save template as draft?")
           if (confirm) {
             const temp = localStorage.getItem('draftTemplates') ? JSON.parse(localStorage.getItem('draftTemplates')) : []
-            temp.push({ ...videoObj, draftedAt: new Date() })
-            localStorage.setItem('draftTemplates', JSON.stringify(temp))
+            if (draftIndex !== null) {
+              localStorage.setItem('draftTemplates', JSON.stringify(temp.map((item, index) => draftIndex === index ? ({ ...videoObj, draftedAt: new Date() }) : item)
+              ))
+            } else {
+              temp.push({ ...videoObj, draftedAt: new Date() })
+              localStorage.setItem('draftTemplates', JSON.stringify(temp))
+            }
           } else {
             console.log('Exit')
           }
         } else return `You will lose all your data.`
       }} />
-      <FormBuilder isEdit={isEdit} video={video} submitForm={handleSubmit} />
+      <FormBuilder isEdit={isEdit} isDrafted={draftIndex !== null} video={video} submitForm={handleSubmit} />
     </>
   );
 };

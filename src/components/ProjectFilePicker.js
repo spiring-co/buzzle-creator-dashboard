@@ -64,7 +64,7 @@ export default ({
   );
   useEffect(() => {
     // if template is in edit mode
-    if (edit) {
+    if (edit && value) {
       // in edit mode and no composition is extracted till yet
       if (compositions.length === 0) {
         setType('file')
