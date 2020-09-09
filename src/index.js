@@ -3,11 +3,14 @@ import ReactDOM from "react-dom";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import "./i18next";
+import { CurrencyProvider } from "services/currencyContext";
 
 ReactDOM.render(
   <Suspense fallback={<div>Loading...</div>}>
     <React.StrictMode>
-      <App />
+      <CurrencyProvider>
+        <App />
+      </CurrencyProvider>
     </React.StrictMode>
   </Suspense>,
   document.getElementById("root")

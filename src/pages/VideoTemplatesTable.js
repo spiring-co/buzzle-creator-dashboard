@@ -1,12 +1,12 @@
 import {
   Box,
-  Button,
   Container,
   GridList,
   GridListTile,
   GridListTileBar,
   IconButton,
   Link,
+  Button,
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
@@ -234,47 +234,59 @@ export default (props) => {
                 tooltip: "Show Code",
               },
             ]}
-            actions={[
-              {
-                icon: "alarm-on",
-                tooltip: "Render Test Job",
-                onClick: (e, item) => {
-                  setTestJobTemplate(item);
-                  setIsDialogOpen(true);
-                },
+            actions={[{
+              icon: () => <Button children="PUBLSH" size="small" variant="contained" color={"primary"} />,
+              tooltip: "Publish your template",
+              onClick: (e, data) => {
+                history.push({
+                  pathname: `${url}/${data.id}/publish`,
+                  state: {
+                    videoTemplate: data,
+                  },
+                });
               },
-              {
-                icon: "delete",
-                tooltip: "Delete Template",
-                disabled: isDeleting,
-                onClick: async (event, { id }) => handleDelete(id),
+            },
+            {
+              icon: "alarm-on",
+              tooltip: "Render Test Job",
+              onClick: (e, item) => {
+                setTestJobTemplate(item);
+                setIsDialogOpen(true);
               },
-              {
-                icon: "add",
-                tooltip: "Add Video Template",
-                isFreeAction: true,
-                onClick: () => history.push(`${url}/add`),
+            },
+            {
+              icon: "delete",
+              tooltip: "Delete Template",
+              disabled: isDeleting,
+              onClick: async (event, { id }) => handleDelete(id),
+            },
+            {
+              icon: "add",
+              tooltip: "Add Video Template",
+              isFreeAction: true,
+              onClick: () => history.push(`${url}/add`),
+            },
+
+            {
+              icon: "edit",
+              tooltip: "Edit Template",
+              onClick: (e, data) => {
+                delete data["tableData"];
+                history.push({
+                  pathname: `${url}/${data.id}/edit`,
+                  state: {
+                    isEdit: true,
+                    video: data,
+                  },
+                });
               },
-              {
-                icon: "edit",
-                tooltip: "Edit Template",
-                onClick: (e, data) => {
-                  delete data["tableData"];
-                  history.push({
-                    pathname: `${url}/${data.id}/edit`,
-                    state: {
-                      isEdit: true,
-                      video: data,
-                    },
-                  });
-                },
-              },
-              {
-                icon: "refresh",
-                tooltip: "Refresh Data",
-                isFreeAction: true,
-                onClick: handleRetry,
-              },
+            },
+            {
+              icon: "refresh",
+              tooltip: "Refresh Data",
+              isFreeAction: true,
+              onClick: handleRetry,
+            },
             ]}
             data={(query) =>
               fetch(`${uri}?page=${query.page + 1}&size=${query.pageSize}`)

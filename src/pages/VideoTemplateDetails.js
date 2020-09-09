@@ -113,6 +113,20 @@ export default () => {
               Edit
             </Button>
             <Button
+              style={{ margin: 10, marginLeft: 0 }}
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                history.push({
+                  pathname: `${url}/publish`,
+                  state: {
+                    videoTemplate: data
+                  },
+                });
+              }}>
+              Publish
+            </Button>
+            <Button
               component={"a"}
               target="_blank"
               style={{ margin: 10, marginLeft: 0 }}
