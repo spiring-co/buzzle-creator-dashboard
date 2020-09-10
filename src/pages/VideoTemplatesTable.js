@@ -234,9 +234,9 @@ export default (props) => {
                 tooltip: "Show Code",
               },
             ]}
-            actions={[{
-              icon: () => <Button children="PUBLSH" size="small" variant="contained" color={"primary"} />,
-              tooltip: "Publish your template",
+            actions={[({ isPublished = false }) => ({
+              icon: () => <Button children={isPublished ? "RE-PUBLISH" : "PUBLSH"} size="small" variant="contained" color={"primary"} />,
+              tooltip: `${isPublished ? 'Re-Publish' : 'Publish'} your template`,
               onClick: (e, data) => {
                 history.push({
                   pathname: `${url}/${data.id}/publish`,
@@ -245,7 +245,7 @@ export default (props) => {
                   },
                 });
               },
-            },
+            }),
             {
               icon: "alarm-on",
               tooltip: "Render Test Job",

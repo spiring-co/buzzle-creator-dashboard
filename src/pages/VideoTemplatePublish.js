@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import {
     Button,
     FormControl, Select, FormHelperText, MenuItem, InputLabel,
-    LinearProgress, Box,
-    Paper, Container,
+    LinearProgress, Box, InputAdornment, Popover,
+    Paper, Container, IconButton,
     Typography, TextField,
     withStyles,
 } from "@material-ui/core";
@@ -21,6 +21,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import { useCurrency } from "services/currencyContext";
 import createTestJobs from "helpers/createTestJobs";
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 
 const { Job } = apiClient({
     baseUrl: process.env.REACT_APP_API_URL,
@@ -47,16 +48,19 @@ export default ({ location }) => {
     );
     const history = useHistory();
     const { currency } = useCurrency()
+    const [anchorEl, setAnchorEl] = useState(null)
     const [videoTemplate, setVideoTemplate] = useState(data)
     const [isPublishing, setIsPublishing] = useState(false);
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState(null);
-    const [activeStep, setActiveStep] = useState(2)
+    const [activeStep, setActiveStep] = useState(0)
+    const open = Boolean(anchorEl);
+    const idPopover = open ? 'simple-popover' : undefined;
     useEffect(() => {
         setVideoTemplate(data)
         console.log(data)
     }, [data])
-    console.log(videoTemplate?.versions[0])
+
     const handleRenderTestJob = async (versionId) => {
         // render test job for version 
         setIsLoading(true)
@@ -75,7 +79,25 @@ export default ({ location }) => {
 
 
     const handlePublish = async () => {
-        //update template with isPublished to true, loyalityCost and loyalty Currency
+        try {
+            setIsPublishing(true)
+            //update template with isPublished to true, loyalityCost and loyalty Currency
+            await VideoTemplate.update(id, videoTemplate)
+            setIsPublishing(false)
+            history.push({
+                pathname: "/home/videoTemplates",
+                state: {
+                    statusObj: {
+                        status: {
+                            message: `Published Successfully.`,
+                        },
+                        err: false,
+                    },
+                },
+            });
+        } catch (err) {
+            setError(err)
+        }
     };
     const handleCurrencyChange = ({ target: { value } }) => {
         setVideoTemplate({ ...videoTemplate, versions: videoTemplate?.versions?.map(item => ({ ...item, loyaltyCurrency: value, loyaltyValue: null })) })
@@ -195,8 +217,28 @@ export default ({ location }) => {
             case 2:
                 return (<TableContainer>
                     <Table size="small" aria-label="a dense table">
-                        <caption>we recommend you to set loyalty as per the platform most accepted loyalty value</caption>
+                        <caption> <IconButton onClick={({ currentTarget }) => setAnchorEl(currentTarget)}>
+                            <InfoOutlinedIcon /> </IconButton>we recommend you to set loyalty as per the platform most accepted loyalty value, click ⓘ button to see platofrm rates
+                           </caption>
                         <TableHead>
+                            <Popover
+                                id={idPopover}
+                                open={open}
+                                anchorEl={anchorEl}
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'left',
+                                }}
+                                transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'left',
+                                }}
+                                onClose={() => setAnchorEl(null)}
+                            >
+                                <Container style={{ padding: 15 }}>
+                                    <Typography>Here comes platform rates</Typography>
+                                </Container>
+                            </Popover>
                             <StyledTableRow>
                                 <StyledTableCell>Version Name</StyledTableCell>
                                 <StyledTableCell >Loyalty amount for this version</StyledTableCell>
@@ -208,15 +250,19 @@ export default ({ location }) => {
                                     <StyledTableCell >
                                         {title}
                                     </StyledTableCell>
-                                    <StyledTableCell key={loyaltyValue + id}>
+                                    <StyledTableCell>
                                         <TextField
+                                            style={{ background: '#fff' }}
                                             required
                                             variant="outlined"
-                                            defaultValue={loyaltyValue}
+                                            value={loyaltyValue}
                                             onChange={({ target: { value } }) => handleLoyaltySet(index, value)}
                                             type="number"
                                             margin="dense"
                                             placeholder="Enter loyalty value"
+                                            InputProps={{
+                                                startAdornment: <InputAdornment position="start">{videoTemplate?.versions[0]?.loyaltyCurrency ?? currency}</InputAdornment>,
+                                            }}
                                             label="Enter loyalty value"
                                         /></StyledTableCell>
                                 </StyledTableRow>
@@ -231,13 +277,13 @@ export default ({ location }) => {
                             children="back"
                         />
                         <Button
-                            disabled={!videoTemplate?.versions?.every(({ loyaltyValue = null }) => (loyaltyValue !== null || loyaltyValue !== ""))}
+                            disabled={!videoTemplate?.versions?.every(({ loyaltyValue = null }) => (loyaltyValue !== null && loyaltyValue !== "")) || isPublishing}
                             size="small"
                             style={{ width: 'fit-content', marginTop: 10 }}
                             color="primary"
                             variant="contained"
                             onClick={handlePublish}
-                            children="Publish"
+                            children={isPublishing ? "Publishing ..." : "Publish"}
                         />
                     </div>
                 </TableContainer>);

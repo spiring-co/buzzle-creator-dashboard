@@ -124,7 +124,7 @@ export default () => {
                   },
                 });
               }}>
-              Publish
+              {data?.isPublished ?? false ? "RE-PUBLISH" : "PUBLSH"}
             </Button>
             <Button
               component={"a"}
