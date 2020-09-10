@@ -3,24 +3,25 @@ const { VideoTemplate } = apiClient({ baseUrl: process.env.REACT_APP_API_URL });
 
 export default async (id, options) => {
   const {
-    versionId,
+    versions,
     settingsTemplate,
     renderSettings,
     incrementFrame,
     dataFillType,
   } = options;
-  const { versions } = await VideoTemplate.get(id);
-  const version = versions.find(({ id }) => id === versionId)
-  return {
-    idVideoTemplate: id,
-    idVersion: version.id,
-    renderPrefs: {
-      settingsTemplate,
-      incrementFrame,
-      renderSettings,
-    },
-    data: fieldsToData(version.fields, dataFillType),
-  };
+
+  return versions.map((v) => {
+    return {
+      idVideoTemplate: id,
+      idVersion: v.id,
+      renderPrefs: {
+        settingsTemplate,
+        incrementFrame,
+        renderSettings,
+      },
+      data: fieldsToData(v.fields, dataFillType),
+    };
+  });
 };
 
 function fieldsToData(fields, dataFillType) {

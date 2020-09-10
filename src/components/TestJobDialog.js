@@ -6,7 +6,7 @@ import {
   FormControl,
   FormControlLabel,
   FormLabel,
-  InputLabel,
+  InputLabel, FormGroup, Checkbox,
   MenuItem,
   Radio,
   RadioGroup, FormHelperText,
@@ -25,8 +25,9 @@ const { Job } = apiClient({
   authToken: localStorage.getItem("jwtoken"),
 });
 const validationSchema = Yup.object().shape({
-  versionId: Yup.string().required("version is required!"),
-
+  versions: Yup.array()
+    .required('Atleast 1 one version should be selected!')
+    .min(1)
 });
 export default ({ onClose, open, idVideoTemplate, versions = [] }) => {
   const handleClose = () => {
@@ -40,11 +41,11 @@ export default ({ onClose, open, idVideoTemplate, versions = [] }) => {
     handleSubmit,
     values,
     errors,
-    touched,
+    touched, setFieldValue, setFieldTouched,
     isSubmitting,
   } = useFormik({
     initialValues: {
-      versionId: "",
+      versions: [],
       dataFillType: "maxLength",
       incrementFrame: 1,
       renderSettings: "h264",
@@ -52,13 +53,25 @@ export default ({ onClose, open, idVideoTemplate, versions = [] }) => {
     },
     validationSchema,
     onSubmit: async (options) => {
-      console.log(idVideoTemplate, options);
-      const job = await createTestJobs(idVideoTemplate, options);
-      await Job.create(job)
+      const jobs = await createTestJobs(idVideoTemplate, options);
+      await Promise.all(jobs.map(Job.create));
       history.push("/home/jobs");
     },
   });
 
+  const handleVersionChoose = (versionId, checked) => {
+    setFieldTouched('versions', true)
+    const isPresent = Boolean(values.versions.filter(({ id }) => id === versionId)?.length ?? false)
+    if (isPresent) {
+      //check if version Id exist remove it from versions
+      setFieldValue('versions', values.versions.filter(({ id }) => id !== versionId))
+    }
+    else {
+      // add it to versions
+      setFieldValue('versions', [...values.versions, versions.find(({ id }) => id === versionId)])
+
+    }
+  }
   return (
     <Dialog
       onClose={handleClose}
@@ -90,32 +103,18 @@ export default ({ onClose, open, idVideoTemplate, versions = [] }) => {
             />
           </RadioGroup>
         </FormControl>
-        <FormControl fullWidth margin="dense" variant="outlined">
-          <InputLabel id="demo-simple-select-outlined-label">
-            Select Version
-        </InputLabel>
-          <Select
-            labelId="demo-simple-select-outlined-label"
-            id="demo-simple-select-outlined"
-            onBlur={handleBlur}
-            onChange={handleChange}
-            error={touched.versionId && errors.versionId}
-            value={values.versionId}
-            name="versionId"
-            placeholder="Select Version"
-            label="Select Version">
-            {versions.length === 0 && (
-              <MenuItem disabled={true}>No version</MenuItem>
-            )}
-            {versions.map(({ id, title }, index) => {
-              return (
-                <MenuItem key={id} id={index} value={id}>
-                  {title}
-                </MenuItem>
-              );
-            })}
-          </Select>
-          <FormHelperText error={touched.versionId && errors.versionId}>{errors.versionId}</FormHelperText>
+        <br />
+        <FormControl required error={touched.versions && errors.versions} component="fieldset" >
+          <FormLabel component="legend">Choose Versions</FormLabel>
+          <FormGroup row>
+            {versions?.map((item) => <FormControlLabel
+              control={<Checkbox
+                checked={Boolean(values.versions?.filter(({ id }) => id === item?.id)?.length ?? false)}
+                onChange={({ target: { checked } }) => handleVersionChoose(item?.id, checked)} />}
+              label={item?.title}
+            />)}
+          </FormGroup>
+          <FormHelperText error={touched.versions && errors.versions}>{errors.versions}</FormHelperText>
         </FormControl>
         <FormControl fullWidth margin="dense" variant="outlined">
           <InputLabel htmlFor="settingsTemplate">Output Module</InputLabel>

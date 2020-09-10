@@ -65,7 +65,7 @@ export default ({ location }) => {
         // render test job for version 
         setIsLoading(true)
         const job = await createTestJobs(id, {
-            versionId,
+            versions: videoTemplate?.versions?.map(({ averageRenderTime = "" }) => averageRenderTime),
             dataFillType: "maxLength",
             incrementFrame: 1,
             renderSettings: "h264",
@@ -97,6 +97,7 @@ export default ({ location }) => {
             });
         } catch (err) {
             setError(err)
+            setIsPublishing(false)
         }
     };
     const handleCurrencyChange = ({ target: { value } }) => {
@@ -105,7 +106,7 @@ export default ({ location }) => {
     const handleLoyaltySet = (versionIndex, amount) => {
         setVideoTemplate({
             ...videoTemplate,
-            isPublished: true,
+            publishState: 'pending',
             versions: videoTemplate?.versions?.map((item, index) =>
                 index === versionIndex
                     ? ({ ...item, loyaltyValue: amount })
@@ -140,7 +141,6 @@ export default ({ location }) => {
                             <StyledTableRow>
                                 <StyledTableCell>Version Name</StyledTableCell>
                                 <StyledTableCell >Average Render Time</StyledTableCell>
-                                <StyledTableCell >Action</StyledTableCell>
                             </StyledTableRow>
                         </TableHead>
                         <TableBody>
@@ -149,17 +149,17 @@ export default ({ location }) => {
                                     <StyledTableCell >
                                         {title}
                                     </StyledTableCell>
-                                    <StyledTableCell >{averageRenderTime == 0 ? 'NA' : `${averageRenderTime} ms`}</StyledTableCell>
-                                    <StyledTableCell >{averageRenderTime == 0 ? <Button
-                                        onClick={() => handleRenderTestJob(id)}
-                                        size="small"
-                                        children="Render Job"
-                                        variant="contained"
-                                        color="primary" /> : '--'}</StyledTableCell>
+                                    <StyledTableCell >{averageRenderTime == 0 || !averageRenderTime ? 'NA' : `${averageRenderTime} ms`}</StyledTableCell>
                                 </StyledTableRow>
                             ))}
                         </TableBody>
                     </Table>
+                    <Button
+                        onClick={() => handleRenderTestJob(id)}
+                        size="small"
+                        children="Render Job"
+                        variant="contained"
+                        color="primary" />
                     <div>
                         <Button
                             disabled={!videoTemplate?.versions?.every(({ averageRenderTime = 0 }) => averageRenderTime != 0)}
@@ -173,49 +173,31 @@ export default ({ location }) => {
                     </div>
                 </TableContainer>);
             case 1:
-                return (<Container><FormControl margin="dense" style={{ width: 200 }} variant="outlined">
-                    <InputLabel id="demo-simple-select-outlined-label">
-                        Select your currency
-              </InputLabel>
-                    <Select
-                        labelId="demo-simple-select-outlined-label"
-                        id="demo-simple-select-outlined"
-                        onChange={handleCurrencyChange}
-                        value={videoTemplate?.versions[0]?.loyaltyCurrency ?? currency}
-                        placeholder="Select your currency"
-                        label="Select your currency">
-                        {currencies.length === 0 && (
-                            <MenuItem disabled={true}>No Currencies</MenuItem>
-                        )}
-                        {currencies.map((item, index) => {
-                            return (
-                                <MenuItem key={item} id={index} value={item}>
-                                    {item}
-                                </MenuItem>
-                            );
-                        })}
-                    </Select>
-                    {/* <FormHelperText>Lo</FormHelperText> */}
-                </FormControl>
-                    <div>
-                        <Button
-                            onClick={() => setActiveStep(activeStep - 1)}
-                            size="small"
-                            style={{ width: 'fit-content', marginTop: 10 }}
-                            children="back"
-                        />
-                        <Button
-                            size="small"
-                            style={{ width: 'fit-content', marginTop: 10 }}
-                            color="primary"
-                            variant="contained"
-                            onClick={() => setActiveStep(activeStep + 1)}
-                            children="Next"
-                        />
-                    </div>
-                </Container>);
-            case 2:
                 return (<TableContainer>
+                    <FormControl margin="dense" fullWidth variant="outlined">
+                        <InputLabel id="demo-simple-select-outlined-label">
+                            Select your currency
+              </InputLabel>
+                        <Select
+                            labelId="demo-simple-select-outlined-label"
+                            id="demo-simple-select-outlined"
+                            onChange={handleCurrencyChange}
+                            value={videoTemplate?.versions[0]?.loyaltyCurrency ?? currency}
+                            placeholder="Select your currency"
+                            label="Select your currency">
+                            {currencies.length === 0 && (
+                                <MenuItem disabled={true}>No Currencies</MenuItem>
+                            )}
+                            {currencies.map((item, index) => {
+                                return (
+                                    <MenuItem key={item} id={index} value={item}>
+                                        {item}
+                                    </MenuItem>
+                                );
+                            })}
+                        </Select>
+                        {/* <FormHelperText>Lo</FormHelperText> */}
+                    </FormControl>
                     <Table size="small" aria-label="a dense table">
                         <caption> <IconButton onClick={({ currentTarget }) => setAnchorEl(currentTarget)}>
                             <InfoOutlinedIcon /> </IconButton>we recommend you to set loyalty as per the platform most accepted loyalty value, click ⓘ button to see platofrm rates

@@ -1,9 +1,9 @@
 import {
-  Box,
+  Box, Chip, Tooltip,
   Container,
   GridList,
   GridListTile,
-  GridListTileBar,
+  GridListTileBar, Fade,
   IconButton,
   Link,
   Button,
@@ -18,6 +18,7 @@ import ListIcon from "@material-ui/icons/List";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import { apiClient } from "buzzle-sdk";
+import PublishIcon from '@material-ui/icons/Publish';
 import ErrorHandler from "components/ErrorHandler";
 import SnackAlert from "components/SnackAlert";
 import TestJobDialog from "components/TestJobDialog";
@@ -190,6 +191,28 @@ export default (props) => {
               {
                 title: "Versions",
                 render: ({ versions }) => <span>{versions.length}</span>,
+              }, {
+                title: "Publish State",
+                field: "publishState",
+                render: function ({ publishState = "unpublished", rejectionReason = null }) {
+
+                  return (
+                    <Tooltip
+                      TransitionComponent={Fade}
+                      title={
+                        rejectionReason === null ? publishState : rejectionReason
+                      }>
+                      <Chip
+                        size="small"
+                        label={publishState}
+                        style={{
+                          background: getColorFromState(publishState),
+                          color: "white",
+                        }}
+                      />
+                    </Tooltip>
+                  );
+                },
               },
               {
                 title: "Last Updated",
@@ -235,8 +258,8 @@ export default (props) => {
               },
             ]}
             actions={[({ isPublished = false }) => ({
-              icon: () => <Button children={isPublished ? "RE-PUBLISH" : "PUBLSH"} size="small" variant="contained" color={"primary"} />,
-              tooltip: `${isPublished ? 'Re-Publish' : 'Publish'} your template`,
+              icon: () => <PublishIcon />,
+              tooltip: `Publish your template`,
               onClick: (e, data) => {
                 history.push({
                   pathname: `${url}/${data.id}/publish`,
@@ -344,4 +367,16 @@ export default (props) => {
       />
     </Container>
   );
+};
+const getColorFromState = (state) => {
+  switch (state) {
+    case "rejected":
+      return "#f44336";
+    case "pending":
+      return "#ffa502";
+    case "published":
+      return `#4caf50`;
+    default:
+      return "grey";
+  }
 };

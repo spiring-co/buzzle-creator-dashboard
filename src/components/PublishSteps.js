@@ -7,8 +7,7 @@ import StepContent from "@material-ui/core/StepContent";
 export default ({ activeStep, renderStep }) => {
     const steps = [
         `Render Time`,
-        `Loyalty Curreny`,
-        `Loyalty Amount`,
+        `Loyalty Amount & Currency`,
     ];
     return (
         <Stepper activeStep={activeStep} orientation="vertical">
