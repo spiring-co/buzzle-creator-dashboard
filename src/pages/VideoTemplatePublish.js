@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
     Button,
     FormControl, Select, FormHelperText, MenuItem, InputLabel,
-    LinearProgress, Box, InputAdornment, Popover,
+    LinearProgress, Box, InputAdornment, Popover, Menu,
     Paper, Container, IconButton,
     Typography, TextField,
     withStyles,
@@ -21,6 +21,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import { useCurrency } from "services/currencyContext";
 import createTestJobs from "helpers/createTestJobs";
+import formatTime from "helpers/formatTime";
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 
 const { Job } = apiClient({
@@ -64,14 +65,14 @@ export default ({ location }) => {
     const handleRenderTestJob = async (versionId) => {
         // render test job for version 
         setIsLoading(true)
-        const job = await createTestJobs(id, {
-            versions: videoTemplate?.versions?.map(({ averageRenderTime = "" }) => averageRenderTime),
+        const jobs = await createTestJobs(id, {
+            versions: videoTemplate?.versions?.filter(({ averageRenderTime = "" }) => !averageRenderTime),
             dataFillType: "maxLength",
             incrementFrame: 1,
             renderSettings: "h264",
             settingsTemplate: "half",
         });
-        await Job.create(job)
+        await Promise.all(jobs.map(Job.create));
         setIsLoading(false)
 
         history.push("/home/jobs");
@@ -149,18 +150,21 @@ export default ({ location }) => {
                                     <StyledTableCell >
                                         {title}
                                     </StyledTableCell>
-                                    <StyledTableCell >{averageRenderTime == 0 || !averageRenderTime ? 'NA' : `${averageRenderTime} ms`}</StyledTableCell>
+                                    <StyledTableCell >{averageRenderTime == 0 || !averageRenderTime ? 'NA' : `${formatTime(averageRenderTime)}`}</StyledTableCell>
                                 </StyledTableRow>
                             ))}
                         </TableBody>
                     </Table>
-                    <Button
-                        onClick={() => handleRenderTestJob(id)}
-                        size="small"
-                        children="Render Job"
-                        variant="contained"
-                        color="primary" />
+
                     <div>
+                        {!videoTemplate?.versions?.every(({ averageRenderTime = 0 }) => averageRenderTime != 0) && <Button
+                            onClick={() => handleRenderTestJob(id)}
+                            disabled={loading}
+                            size="small"
+                            style={{ width: 'fit-content', marginTop: 10, marginRight: 10 }}
+                            children="Render Jobs"
+                            variant="contained"
+                            color="primary" />}
                         <Button
                             disabled={!videoTemplate?.versions?.every(({ averageRenderTime = 0 }) => averageRenderTime != 0)}
                             size="small"
@@ -173,12 +177,15 @@ export default ({ location }) => {
                     </div>
                 </TableContainer>);
             case 1:
-                return (<TableContainer>
-                    <FormControl margin="dense" fullWidth variant="outlined">
+                return (<Container>
+                    <FormControl
+                        style={{ marginBottom: 10 }}
+                        margin="dense" fullWidth variant="outlined">
                         <InputLabel id="demo-simple-select-outlined-label">
                             Select your currency
               </InputLabel>
                         <Select
+                            autoFocus={false}
                             labelId="demo-simple-select-outlined-label"
                             id="demo-simple-select-outlined"
                             onChange={handleCurrencyChange}
@@ -196,11 +203,11 @@ export default ({ location }) => {
                                 );
                             })}
                         </Select>
-                        {/* <FormHelperText>Lo</FormHelperText> */}
                     </FormControl>
                     <Table size="small" aria-label="a dense table">
                         <caption> <IconButton onClick={({ currentTarget }) => setAnchorEl(currentTarget)}>
-                            <InfoOutlinedIcon /> </IconButton>we recommend you to set loyalty as per the platform most accepted loyalty value, click ⓘ button to see platofrm rates
+                            <InfoOutlinedIcon />
+                        </IconButton>we recommend you to set loyalty as per the platform most accepted loyalty value, click ⓘ button to see platofrm rates
                            </caption>
                         <TableHead>
                             <Popover
@@ -234,8 +241,8 @@ export default ({ location }) => {
                                     </StyledTableCell>
                                     <StyledTableCell>
                                         <TextField
-                                            style={{ background: '#fff' }}
                                             required
+                                            autoFocus={true}
                                             variant="outlined"
                                             value={loyaltyValue}
                                             onChange={({ target: { value } }) => handleLoyaltySet(index, value)}
@@ -268,7 +275,7 @@ export default ({ location }) => {
                             children={isPublishing ? "Publishing ..." : "Publish"}
                         />
                     </div>
-                </TableContainer>);
+                </Container>);
             default:
                 return;
         }

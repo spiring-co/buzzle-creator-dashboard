@@ -200,11 +200,11 @@ export default (props) => {
                     <Tooltip
                       TransitionComponent={Fade}
                       title={
-                        rejectionReason === null ? publishState : rejectionReason
+                        rejectionReason ? publishState.toUpperCase() : rejectionReason
                       }>
                       <Chip
                         size="small"
-                        label={publishState}
+                        label={publishState.toUpperCase()}
                         style={{
                           background: getColorFromState(publishState),
                           color: "white",
