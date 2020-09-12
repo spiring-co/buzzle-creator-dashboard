@@ -15,13 +15,14 @@ import PublishSteps from "../components/PublishSteps"
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
-import { countryCodes, currencies } from '../helpers/Currencies';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import formatTime from "helpers/formatTime";
+
 import { useCurrency } from "services/currencyContext";
 import createTestJobs from "helpers/createTestJobs";
-import formatTime from "helpers/formatTime";
+import { countryCodes, currencies } from '../helpers/Currencies';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 
 const { Job } = apiClient({

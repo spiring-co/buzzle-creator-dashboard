@@ -15,6 +15,7 @@ import AddIcon from "@material-ui/icons/Add";
 import InfoIcon from "@material-ui/icons/Info";
 import QueuePlayNextIcon from '@material-ui/icons/QueuePlayNext';
 import ListIcon from "@material-ui/icons/List";
+import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import { apiClient } from "buzzle-sdk";
@@ -48,6 +49,7 @@ export default (props) => {
   const [view, setView] = useState("list");
   const tableRef = useRef(null);
   const { user } = useAuth();
+  const role = 'creator'//'admin'
   const uri = `${process.env.REACT_APP_API_URL}/creators/${user?.id}/videoTemplates`;
   const handleDelete = async (id) => {
     const action = window.confirm("Are you sure, you want to delete");
@@ -78,7 +80,7 @@ export default (props) => {
       color: "rgba(255, 255, 255, 0.54)",
     },
     drafted: {
-      marginTop: 10
+      marginLeft: 10
     }
   }));
   const classes = useStyles();
@@ -129,7 +131,7 @@ export default (props) => {
         justifyContent="space-between"
         flexDirection="row"
         p={1}>
-        <Button
+        {role !== 'admin' && <Box><Button
           color="primary"
           variant="contained"
           className={classes.button}
@@ -137,6 +139,15 @@ export default (props) => {
           children="Add Template"
           startIcon={<AddIcon />}
         />
+          <Button
+            color="primary"
+            variant="contained"
+            className={classes.drafted}
+            onClick={() => history.push(`${url}/drafts`)}
+            children="Drafted Templates"
+            startIcon={<QueuePlayNextIcon
+            />}
+          /></Box>}
         <ToggleButtonGroup
           size="small"
           value={view}
@@ -191,7 +202,8 @@ export default (props) => {
               {
                 title: "Versions",
                 render: ({ versions }) => <span>{versions.length}</span>,
-              }, {
+              },
+              {
                 title: "Publish State",
                 field: "publishState",
                 render: function ({ publishState = "unpublished", rejectionReason = null }) {
@@ -257,7 +269,7 @@ export default (props) => {
                 tooltip: "Show Code",
               },
             ]}
-            actions={[({ isPublished = false }) => ({
+            actions={role === 'admin' ? [] : [{
               icon: () => <PublishIcon />,
               tooltip: `Publish your template`,
               onClick: (e, data) => {
@@ -268,7 +280,7 @@ export default (props) => {
                   },
                 });
               },
-            }),
+            },
             {
               icon: "alarm-on",
               tooltip: "Render Test Job",
@@ -350,15 +362,7 @@ export default (props) => {
             }}
           />
         )}
-      <Button
-        color="primary"
-        variant="contained"
-        className={classes.drafted}
-        onClick={() => history.push(`${url}/drafts`)}
-        children="Drafted Templates"
-        startIcon={<QueuePlayNextIcon
-        />}
-      />
+
       <TestJobDialog
         open={isDialogOpen}
         idVideoTemplate={testJobTemplate?.id ?? ''}

@@ -6,6 +6,7 @@ import VideoTemplatesTable from "pages/VideoTemplatesTable";
 import VideoTemplateDetails from "pages/VideoTemplateDetails";
 import VideoTemplatDrafts from 'pages/VideoTemplatDrafts'
 import VideoTemplatePublish from 'pages/VideoTemplatePublish'
+
 export default () => {
   let { path } = useRouteMatch();
 

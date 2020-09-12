@@ -39,12 +39,15 @@ function CurrencyProvider(props) {
             .then(data => (fx.rates = data.rates));
     }, []);
 
-    const getConvertedCurrency = price => {
+    const getConvertedCurrency = (price, baseCurrency = 'INR', to = currencyCodes[country]) => {
+        if (to === baseCurrency) {
+            return `${price} ${to}`
+        }
         const p = fx(price)
-            .from('INR')
-            .to(currencyCodes[country])
+            .from(baseCurrency)
+            .to(to)
             .toFixed(2) + ' ' +
-            currencyCodes[country]
+            to
         return p.startsWith(0) ? 'FREE' : p
     };
     const value = useMemo(() => {
