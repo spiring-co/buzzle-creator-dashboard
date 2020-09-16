@@ -6,6 +6,7 @@ import PrivateRoute from "components/PrivateRoute";
 
 import Home from "pages/Home";
 import Login from "pages/Login";
+import AdminLogin from "pages/AdminLogin"
 import Landing from "pages/Landing";
 import Register from "pages/Register";
 import ForgotPassword from "pages/ForgotPassword";
@@ -130,6 +131,7 @@ const AppChild = () => {
           <Switch>
             <Route exact path="/" component={Landing} />
             <Route path="/login" exact component={Login} />
+            <Route path="/admin" exact component={AdminLogin} />
             <Route path="/register" exact component={Register} />
             <Route path="/forgotPassword" component={ForgotPassword} />
             <PrivateRoute path="/home" component={Home} />

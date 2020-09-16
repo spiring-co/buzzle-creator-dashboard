@@ -1,14 +1,9 @@
 import { Alert } from "@material-ui/lab";
-import { apiClient } from "buzzle-sdk";
+import { Job, VideoTemplate, Creator } from "services/api";
 import FormBuilder from "components/formSchemaBuilderComponents/FormBuilder";
 import { StateProvider, VideoTemplateContext } from "contextStore/store";
 import React, { useState, useContext } from "react";
 import { Prompt, useHistory } from "react-router-dom";
-
-const { VideoTemplate } = apiClient({
-  baseUrl: process.env.REACT_APP_API_URL,
-  authToken: localStorage.getItem("jwtoken"),
-});
 
 const AddTemplate = ({ location }) => {
   const [isBlocking, setIsBlocking] = useState(true);
@@ -31,8 +26,7 @@ const AddTemplate = ({ location }) => {
         state: {
           statusObj: {
             status: {
-              message: `Video Template ${
-                isEdit ? "Edited" : "Added"
+              message: `Video Template ${isEdit ? "Edited" : "Added"
                 } Successfully.`,
             },
             err: false,

@@ -18,7 +18,7 @@ import ListIcon from "@material-ui/icons/List";
 import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
-import { apiClient } from "buzzle-sdk";
+import { Job, VideoTemplate, Creator } from "services/api";
 import PublishIcon from '@material-ui/icons/Publish';
 import ErrorHandler from "components/ErrorHandler";
 import SnackAlert from "components/SnackAlert";
@@ -33,10 +33,7 @@ import {
 } from "react-router-dom";
 import { useAuth } from "services/auth";
 import * as timeago from "timeago.js";
-const { VideoTemplate } = apiClient({
-  baseUrl: process.env.REACT_APP_API_URL,
-  authToken: localStorage.getItem("jwtoken"),
-});
+import RoleBasedView from "components/RoleBasedView";
 
 export default (props) => {
   let { url, path } = useRouteMatch();
@@ -49,7 +46,7 @@ export default (props) => {
   const [view, setView] = useState("list");
   const tableRef = useRef(null);
   const { user } = useAuth();
-  const role = 'creator'//'admin'
+  const { role } = user
   const uri = `${process.env.REACT_APP_API_URL}/creators/${user?.id}/videoTemplates`;
   const handleDelete = async (id) => {
     const action = window.confirm("Are you sure, you want to delete");
@@ -131,23 +128,24 @@ export default (props) => {
         justifyContent="space-between"
         flexDirection="row"
         p={1}>
-        {role !== 'admin' && <Box><Button
-          color="primary"
-          variant="contained"
-          className={classes.button}
-          onClick={() => history.push(`${url}/add`)}
-          children="Add Template"
-          startIcon={<AddIcon />}
-        />
-          <Button
+        <RoleBasedView allowedRoles={['creator']}>
+          <Box><Button
             color="primary"
             variant="contained"
-            className={classes.drafted}
-            onClick={() => history.push(`${url}/drafts`)}
-            children="Drafted Templates"
-            startIcon={<QueuePlayNextIcon
-            />}
-          /></Box>}
+            className={classes.button}
+            onClick={() => history.push(`${url}/add`)}
+            children="Add Template"
+            startIcon={<AddIcon />}
+          />
+            <Button
+              color="primary"
+              variant="contained"
+              className={classes.drafted}
+              onClick={() => history.push(`${url}/drafts`)}
+              children="Drafted Templates"
+              startIcon={<QueuePlayNextIcon
+              />}
+            /></Box></RoleBasedView>
         <ToggleButtonGroup
           size="small"
           value={view}

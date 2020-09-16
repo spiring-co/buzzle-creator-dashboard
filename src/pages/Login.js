@@ -69,16 +69,18 @@ export default () => {
   } = useFormik({
     initialValues: {
       email: "harshb.work@gmail.com",
-      password: "butter",
+      password: "Butter123",
+      role: "creator"
     },
     validationSchema: Yup.object({
       email: Yup.string().email(t("enterEmail")).required(t("required")),
       password: Yup.string().required(t("passwordRequired")),
+      role: Yup.string().required()
     }),
-    onSubmit: async ({ email, password }) => {
+    onSubmit: async ({ email, password, role }) => {
       try {
         setLoading(true);
-        await login(email, password);
+        await login(email, password, role);
         setIsLoggedIn(true);
         history.push("/home");
       } catch (e) {

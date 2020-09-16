@@ -23,7 +23,7 @@ import clsx from "clsx";
 import React, { forwardRef, useMemo, useState } from "react";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 import { useDarkMode } from "helpers/useDarkMode";
-
+import RoleBasedView from "components/RoleBasedView"
 import { useAuth } from "../services/auth";
 
 const drawerWidth = 240;
@@ -261,12 +261,14 @@ export default function NavBar({ items }) {
 
         <List>
           {items.map((item, index) => (
-            <ListItemLink
-              key={index}
-              to={item.to}
-              primary={item.text}
-              icon={item.icon}
-            />
+            <RoleBasedView allowedRoles={item?.allowedRoles ?? []}>
+              <ListItemLink
+                key={index}
+                to={item.to}
+                primary={item.text}
+                icon={item.icon}
+              />
+            </RoleBasedView>
           ))}
         </List>
       </Drawer>

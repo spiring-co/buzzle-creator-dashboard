@@ -6,7 +6,7 @@ import {
   withStyles, Chip
 } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
-import { apiClient } from "buzzle-sdk";
+import { Job, VideoTemplate, Creator } from "services/api";
 import React, { useState } from "react";
 import { useHistory, useParams, useRouteMatch } from "react-router-dom";
 import useApi from "services/apiHook";
@@ -20,11 +20,8 @@ import TableRow from '@material-ui/core/TableRow';
 import formatTime from "helpers/formatTime";
 import { useCurrency } from "services/currencyContext"
 import RejectionReasonPrompt from "./RejectionReasonPrompt";
+import RoleBasedView from "components/RoleBasedView";
 
-const { VideoTemplate } = apiClient({
-  baseUrl: process.env.REACT_APP_API_URL,
-  authToken: localStorage.getItem("jwtoken"),
-});
 const CustomProgress = withStyles({
   colorPrimary: {
     backgroundColor: "#b2dfdb",
@@ -105,7 +102,7 @@ export default () => {
       setError(err)
     }
   }
-  const role = 'creator'//'admin'
+
 
   return (
     <div>
@@ -143,7 +140,7 @@ export default () => {
                 {data?.rejectionReason}
               </Typography>
             </Box>}
-            {role === 'admin' && <Table size="small" aria-label="a dense table" style={{ marginTop: 20, marginBottom: 20 }}>
+            <RoleBasedView allowedRoles={['admin']}><Table size="small" aria-label="a dense table" style={{ marginTop: 20, marginBottom: 20 }}>
               <TableHead>
                 <StyledTableRow>
                   <StyledTableCell>Version Name</StyledTableCell>
@@ -170,13 +167,15 @@ export default () => {
                   </StyledTableRow>
                 ))}
               </TableBody>
-            </Table>}
-            {role !== 'admin' ? <><Button
+            </Table></RoleBasedView>
+            <RoleBasedView
+              allowedRoles={['creator']}
+            ><Button
               style={{ margin: 10, marginLeft: 0 }}
               variant="contained"
               color="primary"
               onClick={handleEdit}>
-              Edit
+                Edit
             </Button>
               <Button
                 style={{ margin: 10, marginLeft: 0 }}
@@ -216,32 +215,33 @@ export default () => {
                 color="secondary"
                 onClick={handleDelete}>
                 {isDeleting ? "Deleting..." : "Delete"}
-              </Button></> : <>
-                {(data?.publishState === 'pending' || data?.publishState === 'rejected') && <Button
-                  disabled={isLoading}
-                  style={{ margin: 10, marginLeft: 0 }}
-                  variant="contained"
-                  color="primary"
-                  onClick={() => handleUpdateTemplate("published")
-                  }
-                  children="Approve"
-                />}{(data?.publishState !== 'unpublished') && <Button
-                  disabled={data?.publishState === 'rejected' || isLoading}
-                  style={{ margin: 10, marginLeft: 0 }}
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => setIsDialogOpen(true)}
-                  children={data?.publishState === 'rejected' ? "Rejected" : 'Reject'}
-                />}
-                <RejectionReasonPrompt
-                  open={isDialogOpen}
-                  onClose={() => setIsDialogOpen(false)}
-                  onSubmit={({ rejectionReason }) => {
-                    handleUpdateTemplate("rejected", rejectionReason)
-                    setIsDialogOpen(false)
-                  }}
-                  value={data?.rejectionReason}
-                /></>}
+              </Button></RoleBasedView>
+            <RoleBasedView allowedRoles={['admin']}>
+              {(data?.publishState === 'pending' || data?.publishState === 'rejected') && <Button
+                disabled={isLoading}
+                style={{ margin: 10, marginLeft: 0 }}
+                variant="contained"
+                color="primary"
+                onClick={() => handleUpdateTemplate("published")
+                }
+                children="Approve"
+              />}{(data?.publishState !== 'unpublished') && <Button
+                disabled={data?.publishState === 'rejected' || isLoading}
+                style={{ margin: 10, marginLeft: 0 }}
+                variant="contained"
+                color="secondary"
+                onClick={() => setIsDialogOpen(true)}
+                children={data?.publishState === 'rejected' ? "Rejected" : 'Reject'}
+              />}
+              <RejectionReasonPrompt
+                open={isDialogOpen}
+                onClose={() => setIsDialogOpen(false)}
+                onSubmit={({ rejectionReason }) => {
+                  handleUpdateTemplate("rejected", rejectionReason)
+                  setIsDialogOpen(false)
+                }}
+                value={data?.rejectionReason}
+              /></RoleBasedView>
           </div>
         </Container>
       </Paper>

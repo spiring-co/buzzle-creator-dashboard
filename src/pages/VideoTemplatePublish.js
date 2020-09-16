@@ -8,7 +8,7 @@ import {
     withStyles,
 } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
-import { apiClient } from "buzzle-sdk";
+import { Job, VideoTemplate, Creator } from "services/api";
 import { useHistory, useParams, useRouteMatch } from "react-router-dom";
 import useApi from "services/apiHook";
 import PublishSteps from "../components/PublishSteps"
@@ -25,14 +25,7 @@ import createTestJobs from "helpers/createTestJobs";
 import { countryCodes, currencies } from '../helpers/Currencies';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 
-const { Job } = apiClient({
-    baseUrl: process.env.REACT_APP_API_URL,
-    authToken: localStorage.getItem("jwtoken"),
-});
-const { VideoTemplate } = apiClient({
-    baseUrl: process.env.REACT_APP_API_URL,
-    authToken: localStorage.getItem("jwtoken"),
-});
+
 const CustomProgress = withStyles({
     colorPrimary: {
         backgroundColor: "#b2dfdb",

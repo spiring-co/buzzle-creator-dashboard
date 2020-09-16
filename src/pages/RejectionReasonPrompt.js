@@ -13,17 +13,13 @@ import {
     Select,
     TextField, DialogActions, DialogContent
 } from "@material-ui/core";
-import { apiClient } from "buzzle-sdk";
+import { Job, VideoTemplate, Creator } from "services/api";
 import { useFormik } from "formik";
 import createTestJobs from "helpers/createTestJobs";
 import React from "react";
 import { useHistory } from "react-router-dom";
 import * as Yup from "yup";
 
-const { Job } = apiClient({
-    baseUrl: process.env.REACT_APP_API_URL,
-    authToken: localStorage.getItem("jwtoken"),
-});
 const validationSchema = Yup.object().shape({
     rejectionReason: Yup.string()
         .required('Reason is required!')
