@@ -135,7 +135,6 @@ export default () => {
             render: function ({ id, state, failureReason }) {
               state = rtProgressData[id]?.state || state;
               let percent = rtProgressData[id]?.percent;
-              console.log(failureReason);
               return (
                 <Tooltip
                   TransitionComponent={Fade}
@@ -209,6 +208,7 @@ export default () => {
           {
             icon: "repeat",
             tooltip: "Restart Job",
+            position: 'row',
             onClick: async (e, { id, data, actions }) => {
               try {
                 await Job.update(id, { data, actions });
@@ -221,6 +221,7 @@ export default () => {
           {
             icon: "delete",
             tooltip: "Delete Job",
+            position: 'row',
             onClick: async (event, rowData) => {
               const action = window.confirm("Are you sure, you want to delete");
               if (!action) return;
@@ -232,6 +233,32 @@ export default () => {
               }
             },
           },
+          {
+            icon: "repeat",
+            tooltip: "Restart All Selected Jobs",
+            position: 'toolbarOnSelect',
+            onClick: async (e, data) => {
+              try {
+                await Job.updateMultiple(data);
+              } catch (err) {
+                setError(err);
+              }
+              tableRef.current && tableRef.current.onQueryChange();
+            },
+          },
+          {
+            icon: "delete",
+            tooltip: "Delete All Selected Jobs",
+            position: 'toolbarOnSelect',
+            onClick: async (e, data) => {
+              try {
+                await Job.deleteMultiple(data);
+              } catch (err) {
+                setError(err);
+              }
+              tableRef.current && tableRef.current.onQueryChange();
+            },
+          }
         ]}
       />
     </Container>

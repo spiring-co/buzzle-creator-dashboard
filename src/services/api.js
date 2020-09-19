@@ -1,5 +1,5 @@
 
-import { apiClient } from "buzzle-sdk";
+import { apiClient } from "./buzzle-sdk/lib/index";
 
 
 const API = apiClient({

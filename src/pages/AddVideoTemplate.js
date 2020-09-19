@@ -12,6 +12,7 @@ const AddTemplate = ({ location }) => {
 
   const { video, isEdit, draftIndex = null } = location?.state ?? {};
   const history = useHistory();
+  console.log("jwt token is" + localStorage.getItem("jwtoken"));
 
   const handleSubmit = async (data) => {
     console.log(data);

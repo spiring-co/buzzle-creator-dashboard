@@ -46,6 +46,7 @@ function AuthProvider(props) {
 
     try {
       const { id, name, email, role = "" } = jwtDecode(token);
+      console.log("role is" + role);
       setUser({ id, name, email, role });
     } catch (err) {
       setUser(null);

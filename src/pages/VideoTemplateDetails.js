@@ -44,10 +44,10 @@ export default () => {
     `${process.env.REACT_APP_API_URL}/videoTemplates/${id}`
   );
   const handleDownload = async () => {
-    setIsLoading(true)
-    await zipMaker(data?.staticAssets, data?.src)
-    setIsLoading(false)
-  }
+    setIsLoading(true);
+    await zipMaker(data?.staticAssets, data?.src);
+    setIsLoading(false);
+  };
   const handleEdit = async () => {
     history.push({
       pathname: `${url}/edit`,
@@ -140,7 +140,7 @@ export default () => {
                 {data?.rejectionReason}
               </Typography>
             </Box>}
-            <RoleBasedView allowedRoles={['admin']}><Table size="small" aria-label="a dense table" style={{ marginTop: 20, marginBottom: 20 }}>
+            <RoleBasedView allowedRoles={['Admin']}><Table size="small" aria-label="a dense table" style={{ marginTop: 20, marginBottom: 20 }}>
               <TableHead>
                 <StyledTableRow>
                   <StyledTableCell>Version Name</StyledTableCell>
@@ -169,7 +169,7 @@ export default () => {
               </TableBody>
             </Table></RoleBasedView>
             <RoleBasedView
-              allowedRoles={['creator']}
+              allowedRoles={['Creator']}
             ><Button
               style={{ margin: 10, marginLeft: 0 }}
               variant="contained"
@@ -216,7 +216,7 @@ export default () => {
                 onClick={handleDelete}>
                 {isDeleting ? "Deleting..." : "Delete"}
               </Button></RoleBasedView>
-            <RoleBasedView allowedRoles={['admin']}>
+            <RoleBasedView allowedRoles={['Admin']}>
               {(data?.publishState === 'pending' || data?.publishState === 'rejected') && <Button
                 disabled={isLoading}
                 style={{ margin: 10, marginLeft: 0 }}

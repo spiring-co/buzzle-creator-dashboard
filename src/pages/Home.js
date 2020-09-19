@@ -44,13 +44,13 @@ export default () => {
       text: "Video Templates",
       icon: <VideoLibrary />,
       to: `${url}/videoTemplates`,
-      allowedRoles: ['admin', 'creator', 'user']
+      allowedRoles: ['Admin', 'Creator', 'User']
     },
     {
       text: "Jobs",
       icon: <Work />,
       to: `${url}/jobs`,
-      allowedRoles: ['admin', 'creator', 'user']
+      allowedRoles: ['Admin', 'Creator', 'User']
 
     },
 
@@ -58,26 +58,26 @@ export default () => {
       text: "Profile and Settings",
       icon: <AssignmentInd />,
       to: `${url}/profile`,
-      allowedRoles: ['admin', 'creator', 'user']
+      allowedRoles: ['Admin', 'Creator', 'User']
     },
     {
       text: "Revenue",
       icon: <MonetizationOn />,
       to: `${url}/revenue`,
-      allowedRoles: ['admin', 'creator', 'user']
+      allowedRoles: ['Admin', 'Creator', 'User']
 
     },
     {
       text: "Creators",
       icon: <SupervisedUserCircle />,
       to: `${url}/creators`,
-      allowedRoles: ['admin']
+      allowedRoles: ['Admin']
     },
     {
       text: "Users",
       icon: <Stars />,
       to: `${url}/users`,
-      allowedRoles: ['admin']
+      allowedRoles: ['Admin']
     },
   ];
 
