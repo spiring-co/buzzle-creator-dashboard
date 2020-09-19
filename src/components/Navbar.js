@@ -1,5 +1,6 @@
 import { Menu, MenuItem } from "@material-ui/core";
 import AppBar from "@material-ui/core/AppBar";
+import Avatar from "@material-ui/core/Avatar";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Divider from "@material-ui/core/Divider";
 import Drawer from "@material-ui/core/Drawer";
@@ -121,6 +122,7 @@ const useStyles = makeStyles((theme) =>
 
 export default function NavBar({ items }) {
   const classes = useStyles();
+  const { user } = useAuth()
   const theme = useTheme();
   const [drawerOpen, setDrawerOpen] = useState(true);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -191,7 +193,7 @@ export default function NavBar({ items }) {
               aria-haspopup="true"
               onClick={handleMenu}
               color="inherit">
-              <AccountCircle />
+              <Avatar style={{ height: 30, width: 30 }} alt="thumbnail" src={user?.imageUrl} />
             </IconButton>
 
             <Menu

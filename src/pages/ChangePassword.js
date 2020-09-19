@@ -27,7 +27,7 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 import * as Yup from "yup";
-
+import { useAuth } from "../services/auth"
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -45,11 +45,11 @@ export default () => {
     const { t } = useTranslation();
     const classes = useStyles();
     const history = useHistory();
-
+    const { user } = useAuth()
     const [error, setError] = useState(null);
     const [showPassword, setShowPassword] = useState(false);
     const [showPassword2, setShowPassword2] = useState(false);
-
+    const [status, setStatus] = useState(false)
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
     };
@@ -77,12 +77,8 @@ export default () => {
         onSubmit: async (s) => {
             try {
                 delete s["confirmPassword"];
-                // call change password
-                // await Creator.create(s);
-                // history.push("/login", {
-                //     message:
-                //         "Please check your mail for a verification mail and click the link to continue.",
-                // });
+                const result = await Creator.changePassword(user?.id, s);
+                setStatus(result?.message ?? 'Changed Successfully')
             } catch (e) {
                 setError(e);
             }
@@ -101,9 +97,8 @@ export default () => {
             </Typography>
             <Divider />
             <Container style={{ height: 10 }} />
-            {error && (
-                <Alert severity="error" children={error?.message ?? t("wrong")} />
-            )}
+            {(error || status) && <Alert severity={error ? 'error' : 'success'} children={error ? error?.message ?? t("wrong") : status} />
+            }
             <TextField
                 required
                 fullWidth

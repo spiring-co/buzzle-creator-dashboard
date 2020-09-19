@@ -16,7 +16,7 @@ function AuthProvider(props) {
     if (!jwt) return null;
 
     try {
-      const { exp, id, name, email, role = "creator" } = jwtDecode(jwt);
+      const { exp, id, name, email, role = "admin" } = jwtDecode(jwt);
       console.log(exp);
       if (!(exp * 1000 > Date.now())) return null;
       return { id, name, email, role };
@@ -26,7 +26,7 @@ function AuthProvider(props) {
   };
   const [user, setUser] = useState(getUser());
 
-  const login = async (email, password, role = "creator") => {
+  const login = async (email, password, role = "admin") => {
     const response = await fetch(
       `${process.env.REACT_APP_API_URL}/auth/login`,
       {

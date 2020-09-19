@@ -7,7 +7,7 @@ import {
     IconButton,
     Link,
     Button,
-    Typography,
+    Typography, Avatar,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import GridOnIcon from "@material-ui/icons/GridOn";
@@ -138,7 +138,10 @@ export default (props) => {
                 }}
                 columns={[{
                     title: "Name",
-                    field: "title",
+                    render: ({ thumbnail, title }) => <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                        <Avatar style={{ marginRight: 10, height: 30, width: 30 }} alt="thumbnail" src={thumbnail} />
+                        {title}
+                    </div>
                 },
                 {
                     title: "API Key",

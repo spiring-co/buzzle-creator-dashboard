@@ -87,7 +87,7 @@ export default () => {
       <main className={classes.content}>
         <div className={classes.toolbar} />
         <Switch>
-          <Route path={`${path}/`} exact component={ChangePassword} />
+          <Route path={`${path}/`} exact component={Dashboard} />
           <Route path={`${path}/profile`} component={Profile} />
           <Route path={`${path}/videoTemplates`} component={VideoTemplates} />
           <Route path={`${path}/revenue`} component={Revenue} />

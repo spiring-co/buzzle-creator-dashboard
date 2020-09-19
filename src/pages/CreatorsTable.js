@@ -5,19 +5,12 @@ import {
     GridListTile,
     GridListTileBar, Fade,
     IconButton,
-    Link,
+    Link, Avatar,
     Button,
     Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import GridOnIcon from "@material-ui/icons/GridOn";
-import AddIcon from "@material-ui/icons/Add";
-import InfoIcon from "@material-ui/icons/Info";
-import QueuePlayNextIcon from '@material-ui/icons/QueuePlayNext';
-import ListIcon from "@material-ui/icons/List";
-import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
-import ToggleButton from "@material-ui/lab/ToggleButton";
-import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
+import { AccountCircle } from "@material-ui/icons";
 import { Job, VideoTemplate, Creator } from "services/api";
 import PublishIcon from '@material-ui/icons/Publish';
 import ErrorHandler from "components/ErrorHandler";
@@ -140,6 +133,11 @@ export default (props) => {
                     {
                         title: "Name",
                         field: "title",
+                        //change thumbnail to imageUrl and title to name
+                        render: ({ thumbnail, title }) => <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                            <Avatar style={{ marginRight: 10, height: 30, width: 30 }} alt="thumbnail" src={thumbnail} />
+                            {title}
+                        </div>
                     },
                     {
                         title: "Email",
