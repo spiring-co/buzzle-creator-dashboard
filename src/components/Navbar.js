@@ -1,4 +1,4 @@
-import { Menu, MenuItem } from "@material-ui/core";
+import { Menu, MenuItem, Tooltip } from "@material-ui/core";
 import AppBar from "@material-ui/core/AppBar";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Divider from "@material-ui/core/Divider";
@@ -167,32 +167,38 @@ export default function NavBar({ items }) {
           </IconButton>
 
           <div className={classes.menu}>
-            <IconButton
-              aria-label="toggle dark mode"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={() => {
-                toggleTheme();
-              }}
-              color="inherit">
-              {t === "light" ? <BrightnessHigh /> : <BrightnessLow />}
-            </IconButton>
-            <IconButton
-              aria-label="notifications"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={null}
-              color="inherit">
-              <Notifications />
-            </IconButton>
-            <IconButton
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleMenu}
-              color="inherit">
-              <AccountCircle />
-            </IconButton>
+            <Tooltip title="Toggle dark mode">
+              <IconButton
+                aria-label="toggle dark mode"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                onClick={() => {
+                  toggleTheme();
+                }}
+                color="inherit">
+                {t === "light" ? <BrightnessHigh /> : <BrightnessLow />}
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Notifications">
+              <IconButton
+                aria-label="notifications"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                onClick={null}
+                color="inherit">
+                <Notifications />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Account">
+              <IconButton
+                aria-label="account of current user"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                onClick={handleMenu}
+                color="inherit">
+                <AccountCircle />
+              </IconButton>
+            </Tooltip>
 
             <Menu
               id="menu-appbar"

@@ -6,7 +6,7 @@ import React, { useState } from "react";
 import { Prompt, useHistory } from "react-router-dom";
 
 const { VideoTemplate } = apiClient({
-  baseUrl: process.env.REACT_APP_API_URL,
+  baseUrl: "http://localhost:5000",
   authToken: localStorage.getItem("jwtoken"),
 });
 
@@ -17,6 +17,7 @@ export default ({ location }) => {
   const { video, isEdit } = location?.state ?? {};
 
   const history = useHistory();
+  console.log("jwt token is" + localStorage.getItem("jwtoken"));
 
   const handleSubmit = async (data) => {
     console.log(data);

@@ -10,10 +10,10 @@ import { apiClient } from "buzzle-sdk";
 import React, { useState } from "react";
 import { useHistory, useParams, useRouteMatch } from "react-router-dom";
 import useApi from "services/apiHook";
-import { zipMaker } from "helpers/downloadTemplateHelper"
+import { zipMaker } from "helpers/downloadTemplateHelper";
 
 const { VideoTemplate } = apiClient({
-  baseUrl: process.env.REACT_APP_API_URL,
+  baseUrl: "http://localhost:5000",
   authToken: localStorage.getItem("jwtoken"),
 });
 const CustomProgress = withStyles({
@@ -29,18 +29,18 @@ export default () => {
   const { url } = useRouteMatch();
   const { id } = useParams();
   const history = useHistory();
-
+  console.log("jwt token is" + localStorage.getItem("jwtoken"));
   const [isDeleting, setIsDeleting] = useState(false);
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const { data, loading, err } = useApi(
     `${process.env.REACT_APP_API_URL}/videoTemplates/${id}`
   );
   const handleDownload = async () => {
-    setIsLoading(true)
-    await zipMaker(data?.staticAssets, data?.src)
-    setIsLoading(false)
-  }
+    setIsLoading(true);
+    await zipMaker(data?.staticAssets, data?.src);
+    setIsLoading(false);
+  };
   const handleEdit = async () => {
     history.push({
       pathname: `${url}/edit`,
@@ -127,7 +127,7 @@ export default () => {
               variant="contained"
               color="primary"
               onClick={handleDownload}>
-              {isLoading ? 'Preparing...' : 'Download template with assets'}
+              {isLoading ? "Preparing..." : "Download template with assets"}
             </Button>
             <Button
               style={{ margin: 10 }}

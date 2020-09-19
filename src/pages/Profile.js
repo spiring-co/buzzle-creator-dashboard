@@ -5,6 +5,7 @@ import {
   Divider,
   TextField,
   Typography,
+  Tooltip,
 } from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import Tab from "@material-ui/core/Tab";
@@ -85,17 +86,19 @@ function ProfileEdit({ creator }) {
               }}></TextField>
           </div>
         </Box>
-        <Button
-          style={
-            isEditing
-              ? { marginRight: 20, background: "green" }
-              : { marginRight: 20, background: "blue" }
-          }
-          onClick={isEditing ? handleSubmit : toggleEditMode}
-          size="small"
-          variant="contained">
-          {isEditing ? "Save" : "Edit"}
-        </Button>
+        <Tooltip title="Edit your profile">
+          <Button
+            style={
+              isEditing
+                ? { marginRight: 20, background: "green" }
+                : { marginRight: 20, background: "blue" }
+            }
+            onClick={isEditing ? handleSubmit : toggleEditMode}
+            size="small"
+            variant="contained">
+            {isEditing ? "Save" : "Edit"}
+          </Button>
+        </Tooltip>
       </Box>
     </form>
   );

@@ -8,6 +8,7 @@ import {
   IconButton,
   Link,
   Typography,
+  Tooltip,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import GridOnIcon from "@material-ui/icons/GridOn";
@@ -31,7 +32,7 @@ import {
 import { useAuth } from "services/auth";
 import * as timeago from "timeago.js";
 const { VideoTemplate } = apiClient({
-  baseUrl: process.env.REACT_APP_API_URL,
+  baseUrl: "http://localhost:5000",
   authToken: localStorage.getItem("jwtoken"),
 });
 
@@ -53,7 +54,7 @@ export default (props) => {
 
     try {
       setIsDeleting(true);
-  console.log("delete ",id)
+      console.log("delete ", id);
       await VideoTemplate.delete(id);
     } catch (err) {
       setError(err);
@@ -138,12 +139,16 @@ export default (props) => {
           exclusive
           onChange={(e, v) => setView(v)}
           aria-label="text alignment">
-          <ToggleButton value="grid" aria-label="list">
-            <GridOnIcon />
-          </ToggleButton>
-          <ToggleButton value="list" aria-label="grid">
-            <ListIcon />
-          </ToggleButton>
+          <Tooltip title="Grid view">
+            <ToggleButton value="grid" aria-label="list">
+              <GridOnIcon />
+            </ToggleButton>
+          </Tooltip>
+          <Tooltip title="List view">
+            <ToggleButton value="list" aria-label="grid">
+              <ListIcon />
+            </ToggleButton>
+          </Tooltip>
         </ToggleButtonGroup>
       </Box>
 
@@ -157,14 +162,16 @@ export default (props) => {
                   title={tile.title}
                   subtitle={<span>by: {tile.idCreator}</span>}
                   actionIcon={
-                    <IconButton
-                      onClick={() => {
-                        history.push(`${path}${tile.id}`);
-                      }}
-                      aria-label={`info about ${tile.title}`}
-                      className={classes.icon}>
-                      <InfoIcon />
-                    </IconButton>
+                    <Tooltip title="View details">
+                      <IconButton
+                        onClick={() => {
+                          history.push(`${path}${tile.id}`);
+                        }}
+                        aria-label={`info about ${tile.title}`}
+                        className={classes.icon}>
+                        <InfoIcon />
+                      </IconButton>
+                    </Tooltip>
                   }
                 />
               </GridListTile>
