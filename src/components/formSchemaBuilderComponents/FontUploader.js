@@ -1,12 +1,9 @@
 import { Button, FormHelperText, Tooltip } from "@material-ui/core";
 import { Close } from "@material-ui/icons";
-import { apiClient } from "buzzle-sdk";
+import { Job, VideoTemplate, Creator, Font } from "services/api";
 import React, { useState } from "react";
 import upload from "services/s3Upload";
-const { Fonts } = apiClient({
-  baseUrl: process.env.REACT_APP_API_URL,
-  authToken: localStorage.getItem("jwtoken"),
-});
+
 
 export default ({ font, handleDelete, setFont }) => {
   const [name, setName] = useState(
@@ -39,7 +36,7 @@ export default ({ font, handleDelete, setFont }) => {
       setFont({ name: temp, src: uri });
       setSrc(true);
 
-      await Fonts.addFont({ name: temp, src: uri });
+      await Font.addFont({ name: temp, src: uri });
     } catch (err) {
       setLoading(false);
       setError(err);
@@ -125,20 +122,20 @@ export default ({ font, handleDelete, setFont }) => {
             </Button>
           </>
         ) : (
-          <Tooltip arrow={true} placement="right" title="Remove Font">
-            <Close
-              onClick={handleDelete}
-              align="right"
-              style={{
-                margin: 5,
-                marginTop: 0,
-                marginBottom: 0,
-                color: "grey",
-              }}
-              fontSize="small"
-            />
-          </Tooltip>
-        )}
+            <Tooltip arrow={true} placement="right" title="Remove Font">
+              <Close
+                onClick={handleDelete}
+                align="right"
+                style={{
+                  margin: 5,
+                  marginTop: 0,
+                  marginBottom: 0,
+                  color: "grey",
+                }}
+                fontSize="small"
+              />
+            </Tooltip>
+          )}
       </div>
       {error && <FormHelperText error={true} children={error?.message} />}
     </div>

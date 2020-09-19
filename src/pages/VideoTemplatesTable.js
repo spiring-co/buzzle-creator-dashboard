@@ -1,23 +1,29 @@
 import {
   Box,
-  Button,
+  Chip,
+  Tooltip,
   Container,
   GridList,
   GridListTile,
   GridListTileBar,
+  Fade,
   IconButton,
   Link,
+  Avatar,
+  Button,
   Typography,
-  Tooltip,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import GridOnIcon from "@material-ui/icons/GridOn";
 import AddIcon from "@material-ui/icons/Add";
 import InfoIcon from "@material-ui/icons/Info";
+import QueuePlayNextIcon from "@material-ui/icons/QueuePlayNext";
 import ListIcon from "@material-ui/icons/List";
+import AssignmentTurnedInIcon from "@material-ui/icons/AssignmentTurnedIn";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
-import { apiClient } from "buzzle-sdk";
+import { Job, VideoTemplate, Creator } from "services/api";
+import PublishIcon from "@material-ui/icons/Publish";
 import ErrorHandler from "components/ErrorHandler";
 import SnackAlert from "components/SnackAlert";
 import TestJobDialog from "components/TestJobDialog";
@@ -31,23 +37,20 @@ import {
 } from "react-router-dom";
 import { useAuth } from "services/auth";
 import * as timeago from "timeago.js";
-const { VideoTemplate } = apiClient({
-  baseUrl: "http://localhost:5000",
-  authToken: localStorage.getItem("jwtoken"),
-});
+import RoleBasedView from "components/RoleBasedView";
 
 export default (props) => {
   let { url, path } = useRouteMatch();
   const history = useHistory();
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState(null);
-  const [testJobTemplateId, setTestJobTemplateId] = useState(null);
+  const [testJobTemplate, setTestJobTemplate] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [data, setData] = useState([]);
   const [view, setView] = useState("list");
   const tableRef = useRef(null);
   const { user } = useAuth();
-  const uri = `${process.env.REACT_APP_API_URL}/creators/${user?.id}/videoTemplates`;
+  const { role } = user;
   const handleDelete = async (id) => {
     const action = window.confirm("Are you sure, you want to delete");
     if (!action) return;
@@ -76,6 +79,9 @@ export default (props) => {
     icon: {
       color: "rgba(255, 255, 255, 0.54)",
     },
+    drafted: {
+      marginLeft: 10,
+    },
   }));
   const classes = useStyles();
 
@@ -84,12 +90,7 @@ export default (props) => {
   );
   useEffect(() => {
     const data = async () => {
-      const response = await fetch(`${uri}?page=${1}&size=${10}`);
-      if (response.ok) {
-        const result = await response.json();
-        console.log(result);
-        setData(result.data);
-      }
+      setData(await Creator.getVideoTemplates(user?.id, 1, 10));
     };
     data();
   }, []);
@@ -125,14 +126,26 @@ export default (props) => {
         justifyContent="space-between"
         flexDirection="row"
         p={1}>
-        <Button
-          color="primary"
-          variant="contained"
-          className={classes.button}
-          onClick={() => history.push(`${url}/add`)}
-          children="Add Template"
-          startIcon={<AddIcon />}
-        />
+        <RoleBasedView allowedRoles={["Creator"]}>
+          <Box>
+            <Button
+              color="primary"
+              variant="contained"
+              className={classes.button}
+              onClick={() => history.push(`${url}/add`)}
+              children="Add Template"
+              startIcon={<AddIcon />}
+            />
+            <Button
+              color="primary"
+              variant="contained"
+              className={classes.drafted}
+              onClick={() => history.push(`${url}/drafts`)}
+              children="Drafted Templates"
+              startIcon={<QueuePlayNextIcon />}
+            />
+          </Box>
+        </RoleBasedView>
         <ToggleButtonGroup
           size="small"
           value={view}
@@ -189,10 +202,48 @@ export default (props) => {
             {
               title: "Title",
               field: "title",
+              render: ({ title, thumbnail }) => (
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}>
+                  <Avatar
+                    style={{ marginRight: 10, height: 30, width: 30 }}
+                    alt="thumbnail"
+                    src={thumbnail}
+                  />{" "}
+                  {title}
+                </div>
+              ),
             },
             {
               title: "Versions",
               render: ({ versions }) => <span>{versions.length}</span>,
+            },
+            {
+              title: "Publish State",
+              field: "publishState",
+              render: function ({
+                publishState = "unpublished",
+                rejectionReason = null,
+              }) {
+                return (
+                  <Tooltip
+                    TransitionComponent={Fade}
+                    title={rejectionReason ? publishState : rejectionReason}>
+                    <Chip
+                      size="small"
+                      label={publishState}
+                      style={{
+                        background: getColorFromState(publishState),
+                        color: "white",
+                      }}
+                    />
+                  </Tooltip>
+                );
+              },
             },
             {
               title: "Last Updated",
@@ -237,51 +288,67 @@ export default (props) => {
               tooltip: "Show Code",
             },
           ]}
-          actions={[
-            {
-              icon: "alarm-on",
-              tooltip: "Render Test Job",
-              onClick: (e, { id }) => {
-                setTestJobTemplateId(id);
-                setIsDialogOpen(true);
-              },
-            },
-            {
-              icon: "delete",
-              tooltip: "Delete Template",
-              disabled: isDeleting,
-              onClick: async (event, { id }) => handleDelete(id),
-            },
-            {
-              icon: "add",
-              tooltip: "Add Video Template",
-              isFreeAction: true,
-              onClick: () => history.push(`${url}/add`),
-            },
-            {
-              icon: "edit",
-              tooltip: "Edit Template",
-              onClick: (e, data) => {
-                delete data["tableData"];
-                history.push({
-                  pathname: `${url}/${data.id}/edit`,
-                  state: {
-                    isEdit: true,
-                    video: data,
+          actions={
+            role === "Admin"
+              ? []
+              : [
+                  {
+                    icon: () => <PublishIcon />,
+                    tooltip: `Publish your template`,
+                    onClick: (e, data) => {
+                      history.push({
+                        pathname: `${url}/${data.id}/publish`,
+                        state: {
+                          videoTemplate: data,
+                        },
+                      });
+                    },
                   },
-                });
-              },
-            },
-            {
-              icon: "refresh",
-              tooltip: "Refresh Data",
-              isFreeAction: true,
-              onClick: handleRetry,
-            },
-          ]}
+                  {
+                    icon: "alarm-on",
+                    tooltip: "Render Test Job",
+                    onClick: (e, item) => {
+                      setTestJobTemplate(item);
+                      setIsDialogOpen(true);
+                    },
+                  },
+                  {
+                    icon: "delete",
+                    tooltip: "Delete Template",
+                    disabled: isDeleting,
+                    onClick: async (event, { id }) => handleDelete(id),
+                  },
+                  {
+                    icon: "add",
+                    tooltip: "Add Video Template",
+                    isFreeAction: true,
+                    onClick: () => history.push(`${url}/add`),
+                  },
+
+                  {
+                    icon: "edit",
+                    tooltip: "Edit Template",
+                    onClick: (e, data) => {
+                      delete data["tableData"];
+                      history.push({
+                        pathname: `${url}/${data.id}/edit`,
+                        state: {
+                          isEdit: true,
+                          video: data,
+                        },
+                      });
+                    },
+                  },
+                  {
+                    icon: "refresh",
+                    tooltip: "Refresh Data",
+                    isFreeAction: true,
+                    onClick: handleRetry,
+                  },
+                ]
+          }
           data={(query) =>
-            fetch(`${uri}?page=${query.page + 1}&size=${query.pageSize}`)
-              .then((response) => response.json())
+            Creator.getVideoTemplates(user?.id, query.page + 1, query.pageSize)
               .then((result) => {
                 return {
                   data: query.search
@@ -318,11 +385,25 @@ export default (props) => {
           }}
         />
       )}
+
       <TestJobDialog
         open={isDialogOpen}
-        idVideoTemplate={testJobTemplateId}
+        idVideoTemplate={testJobTemplate?.id ?? ""}
         onClose={() => setIsDialogOpen(false)}
+        versions={testJobTemplate?.versions ?? []}
       />
     </Container>
   );
+};
+const getColorFromState = (state) => {
+  switch (state) {
+    case "rejected":
+      return "#f44336";
+    case "pending":
+      return "#ffa502";
+    case "published":
+      return `#4caf50`;
+    default:
+      return "grey";
+  }
 };

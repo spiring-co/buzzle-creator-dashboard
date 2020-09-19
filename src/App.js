@@ -6,8 +6,11 @@ import PrivateRoute from "components/PrivateRoute";
 
 import Home from "pages/Home";
 import Login from "pages/Login";
+import AdminLogin from "pages/AdminLogin"
+import UserLogin from "pages/UserLogin"
 import Landing from "pages/Landing";
 import Register from "pages/Register";
+import UserRegister from "pages/UserRegister";
 import ForgotPassword from "pages/ForgotPassword";
 import NotFoundPage from "pages/NotFoundPage";
 import { pink } from "@material-ui/core/colors";
@@ -130,7 +133,10 @@ const AppChild = () => {
           <Switch>
             <Route exact path="/" component={Landing} />
             <Route path="/login" exact component={Login} />
+            <Route path="/admin" exact component={AdminLogin} />
+            <Route path="/user" exact component={UserLogin} />
             <Route path="/register" exact component={Register} />
+            <Route path="/registerUser" exact component={UserRegister} />
             <Route path="/forgotPassword" component={ForgotPassword} />
             <PrivateRoute path="/home" component={Home} />
             <Route path="*" component={NotFoundPage} />

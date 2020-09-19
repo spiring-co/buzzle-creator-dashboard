@@ -16,17 +16,17 @@ function AuthProvider(props) {
     if (!jwt) return null;
 
     try {
-      const { exp, id, name, email } = jwtDecode(jwt);
+      const { exp, id, name, email, role = "Admin" } = jwtDecode(jwt);
       console.log(exp);
       if (!(exp * 1000 > Date.now())) return null;
-      return { id, name, email };
+      return { id, name, email, role };
     } catch (err) {
       return null;
     }
   };
   const [user, setUser] = useState(getUser());
 
-  const login = async (email, password) => {
+  const login = async (email, password, role = "Admin") => {
     const response = await fetch(
       `${process.env.REACT_APP_API_URL}/auth/login`,
       {
@@ -35,7 +35,7 @@ function AuthProvider(props) {
           Accept: "application/json",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, role }),
       }
     );
     if (!response.ok) {
@@ -45,8 +45,9 @@ function AuthProvider(props) {
     localStorage.setItem("jwtoken", token);
 
     try {
-      const { id, name, email } = jwtDecode(token);
-      setUser({ id, name, email });
+      const { id, name, email, role = "" } = jwtDecode(token);
+      console.log("role is" + role);
+      setUser({ id, name, email, role });
     } catch (err) {
       setUser(null);
       console.log(err);
@@ -60,7 +61,7 @@ function AuthProvider(props) {
     return true;
   };
 
-  const sendOtp = async () => { };
+  const sendOtp = async () => {};
   const value = useMemo(() => {
     return {
       login,

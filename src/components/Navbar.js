@@ -1,5 +1,6 @@
 import { Menu, MenuItem, Tooltip } from "@material-ui/core";
 import AppBar from "@material-ui/core/AppBar";
+import Avatar from "@material-ui/core/Avatar";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Divider from "@material-ui/core/Divider";
 import Drawer from "@material-ui/core/Drawer";
@@ -23,7 +24,7 @@ import clsx from "clsx";
 import React, { forwardRef, useMemo, useState } from "react";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 import { useDarkMode } from "helpers/useDarkMode";
-
+import RoleBasedView from "components/RoleBasedView"
 import { useAuth } from "../services/auth";
 
 const drawerWidth = 240;
@@ -121,6 +122,7 @@ const useStyles = makeStyles((theme) =>
 
 export default function NavBar({ items }) {
   const classes = useStyles();
+  const { user } = useAuth()
   const theme = useTheme();
   const [drawerOpen, setDrawerOpen] = useState(true);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -167,38 +169,32 @@ export default function NavBar({ items }) {
           </IconButton>
 
           <div className={classes.menu}>
-            <Tooltip title="Toggle dark mode">
-              <IconButton
-                aria-label="toggle dark mode"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={() => {
-                  toggleTheme();
-                }}
-                color="inherit">
-                {t === "light" ? <BrightnessHigh /> : <BrightnessLow />}
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Notifications">
-              <IconButton
-                aria-label="notifications"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={null}
-                color="inherit">
-                <Notifications />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Account">
-              <IconButton
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleMenu}
-                color="inherit">
-                <AccountCircle />
-              </IconButton>
-            </Tooltip>
+            <IconButton
+              aria-label="toggle dark mode"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={() => {
+                toggleTheme();
+              }}
+              color="inherit">
+              {t === "light" ? <BrightnessHigh /> : <BrightnessLow />}
+            </IconButton>
+            <IconButton
+              aria-label="notifications"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={null}
+              color="inherit">
+              <Notifications />
+            </IconButton>
+            <IconButton
+              aria-label="account of current user"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={handleMenu}
+              color="inherit">
+              <Avatar style={{ height: 30, width: 30 }} alt="thumbnail" src={user?.imageUrl} />
+            </IconButton>
 
             <Menu
               id="menu-appbar"
@@ -259,20 +255,22 @@ export default function NavBar({ items }) {
             {theme.direction === "rtl" ? (
               <ChevronRightIcon />
             ) : (
-              <ChevronLeftIcon />
-            )}
+                <ChevronLeftIcon />
+              )}
           </IconButton>
         </div>
         <Divider />
 
         <List>
           {items.map((item, index) => (
-            <ListItemLink
-              key={index}
-              to={item.to}
-              primary={item.text}
-              icon={item.icon}
-            />
+            <RoleBasedView allowedRoles={item?.allowedRoles ?? []}>
+              <ListItemLink
+                key={index}
+                to={item.to}
+                primary={item.text}
+                icon={item.icon}
+              />
+            </RoleBasedView>
           ))}
         </List>
       </Drawer>

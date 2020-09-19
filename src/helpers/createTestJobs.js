@@ -1,14 +1,13 @@
-import { apiClient } from "buzzle-sdk";
-const { VideoTemplate } = apiClient({ baseUrl: process.env.REACT_APP_API_URL });
+import { Job, VideoTemplate, Creator } from "services/api";
 
 export default async (id, options) => {
   const {
+    versions,
     settingsTemplate,
     renderSettings,
     incrementFrame,
     dataFillType,
   } = options;
-  const { versions } = await VideoTemplate.get(id);
 
   return versions.map((v) => {
     return {
@@ -29,8 +28,7 @@ function fieldsToData(fields, dataFillType) {
   fields.map((f) => {
     switch (f.type) {
       case "image":
-        data[f.key] = `https://dummyimage.com/${f.constraints.width}x${
-          f.constraints.height
+        data[f.key] = `https://dummyimage.com/${f.constraints.width}x${f.constraints.height
           }/3742fa/fff.${f.rendererData.extension}&text=${encodeURI(f.label)}`;
         break;
       default:

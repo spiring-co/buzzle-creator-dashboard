@@ -6,25 +6,26 @@ import {
   FormControl,
   FormControlLabel,
   FormLabel,
-  InputLabel,
+  InputLabel, FormGroup, Checkbox,
   MenuItem,
   Radio,
-  RadioGroup,
+  RadioGroup, FormHelperText,
   Select,
   TextField,
 } from "@material-ui/core";
-import { apiClient } from "buzzle-sdk";
+import { Job, VideoTemplate, Creator } from "services/api";
 import { useFormik } from "formik";
 import createTestJobs from "helpers/createTestJobs";
 import React from "react";
 import { useHistory } from "react-router-dom";
+import * as Yup from "yup";
 
-const { Job } = apiClient({
-  baseUrl: process.env.REACT_APP_API_URL,
-  authToken: localStorage.getItem("jwtoken"),
+const validationSchema = Yup.object().shape({
+  versions: Yup.array()
+    .required('Atleast 1 one version should be selected!')
+    .min(1)
 });
-
-export default ({ onClose, open, idVideoTemplate }) => {
+export default ({ onClose, open, idVideoTemplate, versions = [] }) => {
   const handleClose = () => {
     onClose();
   };
@@ -36,24 +37,37 @@ export default ({ onClose, open, idVideoTemplate }) => {
     handleSubmit,
     values,
     errors,
-    touched,
+    touched, setFieldValue, setFieldTouched,
     isSubmitting,
   } = useFormik({
     initialValues: {
+      versions: [],
       dataFillType: "maxLength",
       incrementFrame: 1,
       renderSettings: "h264",
       settingsTemplate: "half",
     },
+    validationSchema,
     onSubmit: async (options) => {
-      console.log(idVideoTemplate, options);
       const jobs = await createTestJobs(idVideoTemplate, options);
-      console.log(jobs);
       await Promise.all(jobs.map(Job.create));
       history.push("/home/jobs");
     },
   });
 
+  const handleVersionChoose = (versionId, checked) => {
+    setFieldTouched('versions', true)
+    const isPresent = Boolean(values.versions.filter(({ id }) => id === versionId)?.length ?? false)
+    if (isPresent) {
+      //check if version Id exist remove it from versions
+      setFieldValue('versions', values.versions.filter(({ id }) => id !== versionId))
+    }
+    else {
+      // add it to versions
+      setFieldValue('versions', [...values.versions, versions.find(({ id }) => id === versionId)])
+
+    }
+  }
   return (
     <Dialog
       onClose={handleClose}
@@ -85,6 +99,19 @@ export default ({ onClose, open, idVideoTemplate }) => {
             />
           </RadioGroup>
         </FormControl>
+        <br />
+        <FormControl required error={touched.versions && errors.versions} component="fieldset" >
+          <FormLabel component="legend">Choose Versions</FormLabel>
+          <FormGroup row>
+            {versions?.map((item) => <FormControlLabel
+              control={<Checkbox
+                checked={Boolean(values.versions?.filter(({ id }) => id === item?.id)?.length ?? false)}
+                onChange={({ target: { checked } }) => handleVersionChoose(item?.id, checked)} />}
+              label={item?.title}
+            />)}
+          </FormGroup>
+          <FormHelperText error={touched.versions && errors.versions}>{errors.versions}</FormHelperText>
+        </FormControl>
         <FormControl fullWidth margin="dense" variant="outlined">
           <InputLabel htmlFor="settingsTemplate">Output Module</InputLabel>
           <Select
@@ -96,6 +123,7 @@ export default ({ onClose, open, idVideoTemplate }) => {
             error={touched.settingsTemplate && !!errors.settingsTemplate}
             fullWidth
             placeholder={"Settings Template"}
+            label="Output Module"
             variant={"outlined"}
             inputProps={{
               name: "settingsTemplate",
@@ -117,6 +145,7 @@ export default ({ onClose, open, idVideoTemplate }) => {
             onBlur={handleBlur}
             onChange={handleChange}
             placeholder={"Render Settings"}
+            label="Render Settings Template"
             error={touched.renderSettings && !!errors.renderSettings}
             fullWidth
             variant={"outlined"}

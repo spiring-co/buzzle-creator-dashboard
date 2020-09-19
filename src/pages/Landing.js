@@ -107,6 +107,13 @@ function Landing() {
                   variant="contained">
                   Login
                 </Button>
+                <Button
+                  component={Link}
+                  to="/admin"
+                  style={{ background: "white" }}
+                  variant="contained">
+                  Admin Login
+                </Button>
               </Box>
               <Box display="inline-block" m={1}>
                 <Button

@@ -1,5 +1,5 @@
-import { Button, Chip, Container, Tooltip } from "@material-ui/core";
-import { apiClient } from "buzzle-sdk";
+import { Button, Chip, Container, Tooltip, } from "@material-ui/core";
+import { Job, VideoTemplate, Creator } from "services/api";
 import ErrorHandler from "components/ErrorHandler";
 import { useDarkMode } from "helpers/useDarkMode";
 import MaterialTable from "material-table";
@@ -9,12 +9,10 @@ import { useHistory, useRouteMatch } from "react-router-dom";
 import { useAuth } from "services/auth";
 import io from "socket.io-client";
 import Fade from '@material-ui/core/Fade';
+import formatTime from "helpers/formatTime";
+
 import * as timeago from "timeago.js";
 
-const { Job } = apiClient({
-  baseUrl: process.env.REACT_APP_API_URL,
-  authToken: localStorage.getItem("jwtoken"),
-});
 
 export default () => {
   const [error, setError] = useState(null);
@@ -107,6 +105,15 @@ export default () => {
               <span>
                 {videoTemplate?.versions.find((v) => v?.id === idVersion)
                   ?.title ?? ""}
+              </span>
+            ),
+          },
+          {
+            title: "Render Time",
+            searchable: false,
+            render: ({ videoTemplate, idVersion, renderTime }) => (
+              <span>
+                {renderTime !== -1 ? formatTime(renderTime) : 'NA'}
               </span>
             ),
           },

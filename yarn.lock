@@ -7983,6 +7983,11 @@ mkdirp@^0.5.1, mkdirp@^0.5.3, mkdirp@~0.5.1:
   dependencies:
     minimist "^1.2.5"
 
+money@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/money/-/money-0.2.0.tgz#7eada2df1009df935fa18d4fb1d620ddacce02c2"
+  integrity sha1-fq2i3xAJ35NfoY1PsdYg3azOAsI=
+
 moo@^0.5.0:
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/moo/-/moo-0.5.1.tgz#7aae7f384b9b09f620b6abf6f74ebbcd1b65dbc4"
