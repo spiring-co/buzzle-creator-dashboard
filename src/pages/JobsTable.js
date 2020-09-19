@@ -73,6 +73,7 @@ export default () => {
           pageSize: 20,
           headerStyle: { fontWeight: 700 },
           actionsColumnIndex: -1,
+          selection: true
         }}
         onRowClick={(e, { id }) => {
           if (["td", "TD"].includes(e.target.tagName))
