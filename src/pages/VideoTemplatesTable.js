@@ -90,7 +90,7 @@ export default (props) => {
   );
   useEffect(() => {
     const data = async () => {
-      setData(await Creator.getVideoTemplates(user?.id, 1, 10));
+      setData(await Creator.get(user?.id, 1, 10));
     };
     data();
   }, []);
