@@ -11,12 +11,14 @@ import Revenue from "pages/Revenue";
 import Profile from "pages/Profile";
 import VideoTemplates from "pages/VideoTemplates";
 import React from "react";
+import StorageIcon from '@material-ui/icons/Storage';
 import { Route, Switch, useRouteMatch, Redirect } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import RoleBasedRoute from "components/RoleBasedRoute"
 import Creators from "pages/Creators"
 import Users from "pages/Users"
 import ChangePassword from "./ChangePassword";
+import Servers from "./Servers";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -79,6 +81,12 @@ export default () => {
       to: `${url}/users`,
       allowedRoles: ['Admin']
     },
+    {
+      text: "Render Server",
+      icon: <StorageIcon />,
+      to: `${url}/servers`,
+      allowedRoles: ['Admin']
+    },
   ];
 
   return (
@@ -92,9 +100,10 @@ export default () => {
           <Route path={`${path}/videoTemplates`} component={VideoTemplates} />
           <Route path={`${path}/revenue`} component={Revenue} />
           <Route path={`${path}/jobs`} component={Jobs} />
-          <RoleBasedRoute allowedRoles={['admin']}>
+          <RoleBasedRoute allowedRoles={['Admin']}>
             <Route path={`${path}/creators`} component={Creators} />
             <Route path={`${path}/users`} component={Users} />
+            <Route path={`${path}/servers`} component={Servers} />
           </RoleBasedRoute>
           <Redirect to={"/NotFound"} />
         </Switch>
