@@ -60,9 +60,10 @@ export default () => {
                     actionsColumnIndex: -1,
                     selection: true
                 }}
-                onRowClick={(e, { id }) => {
-                    if (["td", "TD"].includes(e.target.tagName))
-                        history.push(`${path}${id}`);
+                onRowClick={(e, { uid }) => {
+                    if (["td", "TD"].includes(e.target.tagName)) {
+                        history.push(`${path.substr(0, path.lastIndexOf("/"))}/jobs/${uid}`)
+                    }
                 }}
                 detailPanel={[
                     {
@@ -127,14 +128,6 @@ export default () => {
                         tooltip: "Refresh Data",
                         isFreeAction: true,
                         onClick: handleRetry,
-                    },
-                    {
-                        icon: "repeat",
-                        tooltip: "Restart Job",
-                        position: 'row',
-                        onClick: async (e, job) => {
-                            handleRetry()
-                        }
                     },
                     {
                         icon: "delete",

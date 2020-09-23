@@ -91,6 +91,7 @@ export default () => {
   const [isLoading, setIsLoading] = useState(true);
   const [redirect, setRedirect] = useState(null);
   const { id } = useParams();
+  console.log(id)
   const history = useHistory();
   const [selectedOutputIndex, setSelectedOutputIndex] = useState(0);
   const [activeTabIndex, setActiveTabIndex] = useState(0);

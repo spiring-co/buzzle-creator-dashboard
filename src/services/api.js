@@ -6,7 +6,7 @@ const API = apiClient({
     baseUrl: process.env.REACT_APP_API_URL,
     authToken: localStorage.getItem("jwtoken"),
 });
-const uri = `${process.env.RENDER_SERVER_URL}/api/v1/jobs`;
+const uri = `http://34.229.239.151:3050/api/v1/jobs`;
 
 export const ServerJobs = {
     getAll: async () => {
