@@ -22,7 +22,7 @@ import ListIcon from "@material-ui/icons/List";
 import AssignmentTurnedInIcon from "@material-ui/icons/AssignmentTurnedIn";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
-import { Job, VideoTemplate, Creator } from "services/api";
+import { Job, VideoTemplate, Creator, Search } from "services/api";
 import PublishIcon from "@material-ui/icons/Publish";
 import ErrorHandler from "components/ErrorHandler";
 import SnackAlert from "components/SnackAlert";
@@ -348,63 +348,45 @@ export default (props) => {
                 ]
             }
             data={(query) =>
-              user?.role === 'Admin' ?
-                VideoTemplate.getAll(query.page + 1, query.pageSize)
-                  .then((result) => {
-                    return {
-                      data: query.search
-                        ? result.data.filter(({ title }) =>
-                          title
-                            .toLowerCase()
-                            .startsWith(query.search.toLowerCase())
-                        )
-                        : result.data,
-                      page: query.page,
-                      totalCount: query.search
-                        ? result.data.filter(({ title }) =>
-                          title
-                            .toLowerCase()
-                            .startsWith(query.search.toLowerCase())
-                        ).length
-                        : result.count,
-                    };
-                  })
-                  .catch((err) => {
-                    setError(err);
-                    return {
-                      data: [],
-                      page: query.page,
-                      totalCount: 0,
-                    };
-                  })
-                : Creator.getVideoTemplates(user?.id, query.page + 1, query.pageSize)
-                  .then((result) => {
-                    return {
-                      data: query.search
-                        ? result.data.filter(({ title }) =>
-                          title
-                            .toLowerCase()
-                            .startsWith(query.search.toLowerCase())
-                        )
-                        : result.data,
-                      page: query.page,
-                      totalCount: query.search
-                        ? result.data.filter(({ title }) =>
-                          title
-                            .toLowerCase()
-                            .startsWith(query.search.toLowerCase())
-                        ).length
-                        : result.count,
-                    };
-                  })
-                  .catch((err) => {
-                    setError(err);
-                    return {
-                      data: [],
-                      page: query.page,
-                      totalCount: 0,
-                    };
-                  })
+              query?.search
+                ? Search.get(query?.search, query.page + 1, query.pageSize).then(({ videoTemplates }) => ({
+                  data: videoTemplates,
+                  page: query?.page,
+                  totalCount: videoTemplates.length
+                }))
+                : (user?.role === 'Admin'
+                  ? VideoTemplate.getAll(query.page + 1, query.pageSize)
+                    .then((result) => {
+                      return {
+                        data: result.data,
+                        page: query.page,
+                        totalCount: result.count,
+                      };
+                    })
+                    .catch((err) => {
+                      setError(err);
+                      return {
+                        data: [],
+                        page: query.page,
+                        totalCount: 0,
+                      };
+                    })
+                  : Creator.getVideoTemplates(user?.id, query.page + 1, query.pageSize)
+                    .then((result) => {
+                      return {
+                        data: result.data,
+                        page: query.page,
+                        totalCount: result.count,
+                      };
+                    })
+                    .catch((err) => {
+                      setError(err);
+                      return {
+                        data: [],
+                        page: query.page,
+                        totalCount: 0,
+                      };
+                    }))
             }
             options={{
               pageSize: 10,

@@ -42,7 +42,13 @@ module.exports = function Creator(baseUrl, headers) {
         method: "GET",
         headers,
       });
-    }
+    },
+    getJobs: async (id, page, size) => {
+      return apiRequest(`${baseUrl}/creators/${id}/jobs?page=${page}&size=${size}`, {
+        method: "GET",
+        headers,
+      });
+    },
 
 
   };

@@ -39,4 +39,4 @@ export const ServerJobs = {
     }
 }
 
-export const { Job, Creator, VideoTemplate, Font } = API
+export const { Job, Creator, VideoTemplate, Font, Search } = API

@@ -121,6 +121,19 @@ function ProfileEdit({ creator }) {
   );
 }
 
+function APISection() {
+  return <Container>
+    <Container style={{ padding: 15, }}>
+      <Typography variant="h5">Credentials</Typography>
+    </Container>
+    <Divider />
+    <Typography>API KEY</Typography>
+    <Typography></Typography>
+  </Container>
+}
+
+
+
 function Setting() {
   return <Container>
     <Container style={{ padding: 15, }}>
@@ -155,13 +168,23 @@ export default () => {
       <Divider />
       <VerticalTabs tabs={[{
         label: "Profile",
-        component: <ProfileEdit creator={creator} />
+        component: <ProfileEdit creator={creator} />,
+        allowedRoles: ['Admin', 'Creator', 'User']
       }, {
         label: "Account Security",
-        component: <ChangePassword />
+        component: <ChangePassword />,
+        allowedRoles: ['Admin', 'Creator', 'User']
+
+      }, {
+        label: 'Credentials',
+        component: <APISection />,
+        allowedRoles: ['User']
+
       }, {
         label: 'Setting',
-        component: <Setting />
+        component: <Setting />,
+        allowedRoles: ['Admin', 'Creator', 'User']
+
       }]} />
     </Container>
   );

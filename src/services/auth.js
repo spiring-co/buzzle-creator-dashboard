@@ -19,7 +19,7 @@ function AuthProvider(props) {
       const { exp, id, name, email, role = "Creator" } = jwtDecode(jwt);
       console.log(exp);
       if (!(exp * 1000 > Date.now())) return null;
-      return { id, name, email, role };
+      return { id, name, email, role: "Creator" };
     } catch (err) {
       return null;
     }
@@ -47,7 +47,7 @@ function AuthProvider(props) {
     try {
       const { id, name, email, role = "" } = jwtDecode(token);
       console.log("role is" + role);
-      setUser({ id, name, email, role });
+      setUser({ id, name, email, role: 'Creator' });
     } catch (err) {
       setUser(null);
       console.log(err);

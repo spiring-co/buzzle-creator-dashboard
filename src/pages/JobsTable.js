@@ -1,5 +1,5 @@
 import { Button, Chip, Container, Tooltip, } from "@material-ui/core";
-import { Job, VideoTemplate, Creator } from "services/api";
+import { Job, VideoTemplate, Creator, Search } from "services/api";
 import ErrorHandler from "components/ErrorHandler";
 import { useDarkMode } from "helpers/useDarkMode";
 import MaterialTable from "material-table";
@@ -173,29 +173,45 @@ export default () => {
           },
         }}
         data={(query) =>
-          // TODO should be abstracted to API service
-          fetch(`${uri}?page=${query.page + 1}&size=${query.pageSize}`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("jwtoken")}`,
-            },
-          })
-            .then((response) => response.json())
-            .then((result) => {
-              const { jobs = [], message = "", totalCount } = result;
-              if (message) {
-                return setError(new Error(message));
-              }
-              setJobIds(jobs.map(({ id }) => id));
-              return {
-                data: jobs,
-                page: query.page,
-                totalCount,
-              };
-            })
-            .catch((e) => {
-              setError(e);
-              return { data: [], page: query.page, totalCount: 0 };
-            })
+          query?.search
+            ? Search.get(query?.search, query.page + 1, query.pageSize).then(({ jobs }) => ({
+              data: jobs,
+              page: query?.page,
+              totalCount: jobs.length
+            }))
+            : (user?.role === 'Admin'
+              ? Job.getAll(query.page + 1, query.pageSize)
+                .then((result) => {
+                  return {
+                    data: result.data,
+                    page: query.page,
+                    totalCount: result.count,
+                  };
+                })
+                .catch((err) => {
+                  setError(err);
+                  return {
+                    data: [],
+                    page: query.page,
+                    totalCount: 0,
+                  };
+                })
+              : Creator.getJobs(user?.id, query.page + 1, query.pageSize)
+                .then((result) => {
+                  return {
+                    data: result.jobs,
+                    page: query.page,
+                    totalCount: result.count,
+                  };
+                })
+                .catch((err) => {
+                  setError(err);
+                  return {
+                    data: [],
+                    page: query.page,
+                    totalCount: 0,
+                  };
+                }))
         }
         actions={[
           //TODO add rerender and edit job actions

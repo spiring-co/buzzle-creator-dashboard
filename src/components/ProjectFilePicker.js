@@ -62,6 +62,7 @@ export default ({
   const [message, setMessage] = useState(
     compositions.length === 0 ? null : getCompositionDetails(compositions)
   );
+  const [error, setError] = useState(null)
   useEffect(() => {
     // if template is in edit mode
     if (edit && value) {
@@ -93,10 +94,11 @@ export default ({
   const handlePickFile = async (e) => {
     e && e.preventDefault();
     setMessage(null);
+    setError(null)
     setHasPickedFile(true);
     setHasExtractedData(false);
     try {
-      if (!edit) {
+      if (!edit && !value) {
         var file =
           (e?.target?.files ?? [null])[0] ||
           (e?.dataTransfer?.files ?? [null])[0];
@@ -112,6 +114,7 @@ export default ({
           setMessage(`${parseInt((loaded / total) * 100)}% uploaded`)
         );
         var { Location: uri } = await task.promise();
+        setValue(uri)
       } else {
         var uri = value;
       }
@@ -122,9 +125,11 @@ export default ({
       console.log(staticAssets)
       setHasExtractedData(true);
       if (!compositions) {
+        setError({ message: "Could not extract project structure." })
         onError("Could not extract project structure.");
       } else {
         setMessage(getCompositionDetails(compositions));
+        console.log(compositions)
         setHasExtractedData(true);
         onData({
           compositions,
@@ -141,7 +146,7 @@ export default ({
       setHasPickedFile(false);
       setHasExtractedData(false);
       onTouched(true);
-      setMessage(`Error: ${error.message}`);
+      setError(error);
       onError(error.message);
     }
   };
@@ -153,8 +158,7 @@ export default ({
           return [...textLayers, ...imageLayers];
         })
         .flat();
-      return `${Object.keys(c).length} compositions & ${
-        allLayers.length
+      return `${Object.keys(c).length} compositions & ${allLayers.length
         } layers found`;
     } catch (err) {
       onError(err);
@@ -224,6 +228,7 @@ export default ({
                 onClick={() => {
                   // change will work in edit mode
                   setMessage("");
+                  setValue("")
                   isEdit && setEdit(false);
                   setHasPickedFile(false);
                   setHasExtractedData(false);
@@ -232,7 +237,13 @@ export default ({
             )}
           </>
         )}
-        <Typography>{message}</Typography>
+        <Typography color={error ? 'error' : 'initial'}>{error?.message ?? message}</Typography>
+        {error && <Button onClick={handlePickFile}
+          size="small"
+          children="Retry"
+          color="secondary"
+          variant="contained"
+        />}
       </Box></Container>
   }
 
