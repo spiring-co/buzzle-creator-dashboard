@@ -1,22 +1,25 @@
 import {
-  Box,
-  Button,
+  Box, Chip, Tooltip,
   Container,
   GridList,
   GridListTile,
-  GridListTileBar,
+  GridListTileBar, Fade,
   IconButton,
-  Link,
+  Link, Avatar,
+  Button,
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import GridOnIcon from "@material-ui/icons/GridOn";
 import AddIcon from "@material-ui/icons/Add";
 import InfoIcon from "@material-ui/icons/Info";
+import QueuePlayNextIcon from '@material-ui/icons/QueuePlayNext';
 import ListIcon from "@material-ui/icons/List";
+import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
-import { apiClient } from "buzzle-sdk";
+import { Job, VideoTemplate, Creator } from "services/api";
+import PublishIcon from '@material-ui/icons/Publish';
 import ErrorHandler from "components/ErrorHandler";
 import SnackAlert from "components/SnackAlert";
 import TestJobDialog from "components/TestJobDialog";
@@ -30,30 +33,27 @@ import {
 } from "react-router-dom";
 import { useAuth } from "services/auth";
 import * as timeago from "timeago.js";
-const { VideoTemplate } = apiClient({
-  baseUrl: process.env.REACT_APP_API_URL,
-  authToken: localStorage.getItem("jwtoken"),
-});
+import RoleBasedView from "components/RoleBasedView";
 
 export default (props) => {
   let { url, path } = useRouteMatch();
   const history = useHistory();
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState(null);
-  const [testJobTemplateId, setTestJobTemplateId] = useState(null);
+  const [testJobTemplate, setTestJobTemplate] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [data, setData] = useState([]);
   const [view, setView] = useState("list");
   const tableRef = useRef(null);
   const { user } = useAuth();
-  const uri = `${process.env.REACT_APP_API_URL}/creators/${user?.id}/videoTemplates`;
+  const { role } = user
   const handleDelete = async (id) => {
     const action = window.confirm("Are you sure, you want to delete");
     if (!action) return;
 
     try {
       setIsDeleting(true);
-  console.log("delete ",id)
+      console.log("delete ", id)
       await VideoTemplate.delete(id);
     } catch (err) {
       setError(err);
@@ -75,6 +75,9 @@ export default (props) => {
     icon: {
       color: "rgba(255, 255, 255, 0.54)",
     },
+    drafted: {
+      marginLeft: 10
+    }
   }));
   const classes = useStyles();
 
@@ -83,12 +86,7 @@ export default (props) => {
   );
   useEffect(() => {
     const data = async () => {
-      const response = await fetch(`${uri}?page=${1}&size=${10}`);
-      if (response.ok) {
-        const result = await response.json();
-        console.log(result);
-        setData(result.data);
-      }
+      setData(await Creator.getVideoTemplates(user?.id, 1, 10))
     };
     data();
   }, []);
@@ -124,14 +122,24 @@ export default (props) => {
         justifyContent="space-between"
         flexDirection="row"
         p={1}>
-        <Button
-          color="primary"
-          variant="contained"
-          className={classes.button}
-          onClick={() => history.push(`${url}/add`)}
-          children="Add Template"
-          startIcon={<AddIcon />}
-        />
+        <RoleBasedView allowedRoles={['creator']}>
+          <Box><Button
+            color="primary"
+            variant="contained"
+            className={classes.button}
+            onClick={() => history.push(`${url}/add`)}
+            children="Add Template"
+            startIcon={<AddIcon />}
+          />
+            <Button
+              color="primary"
+              variant="contained"
+              className={classes.drafted}
+              onClick={() => history.push(`${url}/drafts`)}
+              children="Drafted Templates"
+              startIcon={<QueuePlayNextIcon
+              />}
+            /></Box></RoleBasedView>
         <ToggleButtonGroup
           size="small"
           value={view}
@@ -172,70 +180,105 @@ export default (props) => {
           </GridList>
         </Box>
       ) : (
-        <MaterialTable
-          tableRef={tableRef}
-          title="Your Video Templates"
-          onRowClick={(e, { id }) => {
-            history.push(`${path}${id}`);
-          }}
-          columns={[
-            {
-              title: "Title",
-              field: "title",
-            },
-            {
-              title: "Versions",
-              render: ({ versions }) => <span>{versions.length}</span>,
-            },
-            {
-              title: "Last Updated",
-              field: "dateUpdated",
-              type: "datetime",
-              render: ({ dateUpdated }) => (
-                <span>{timeago.format(dateUpdated)}</span>
-              ),
-              defaultSort: "desc",
-            },
-          ]}
-          localization={{
-            body: {
-              emptyDataSourceMessage: error ? (
-                <Button
-                  onClick={handleRetry}
-                  color="secondary"
-                  variant="outlined"
-                  children={"Retry"}
-                />
-              ) : (
-                <Typography>
-                  <Link component={RouterLink} to={`${path}add`}>
-                    Click here
+          <MaterialTable
+            tableRef={tableRef}
+            title="Your Video Templates"
+            onRowClick={(e, { id }) => {
+              history.push(`${path}${id}`);
+            }}
+            columns={[
+              {
+                title: "Title",
+                field: "title", render: ({ title, thumbnail }) => <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                  <Avatar style={{ marginRight: 10, height: 30, width: 30 }} alt="thumbnail" src={thumbnail} /> {title}</div>
+              },
+              {
+                title: "Versions",
+                render: ({ versions }) => <span>{versions.length}</span>,
+              },
+              {
+                title: "Publish State",
+                field: "publishState",
+                render: function ({ publishState = "unpublished", rejectionReason = null }) {
+
+                  return (
+                    <Tooltip
+                      TransitionComponent={Fade}
+                      title={
+                        rejectionReason ? publishState : rejectionReason
+                      }>
+                      <Chip
+                        size="small"
+                        label={publishState}
+                        style={{
+                          background: getColorFromState(publishState),
+                          color: "white",
+                        }}
+                      />
+                    </Tooltip>
+                  );
+                },
+              },
+              {
+                title: "Last Updated",
+                field: "dateUpdated",
+                type: "datetime",
+                render: ({ dateUpdated }) => (
+                  <span>{timeago.format(dateUpdated)}</span>
+                ),
+                defaultSort: "desc",
+              },
+            ]}
+            localization={{
+              body: {
+                emptyDataSourceMessage: error ? (
+                  <Button
+                    onClick={handleRetry}
+                    color="secondary"
+                    variant="outlined"
+                    children={"Retry"}
+                  />
+                ) : (
+                    <Typography>
+                      <Link component={RouterLink} to={`${path}add`}>
+                        Click here
                   </Link>{" "}
                   to create a Video Template😀
-                </Typography>
-              ),
+                    </Typography>
+                  ),
+              },
+            }}
+            detailPanel={[
+              {
+                render: (rowData) => (
+                  <ReactJson
+                    displayDataTypes={false}
+                    name={rowData.id}
+                    collapsed={1}
+                    src={rowData}
+                  />
+                ),
+                icon: "code",
+                tooltip: "Show Code",
+              },
+            ]}
+            actions={role === 'admin' ? [] : [{
+              icon: () => <PublishIcon />,
+              tooltip: `Publish your template`,
+              onClick: (e, data) => {
+                history.push({
+                  pathname: `${url}/${data.id}/publish`,
+                  state: {
+                    videoTemplate: data,
+                  },
+                });
+              },
             },
-          }}
-          detailPanel={[
-            {
-              render: (rowData) => (
-                <ReactJson
-                  displayDataTypes={false}
-                  name={rowData.id}
-                  collapsed={1}
-                  src={rowData}
-                />
-              ),
-              icon: "code",
-              tooltip: "Show Code",
-            },
-          ]}
-          actions={[
             {
               icon: "alarm-on",
               tooltip: "Render Test Job",
-              onClick: (e, { id }) => {
-                setTestJobTemplateId(id);
+              onClick: (e, item) => {
+                setTestJobTemplate(item);
                 setIsDialogOpen(true);
               },
             },
@@ -251,6 +294,7 @@ export default (props) => {
               isFreeAction: true,
               onClick: () => history.push(`${url}/add`),
             },
+
             {
               icon: "edit",
               tooltip: "Edit Template",
@@ -271,51 +315,64 @@ export default (props) => {
               isFreeAction: true,
               onClick: handleRetry,
             },
-          ]}
-          data={(query) =>
-            fetch(`${uri}?page=${query.page + 1}&size=${query.pageSize}`)
-              .then((response) => response.json())
-              .then((result) => {
-                return {
-                  data: query.search
-                    ? result.data.filter(({ title }) =>
+            ]}
+            data={(query) =>
+              Creator.getVideoTemplates(user?.id, query.page + 1, query.pageSize)
+                .then((result) => {
+                  return {
+                    data: query.search
+                      ? result.data.filter(({ title }) =>
                         title
                           .toLowerCase()
                           .startsWith(query.search.toLowerCase())
                       )
-                    : result.data,
-                  page: query.page,
-                  totalCount: query.search
-                    ? result.data.filter(({ title }) =>
+                      : result.data,
+                    page: query.page,
+                    totalCount: query.search
+                      ? result.data.filter(({ title }) =>
                         title
                           .toLowerCase()
                           .startsWith(query.search.toLowerCase())
                       ).length
-                    : result.count,
-                };
-              })
-              .catch((err) => {
-                setError(err);
-                return {
-                  data: [],
-                  page: query.page,
-                  totalCount: 0,
-                };
-              })
-          }
-          options={{
-            pageSize: 10,
-            headerStyle: { fontWeight: 700 },
-            minBodyHeight: 500,
-            actionsColumnIndex: -1,
-          }}
-        />
-      )}
+                      : result.count,
+                  };
+                })
+                .catch((err) => {
+                  setError(err);
+                  return {
+                    data: [],
+                    page: query.page,
+                    totalCount: 0,
+                  };
+                })
+            }
+            options={{
+              pageSize: 10,
+              headerStyle: { fontWeight: 700 },
+              minBodyHeight: 500,
+              actionsColumnIndex: -1,
+            }}
+          />
+        )}
+
       <TestJobDialog
         open={isDialogOpen}
-        idVideoTemplate={testJobTemplateId}
+        idVideoTemplate={testJobTemplate?.id ?? ''}
         onClose={() => setIsDialogOpen(false)}
+        versions={testJobTemplate?.versions ?? []}
       />
     </Container>
   );
+};
+const getColorFromState = (state) => {
+  switch (state) {
+    case "rejected":
+      return "#f44336";
+    case "pending":
+      return "#ffa502";
+    case "published":
+      return `#4caf50`;
+    default:
+      return "grey";
+  }
 };

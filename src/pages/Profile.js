@@ -2,64 +2,87 @@ import {
   Box,
   Button,
   Container,
-  Divider,
+  Divider, Paper,
   TextField,
   Typography,
 } from "@material-ui/core";
-import Paper from "@material-ui/core/Paper";
 import Tab from "@material-ui/core/Tab";
 import Tabs from "@material-ui/core/Tabs";
 import { Alert } from "@material-ui/lab";
-import { apiClient } from "buzzle-sdk";
+import { Job, VideoTemplate, Creator } from "services/api";
+import upload from "services/s3Upload";
 import { useFormik } from "formik";
 import React, { useEffect, useState } from "react";
+import EditIcon from '@material-ui/icons/Edit';
 import { useAuth } from "services/auth";
-const { Creator } = apiClient({
-  baseUrl: process.env.REACT_APP_API_URL,
-  authToken: localStorage.getItem("jwtoken"),
-});
-
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}>
-      {value === index && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  );
-}
+import VerticalTabs from "components/VerticalTabs"
+import ChangePassword from "pages/ChangePassword"
 function ProfileEdit({ creator }) {
-  const [isEditing, setIsEditing] = useState(false);
+  console.log(creator)
+  const [loading, setLoading] = useState(false)
+  const [progress, setProgress] = useState(0)
   const handleUpdate = (data) => {
-    setIsEditing(false);
-    Creator.update(data);
-    console.log(data);
+    Creator.update(creator?.id, data);
+    console.log("to submit", data);
   };
-  const { handleChange, values, handleSubmit } = useFormik({
+  const { handleChange, values, handleSubmit, setFieldValue } = useFormik({
     initialValues: {
       name: creator.name,
       email: creator.email,
+      imageUrl: creator?.imageUrl
     },
     validationSchema: null,
     onSubmit: handleUpdate,
   });
 
-  const toggleEditMode = () => {
-    setIsEditing(!isEditing);
-  };
+  const handleUpload = async (file, extension) => {
+    try {
+      setLoading(true);
+      const task = upload(
+        `avtars/${Date.now()}${extension}`,
+        file
+      );
+      task.on("httpUploadProgress", ({ loaded, total }) =>
+        setProgress(parseInt((loaded * 100) / total))
+      );
+      const { Location: uri } = await task.promise();
+      setLoading(false);
+      setFieldValue('imageUrl', uri);
+      console.log(uri)
+    } catch (err) {
+      setLoading(false);
+    }
 
+  }
   return (
     <form onSubmit={handleSubmit}>
+      <Container style={{ padding: 15, }}>
+        <Typography variant="h5">Profile</Typography>
+      </Container>
+      <Divider />
       <Box p={2}>
         <Box style={{ marginBottom: 20 }} display="flex" flexDirection="column">
+          <Box style={{
+            height: 180, width: 180, margin: 10, borderRadius: '50%', alignSelf: 'flex-start',
+            border: '1px solid #f0f8ff', position: 'relative', background: '#f0f8ff',
+          }}>
+            {values?.imageUrl && <img style={{ width: "inherit", height: 'inherit', borderRadius: 'inherit' }} src={values?.imageUrl} />}
+            <Paper style={{
+              position: 'absolute',
+              left: 5, bottom: 15, paddingLeft: 15, paddingRight: 15, borderRadius: 15
+            }}>
+              <label><EditIcon fontSize="small" /> {loading ? `Uploading : ${progress}%` : "Edit"}
+                {!loading && <input
+                  style={{ display: 'none' }}
+                  onChange={({ target: { files } }) =>
+                    handleUpload(files[0], files[0].name.substr(files[0].name.lastIndexOf(".")))}
+                  type="file"
+                  accept={"image/*"}
+                />}
+              </label>
+            </Paper>
+          </Box>
+
           <div style={{ marginBottom: 10 }}>
             <TextField
               variant="outlined"
@@ -68,9 +91,7 @@ function ProfileEdit({ creator }) {
               name="name"
               margin="dense"
               value={values.name}
-              inputProps={{
-                readOnly: !isEditing,
-              }}></TextField>
+            ></TextField>
           </div>
           <div>
             <TextField
@@ -80,29 +101,32 @@ function ProfileEdit({ creator }) {
               name="email"
               margin="dense"
               value={values.email}
-              inputProps={{
-                readOnly: !isEditing,
-              }}></TextField>
+            ></TextField>
           </div>
         </Box>
         <Button
-          style={
-            isEditing
-              ? { marginRight: 20, background: "green" }
-              : { marginRight: 20, background: "blue" }
-          }
-          onClick={isEditing ? handleSubmit : toggleEditMode}
+          disabled={loading}
+          onClick={handleSubmit}
           size="small"
+          color="primary"
           variant="contained">
-          {isEditing ? "Save" : "Edit"}
+          Update
         </Button>
       </Box>
     </form>
   );
 }
 
-export default function DisabledTabs() {
-  const [activeTabIndex, setActiveTabIndex] = useState(0);
+function Setting() {
+  return <Container>
+    <Container style={{ padding: 15, }}>
+      <Typography variant="h5">Setting</Typography>
+    </Container>
+    <Divider />
+  </Container>
+}
+
+export default () => {
   const [creator, setCreator] = useState({});
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -121,29 +145,20 @@ export default function DisabledTabs() {
     return <Typography>loading...</Typography>;
   }
 
-  const handleTabChange = (event, newValue) => {
-    setActiveTabIndex(newValue);
-  };
-
   return (
     <Container>
-      <Typography variant="h4">Your account</Typography>
       {error && <Alert severity="error">{error.message}</Alert>}
       <Divider />
-      <Paper square>
-        <Tabs
-          value={activeTabIndex}
-          indicatorColor="primary"
-          textColor="primary"
-          onChange={handleTabChange}
-          aria-label="account tabs">
-          <Tab label="Profile" />
-          <Tab label="Settings" />
-        </Tabs>
-        <TabPanel value={activeTabIndex} index={0}>
-          <ProfileEdit creator={creator} />
-        </TabPanel>
-      </Paper>
+      <VerticalTabs tabs={[{
+        label: "Profile",
+        component: <ProfileEdit creator={creator} />
+      }, {
+        label: "Account Security",
+        component: <ChangePassword />
+      }, {
+        label: 'Setting',
+        component: <Setting />
+      }]} />
     </Container>
   );
 }

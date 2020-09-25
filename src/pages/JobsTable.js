@@ -1,5 +1,5 @@
-import { Button, Chip, Container } from "@material-ui/core";
-import { apiClient } from "buzzle-sdk";
+import { Button, Chip, Container, Tooltip, } from "@material-ui/core";
+import { Job, VideoTemplate, Creator } from "services/api";
 import ErrorHandler from "components/ErrorHandler";
 import { useDarkMode } from "helpers/useDarkMode";
 import MaterialTable from "material-table";
@@ -8,12 +8,11 @@ import ReactJson from "react-json-view";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import { useAuth } from "services/auth";
 import io from "socket.io-client";
+import Fade from '@material-ui/core/Fade';
+import formatTime from "helpers/formatTime";
+
 import * as timeago from "timeago.js";
 
-const { Job } = apiClient({
-  baseUrl: process.env.REACT_APP_API_URL,
-  authToken: localStorage.getItem("jwtoken"),
-});
 
 export default () => {
   const [error, setError] = useState(null);
@@ -71,7 +70,7 @@ export default () => {
         tableRef={tableRef}
         title="Your Jobs"
         options={{
-          pageSize: 10,
+          pageSize: 20,
           headerStyle: { fontWeight: 700 },
           actionsColumnIndex: -1,
         }}
@@ -110,6 +109,15 @@ export default () => {
             ),
           },
           {
+            title: "Render Time",
+            searchable: false,
+            render: ({ videoTemplate, idVersion, renderTime }) => (
+              <span>
+                {renderTime !== -1 ? formatTime(renderTime) : 'NA'}
+              </span>
+            ),
+          },
+          {
             searchable: false,
             title: "Last Updated",
             field: "dateUpdated",
@@ -123,20 +131,31 @@ export default () => {
             searchable: false,
             title: "State",
             field: "state",
-            render: function ({ id, state }) {
+            render: function ({ id, state, failureReason }) {
               state = rtProgressData[id]?.state || state;
               let percent = rtProgressData[id]?.percent;
+              console.log(failureReason);
               return (
-                <Chip
-                  size="small"
-                  label={`${state}${percent ? " " + percent + "%" : ""}`}
-                  style={{
-                    transition: "background-color 0.5s ease",
-                    fontWeight: 700,
-                    background: getColorFromState(state, percent),
-                    color: "white",
-                  }}
-                />
+                <Tooltip
+                  TransitionComponent={Fade}
+                  title={
+                    state === "error"
+                      ? failureReason
+                        ? failureReason
+                        : "Reason not given"
+                      : "finished/inProgress"
+                  }>
+                  <Chip
+                    size="small"
+                    label={`${state}${percent ? " " + percent + "%" : ""}`}
+                    style={{
+                      transition: "background-color 0.5s ease",
+                      fontWeight: 700,
+                      background: getColorFromState(state, percent),
+                      color: "white",
+                    }}
+                  />
+                </Tooltip>
               );
             },
           },

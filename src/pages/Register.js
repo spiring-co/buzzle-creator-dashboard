@@ -19,7 +19,7 @@ import { createStyles, makeStyles } from "@material-ui/core/styles";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import { Alert } from "@material-ui/lab";
-import { apiClient } from "buzzle-sdk";
+import { Job, VideoTemplate, Creator } from "services/api";
 import Branding from "components/Branding";
 import { countryList } from "components/CountryList";
 import { useFormik } from "formik";
@@ -27,10 +27,6 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 import * as Yup from "yup";
-const { Creator } = apiClient({
-  baseUrl: process.env.REACT_APP_API_URL,
-  authToken: localStorage.getItem("jwtoken"),
-});
 
 function renderCountryMenuItem(country) {
   return <MenuItem value={country}>{country}</MenuItem>;

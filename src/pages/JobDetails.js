@@ -21,7 +21,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import DownloadIcon from "@material-ui/icons/GetApp";
 import PublishIcon from "@material-ui/icons/Publish";
 import UpdateIcon from "@material-ui/icons/Update";
-import { apiClient } from "buzzle-sdk";
+import { Job, VideoTemplate, Creator } from "services/api";
 import ActionsHandler from "components/ActionsHandler";
 import ErrorHandler from "components/ErrorHandler";
 import ImageEditRow from "components/ImageEditRow";
@@ -30,11 +30,6 @@ import MaterialTable from "material-table";
 import React, { useEffect, useState } from "react";
 import { Redirect, useHistory, useParams } from "react-router-dom";
 import * as timeago from "timeago.js";
-
-const { Job } = apiClient({
-  baseUrl: process.env.REACT_APP_API_URL,
-  authToken: localStorage.getItem("jwtoken"),
-});
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -104,7 +99,7 @@ export default () => {
     fetchJob();
   }, []);
 
-  useEffect(() => {}, [selectedOutputIndex]);
+  useEffect(() => { }, [selectedOutputIndex]);
 
   const fetchJob = async () => {
     setError(false);
@@ -276,16 +271,16 @@ export default () => {
               src={output.length && output[selectedOutputIndex].src}
             />
           ) : (
-            <>
-              <Box justifyContent="center" textAlign="center" height={320}>
-                <Typography style={{ padding: 100 }}>
-                  {" "}
+              <>
+                <Box justifyContent="center" textAlign="center" height={320}>
+                  <Typography style={{ padding: 100 }}>
+                    {" "}
                   No output yet.
                 </Typography>
-              </Box>
-              <Divider />
-            </>
-          )}
+                </Box>
+                <Divider />
+              </>
+            )}
           <AppBar position="static" color="transparent" elevation={0}>
             <Tabs
               value={activeTabIndex}
@@ -357,7 +352,7 @@ export default () => {
                     return (
                       <span>
                         {value.startsWith("http://") ||
-                        value.startsWith("https://")
+                          value.startsWith("https://")
                           ? "image"
                           : "string"}
                       </span>
