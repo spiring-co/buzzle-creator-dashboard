@@ -11,12 +11,14 @@ import Revenue from "pages/Revenue";
 import Profile from "pages/Profile";
 import VideoTemplates from "pages/VideoTemplates";
 import React from "react";
+import StorageIcon from '@material-ui/icons/Storage';
 import { Route, Switch, useRouteMatch, Redirect } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import RoleBasedRoute from "components/RoleBasedRoute"
 import Creators from "pages/Creators"
 import Users from "pages/Users"
 import ChangePassword from "./ChangePassword";
+import Servers from "./Servers";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -44,13 +46,13 @@ export default () => {
       text: "Video Templates",
       icon: <VideoLibrary />,
       to: `${url}/videoTemplates`,
-      allowedRoles: ['admin', 'creator', 'user']
+      allowedRoles: ['Admin', 'Creator', 'User']
     },
     {
       text: "Jobs",
       icon: <Work />,
       to: `${url}/jobs`,
-      allowedRoles: ['admin', 'creator', 'user']
+      allowedRoles: ['Admin', 'Creator', 'User']
 
     },
 
@@ -58,26 +60,32 @@ export default () => {
       text: "Profile and Settings",
       icon: <AssignmentInd />,
       to: `${url}/profile`,
-      allowedRoles: ['admin', 'creator', 'user']
+      allowedRoles: ['Admin', 'Creator', 'User']
     },
     {
       text: "Revenue",
       icon: <MonetizationOn />,
       to: `${url}/revenue`,
-      allowedRoles: ['admin', 'creator', 'user']
+      allowedRoles: ['Admin', 'Creator', 'User']
 
     },
     {
       text: "Creators",
       icon: <SupervisedUserCircle />,
       to: `${url}/creators`,
-      allowedRoles: ['admin']
+      allowedRoles: ['Admin']
     },
     {
       text: "Users",
       icon: <Stars />,
       to: `${url}/users`,
-      allowedRoles: ['admin']
+      allowedRoles: ['Admin']
+    },
+    {
+      text: "Render Server",
+      icon: <StorageIcon />,
+      to: `${url}/servers`,
+      allowedRoles: ['Admin']
     },
   ];
 
@@ -92,9 +100,10 @@ export default () => {
           <Route path={`${path}/videoTemplates`} component={VideoTemplates} />
           <Route path={`${path}/revenue`} component={Revenue} />
           <Route path={`${path}/jobs`} component={Jobs} />
-          <RoleBasedRoute allowedRoles={['admin']}>
+          <RoleBasedRoute allowedRoles={['Admin']}>
             <Route path={`${path}/creators`} component={Creators} />
             <Route path={`${path}/users`} component={Users} />
+            <Route path={`${path}/servers`} component={Servers} />
           </RoleBasedRoute>
           <Redirect to={"/NotFound"} />
         </Switch>

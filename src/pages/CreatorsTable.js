@@ -40,7 +40,7 @@ export default (props) => {
     const tableRef = useRef(null);
     const { user } = useAuth();
     const { role } = user
-    const uri = `${process.env.REACT_APP_API_URL}/creators/${user?.id}/videoTemplates`;
+    const uri = `${process.env.REACT_APP_API_URL}/creators/`;
     const handleDelete = async (id) => {
         const action = window.confirm("Are you sure, you want to delete");
         if (!action) return;
@@ -80,12 +80,7 @@ export default (props) => {
     );
     useEffect(() => {
         const data = async () => {
-            const response = await fetch(`${uri}?page=${1}&size=${10}`);
-            if (response.ok) {
-                const result = await response.json();
-                console.log(result);
-                setData(result.data);
-            }
+            setData(await Creator.getAll(1, 10));
         };
         data();
     }, []);
@@ -132,26 +127,21 @@ export default (props) => {
                 columns={[
                     {
                         title: "Name",
-                        field: "title",
+                        field: "name",
                         //change thumbnail to imageUrl and title to name
-                        render: ({ thumbnail, title }) => <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                            <Avatar style={{ marginRight: 10, height: 30, width: 30 }} alt="thumbnail" src={thumbnail} />
-                            {title}
+                        render: ({ imageUrl, name }) => <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                            <Avatar style={{ marginRight: 10, height: 30, width: 30 }} alt="thumbnail" src={imageUrl} />
+                            {name}
                         </div>
+                    },
+                    {
+                        title: "Creator Id",
+                        field: "id",
+
                     },
                     {
                         title: "Email",
                         field: "email",
-                        render: ({ versions }) => <span>{versions.length}</span>,
-                    },
-
-                    {
-                        title: "Phone Number",
-                        field: "dateUpdated",
-                        type: "datetime",
-                        render: ({ dateUpdated }) => (
-                            <span>554545454545</span>
-                        ),
                     },
                 ]}
                 localization={{
@@ -175,8 +165,7 @@ export default (props) => {
                 ]}
 
                 data={(query) =>
-                    fetch(`${uri}?page=${query.page + 1}&size=${query.pageSize}`)
-                        .then((response) => response.json())
+                    Creator.getAll(user?.id, query.page + 1, query.pageSize)
                         .then((result) => {
                             return {
                                 data: query.search

@@ -70,7 +70,7 @@ export default () => {
         initialValues: {
             email: "harshb.work@gmail.com",
             password: "butter",
-            role: "admin"
+            role: "Admin"
         },
         validationSchema: Yup.object({
             email: Yup.string().email(t("enterEmail")).required(t("required")),
@@ -120,10 +120,9 @@ export default () => {
                         }}>
                         Buzzle!
           </Typography>
-                    <Typography variant="h6">Sign In</Typography>
+                    <Typography variant="h6">Sign In as Admin</Typography>
                     <Typography className={classes.spacedText}>
-                        Welcome back fam, what&apos;s cooking?{" "}
-                        <span aria-label="cool" role="img" children="😎" />
+                        Welcome to Admin Login
                     </Typography>
 
                     {error && <Alert severity="error" children={error.message} />}

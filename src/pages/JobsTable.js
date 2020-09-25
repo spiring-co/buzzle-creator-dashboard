@@ -1,5 +1,5 @@
 import { Button, Chip, Container, Tooltip, } from "@material-ui/core";
-import { Job, VideoTemplate, Creator } from "services/api";
+import { Job, VideoTemplate, Creator, Search } from "services/api";
 import ErrorHandler from "components/ErrorHandler";
 import { useDarkMode } from "helpers/useDarkMode";
 import MaterialTable from "material-table";
@@ -73,6 +73,7 @@ export default () => {
           pageSize: 20,
           headerStyle: { fontWeight: 700 },
           actionsColumnIndex: -1,
+          selection: true
         }}
         onRowClick={(e, { id }) => {
           if (["td", "TD"].includes(e.target.tagName))
@@ -134,7 +135,6 @@ export default () => {
             render: function ({ id, state, failureReason }) {
               state = rtProgressData[id]?.state || state;
               let percent = rtProgressData[id]?.percent;
-              console.log(failureReason);
               return (
                 <Tooltip
                   TransitionComponent={Fade}
@@ -173,29 +173,45 @@ export default () => {
           },
         }}
         data={(query) =>
-          // TODO should be abstracted to API service
-          fetch(`${uri}?page=${query.page + 1}&size=${query.pageSize}`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("jwtoken")}`,
-            },
-          })
-            .then((response) => response.json())
-            .then((result) => {
-              const { jobs = [], message = "", totalCount } = result;
-              if (message) {
-                return setError(new Error(message));
-              }
-              setJobIds(jobs.map(({ id }) => id));
-              return {
-                data: jobs,
-                page: query.page,
-                totalCount,
-              };
-            })
-            .catch((e) => {
-              setError(e);
-              return { data: [], page: query.page, totalCount: 0 };
-            })
+          query?.search
+            ? Search.get(query?.search, query.page + 1, query.pageSize).then(({ jobs }) => ({
+              data: jobs,
+              page: query?.page,
+              totalCount: jobs.length
+            }))
+            : (user?.role === 'Admin'
+              ? Job.getAll(query.page + 1, query.pageSize)
+                .then((result) => {
+                  return {
+                    data: result.data,
+                    page: query.page,
+                    totalCount: result.count,
+                  };
+                })
+                .catch((err) => {
+                  setError(err);
+                  return {
+                    data: [],
+                    page: query.page,
+                    totalCount: 0,
+                  };
+                })
+              : Creator.getJobs(user?.id, query.page + 1, query.pageSize)
+                .then((result) => {
+                  return {
+                    data: result.jobs,
+                    page: query.page,
+                    totalCount: result.count,
+                  };
+                })
+                .catch((err) => {
+                  setError(err);
+                  return {
+                    data: [],
+                    page: query.page,
+                    totalCount: 0,
+                  };
+                }))
         }
         actions={[
           //TODO add rerender and edit job actions
@@ -208,6 +224,7 @@ export default () => {
           {
             icon: "repeat",
             tooltip: "Restart Job",
+            position: 'row',
             onClick: async (e, { id, data, actions }) => {
               try {
                 await Job.update(id, { data, actions });
@@ -220,6 +237,7 @@ export default () => {
           {
             icon: "delete",
             tooltip: "Delete Job",
+            position: 'row',
             onClick: async (event, rowData) => {
               const action = window.confirm("Are you sure, you want to delete");
               if (!action) return;
@@ -231,6 +249,32 @@ export default () => {
               }
             },
           },
+          {
+            icon: "repeat",
+            tooltip: "Restart All Selected Jobs",
+            position: 'toolbarOnSelect',
+            onClick: async (e, data) => {
+              try {
+                await Job.updateMultiple(data);
+              } catch (err) {
+                setError(err);
+              }
+              tableRef.current && tableRef.current.onQueryChange();
+            },
+          },
+          {
+            icon: "delete",
+            tooltip: "Delete All Selected Jobs",
+            position: 'toolbarOnSelect',
+            onClick: async (e, data) => {
+              try {
+                await Job.deleteMultiple(data);
+              } catch (err) {
+                setError(err);
+              }
+              tableRef.current && tableRef.current.onQueryChange();
+            },
+          }
         ]}
       />
     </Container>

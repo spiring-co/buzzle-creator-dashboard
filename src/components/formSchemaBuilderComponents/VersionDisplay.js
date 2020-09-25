@@ -8,6 +8,7 @@ import {
   Paper,
 } from "@material-ui/core";
 import useActions from "contextStore/actions";
+import Alert from '@material-ui/lab/Alert';
 import { VideoTemplateContext } from "contextStore/store";
 import React, { useContext, useEffect, useState } from "react";
 import { ExpandMore, ArrowForward, ArrowBack } from "@material-ui/icons";
@@ -16,6 +17,7 @@ import LayerAdder from "./LayerAdder";
 import VersionMeta from "./VersionMeta";
 import VersionStepper from "./VersionStepper";
 import VersionSampleField from "./VersionSampleField";
+import { getLayersFromComposition } from "services/helper";
 export default ({
   isEdit,
   compositions,
@@ -29,6 +31,18 @@ export default ({
   const { removeVersion, editversionKeys } = useActions();
   const [activeStep, setActiveStep] = useState(0);
   const [composition, setComposition] = useState("");
+  const [isVersionValid, setIsVersionValid] = useState(videoObj?.versions?.map(({ fields, composition }) => {
+    const extracted = getLayersFromComposition(compositions[composition])
+    const compLayer = Object.keys(extracted)?.flatMap(k => extracted[k]?.map(({ name }) => name))
+    return fields?.map(({ rendererData: { layerName } }) => layerName).every(layer => compLayer.includes(layer))
+  }))
+  useEffect(() => {
+    setIsVersionValid(videoObj?.versions?.map(({ fields, composition }) => {
+      const extracted = getLayersFromComposition(compositions[composition])
+      const compLayer = Object.keys(extracted)?.flatMap(k => extracted[k]?.map(({ name }) => name))
+      return fields?.map(({ rendererData: { layerName } }) => layerName).every(layer => compLayer.includes(layer))
+    }))
+  }, [videoObj])
 
   useEffect(() => {
     setActiveVersionIndex(videoObj.versions.length);
@@ -147,54 +161,55 @@ export default ({
               </Typography>
             </div>
           ) : (
-            videoObj?.versions?.map((item, index) => {
-              if (index === activeVersionIndex) {
-                return <div></div>;
-              }
+              videoObj?.versions?.map((item, index) => {
+                if (index === activeVersionIndex) {
+                  return <div></div>;
+                }
 
-              if (index === editIndex) {
-                return <div></div>;
-              }
-              return (
-                <Paper key={index} style={{ padding: 10, margin: 10 }}>
-                  <Typography>
-                    <strong>Title: </strong>
-                    {item.title}
-                  </Typography>
-                  <Typography>
-                    <strong>Description: </strong>
-                    {item.description}
-                  </Typography>
-                  <Typography>
-                    <strong>No of fields: </strong>
-                    {item.fields.length}
-                  </Typography>
-                  <Button
-                    size="small"
-                    disabled={activeStep !== 0}
-                    style={{ margin: 8 }}
-                    variant="contained"
-                    color="primary"
-                    onClick={() => openVersionMeta(index, true)}
-                    children="Edit"
-                  />
+                if (index === editIndex) {
+                  return <div></div>;
+                }
+                return (
+                  <Paper key={index} style={{ padding: 10, margin: 10 }}>
+                    <Typography>
+                      <strong>Title: </strong>
+                      {item.title}
+                    </Typography>
+                    <Typography>
+                      <strong>Description: </strong>
+                      {item.description}
+                    </Typography>
+                    <Typography>
+                      <strong>No of fields: </strong>
+                      {item.fields.length}
+                    </Typography>
+                    <Button
+                      size="small"
+                      disabled={activeStep !== 0}
+                      style={{ margin: 8 }}
+                      variant="contained"
+                      color="primary"
+                      onClick={() => openVersionMeta(index, true)}
+                      children="Edit"
+                    />
 
-                  <Button
-                    disabled={activeStep !== 0}
-                    size="small"
-                    style={{ margin: 8 }}
-                    variant="outlined"
-                    color="secondary"
-                    onClick={() => {
-                      setActiveVersionIndex(activeVersionIndex - 1);
-                      removeVersion(index);
-                    }}
-                    children="Delete"
-                  />
-                </Paper>
-              );
-            })
-          )}
+                    <Button
+                      disabled={activeStep !== 0}
+                      size="small"
+                      style={{ margin: 8 }}
+                      variant="outlined"
+                      color="secondary"
+                      onClick={() => {
+                        setActiveVersionIndex(activeVersionIndex - 1);
+                        removeVersion(index);
+                      }}
+                      children="Delete"
+                    />
+                    {!isVersionValid[index] && <Alert severity="warning">Layers Not Found!</Alert>}
+                  </Paper>
+                );
+              })
+            )}
         </ExpansionPanelDetails>
       </ExpansionPanel>
       {activeStep !== 0 && (
@@ -217,7 +232,7 @@ export default ({
         </Button>
 
         <Button
-          disabled={videoObj.versions.length === 0 || activeStep !== 0}
+          disabled={videoObj.versions.length === 0 || activeStep !== 0 || !isVersionValid?.every(v => v)}
           endIcon={<ArrowForward />}
           color="primary"
           variant="contained"

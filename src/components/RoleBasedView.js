@@ -7,5 +7,5 @@ export default ({ allowedRoles, children, redirectTo = null }) => {
     if (!allowedRoles.includes(role)) {
         return redirectTo !== null ? redirectTo : <div />
     }
-    return <div>{children}</div>
+    return children
 }

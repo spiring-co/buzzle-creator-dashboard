@@ -7,7 +7,7 @@ import {
 } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import { Job, VideoTemplate, Creator } from "services/api";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useHistory, useParams, useRouteMatch } from "react-router-dom";
 import useApi from "services/apiHook";
 import { zipMaker } from "helpers/downloadTemplateHelper"
@@ -40,14 +40,27 @@ export default () => {
   const [isLoading, setIsLoading] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [error, setError] = useState(null);
-  const { data, loading, err } = useApi(
-    `${process.env.REACT_APP_API_URL}/videoTemplates/${id}`
-  );
-  const handleDownload = async () => {
-    setIsLoading(true)
-    await zipMaker(data?.staticAssets, data?.src)
-    setIsLoading(false)
+  const [data, setData] = useState({})
+  const [loading, setLoading] = useState(true)
+  useEffect(() => {
+    init()
+  }, [])
+
+  const init = async () => {
+    try {
+      setData(await VideoTemplate.get(id))
+      setLoading(false)
+    } catch (err) {
+      setLoading(false)
+      setError(err)
+    }
   }
+
+  const handleDownload = async () => {
+    setIsLoading(true);
+    await zipMaker(data?.staticAssets, data?.src);
+    setIsLoading(false);
+  };
   const handleEdit = async () => {
     history.push({
       pathname: `${url}/edit`,
@@ -89,7 +102,6 @@ export default () => {
     }
   };
 
-  if (err) setError(err);
 
   const handleUpdateTemplate = async (publishState = "unpublished", rejectionReason = "") => {
     try {
@@ -114,7 +126,7 @@ export default () => {
             id="sample"
             controls={true}
             style={{ width: 300, height: 200, marginTop: 10 }}
-            src={data?.versions[0]?.sample}
+            src={data?.versions ?? [][0]?.sample}
           />
           <div>
             <Typography variant="h6">{data?.title}</Typography>
@@ -125,7 +137,7 @@ export default () => {
             </Typography>
               <Chip
                 size="small"
-                label={data?.publishState.toUpperCase() ?? 'UNPUBLISHED'}
+                label={data?.publishState?.toUpperCase() ?? 'UNPUBLISHED'}
                 style={{
                   background: getColorFromState(data?.publishState ?? 'unpublished'),
                   color: "white",
@@ -140,7 +152,7 @@ export default () => {
                 {data?.rejectionReason}
               </Typography>
             </Box>}
-            <RoleBasedView allowedRoles={['admin']}><Table size="small" aria-label="a dense table" style={{ marginTop: 20, marginBottom: 20 }}>
+            <RoleBasedView allowedRoles={['Admin']}><Table size="small" aria-label="a dense table" style={{ marginTop: 20, marginBottom: 20 }}>
               <TableHead>
                 <StyledTableRow>
                   <StyledTableCell>Version Name</StyledTableCell>
@@ -169,7 +181,7 @@ export default () => {
               </TableBody>
             </Table></RoleBasedView>
             <RoleBasedView
-              allowedRoles={['creator']}
+              allowedRoles={['Creator']}
             ><Button
               style={{ margin: 10, marginLeft: 0 }}
               variant="contained"
@@ -197,7 +209,7 @@ export default () => {
                 style={{ margin: 10, marginLeft: 0 }}
                 variant="contained"
                 color="primary"
-                href={data?.src || ""}>
+                href={data?.src}>
                 Download AEP(X)
             </Button>
               <Button
@@ -216,7 +228,7 @@ export default () => {
                 onClick={handleDelete}>
                 {isDeleting ? "Deleting..." : "Delete"}
               </Button></RoleBasedView>
-            <RoleBasedView allowedRoles={['admin']}>
+            <RoleBasedView allowedRoles={['Admin']}>
               {(data?.publishState === 'pending' || data?.publishState === 'rejected') && <Button
                 disabled={isLoading}
                 style={{ margin: 10, marginLeft: 0 }}

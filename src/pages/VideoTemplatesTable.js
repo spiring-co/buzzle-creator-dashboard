@@ -1,11 +1,15 @@
 import {
-  Box, Chip, Tooltip,
+  Box,
+  Chip,
+  Tooltip,
   Container,
   GridList,
   GridListTile,
-  GridListTileBar, Fade,
+  GridListTileBar,
+  Fade,
   IconButton,
-  Link, Avatar,
+  Link,
+  Avatar,
   Button,
   Typography,
 } from "@material-ui/core";
@@ -13,13 +17,13 @@ import { makeStyles } from "@material-ui/core/styles";
 import GridOnIcon from "@material-ui/icons/GridOn";
 import AddIcon from "@material-ui/icons/Add";
 import InfoIcon from "@material-ui/icons/Info";
-import QueuePlayNextIcon from '@material-ui/icons/QueuePlayNext';
+import QueuePlayNextIcon from "@material-ui/icons/QueuePlayNext";
 import ListIcon from "@material-ui/icons/List";
-import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
+import AssignmentTurnedInIcon from "@material-ui/icons/AssignmentTurnedIn";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
-import { Job, VideoTemplate, Creator } from "services/api";
-import PublishIcon from '@material-ui/icons/Publish';
+import { Job, VideoTemplate, Creator, Search } from "services/api";
+import PublishIcon from "@material-ui/icons/Publish";
 import ErrorHandler from "components/ErrorHandler";
 import SnackAlert from "components/SnackAlert";
 import TestJobDialog from "components/TestJobDialog";
@@ -46,14 +50,14 @@ export default (props) => {
   const [view, setView] = useState("list");
   const tableRef = useRef(null);
   const { user } = useAuth();
-  const { role } = user
+  const { role } = user;
   const handleDelete = async (id) => {
     const action = window.confirm("Are you sure, you want to delete");
     if (!action) return;
 
     try {
       setIsDeleting(true);
-      console.log("delete ", id)
+      console.log("delete ", id);
       await VideoTemplate.delete(id);
     } catch (err) {
       setError(err);
@@ -76,20 +80,20 @@ export default (props) => {
       color: "rgba(255, 255, 255, 0.54)",
     },
     drafted: {
-      marginLeft: 10
-    }
+      marginLeft: 10,
+    },
   }));
   const classes = useStyles();
 
   const [deleteStatus, setDeleteStatus] = useState(
     props?.location?.state?.statusObj ?? { status: false, err: false }
   );
-  useEffect(() => {
-    const data = async () => {
-      setData(await Creator.getVideoTemplates(user?.id, 1, 10))
-    };
-    data();
-  }, []);
+  // useEffect(() => {
+  //   const data = async () => {
+  //     setData(await Creator.getVideoTemplates(user?.id, 1, 10));
+  //   };
+  //   data();
+  // }, []);
 
   const handleRetry = () => {
     setError(false);
@@ -122,36 +126,42 @@ export default (props) => {
         justifyContent="space-between"
         flexDirection="row"
         p={1}>
-        <RoleBasedView allowedRoles={['creator']}>
-          <Box><Button
-            color="primary"
-            variant="contained"
-            className={classes.button}
-            onClick={() => history.push(`${url}/add`)}
-            children="Add Template"
-            startIcon={<AddIcon />}
-          />
+        <RoleBasedView allowedRoles={["Creator"]}>
+          <Box>
+            <Button
+              color="primary"
+              variant="contained"
+              className={classes.button}
+              onClick={() => history.push(`${url}/add`)}
+              children="Add Template"
+              startIcon={<AddIcon />}
+            />
             <Button
               color="primary"
               variant="contained"
               className={classes.drafted}
               onClick={() => history.push(`${url}/drafts`)}
               children="Drafted Templates"
-              startIcon={<QueuePlayNextIcon
-              />}
-            /></Box></RoleBasedView>
+              startIcon={<QueuePlayNextIcon />}
+            />
+          </Box>
+        </RoleBasedView>
         <ToggleButtonGroup
           size="small"
           value={view}
           exclusive
           onChange={(e, v) => setView(v)}
           aria-label="text alignment">
-          <ToggleButton value="grid" aria-label="list">
-            <GridOnIcon />
-          </ToggleButton>
-          <ToggleButton value="list" aria-label="grid">
-            <ListIcon />
-          </ToggleButton>
+          <Tooltip title="Grid view">
+            <ToggleButton value="grid" aria-label="list">
+              <GridOnIcon />
+            </ToggleButton>
+          </Tooltip>
+          <Tooltip title="List view">
+            <ToggleButton value="list" aria-label="grid">
+              <ListIcon />
+            </ToggleButton>
+          </Tooltip>
         </ToggleButtonGroup>
       </Box>
 
@@ -165,14 +175,16 @@ export default (props) => {
                   title={tile.title}
                   subtitle={<span>by: {tile.idCreator}</span>}
                   actionIcon={
-                    <IconButton
-                      onClick={() => {
-                        history.push(`${path}${tile.id}`);
-                      }}
-                      aria-label={`info about ${tile.title}`}
-                      className={classes.icon}>
-                      <InfoIcon />
-                    </IconButton>
+                    <Tooltip title="View details">
+                      <IconButton
+                        onClick={() => {
+                          history.push(`${path}${tile.id}`);
+                        }}
+                        aria-label={`info about ${tile.title}`}
+                        className={classes.icon}>
+                        <InfoIcon />
+                      </IconButton>
+                    </Tooltip>
                   }
                 />
               </GridListTile>
@@ -189,8 +201,22 @@ export default (props) => {
             columns={[
               {
                 title: "Title",
-                field: "title", render: ({ title, thumbnail }) => <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                  <Avatar style={{ marginRight: 10, height: 30, width: 30 }} alt="thumbnail" src={thumbnail} /> {title}</div>
+                field: "title",
+                render: ({ title, thumbnail }) => (
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                    }}>
+                    <Avatar
+                      style={{ marginRight: 10, height: 30, width: 30 }}
+                      alt="thumbnail"
+                      src={thumbnail}
+                    />{" "}
+                    {title}
+                  </div>
+                ),
               },
               {
                 title: "Versions",
@@ -199,14 +225,14 @@ export default (props) => {
               {
                 title: "Publish State",
                 field: "publishState",
-                render: function ({ publishState = "unpublished", rejectionReason = null }) {
-
+                render: function ({
+                  publishState = "unpublished",
+                  rejectionReason = null,
+                }) {
                   return (
                     <Tooltip
                       TransitionComponent={Fade}
-                      title={
-                        rejectionReason ? publishState : rejectionReason
-                      }>
+                      title={rejectionReason ? publishState : rejectionReason}>
                       <Chip
                         size="small"
                         label={publishState}
@@ -262,89 +288,105 @@ export default (props) => {
                 tooltip: "Show Code",
               },
             ]}
-            actions={role === 'admin' ? [] : [{
-              icon: () => <PublishIcon />,
-              tooltip: `Publish your template`,
-              onClick: (e, data) => {
-                history.push({
-                  pathname: `${url}/${data.id}/publish`,
-                  state: {
-                    videoTemplate: data,
+            actions={
+              role === "Admin"
+                ? []
+                : [
+                  {
+                    icon: () => <PublishIcon />,
+                    tooltip: `Publish your template`,
+                    onClick: (e, data) => {
+                      history.push({
+                        pathname: `${url}/${data.id}/publish`,
+                        state: {
+                          videoTemplate: data,
+                        },
+                      });
+                    },
                   },
-                });
-              },
-            },
-            {
-              icon: "alarm-on",
-              tooltip: "Render Test Job",
-              onClick: (e, item) => {
-                setTestJobTemplate(item);
-                setIsDialogOpen(true);
-              },
-            },
-            {
-              icon: "delete",
-              tooltip: "Delete Template",
-              disabled: isDeleting,
-              onClick: async (event, { id }) => handleDelete(id),
-            },
-            {
-              icon: "add",
-              tooltip: "Add Video Template",
-              isFreeAction: true,
-              onClick: () => history.push(`${url}/add`),
-            },
+                  {
+                    icon: "alarm-on",
+                    tooltip: "Render Test Job",
+                    onClick: (e, item) => {
+                      setTestJobTemplate(item);
+                      setIsDialogOpen(true);
+                    },
+                  },
+                  {
+                    icon: "delete",
+                    tooltip: "Delete Template",
+                    disabled: isDeleting,
+                    onClick: async (event, { id }) => handleDelete(id),
+                  },
+                  {
+                    icon: "add",
+                    tooltip: "Add Video Template",
+                    isFreeAction: true,
+                    onClick: () => history.push(`${url}/add`),
+                  },
 
-            {
-              icon: "edit",
-              tooltip: "Edit Template",
-              onClick: (e, data) => {
-                delete data["tableData"];
-                history.push({
-                  pathname: `${url}/${data.id}/edit`,
-                  state: {
-                    isEdit: true,
-                    video: data,
+                  {
+                    icon: "edit",
+                    tooltip: "Edit Template",
+                    onClick: (e, data) => {
+                      delete data["tableData"];
+                      history.push({
+                        pathname: `${url}/${data.id}/edit`,
+                        state: {
+                          isEdit: true,
+                          video: data,
+                        },
+                      });
+                    },
                   },
-                });
-              },
-            },
-            {
-              icon: "refresh",
-              tooltip: "Refresh Data",
-              isFreeAction: true,
-              onClick: handleRetry,
-            },
-            ]}
+                  {
+                    icon: "refresh",
+                    tooltip: "Refresh Data",
+                    isFreeAction: true,
+                    onClick: handleRetry,
+                  },
+                ]
+            }
             data={(query) =>
-              Creator.getVideoTemplates(user?.id, query.page + 1, query.pageSize)
-                .then((result) => {
-                  return {
-                    data: query.search
-                      ? result.data.filter(({ title }) =>
-                        title
-                          .toLowerCase()
-                          .startsWith(query.search.toLowerCase())
-                      )
-                      : result.data,
-                    page: query.page,
-                    totalCount: query.search
-                      ? result.data.filter(({ title }) =>
-                        title
-                          .toLowerCase()
-                          .startsWith(query.search.toLowerCase())
-                      ).length
-                      : result.count,
-                  };
-                })
-                .catch((err) => {
-                  setError(err);
-                  return {
-                    data: [],
-                    page: query.page,
-                    totalCount: 0,
-                  };
-                })
+              query?.search
+                ? Search.get(query?.search, query.page + 1, query.pageSize).then(({ videoTemplates }) => ({
+                  data: videoTemplates,
+                  page: query?.page,
+                  totalCount: videoTemplates.length
+                }))
+                : (user?.role === 'Admin'
+                  ? VideoTemplate.getAll(query.page + 1, query.pageSize)
+                    .then((result) => {
+                      return {
+                        data: result.data,
+                        page: query.page,
+                        totalCount: result.count,
+                      };
+                    })
+                    .catch((err) => {
+                      setError(err);
+                      return {
+                        data: [],
+                        page: query.page,
+                        totalCount: 0,
+                      };
+                    })
+                  : Creator.getVideoTemplates(user?.id, query.page + 1, query.pageSize)
+                    .then((result) => {
+                      return {
+                        data: result.data,
+                        page: query.page,
+                        totalCount: result.count,
+                      };
+                    })
+                    .catch((err) => {
+                      setError(err);
+                      return {
+                        data: [],
+                        page: query.page,
+                        totalCount: 0,
+                      };
+                    }))
             }
             options={{
               pageSize: 10,
@@ -357,7 +399,7 @@ export default (props) => {
 
       <TestJobDialog
         open={isDialogOpen}
-        idVideoTemplate={testJobTemplate?.id ?? ''}
+        idVideoTemplate={testJobTemplate?.id ?? ""}
         onClose={() => setIsDialogOpen(false)}
         versions={testJobTemplate?.versions ?? []}
       />

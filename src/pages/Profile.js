@@ -5,6 +5,7 @@ import {
   Divider, Paper,
   TextField,
   Typography,
+  Tooltip,
 } from "@material-ui/core";
 import Tab from "@material-ui/core/Tab";
 import Tabs from "@material-ui/core/Tabs";
@@ -16,14 +17,16 @@ import React, { useEffect, useState } from "react";
 import EditIcon from '@material-ui/icons/Edit';
 import { useAuth } from "services/auth";
 import VerticalTabs from "components/VerticalTabs"
+import { Prompt } from "react-router-dom"
 import ChangePassword from "pages/ChangePassword"
 function ProfileEdit({ creator }) {
-  console.log(creator)
+  const [isBlocking, setIsBlocking] = useState(true);
+
   const [loading, setLoading] = useState(false)
   const [progress, setProgress] = useState(0)
   const handleUpdate = (data) => {
+    setIsBlocking(false)
     Creator.update(creator?.id, data);
-    console.log("to submit", data);
   };
   const { handleChange, values, handleSubmit, setFieldValue } = useFormik({
     initialValues: {
@@ -59,6 +62,7 @@ function ProfileEdit({ creator }) {
       <Container style={{ padding: 15, }}>
         <Typography variant="h5">Profile</Typography>
       </Container>
+      <Prompt when={isBlocking} message={`Do you want to leave, Changes will be unsaved.`} />
       <Divider />
       <Box p={2}>
         <Box style={{ marginBottom: 20 }} display="flex" flexDirection="column">
@@ -117,6 +121,19 @@ function ProfileEdit({ creator }) {
   );
 }
 
+function APISection() {
+  return <Container>
+    <Container style={{ padding: 15, }}>
+      <Typography variant="h5">Credentials</Typography>
+    </Container>
+    <Divider />
+    <Typography>API KEY</Typography>
+    <Typography></Typography>
+  </Container>
+}
+
+
+
 function Setting() {
   return <Container>
     <Container style={{ padding: 15, }}>
@@ -151,13 +168,23 @@ export default () => {
       <Divider />
       <VerticalTabs tabs={[{
         label: "Profile",
-        component: <ProfileEdit creator={creator} />
+        component: <ProfileEdit creator={creator} />,
+        allowedRoles: ['Admin', 'Creator', 'User']
       }, {
         label: "Account Security",
-        component: <ChangePassword />
+        component: <ChangePassword />,
+        allowedRoles: ['Admin', 'Creator', 'User']
+
+      }, {
+        label: 'Credentials',
+        component: <APISection />,
+        allowedRoles: ['User']
+
       }, {
         label: 'Setting',
-        component: <Setting />
+        component: <Setting />,
+        allowedRoles: ['Admin', 'Creator', 'User']
+
       }]} />
     </Container>
   );

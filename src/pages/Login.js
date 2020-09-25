@@ -70,7 +70,7 @@ export default () => {
     initialValues: {
       email: "harshb.work@gmail.com",
       password: "Butter123",
-      role: "creator"
+      role: "Creator"
     },
     validationSchema: Yup.object({
       email: Yup.string().email(t("enterEmail")).required(t("required")),
