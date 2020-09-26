@@ -279,6 +279,7 @@ export default () => {
               //passs filters here if isFiltering is true
               Creator.getJobs(user?.id, query.page + 1, query.pageSize, isFilterEnabled ? filters : {})
                 .then((result) => {
+                  //change on final deploy to .jobs to .data as per convention
                   return {
                     data: result.jobs,
                     page: query.page,
