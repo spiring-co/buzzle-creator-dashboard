@@ -23,6 +23,8 @@ export default () => {
   const [socket, setSocket] = useState(null);
   const [rtProgressData, setRtProgressData] = useState({});
   const [jobIds, setJobIds] = useState([]);
+  const [videoTemplates, setVideoTemplates] = useState([])
+  const [loading, setLoading] = useState()
   const { path } = useRouteMatch();
   const [isFilterEnabled, setIsFilterEnabled] = useState(false)
   const tableRef = useRef(null);
@@ -35,6 +37,9 @@ export default () => {
     state: ""
   })
   const uri = `${process.env.REACT_APP_API_URL}/creators/${user?.id}/jobs`;
+  useEffect(() => {
+    VideoTemplate.getAll(1, 500).then(({ data }) => setVideoTemplates(data)).catch(console.log).finally(() => setLoading(false))
+  }, [])
 
   const handleRetry = () => {
     setError(false);
@@ -119,9 +124,18 @@ export default () => {
                       }}
                     />
                   </MuiPickersUtilsProvider>
-                  <TextField style={{ marginRight: 10, width: 150 }} placeholder="Template Id" margin="dense" defaultValue={filters?.idVideoTemplate}
-                    onBlur={({ target: { value } }) => setFilters({ ...filters, idVideoTemplate: value })}
-                  />
+                  <FormControl style={{ marginRight: 10, minWidth: 150, }}>
+                    <InputLabel id="demo-simple-select-label">Video Template</InputLabel>
+                    <Select
+                      disabled={loading}
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={filters?.idVideoTemplate}
+                      onChange={({ target: { value } }) => setFilters({ ...filters, idVideoTemplate: value })}
+                    >
+                      {videoTemplates.map(({ title, id }) => <MenuItem value={id}>{title}</MenuItem>)}
+                    </Select>
+                  </FormControl>
                   <FormControl style={{ marginRight: 10, width: 100, }}>
                     <InputLabel id="demo-simple-select-label">Status</InputLabel>
                     <Select
