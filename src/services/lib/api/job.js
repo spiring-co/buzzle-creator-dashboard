@@ -2,8 +2,9 @@ const apiRequest = require("../helpers/apiRequest");
 
 module.exports = function Job(baseUrl, headers) {
   return {
-    getAll: async (page, size, ids = []) => {
-      return apiRequest(`${baseUrl}/jobs?page=${page}&size=${size}&ids=${ids}`, {
+    getAll: async (page, size, ids = [], { startDate = "", endDate = "", idVideoTemplate = "", state = "" }) => {
+      return apiRequest(`${baseUrl}/jobs?page=${page}&size=${size}&ids=${ids}
+      &startDate=${startDate}&endDate=${endDate}&idVideoTemplate=${idVideoTemplate}&state=${state}`, {
         method: "GET",
         headers,
       });

@@ -1,8 +1,11 @@
-import { Button, Chip, Container, Tooltip, } from "@material-ui/core";
+import {
+  Button, Chip, Container, Tooltip, FormControl
+  , InputLabel, FormHelperText, MenuItem, Select, TextField
+} from "@material-ui/core";
 import { Job, VideoTemplate, Creator, Search } from "services/api";
 import ErrorHandler from "components/ErrorHandler";
 import { useDarkMode } from "helpers/useDarkMode";
-import MaterialTable from "material-table";
+import MaterialTable, { MTableToolbar } from "material-table";
 import React, { useEffect, useRef, useState } from "react";
 import ReactJson from "react-json-view";
 import { useHistory, useRouteMatch } from "react-router-dom";
@@ -10,7 +13,8 @@ import { useAuth } from "services/auth";
 import io from "socket.io-client";
 import Fade from '@material-ui/core/Fade';
 import formatTime from "helpers/formatTime";
-
+import DateFnsUtils from '@date-io/date-fns';
+import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import * as timeago from "timeago.js";
 
 
@@ -20,11 +24,16 @@ export default () => {
   const [rtProgressData, setRtProgressData] = useState({});
   const [jobIds, setJobIds] = useState([]);
   const { path } = useRouteMatch();
+  const [isFilterEnabled, setIsFilterEnabled] = useState(false)
   const tableRef = useRef(null);
   const [darkModeTheme] = useDarkMode();
   const { user } = useAuth();
   const history = useHistory();
+  const [filters, setFilters] = useState({
 
+    idVideoTemplate: "",
+    state: ""
+  })
   const uri = `${process.env.REACT_APP_API_URL}/creators/${user?.id}/jobs`;
 
   const handleRetry = () => {
@@ -73,7 +82,76 @@ export default () => {
           pageSize: 20,
           headerStyle: { fontWeight: 700 },
           actionsColumnIndex: -1,
-          selection: true
+          selection: true,
+        }}
+        components={{
+          Toolbar: props => {
+            console.log(props)
+            return (
+              <div >
+                <MTableToolbar {...props} />
+                <div style={{ marginLeft: 25, marginTop: 10, display: 'flex', alignItems: 'baseline' }}>
+                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <KeyboardDatePicker
+                      style={{ width: 150, marginBottom: 0 }}
+                      disableToolbar
+                      margin="dense"
+                      format="MM/dd/yyyy"
+                      id="date-picker-inline"
+                      label="Start date"
+                      value={filters?.startDate ?? null}
+                      onChange={v => setFilters({ ...filters, startDate: new Date(v).toISOString() })}
+                      KeyboardButtonProps={{
+                        'aria-label': 'change date',
+                      }}
+                    />
+                    <KeyboardDatePicker
+                      margin="dense"
+                      style={{ marginLeft: 10, width: 150, marginRight: 10, marginBottom: 0 }}
+                      disableToolbar
+                      format="MM/dd/yyyy"
+                      id="date-picker-inline"
+                      label="End date"
+                      value={filters?.endDate ?? null}
+                      onChange={v => setFilters({ ...filters, endDate: new Date(v).toISOString() })}
+                      KeyboardButtonProps={{
+                        'aria-label': 'change date',
+                      }}
+                    />
+                  </MuiPickersUtilsProvider>
+                  <TextField style={{ marginRight: 10, width: 150 }} placeholder="Template Id" margin="dense" defaultValue={filters?.idVideoTemplate}
+                    onBlur={({ target: { value } }) => setFilters({ ...filters, idVideoTemplate: value })}
+                  />
+                  <FormControl style={{ marginRight: 10, width: 100, }}>
+                    <InputLabel id="demo-simple-select-label">Status</InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={filters?.state}
+                      onChange={({ target: { value } }) => setFilters({ ...filters, state: value })}
+                    >
+                      <MenuItem value={""}>All</MenuItem>
+                      <MenuItem value={'error'}>Error</MenuItem>
+                      <MenuItem value={'created'}>Created</MenuItem>
+                      <MenuItem value={'finished'}>Finished</MenuItem>
+                    </Select>
+                  </FormControl>
+                  <Button children="filter" size="small" variant="contained" color="primary" onClick={() => {
+                    setIsFilterEnabled(true)
+                    handleRetry()
+                  }} />
+                  {isFilterEnabled && <Button disabled={!isFilterEnabled} children="clear filter" size="small" color="primary" onClick={() => {
+                    setIsFilterEnabled(false)
+                    setFilters({
+                      state: "", idVideoTemplate: ""
+                    })
+                    handleRetry()
+                  }} />}
+                </div>
+
+              </div>
+            )
+          }
         }}
         onRowClick={(e, { id }) => {
           if (["td", "TD"].includes(e.target.tagName))
@@ -180,7 +258,8 @@ export default () => {
               totalCount: jobs.length
             }))
             : (user?.role === 'Admin'
-              ? Job.getAll(query.page + 1, query.pageSize)
+              //passs filters here if isFiltering is true
+              ? Job.getAll(query.page + 1, query.pageSize, [], isFilterEnabled ? filters : {})
                 .then((result) => {
                   return {
                     data: result.data,
@@ -196,7 +275,9 @@ export default () => {
                     totalCount: 0,
                   };
                 })
-              : Creator.getJobs(user?.id, query.page + 1, query.pageSize)
+              :
+              //passs filters here if isFiltering is true
+              Creator.getJobs(user?.id, query.page + 1, query.pageSize, isFilterEnabled ? filters : {})
                 .then((result) => {
                   return {
                     data: result.jobs,

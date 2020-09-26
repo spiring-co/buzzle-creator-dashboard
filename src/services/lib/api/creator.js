@@ -43,8 +43,8 @@ module.exports = function Creator(baseUrl, headers) {
         headers,
       });
     },
-    getJobs: async (id, page, size) => {
-      return apiRequest(`${baseUrl}/creators/${id}/jobs?page=${page}&size=${size}`, {
+    getJobs: async (id, page, size, { startDate = "", endDate = "", idVideoTemplate = "", state = "" }) => {
+      return apiRequest(`${baseUrl}/creators/${id}/jobs?page=${page}&size=${size}&startDate=${startDate}&endDate=${endDate}&idVideoTemplate=${idVideoTemplate}&state=${state}`, {
         method: "GET",
         headers,
       });
