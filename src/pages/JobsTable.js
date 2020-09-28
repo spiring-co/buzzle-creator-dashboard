@@ -1,9 +1,10 @@
 import {
   Button, Chip, Container, Tooltip, FormControl
-  , InputLabel, FormHelperText, MenuItem, Select, TextField
+  , InputLabel, FormHelperText, MenuItem, Select, TextField, Typography, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails
 } from "@material-ui/core";
 import { Job, VideoTemplate, Creator, Search } from "services/api";
 import ErrorHandler from "components/ErrorHandler";
+import Filters from "components/Filters";
 import { useDarkMode } from "helpers/useDarkMode";
 import MaterialTable, { MTableToolbar } from "material-table";
 import React, { useEffect, useRef, useState } from "react";
@@ -15,6 +16,7 @@ import Fade from '@material-ui/core/Fade';
 import formatTime from "helpers/formatTime";
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import * as timeago from "timeago.js";
 
 
@@ -23,8 +25,6 @@ export default () => {
   const [socket, setSocket] = useState(null);
   const [rtProgressData, setRtProgressData] = useState({});
   const [jobIds, setJobIds] = useState([]);
-  const [videoTemplates, setVideoTemplates] = useState([])
-  const [loading, setLoading] = useState()
   const { path } = useRouteMatch();
   const [isFilterEnabled, setIsFilterEnabled] = useState(false)
   const tableRef = useRef(null);
@@ -32,14 +32,11 @@ export default () => {
   const { user } = useAuth();
   const history = useHistory();
   const [filters, setFilters] = useState({
-
     idVideoTemplate: "",
     state: ""
   })
   const uri = `${process.env.REACT_APP_API_URL}/creators/${user?.id}/jobs`;
-  useEffect(() => {
-    VideoTemplate.getAll(1, 500).then(({ data }) => setVideoTemplates(data)).catch(console.log).finally(() => setLoading(false))
-  }, [])
+
 
   const handleRetry = () => {
     setError(false);
@@ -95,74 +92,34 @@ export default () => {
             return (
               <div >
                 <MTableToolbar {...props} />
-                <div style={{ marginLeft: 25, marginTop: 10, display: 'flex', alignItems: 'baseline' }}>
-                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                    <KeyboardDatePicker
-                      style={{ width: 150, marginBottom: 0 }}
-                      disableToolbar
-                      margin="dense"
-                      format="MM/dd/yyyy"
-                      id="date-picker-inline"
-                      label="Start date"
-                      value={filters?.startDate ?? null}
-                      onChange={v => setFilters({ ...filters, startDate: new Date(v).toISOString() })}
-                      KeyboardButtonProps={{
-                        'aria-label': 'change date',
-                      }}
-                    />
-                    <KeyboardDatePicker
-                      margin="dense"
-                      style={{ marginLeft: 10, width: 150, marginRight: 10, marginBottom: 0 }}
-                      disableToolbar
-                      format="MM/dd/yyyy"
-                      id="date-picker-inline"
-                      label="End date"
-                      value={filters?.endDate ?? null}
-                      onChange={v => setFilters({ ...filters, endDate: new Date(v).toISOString() })}
-                      KeyboardButtonProps={{
-                        'aria-label': 'change date',
-                      }}
-                    />
-                  </MuiPickersUtilsProvider>
-                  <FormControl style={{ marginRight: 10, minWidth: 150, }}>
-                    <InputLabel id="demo-simple-select-label">Video Template</InputLabel>
-                    <Select
-                      disabled={loading}
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value={filters?.idVideoTemplate}
-                      onChange={({ target: { value } }) => setFilters({ ...filters, idVideoTemplate: value })}
+                <div
+                  style={{ marginLeft: 25, marginTop: 10, display: 'flex' }}
+                >
+                  <ExpansionPanel
+                    TransitionProps={{ mountOnEnter: true }}
+                  >
+                    <ExpansionPanelSummary
+                      expandIcon={<ExpandMoreIcon />}
+                      aria-controls="panel1a-content"
+                      id="panel1a-header"
                     >
-                      {videoTemplates.map(({ title, id }) => <MenuItem value={id}>{title}</MenuItem>)}
-                    </Select>
-                  </FormControl>
-                  <FormControl style={{ marginRight: 10, width: 100, }}>
-                    <InputLabel id="demo-simple-select-label">Status</InputLabel>
-                    <Select
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value={filters?.state}
-                      onChange={({ target: { value } }) => setFilters({ ...filters, state: value })}
-                    >
-                      <MenuItem value={""}>All</MenuItem>
-                      <MenuItem value={'error'}>Error</MenuItem>
-                      <MenuItem value={'created'}>Created</MenuItem>
-                      <MenuItem value={'finished'}>Finished</MenuItem>
-                    </Select>
-                  </FormControl>
-                  <Button children="filter" size="small" variant="contained" color="primary" onClick={() => {
-                    setIsFilterEnabled(true)
-                    handleRetry()
-                  }} />
-                  {isFilterEnabled && <Button disabled={!isFilterEnabled} children="clear filter" size="small" color="primary" onClick={() => {
-                    setIsFilterEnabled(false)
-                    setFilters({
-                      state: "", idVideoTemplate: ""
-                    })
-                    handleRetry()
-                  }} />}
-                </div>
-
+                      <Typography color="primary">Filters</Typography>
+                    </ExpansionPanelSummary>
+                    <ExpansionPanelDetails style={{ display: 'flex', alignItems: 'baseline' }}>
+                      <Filters value={filters} onChange={v => setFilters({ ...filters, ...v })} />
+                      <Button children="filter" size="small" variant="contained" color="primary" onClick={() => {
+                        setIsFilterEnabled(true)
+                        handleRetry()
+                      }} />
+                      {isFilterEnabled && <Button disabled={!isFilterEnabled} children="clear filter" size="small" color="primary" onClick={() => {
+                        setIsFilterEnabled(false)
+                        setFilters({
+                          state: "", idVideoTemplate: ""
+                        })
+                        handleRetry()
+                      }} />}
+                    </ExpansionPanelDetails>
+                  </ExpansionPanel></div>
               </div>
             )
           }
