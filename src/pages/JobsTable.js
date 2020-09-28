@@ -1,54 +1,79 @@
-import {
-  Button, Chip, Container, Tooltip, FormControl
-  , InputLabel, FormHelperText, MenuItem, Select, TextField
-} from "@material-ui/core";
-import { Job, VideoTemplate, Creator, Search } from "services/api";
-import ErrorHandler from "components/ErrorHandler";
-import { useDarkMode } from "helpers/useDarkMode";
-import MaterialTable, { MTableToolbar } from "material-table";
 import React, { useEffect, useRef, useState } from "react";
-import ReactJson from "react-json-view";
 import { useHistory, useRouteMatch } from "react-router-dom";
-import { useAuth } from "services/auth";
-import io from "socket.io-client";
-import Fade from '@material-ui/core/Fade';
-import formatTime from "helpers/formatTime";
-import DateFnsUtils from '@date-io/date-fns';
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
-import * as timeago from "timeago.js";
 
+import io from "socket.io-client";
+import * as timeago from "timeago.js";
+import ReactJson from "react-json-view";
+
+import DateFnsUtils from "@date-io/date-fns";
+import {
+  Button,
+  Chip,
+  Container,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Tooltip,
+  Fade,
+} from "@material-ui/core";
+
+import {
+  KeyboardDatePicker,
+  MuiPickersUtilsProvider,
+} from "@material-ui/pickers";
+
+import MaterialTable, { MTableToolbar } from "material-table";
+
+import ErrorHandler from "components/ErrorHandler";
+
+import formatTime from "helpers/formatTime";
+import { useDarkMode } from "helpers/useDarkMode";
+
+import { useAuth } from "services/auth";
+import { Creator, Job, Search, VideoTemplate } from "services/api";
 
 export default () => {
-  const [error, setError] = useState(null);
-  const [socket, setSocket] = useState(null);
-  const [rtProgressData, setRtProgressData] = useState({});
-  const [jobIds, setJobIds] = useState([]);
-  const [videoTemplates, setVideoTemplates] = useState([])
-  const [loading, setLoading] = useState()
   const { path } = useRouteMatch();
-  const [isFilterEnabled, setIsFilterEnabled] = useState(false)
-  const tableRef = useRef(null);
-  const [darkModeTheme] = useDarkMode();
   const { user } = useAuth();
   const history = useHistory();
-  const [filters, setFilters] = useState({
+  const [darkModeTheme] = useDarkMode();
 
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState();
+
+  const [videoTemplates, setVideoTemplates] = useState([]);
+
+  const tableRef = useRef(null);
+
+  const [isFilterEnabled, setIsFilterEnabled] = useState(false);
+  const [filters, setFilters] = useState({
     idVideoTemplate: "",
-    state: ""
-  })
-  const uri = `${process.env.REACT_APP_API_URL}/creators/${user?.id}/jobs`;
+    state: "",
+  });
+
+  // TODO should be encapsulated in other compoment for srp
+  //get video templates for filters
   useEffect(() => {
-    VideoTemplate.getAll(1, 500).then(({ data }) => setVideoTemplates(data)).catch(console.log).finally(() => setLoading(false))
-  }, [])
+    VideoTemplate.getAll(1, 500)
+      .then(({ data }) => setVideoTemplates(data))
+      .catch(console.log)
+      .finally(() => setLoading(false));
+  }, []);
 
   const handleRetry = () => {
     setError(false);
     tableRef.current && tableRef.current.onQueryChange();
   };
 
+  // progress sockets
+
+  const [jobIds, setJobIds] = useState([]);
+  const [socket, setSocket] = useState(null);
+  const [rtProgressData, setRtProgressData] = useState({});
+
   function subscribeToProgress(id) {
     if (!socket) return;
-    console.log("Listening for " + id);
     socket.on(id, (data) =>
       setRtProgressData({ ...rtProgressData, [id]: data })
     );
@@ -90,12 +115,19 @@ export default () => {
           selection: true,
         }}
         components={{
-          Toolbar: props => {
-            console.log(props)
+          //TODO: abstract to separate component
+          Toolbar: (props) => {
+            console.log(props);
             return (
-              <div >
+              <div>
                 <MTableToolbar {...props} />
-                <div style={{ marginLeft: 25, marginTop: 10, display: 'flex', alignItems: 'baseline' }}>
+                <div
+                  style={{
+                    marginLeft: 25,
+                    marginTop: 10,
+                    display: "flex",
+                    alignItems: "baseline",
+                  }}>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <KeyboardDatePicker
                       style={{ width: 150, marginBottom: 0 }}
@@ -105,69 +137,109 @@ export default () => {
                       id="date-picker-inline"
                       label="Start date"
                       value={filters?.startDate ?? null}
-                      onChange={v => setFilters({ ...filters, startDate: new Date(v).toISOString() })}
+                      onChange={(v) =>
+                        setFilters({
+                          ...filters,
+                          startDate: new Date(v).toISOString(),
+                        })
+                      }
                       KeyboardButtonProps={{
-                        'aria-label': 'change date',
+                        "aria-label": "change date",
                       }}
                     />
                     <KeyboardDatePicker
                       margin="dense"
-                      style={{ marginLeft: 10, width: 150, marginRight: 10, marginBottom: 0 }}
+                      style={{
+                        marginLeft: 10,
+                        width: 150,
+                        marginRight: 10,
+                        marginBottom: 0,
+                      }}
                       disableToolbar
                       format="MM/dd/yyyy"
                       id="date-picker-inline"
                       label="End date"
                       value={filters?.endDate ?? null}
-                      onChange={v => setFilters({ ...filters, endDate: new Date(v).toISOString() })}
+                      onChange={(v) =>
+                        setFilters({
+                          ...filters,
+                          endDate: new Date(v).toISOString(),
+                        })
+                      }
                       KeyboardButtonProps={{
-                        'aria-label': 'change date',
+                        "aria-label": "change date",
                       }}
                     />
                   </MuiPickersUtilsProvider>
-                  <FormControl style={{ marginRight: 10, minWidth: 150, }}>
-                    <InputLabel id="demo-simple-select-label">Video Template</InputLabel>
+                  <FormControl style={{ marginRight: 10, minWidth: 150 }}>
+                    <InputLabel id="demo-simple-select-label">
+                      Video Template
+                    </InputLabel>
                     <Select
                       disabled={loading}
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
                       value={filters?.idVideoTemplate}
-                      onChange={({ target: { value } }) => setFilters({ ...filters, idVideoTemplate: value })}
-                    >
-                      {videoTemplates.map(({ title, id }) => <MenuItem value={id}>{title}</MenuItem>)}
+                      onChange={({ target: { value } }) =>
+                        setFilters({ ...filters, idVideoTemplate: value })
+                      }>
+                      {videoTemplates.map(({ title, id }) => (
+                        <MenuItem key={id} value={id}>
+                          {title}
+                        </MenuItem>
+                      ))}
                     </Select>
                   </FormControl>
-                  <FormControl style={{ marginRight: 10, width: 100, }}>
-                    <InputLabel id="demo-simple-select-label">Status</InputLabel>
+                  <FormControl style={{ marginRight: 10, width: 100 }}>
+                    <InputLabel id="demo-simple-select-label">
+                      Status
+                    </InputLabel>
                     <Select
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
                       value={filters?.state}
-                      onChange={({ target: { value } }) => setFilters({ ...filters, state: value })}
-                    >
+                      onChange={({ target: { value } }) =>
+                        setFilters({ ...filters, state: value })
+                      }>
                       <MenuItem value={""}>All</MenuItem>
-                      <MenuItem value={'error'}>Error</MenuItem>
-                      <MenuItem value={'created'}>Created</MenuItem>
-                      <MenuItem value={'finished'}>Finished</MenuItem>
+                      <MenuItem value={"error"}>Error</MenuItem>
+                      <MenuItem value={"created"}>Created</MenuItem>
+                      <MenuItem value={"finished"}>Finished</MenuItem>
                     </Select>
                   </FormControl>
-                  <Button children="filter" size="small" variant="contained" color="primary" onClick={() => {
-                    setIsFilterEnabled(true)
-                    handleRetry()
-                  }} />
-                  {isFilterEnabled && <Button disabled={!isFilterEnabled} children="clear filter" size="small" color="primary" onClick={() => {
-                    setIsFilterEnabled(false)
-                    setFilters({
-                      state: "", idVideoTemplate: ""
-                    })
-                    handleRetry()
-                  }} />}
+                  <Button
+                    children="filter"
+                    size="small"
+                    variant="contained"
+                    color="primary"
+                    onClick={() => {
+                      setIsFilterEnabled(true);
+                      handleRetry();
+                    }}
+                  />
+                  {isFilterEnabled && (
+                    <Button
+                      disabled={!isFilterEnabled}
+                      children="clear filter"
+                      size="small"
+                      color="primary"
+                      onClick={() => {
+                        setIsFilterEnabled(false);
+                        setFilters({
+                          state: "",
+                          idVideoTemplate: "",
+                        });
+                        handleRetry();
+                      }}
+                    />
+                  )}
                 </div>
-
               </div>
-            )
-          }
+            );
+          },
         }}
         onRowClick={(e, { id }) => {
+          // prevents redirection on link click
           if (["td", "TD"].includes(e.target.tagName))
             history.push(`${path}${id}`);
         }}
@@ -204,10 +276,8 @@ export default () => {
           {
             title: "Render Time",
             searchable: false,
-            render: ({ videoTemplate, idVersion, renderTime }) => (
-              <span>
-                {renderTime !== -1 ? formatTime(renderTime) : 'NA'}
-              </span>
+            render: ({ renderTime }) => (
+              <span>{renderTime !== -1 ? formatTime(renderTime) : "NA"}</span>
             ),
           },
           {
@@ -266,15 +336,16 @@ export default () => {
         }}
         data={(query) =>
           query?.search
-            ? Search.get(query?.search, query.page + 1, query.pageSize).then(({ jobs }) => ({
-              data: jobs,
-              page: query?.page,
-              totalCount: jobs.length
-            }))
-            : (user?.role === 'Admin'
-              //passs filters here if isFiltering is true
-              ? Job.getAll(query.page + 1, query.pageSize, [], isFilterEnabled ? filters : {})
+            ? Search.get(query?.search, query.page + 1, query.pageSize).then(
+                ({ jobs }) => ({
+                  data: jobs,
+                  page: query?.page,
+                  totalCount: jobs.length,
+                })
+              )
+            : Job.getAll(query.page + 1, query.pageSize)
                 .then((result) => {
+                  setJobIds(result.data.map((j) => j.id));
                   return {
                     data: result.data,
                     page: query.page,
@@ -289,28 +360,8 @@ export default () => {
                     totalCount: 0,
                   };
                 })
-              :
-              //passs filters here if isFiltering is true
-              Creator.getJobs(user?.id, query.page + 1, query.pageSize, isFilterEnabled ? filters : {})
-                .then((result) => {
-                  //change on final deploy to .jobs to .data as per convention
-                  return {
-                    data: result.jobs,
-                    page: query.page,
-                    totalCount: result.count,
-                  };
-                })
-                .catch((err) => {
-                  setError(err);
-                  return {
-                    data: [],
-                    page: query.page,
-                    totalCount: 0,
-                  };
-                }))
         }
         actions={[
-          //TODO add rerender and edit job actions
           {
             icon: "refresh",
             tooltip: "Refresh Data",
@@ -320,7 +371,7 @@ export default () => {
           {
             icon: "repeat",
             tooltip: "Restart Job",
-            position: 'row',
+            position: "row",
             onClick: async (e, { id, data, actions }) => {
               try {
                 await Job.update(id, { data, actions });
@@ -333,7 +384,7 @@ export default () => {
           {
             icon: "delete",
             tooltip: "Delete Job",
-            position: 'row',
+            position: "row",
             onClick: async (event, rowData) => {
               const action = window.confirm("Are you sure, you want to delete");
               if (!action) return;
@@ -348,7 +399,7 @@ export default () => {
           {
             icon: "repeat",
             tooltip: "Restart All Selected Jobs",
-            position: 'toolbarOnSelect',
+            position: "toolbarOnSelect",
             onClick: async (e, data) => {
               try {
                 await Job.updateMultiple(data);
@@ -361,7 +412,7 @@ export default () => {
           {
             icon: "delete",
             tooltip: "Delete All Selected Jobs",
-            position: 'toolbarOnSelect',
+            position: "toolbarOnSelect",
             onClick: async (e, data) => {
               try {
                 await Job.deleteMultiple(data);
@@ -370,7 +421,7 @@ export default () => {
               }
               tableRef.current && tableRef.current.onQueryChange();
             },
-          }
+          },
         ]}
       />
     </Container>
