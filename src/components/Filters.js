@@ -1,6 +1,6 @@
 import {
     FormControl
-    , InputLabel, MenuItem, Select, TextField, Typography, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails
+    , InputLabel, MenuItem, Select, Button,
 } from "@material-ui/core";
 import { Job, VideoTemplate, Creator, Search } from "services/api";
 import ErrorHandler from "components/ErrorHandler";
@@ -8,13 +8,16 @@ import React, { useEffect, useRef, useState } from "react";
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 
-export default ({ value, onChange }) => {
-    const [loading, setLoading] = useState()
+export default ({ value = {}, onChange, }) => {
+    const [loading, setLoading] = useState(true)
     const [videoTemplates, setVideoTemplates] = useState([])
-
+    const [filters, setFilters] = useState(value)
     useEffect(() => {
         VideoTemplate.getAll(1, 500).then(({ data }) => setVideoTemplates(data)).catch(console.log).finally(() => setLoading(false))
     }, [])
+    useEffect(() => {
+        onChange(filters)
+    }, [filters])
     return (
         <><MuiPickersUtilsProvider utils={DateFnsUtils}>
             <KeyboardDatePicker
@@ -25,7 +28,7 @@ export default ({ value, onChange }) => {
                 id="date-picker-inline"
                 label="Start date"
                 value={value?.startDate ?? null}
-                onChange={v => onChange({ startDate: new Date(v).toISOString() })}
+                onChange={v => setFilters({ ...filters, startDate: new Date(v).toISOString(), })}
                 KeyboardButtonProps={{
                     'aria-label': 'change date',
                 }}
@@ -38,7 +41,7 @@ export default ({ value, onChange }) => {
                 id="date-picker-inline"
                 label="End date"
                 value={value?.endDate ?? null}
-                onChange={v => onChange({ endDate: new Date(v).toISOString() })}
+                onChange={v => setFilters({ ...filters, endDate: new Date(v).toISOString() })}
                 KeyboardButtonProps={{
                     'aria-label': 'change date',
                 }}
@@ -51,7 +54,7 @@ export default ({ value, onChange }) => {
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
                     value={value?.idVideoTemplate}
-                    onChange={({ target: { value } }) => onChange({ idVideoTemplate: value })}
+                    onChange={({ target: { value } }) => setFilters({ ...filters, idVideoTemplate: value })}
                 >
                     {videoTemplates.map(({ title, id }) => <MenuItem value={id}>{title}</MenuItem>)}
                 </Select>
@@ -62,7 +65,7 @@ export default ({ value, onChange }) => {
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
                     value={value?.state}
-                    onChange={({ target: { value } }) => onChange({ state: value })}
+                    onChange={({ target: { value } }) => setFilters({ ...filters, state: value })}
                 >
                     <MenuItem value={""}>All</MenuItem>
                     <MenuItem value={'error'}>Error</MenuItem>
@@ -70,5 +73,25 @@ export default ({ value, onChange }) => {
                     <MenuItem value={'finished'}>Finished</MenuItem>
                 </Select>
             </FormControl>
+            {/* <Button
+                children="filter"
+                size="small"
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                    onChange(filters)
+                }}
+            /> */}
+            {Object.keys(filters).length ? (
+                <Button
+                    disabled={!Object.keys(filters).length}
+                    children="clear filter"
+                    size="small"
+                    color="primary"
+                    onClick={() => {
+                        onChange({})
+                    }}
+                />
+            ) : <div />}
         </>)
 }

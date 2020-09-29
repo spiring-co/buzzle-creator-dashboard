@@ -1,130 +1,28 @@
+import { MuiThemeProvider } from "@material-ui/core/styles";
+import PrivateRoute from "components/PrivateRoute";
+import { darkTheme, lightTheme } from "helpers/themes";
+import { DarkModeProvider, useDarkMode } from "helpers/useDarkMode";
+// pages
+// import AddVideoTemplateOutline from "pages/AddVideoTemplateOutline";
+import AdminLogin from "pages/AdminLogin";
+import ForgotPassword from "pages/ForgotPassword";
+import Home from "pages/Home";
+import Landing from "pages/Landing";
+import Login from "pages/Login";
+import NotFoundPage from "pages/NotFoundPage";
+import Register from "pages/Register";
+import UserLogin from "pages/UserLogin";
+import UserRegister from "pages/UserRegister";
 import React from "react";
 import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
-
-import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
-import PrivateRoute from "components/PrivateRoute";
-
-import Home from "pages/Home";
-import Login from "pages/Login";
-import AdminLogin from "pages/AdminLogin"
-import UserLogin from "pages/UserLogin"
-import Landing from "pages/Landing";
-import Register from "pages/Register";
-import UserRegister from "pages/UserRegister";
-import ForgotPassword from "pages/ForgotPassword";
-import NotFoundPage from "pages/NotFoundPage";
-import { pink } from "@material-ui/core/colors";
 import { AuthProvider } from "services/auth";
-import { useDarkMode, DarkModeProvider } from "helpers/useDarkMode";
 
 const AppChild = () => {
-  const [theme, toggleTheme, componentMounted] = useDarkMode();
+  const [theme, t, componentMounted] = useDarkMode();
   if (!componentMounted) {
     return <div />;
   }
-  const darkTheme = createMuiTheme({
-    palette: {
-      type: "dark",
-      primary: {
-        main: "#3742fa",
-      },
-      secondary: pink,
-      background: {
-        default: "#222",
-        paper: "#333",
-      },
-    },
-    typography: {
-      fontSize: 14,
-      fontFamily: "Noto Sans JP",
-      fontWeightRegular: 500,
-      h3: {
-        fontWeight: 700,
-      },
-      h4: {
-        fontWeight: 700,
-      },
-      h5: {
-        fontWeight: 700,
-      },
-      h6: {
-        fontWeight: 700,
-      },
-    },
-    overrides: {
-      MuiLink: {
-        root: {
-          fontWeight: 600,
-        },
-      },
-      MuiStepLabel: {
-        label: {
-          fontWeight: 700,
-        },
-        active: {
-          fontWeight: 700,
-        },
-      },
-      MuiButton: {
-        label: {
-          fontWeight: 700,
-        },
-      },
-    },
-  });
 
-  const lightTheme = createMuiTheme({
-    palette: {
-      type: "light",
-      primary: {
-        main: "#3742fa",
-      },
-      secondary: pink,
-    },
-    typography: {
-      fontSize: 14,
-      fontFamily: "Noto Sans JP",
-      fontWeightRegular: 500,
-      h3: {
-        fontWeight: 700,
-      },
-      h4: {
-        fontWeight: 700,
-      },
-      h5: {
-        fontWeight: 700,
-      },
-      h6: {
-        fontWeight: 700,
-      },
-    },
-    overrides: {
-      MuiLink: {
-        root: {
-          fontWeight: 600,
-        },
-      },
-      MuiStepLabel: {
-        label: {
-          fontWeight: 700,
-        },
-        active: {
-          fontWeight: 700,
-        },
-      },
-      MuiButton: {
-        label: {
-          fontWeight: 700,
-        },
-      },
-      MuiTab: {
-        wrapper: {
-          fontWeight: 700,
-          color: "#3742fa",
-        },
-      },
-    },
-  });
   const themeMode = theme == "light" ? lightTheme : darkTheme;
   return (
     <AuthProvider>
@@ -135,9 +33,12 @@ const AppChild = () => {
             <Route path="/login" exact component={Login} />
             <Route path="/admin" exact component={AdminLogin} />
             <Route path="/user" exact component={UserLogin} />
+            
             <Route path="/register" exact component={Register} />
             <Route path="/registerUser" exact component={UserRegister} />
+            
             <Route path="/forgotPassword" component={ForgotPassword} />
+            
             <PrivateRoute path="/home" component={Home} />
             <Route path="*" component={NotFoundPage} />
           </Switch>

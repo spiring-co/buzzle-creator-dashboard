@@ -2865,7 +2865,7 @@ builtin-status-codes@^3.0.0:
 
 "buzzle-sdk@https://github.com/spiring-co/buzzle-sdk.git":
   version "1.0.2"
-  resolved "https://github.com/spiring-co/buzzle-sdk.git#d55c44feb7575546c66450bdd34a122658eba453"
+  resolved "https://github.com/spiring-co/buzzle-sdk.git#836b65eeff2f0af6aa1ad83364541c5c421a604c"
   dependencies:
     isomorphic-fetch "^2.2.1"
     socket.io-client "^2.3.0"

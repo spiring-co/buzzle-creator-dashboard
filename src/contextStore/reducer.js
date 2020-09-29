@@ -11,14 +11,16 @@ export const LOAD_STATE = "LOAD_STATE";
 export const RESTORE_FIELDS = "RESTORE_FIELDS";
 export const SWAP_FIELDS = "SWAP_FIELDS";
 
-const shiftValueByIndex = (array, dropIndex, dragIndex) => {
-  const startPart = array.slice(0, dropIndex)
-  startPart.push(array[dragIndex])
-  const endPart = array.slice(dropIndex)
-  const shifted = startPart.concat(endPart)
-  return shifted.filter((it, i) => i !== dragIndex + 1)
-}
-
+function shiftValueByIndex(arr, dropIndex, dragIndex) {
+  if (dropIndex >= arr.length) {
+    var k = dropIndex - arr.length + 1;
+    while (k--) {
+      arr.push(undefined);
+    }
+  }
+  arr.splice(dropIndex, 0, arr.splice(dragIndex, 1)[0]);
+  return arr; // for testing
+};
 export default (state, action) => {
   // const { user } = useAuth();
 

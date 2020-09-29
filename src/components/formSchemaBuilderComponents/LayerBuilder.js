@@ -38,6 +38,7 @@ export default ({ compositions, editVersion, activeVersionIndex }) => {
   const [isDialogVisible, setIsDialogVisible] = useState(false);
   const [restoreStatus, setRestoreStatus] = useState(false);
 
+  const layerWithProperty = videoObj.versions[activeVersionIndex]?.fields?.map(({ rendererData: { layerName, property } }) => layerName + property)
 
   useEffect(() => {
     let layers = getLayersFromComposition(
@@ -106,6 +107,9 @@ export default ({ compositions, editVersion, activeVersionIndex }) => {
                 style={{ display: "flex", alignItems: "center", flexWrap: "wrap" }}>
                 {!currentCompositionFields.includes(item?.rendererData?.layerName)
                   && <Alert severity="error">Layer Not Found!</Alert>
+                }
+                {layerWithProperty.filter(v => v === item?.rendererData?.layerName + item?.rendererData?.property).length !== 1
+                  && <Alert severity="error">Duplicate Layer</Alert>
                 }
                 {item?.rendererData?.type === "data" ? (
                   <>

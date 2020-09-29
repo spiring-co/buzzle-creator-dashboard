@@ -36,11 +36,26 @@ export default ({
     const compLayer = Object.keys(extracted)?.flatMap(k => extracted[k]?.map(({ name }) => name))
     return fields?.map(({ rendererData: { layerName } }) => layerName).every(layer => compLayer.includes(layer))
   }))
+  const [isVersionsFieldsDuplicate, setIsVersionsFieldsDuplicate] = useState(videoObj?.versions?.map(({ fields }) => {
+    const layerWithProperty = fields?.map(({ rendererData: { layerName, property } }) => layerName + property)
+    if (new Set(layerWithProperty)?.size !== layerWithProperty.length) {
+      return true
+    }
+    else return false
+  }))
   useEffect(() => {
     setIsVersionValid(videoObj?.versions?.map(({ fields, composition }) => {
       const extracted = getLayersFromComposition(compositions[composition])
       const compLayer = Object.keys(extracted)?.flatMap(k => extracted[k]?.map(({ name }) => name))
       return fields?.map(({ rendererData: { layerName } }) => layerName).every(layer => compLayer.includes(layer))
+    }))
+    setIsVersionsFieldsDuplicate(videoObj?.versions?.map(({ fields }) => {
+      const layerWithProperty = fields?.map(({ rendererData: { layerName, property } }) => layerName + property)
+      console.log(new Set(layerWithProperty)?.size, layerWithProperty.length)
+      if (new Set(layerWithProperty)?.size !== layerWithProperty.length) {
+        return true
+      }
+      else return false
     }))
   }, [videoObj])
 
@@ -206,6 +221,7 @@ export default ({
                       children="Delete"
                     />
                     {!isVersionValid[index] && <Alert severity="warning">Layers Not Found!</Alert>}
+                    {isVersionsFieldsDuplicate[index] && <Alert severity="warning">Contains Duplicate Fields!</Alert>}
                   </Paper>
                 );
               })
@@ -232,7 +248,7 @@ export default ({
         </Button>
 
         <Button
-          disabled={videoObj.versions.length === 0 || activeStep !== 0 || !isVersionValid?.every(v => v)}
+          disabled={videoObj.versions.length === 0 || activeStep !== 0 || !isVersionValid?.every(v => v) || !isVersionsFieldsDuplicate?.every(v => !v)}
           endIcon={<ArrowForward />}
           color="primary"
           variant="contained"
