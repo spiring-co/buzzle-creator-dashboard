@@ -1,7 +1,7 @@
 import { apiClient } from "buzzle-sdk";
 
 const API = apiClient({
-  baseUrl: "http://localhost:5000",
+  baseUrl: process.env.REACT_APP_API_URL,
   authToken: localStorage.getItem("jwtoken"),
 });
 const uri = `http://34.229.239.151:3050/api/v1/jobs`;
