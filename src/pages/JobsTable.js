@@ -5,50 +5,34 @@ import io from "socket.io-client";
 import * as timeago from "timeago.js";
 import ReactJson from "react-json-view";
 
-import DateFnsUtils from "@date-io/date-fns";
-import {
-  Button,
-  Chip,
-  Container, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, Typography,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  Tooltip,
-  Fade,
-} from "@material-ui/core";
-
-import {
-  KeyboardDatePicker,
-  MuiPickersUtilsProvider,
-} from "@material-ui/pickers";
+import { Button, Chip, Container, Tooltip, Fade } from "@material-ui/core";
 
 import MaterialTable, { MTableToolbar } from "material-table";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
 import ErrorHandler from "components/ErrorHandler";
 
 import formatTime from "helpers/formatTime";
 import { useDarkMode } from "helpers/useDarkMode";
 
-import { useAuth } from "services/auth";
-import { Creator, Job, Search, VideoTemplate } from "services/api";
+import { Job, Search } from "services/api";
 import Filters from "components/Filters";
 
 export default () => {
-  const { path } = useRouteMatch();
-  const { user } = useAuth();
   const history = useHistory();
+  const tableRef = useRef(null);
+  const { path } = useRouteMatch();
   const [darkModeTheme] = useDarkMode();
   const [error, setError] = useState(null);
-  const tableRef = useRef(null);
   const [filters, setFilters] = useState({});
+
   const handleRetry = () => {
     setError(false);
     tableRef.current && tableRef.current.onQueryChange();
   };
+
   useEffect(() => {
-    handleRetry()
-  }, [filters])
+    handleRetry();
+  }, [filters]);
+
   // progress sockets
 
   const [jobIds, setJobIds] = useState([]);
@@ -98,7 +82,6 @@ export default () => {
           selection: true,
         }}
         components={{
-          //TODO: abstract to separate component
           Toolbar: (props) => {
             console.log(props);
             return (
@@ -108,22 +91,16 @@ export default () => {
                   style={{
                     marginLeft: 25,
                     marginTop: 10,
-                    display: 'flex',
+                    display: "flex",
                     alignItems: "baseline",
-
                   }}>
-                  {/* <ExpansionPanel >
-                    <ExpansionPanelSummary
-                      expandIcon={<ExpandMoreIcon />}>
-                      <Typography color="primary">Filters</Typography>
-                    </ExpansionPanelSummary>
-                    <ExpansionPanelDetails style={{
-                      alignItems: "baseline",
-                    }}> */}
-                  <Filters onChange={setFilters} value={filters} />
-                  {/* </ExpansionPanelDetails>
-                  </ExpansionPanel> */}
-
+                  <Filters
+                    onChange={(f) => {
+                      console.log(f);
+                      setFilters(f);
+                    }}
+                    value={filters}
+                  />
                 </div>
               </div>
             );
@@ -228,38 +205,30 @@ export default () => {
         data={(query) =>
           query?.search
             ? Search.get(query?.search, query.page + 1, query.pageSize).then(
-              ({ jobs }) => ({
-                data: jobs,
-                page: query?.page,
-                totalCount: jobs.length,
-              })
-            )
-            : Creator.getJobs(user?.id, query.page + 1, query.pageSize, filters)
-              .then((result) => {
-                //change on final deploy to .jobs to .data as per convention	
-                return {
-                  data: result.jobs,
-                  page: query.page,
-                  totalCount: result.count,
-                };
-              })
-              // : Job.getAll(query.page + 1, query.pageSize, [], filters)
-              //   .then((result) => {
-              //     setJobIds(result.jobs.map((j) => j.id));
-              //     return {
-              //       data: result.jobs,
-              //       page: query.page,
-              //       totalCount: result.count,
-              //     };
-              //   })
-              .catch((err) => {
-                setError(err);
-                return {
-                  data: [],
-                  page: query.page,
-                  totalCount: 0,
-                };
-              })
+                ({ jobs }) => ({
+                  data: jobs,
+                  page: query?.page,
+                  totalCount: jobs.length,
+                })
+              )
+            : Job.getAll(query.page + 1, query.pageSize, serialize(filters))
+                .then((result) => {
+                  console.log(result);
+                  setJobIds(result.data.map((j) => j.id));
+                  return {
+                    data: result.data,
+                    page: query.page,
+                    totalCount: result.count,
+                  };
+                })
+                .catch((err) => {
+                  setError(err);
+                  return {
+                    data: [],
+                    page: query.page,
+                    totalCount: 0,
+                  };
+                })
         }
         actions={[
           {
@@ -274,7 +243,7 @@ export default () => {
             position: "row",
             onClick: async (e, { id, data, actions }) => {
               try {
-                await Job.update(id, { data, actions });
+                await Job.update(id, { data, actions, state: "created" });
               } catch (err) {
                 setError(err);
               }
@@ -302,6 +271,7 @@ export default () => {
             position: "toolbarOnSelect",
             onClick: async (e, data) => {
               try {
+                data = data.map((j) => ({ ...j, state: "created" }));
                 await Job.updateMultiple(data);
               } catch (err) {
                 setError(err);
@@ -341,4 +311,13 @@ const getColorFromState = (state, percent) => {
     default:
       return "grey";
   }
+};
+
+const serialize = function (obj) {
+  var str = [];
+  for (var p in obj)
+    if (obj.hasOwnProperty(p)) {
+      str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+    }
+  return str.join("&");
 };
