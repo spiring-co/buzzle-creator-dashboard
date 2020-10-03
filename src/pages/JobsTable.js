@@ -13,7 +13,7 @@ import ErrorHandler from "components/ErrorHandler";
 import formatTime from "helpers/formatTime";
 import { useDarkMode } from "helpers/useDarkMode";
 
-import { Job, Search } from "services/api";
+import { Job, Search, Creator } from "services/api";
 import Filters from "components/Filters";
 
 export default () => {
@@ -211,7 +211,7 @@ export default () => {
                   totalCount: jobs.length,
                 })
               )
-            : Job.getAll(query.page + 1, query.pageSize, serialize(filters))
+            : Creator.getJobs(query.page + 1, query.pageSize, serialize(filters))
                 .then((result) => {
                   console.log(result);
                   setJobIds(result.data.map((j) => j.id));
