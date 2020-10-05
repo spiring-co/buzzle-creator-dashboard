@@ -218,9 +218,9 @@ export default () => {
             : Creator.getJobs(user?.id, query.page + 1, query.pageSize, {})
                 .then((result) => {
                   console.log(result);
-                  setJobIds(result.data.map((j) => j.id));
+                  setJobIds(result.jobs.map((j) => j.id));
                   return {
-                    data: result.data,
+                    data: result.jobs,
                     page: query.page,
                     totalCount: result.count,
                   };
