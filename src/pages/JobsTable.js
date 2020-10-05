@@ -13,15 +13,17 @@ import ErrorHandler from "components/ErrorHandler";
 import formatTime from "helpers/formatTime";
 import { useDarkMode } from "helpers/useDarkMode";
 
+import { useAuth } from "services/auth";
 import { Job, Search, Creator } from "services/api";
 import Filters from "components/Filters";
 
 export default () => {
   const history = useHistory();
   const tableRef = useRef(null);
+  const { user } = useAuth();
 
   const { path } = useRouteMatch();
-  
+
   const [darkModeTheme] = useDarkMode();
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({});
@@ -213,7 +215,7 @@ export default () => {
                   totalCount: jobs.length,
                 })
               )
-            : Creator.getJobs(query.page + 1, query.pageSize, serialize(filters))
+            : Creator.getJobs(user?.id, query.page + 1, query.pageSize, {})
                 .then((result) => {
                   console.log(result);
                   setJobIds(result.data.map((j) => j.id));
