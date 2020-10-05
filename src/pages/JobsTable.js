@@ -19,7 +19,9 @@ import Filters from "components/Filters";
 export default () => {
   const history = useHistory();
   const tableRef = useRef(null);
+
   const { path } = useRouteMatch();
+  
   const [darkModeTheme] = useDarkMode();
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({});
