@@ -1,40 +1,62 @@
-import { Button, Chip, Container, Tooltip, } from "@material-ui/core";
-import { Job, VideoTemplate, Creator } from "services/api";
-import ErrorHandler from "components/ErrorHandler";
-import { useDarkMode } from "helpers/useDarkMode";
-import MaterialTable from "material-table";
 import React, { useEffect, useRef, useState } from "react";
-import ReactJson from "react-json-view";
 import { useHistory, useRouteMatch } from "react-router-dom";
-import { useAuth } from "services/auth";
+
 import io from "socket.io-client";
-import Fade from '@material-ui/core/Fade';
-import formatTime from "helpers/formatTime";
-
 import * as timeago from "timeago.js";
+import ReactJson from "react-json-view";
 
+import DateFnsUtils from "@date-io/date-fns";
+import {
+  Button,
+  Chip,
+  Container, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, Typography,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Tooltip,
+  Fade,
+} from "@material-ui/core";
+
+import {
+  KeyboardDatePicker,
+  MuiPickersUtilsProvider,
+} from "@material-ui/pickers";
+
+import MaterialTable, { MTableToolbar } from "material-table";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
+import ErrorHandler from "components/ErrorHandler";
+
+import formatTime from "helpers/formatTime";
+import { useDarkMode } from "helpers/useDarkMode";
+
+import { useAuth } from "services/auth";
+import { Creator, Job, Search, VideoTemplate } from "services/api";
+import Filters from "components/Filters";
 
 export default () => {
-  const [error, setError] = useState(null);
-  const [socket, setSocket] = useState(null);
-  const [rtProgressData, setRtProgressData] = useState({});
-  const [jobIds, setJobIds] = useState([]);
   const { path } = useRouteMatch();
-  const tableRef = useRef(null);
-  const [darkModeTheme] = useDarkMode();
   const { user } = useAuth();
   const history = useHistory();
-
-  const uri = `${process.env.REACT_APP_API_URL}/creators/${user?.id}/jobs`;
-
+  const [darkModeTheme] = useDarkMode();
+  const [error, setError] = useState(null);
+  const tableRef = useRef(null);
+  const [filters, setFilters] = useState({});
   const handleRetry = () => {
     setError(false);
     tableRef.current && tableRef.current.onQueryChange();
   };
+  useEffect(() => {
+    handleRetry()
+  }, [filters])
+  // progress sockets
+
+  const [jobIds, setJobIds] = useState([]);
+  const [socket, setSocket] = useState(null);
+  const [rtProgressData, setRtProgressData] = useState({});
 
   function subscribeToProgress(id) {
     if (!socket) return;
-    console.log("Listening for " + id);
     socket.on(id, (data) =>
       setRtProgressData({ ...rtProgressData, [id]: data })
     );
@@ -73,9 +95,42 @@ export default () => {
           pageSize: 20,
           headerStyle: { fontWeight: 700 },
           actionsColumnIndex: -1,
-          selection: true
+          selection: true,
+        }}
+        components={{
+          //TODO: abstract to separate component
+          Toolbar: (props) => {
+            console.log(props);
+            return (
+              <div>
+                <MTableToolbar {...props} />
+                <div
+                  style={{
+                    marginLeft: 25,
+                    marginTop: 10,
+                    display: 'flex',
+                    alignItems: "baseline",
+
+                  }}>
+                  {/* <ExpansionPanel >
+                    <ExpansionPanelSummary
+                      expandIcon={<ExpandMoreIcon />}>
+                      <Typography color="primary">Filters</Typography>
+                    </ExpansionPanelSummary>
+                    <ExpansionPanelDetails style={{
+                      alignItems: "baseline",
+                    }}> */}
+                  <Filters onChange={setFilters} value={filters} />
+                  {/* </ExpansionPanelDetails>
+                  </ExpansionPanel> */}
+
+                </div>
+              </div>
+            );
+          },
         }}
         onRowClick={(e, { id }) => {
+          // prevents redirection on link click
           if (["td", "TD"].includes(e.target.tagName))
             history.push(`${path}${id}`);
         }}
@@ -112,10 +167,8 @@ export default () => {
           {
             title: "Render Time",
             searchable: false,
-            render: ({ videoTemplate, idVersion, renderTime }) => (
-              <span>
-                {renderTime !== -1 ? formatTime(renderTime) : 'NA'}
-              </span>
+            render: ({ renderTime }) => (
+              <span>{renderTime !== -1 ? formatTime(renderTime) : "NA"}</span>
             ),
           },
           {
@@ -173,32 +226,42 @@ export default () => {
           },
         }}
         data={(query) =>
-          // TODO should be abstracted to API service
-          fetch(`${uri}?page=${query.page + 1}&size=${query.pageSize}`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("jwtoken")}`,
-            },
-          })
-            .then((response) => response.json())
-            .then((result) => {
-              const { jobs = [], message = "", totalCount } = result;
-              if (message) {
-                return setError(new Error(message));
-              }
-              setJobIds(jobs.map(({ id }) => id));
-              return {
+          query?.search
+            ? Search.get(query?.search, query.page + 1, query.pageSize).then(
+              ({ jobs }) => ({
                 data: jobs,
-                page: query.page,
-                totalCount,
-              };
-            })
-            .catch((e) => {
-              setError(e);
-              return { data: [], page: query.page, totalCount: 0 };
-            })
+                page: query?.page,
+                totalCount: jobs.length,
+              })
+            )
+            : Creator.getJobs(user?.id, query.page + 1, query.pageSize, filters)
+              .then((result) => {
+                //change on final deploy to .jobs to .data as per convention	
+                return {
+                  data: result.jobs,
+                  page: query.page,
+                  totalCount: result.count,
+                };
+              })
+              // : Job.getAll(query.page + 1, query.pageSize, [], filters)
+              //   .then((result) => {
+              //     setJobIds(result.jobs.map((j) => j.id));
+              //     return {
+              //       data: result.jobs,
+              //       page: query.page,
+              //       totalCount: result.count,
+              //     };
+              //   })
+              .catch((err) => {
+                setError(err);
+                return {
+                  data: [],
+                  page: query.page,
+                  totalCount: 0,
+                };
+              })
         }
         actions={[
-          //TODO add rerender and edit job actions
           {
             icon: "refresh",
             tooltip: "Refresh Data",
@@ -208,7 +271,7 @@ export default () => {
           {
             icon: "repeat",
             tooltip: "Restart Job",
-            position: 'row',
+            position: "row",
             onClick: async (e, { id, data, actions }) => {
               try {
                 await Job.update(id, { data, actions });
@@ -221,7 +284,7 @@ export default () => {
           {
             icon: "delete",
             tooltip: "Delete Job",
-            position: 'row',
+            position: "row",
             onClick: async (event, rowData) => {
               const action = window.confirm("Are you sure, you want to delete");
               if (!action) return;
@@ -236,7 +299,7 @@ export default () => {
           {
             icon: "repeat",
             tooltip: "Restart All Selected Jobs",
-            position: 'toolbarOnSelect',
+            position: "toolbarOnSelect",
             onClick: async (e, data) => {
               try {
                 await Job.updateMultiple(data);
@@ -249,7 +312,7 @@ export default () => {
           {
             icon: "delete",
             tooltip: "Delete All Selected Jobs",
-            position: 'toolbarOnSelect',
+            position: "toolbarOnSelect",
             onClick: async (e, data) => {
               try {
                 await Job.deleteMultiple(data);
@@ -258,7 +321,7 @@ export default () => {
               }
               tableRef.current && tableRef.current.onQueryChange();
             },
-          }
+          },
         ]}
       />
     </Container>

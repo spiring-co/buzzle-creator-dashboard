@@ -91,6 +91,7 @@ export default () => {
   const [isLoading, setIsLoading] = useState(true);
   const [redirect, setRedirect] = useState(null);
   const { id } = useParams();
+  console.log(id)
   const history = useHistory();
   const [selectedOutputIndex, setSelectedOutputIndex] = useState(0);
   const [activeTabIndex, setActiveTabIndex] = useState(0);
@@ -102,12 +103,17 @@ export default () => {
   useEffect(() => { }, [selectedOutputIndex]);
 
   const fetchJob = async () => {
-    setError(false);
-    setIsLoading(true);
-    Job.get(id, true)
-      .then(setJob)
-      .catch(setError)
-      .finally(() => setIsLoading(false));
+    try {
+      setError(false);
+      setIsLoading(true);
+      setJob(await Job.get(id, true))
+      setIsLoading(false)
+    } catch (err) {
+      console.log(err)
+      setError(err)
+      setIsLoading(false)
+    }
+
   };
 
   const handleUpdateJob = async () => {
@@ -236,7 +242,7 @@ export default () => {
                 console.log(e.target.value);
                 setSelectedOutputIndex(e.target.value);
               }}>
-              {output.map((o, i) => (
+              {output?.map((o, i) => (
                 <MenuItem key={i} value={i}>
                   {o.label}
                   <Typography
@@ -257,7 +263,7 @@ export default () => {
             <IconButton
               aria-label="download"
               className={classes.margin}
-              href={output.length && output[selectedOutputIndex].src}>
+              href={output?.length && output[selectedOutputIndex]?.src}>
               <DownloadIcon fontSize="inherit" />
             </IconButton>
           </Box>

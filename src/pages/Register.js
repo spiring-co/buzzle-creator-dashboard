@@ -74,12 +74,12 @@ export default () => {
     initialValues: {
       name: "",
       email: "",
-      countryCode: "",
+      // countryCode: "",
       password: "",
       confirmPassword: "",
-      gender: "",
-      country: "",
-      phoneNumber: "",
+      // gender: "",
+      // country: "",
+      // phoneNumber: "",
       birthDate: new Date().toISOString().substr(0, 10),
     },
     validationSchema,
@@ -194,7 +194,7 @@ export default () => {
             type={showPassword2 ? "text" : "password"}
             helperText={errors?.confirmPassword}
           />
-          <FormControl
+          {/* <FormControl
             required
             fullWidth
             margin="dense"
@@ -221,8 +221,8 @@ export default () => {
             <FormHelperText error={touched.gender && !!errors.gender}>
               {errors?.gender}
             </FormHelperText>
-          </FormControl>
-          <TextField
+          </FormControl> */}
+          {/* <TextField
             required
             fullWidth
             margin={"dense"}
@@ -236,7 +236,7 @@ export default () => {
             label="Phone Number"
             error={touched.phoneNumber && !!errors.phoneNumber}
             helperText={errors?.phoneNumber ?? ""}
-          />
+          /> */}
           <TextField
             required
             fullWidth
@@ -252,7 +252,7 @@ export default () => {
             error={touched.birthDate && !!errors.birthDate}
             helperText={errors?.birthDate ?? ""}
           />
-          <TextField
+          {/* <TextField
             required
             fullWidth
             margin={"dense"}
@@ -267,8 +267,8 @@ export default () => {
             label="Country Code"
             error={touched.countryCode && !!errors.countryCode}
             helperText={errors.countryCode ?? ""}
-          />
-          <FormControl
+          /> */}
+          {/* <FormControl
             required
             fullWidth
             margin="dense"
@@ -292,7 +292,7 @@ export default () => {
             <FormHelperText error={touched.country && !!errors.country}>
               {errors?.country ?? ""}
             </FormHelperText>
-          </FormControl>
+          </FormControl> */}
           <Button
             variant="contained"
             color="primary"
@@ -343,14 +343,14 @@ const validationSchema = Yup.object({
   confirmPassword: Yup.string()
     .equalTo(Yup.ref("password"), "Incorrect password!")
     .required("Confirm password is required!"),
-  countryCode: Yup.string()
-    .matches(/^(\+?\d{1,3}|\d{1,4})$/gm, "Country code is not valid")
-    .required("Country code is required"),
-  phoneNumber: Yup.string()
-    .matches(/^\d{10}$/, "Phone number isn't valid")
-    .required("Phone number is required"),
+  // countryCode: Yup.string()
+  //   .matches(/^(\+?\d{1,3}|\d{1,4})$/gm, "Country code is not valid")
+  //   .required("Country code is required"),
+  // phoneNumber: Yup.string()
+  //   .matches(/^\d{10}$/, "Phone number isn't valid")
+  //   .required("Phone number is required"),
 
   birthDate: Yup.date().required("Birth date is required"),
-  country: Yup.string().required("Country name is required"),
-  gender: Yup.string().required("Gender field is required"),
+  // country: Yup.string().required("Country name is required"),
+  // gender: Yup.string().required("Gender field is required"),
 });

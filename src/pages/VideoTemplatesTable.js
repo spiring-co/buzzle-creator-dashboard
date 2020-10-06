@@ -22,7 +22,7 @@ import ListIcon from "@material-ui/icons/List";
 import AssignmentTurnedInIcon from "@material-ui/icons/AssignmentTurnedIn";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
-import { Job, VideoTemplate, Creator } from "services/api";
+import { Job, VideoTemplate, Creator, Search } from "services/api";
 import PublishIcon from "@material-ui/icons/Publish";
 import ErrorHandler from "components/ErrorHandler";
 import SnackAlert from "components/SnackAlert";
@@ -88,12 +88,12 @@ export default (props) => {
   const [deleteStatus, setDeleteStatus] = useState(
     props?.location?.state?.statusObj ?? { status: false, err: false }
   );
-  useEffect(() => {
-    const data = async () => {
-      setData(await Creator.get(user?.id, 1, 10));
-    };
-    data();
-  }, []);
+  // useEffect(() => {
+  //   const data = async () => {
+  //     setData(await Creator.getVideoTemplates(user?.id, 1, 10));
+  //   };
+  //   data();
+  // }, []);
 
   const handleRetry = () => {
     setError(false);
@@ -192,106 +192,106 @@ export default (props) => {
           </GridList>
         </Box>
       ) : (
-        <MaterialTable
-          tableRef={tableRef}
-          title="Your Video Templates"
-          onRowClick={(e, { id }) => {
-            history.push(`${path}${id}`);
-          }}
-          columns={[
-            {
-              title: "Title",
-              field: "title",
-              render: ({ title, thumbnail }) => (
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
-                  }}>
-                  <Avatar
-                    style={{ marginRight: 10, height: 30, width: 30 }}
-                    alt="thumbnail"
-                    src={thumbnail}
-                  />{" "}
-                  {title}
-                </div>
-              ),
-            },
-            {
-              title: "Versions",
-              render: ({ versions }) => <span>{versions.length}</span>,
-            },
-            {
-              title: "Publish State",
-              field: "publishState",
-              render: function ({
-                publishState = "unpublished",
-                rejectionReason = null,
-              }) {
-                return (
-                  <Tooltip
-                    TransitionComponent={Fade}
-                    title={rejectionReason ? publishState : rejectionReason}>
-                    <Chip
-                      size="small"
-                      label={publishState}
-                      style={{
-                        background: getColorFromState(publishState),
-                        color: "white",
-                      }}
-                    />
-                  </Tooltip>
-                );
+          <MaterialTable
+            tableRef={tableRef}
+            title="Your Video Templates"
+            onRowClick={(e, { id }) => {
+              history.push(`${path}${id}`);
+            }}
+            columns={[
+              {
+                title: "Title",
+                field: "title",
+                render: ({ title, thumbnail }) => (
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                    }}>
+                    <Avatar
+                      style={{ marginRight: 10, height: 30, width: 30 }}
+                      alt="thumbnail"
+                      src={thumbnail}
+                    />{" "}
+                    {title}
+                  </div>
+                ),
               },
-            },
-            {
-              title: "Last Updated",
-              field: "dateUpdated",
-              type: "datetime",
-              render: ({ dateUpdated }) => (
-                <span>{timeago.format(dateUpdated)}</span>
-              ),
-              defaultSort: "desc",
-            },
-          ]}
-          localization={{
-            body: {
-              emptyDataSourceMessage: error ? (
-                <Button
-                  onClick={handleRetry}
-                  color="secondary"
-                  variant="outlined"
-                  children={"Retry"}
-                />
-              ) : (
-                <Typography>
-                  <Link component={RouterLink} to={`${path}add`}>
-                    Click here
+              {
+                title: "Versions",
+                render: ({ versions }) => <span>{versions.length}</span>,
+              },
+              {
+                title: "Publish State",
+                field: "publishState",
+                render: function ({
+                  publishState = "unpublished",
+                  rejectionReason = null,
+                }) {
+                  return (
+                    <Tooltip
+                      TransitionComponent={Fade}
+                      title={rejectionReason ? publishState : rejectionReason}>
+                      <Chip
+                        size="small"
+                        label={publishState}
+                        style={{
+                          background: getColorFromState(publishState),
+                          color: "white",
+                        }}
+                      />
+                    </Tooltip>
+                  );
+                },
+              },
+              {
+                title: "Last Updated",
+                field: "dateUpdated",
+                type: "datetime",
+                render: ({ dateUpdated }) => (
+                  <span>{timeago.format(dateUpdated)}</span>
+                ),
+                defaultSort: "desc",
+              },
+            ]}
+            localization={{
+              body: {
+                emptyDataSourceMessage: error ? (
+                  <Button
+                    onClick={handleRetry}
+                    color="secondary"
+                    variant="outlined"
+                    children={"Retry"}
+                  />
+                ) : (
+                    <Typography>
+                      <Link component={RouterLink} to={`${path}add`}>
+                        Click here
                   </Link>{" "}
                   to create a Video Template😀
-                </Typography>
-              ),
-            },
-          }}
-          detailPanel={[
-            {
-              render: (rowData) => (
-                <ReactJson
-                  displayDataTypes={false}
-                  name={rowData.id}
-                  collapsed={1}
-                  src={rowData}
-                />
-              ),
-              icon: "code",
-              tooltip: "Show Code",
-            },
-          ]}
-          actions={
-            role === "Admin"
-              ? []
-              : [
+                    </Typography>
+                  ),
+              },
+            }}
+            detailPanel={[
+              {
+                render: (rowData) => (
+                  <ReactJson
+                    displayDataTypes={false}
+                    name={rowData.id}
+                    collapsed={1}
+                    src={rowData}
+                  />
+                ),
+                icon: "code",
+                tooltip: "Show Code",
+              },
+            ]}
+            actions={
+              role === "Admin"
+                ? []
+                : [
                   {
                     icon: () => <PublishIcon />,
                     tooltip: `Publish your template`,
@@ -346,45 +346,56 @@ export default (props) => {
                     onClick: handleRetry,
                   },
                 ]
-          }
-          data={(query) =>
-            Creator.getVideoTemplates(user?.id, query.page + 1, query.pageSize)
-              .then((result) => {
-                return {
-                  data: query.search
-                    ? result.data.filter(({ title }) =>
-                        title
-                          .toLowerCase()
-                          .startsWith(query.search.toLowerCase())
-                      )
-                    : result.data,
-                  page: query.page,
-                  totalCount: query.search
-                    ? result.data.filter(({ title }) =>
-                        title
-                          .toLowerCase()
-                          .startsWith(query.search.toLowerCase())
-                      ).length
-                    : result.count,
-                };
-              })
-              .catch((err) => {
-                setError(err);
-                return {
-                  data: [],
-                  page: query.page,
-                  totalCount: 0,
-                };
-              })
-          }
-          options={{
-            pageSize: 10,
-            headerStyle: { fontWeight: 700 },
-            minBodyHeight: 500,
-            actionsColumnIndex: -1,
-          }}
-        />
-      )}
+            }
+            data={(query) =>
+              query?.search
+                ? Search.get(query?.search, query.page + 1, query.pageSize).then(({ videoTemplates }) => ({
+                  data: videoTemplates,
+                  page: query?.page,
+                  totalCount: videoTemplates.length
+                }))
+                : (user?.role === 'Admin'
+                  ? VideoTemplate.getAll(query.page + 1, query.pageSize)
+                    .then((result) => {
+                      return {
+                        data: result.data,
+                        page: query.page,
+                        totalCount: result.count,
+                      };
+                    })
+                    .catch((err) => {
+                      setError(err);
+                      return {
+                        data: [],
+                        page: query.page,
+                        totalCount: 0,
+                      };
+                    })
+                  : Creator.getVideoTemplates(user?.id, query.page + 1, query.pageSize)
+                    .then((result) => {
+                      return {
+                        data: result.data,
+                        page: query.page,
+                        totalCount: result.count,
+                      };
+                    })
+                    .catch((err) => {
+                      setError(err);
+                      return {
+                        data: [],
+                        page: query.page,
+                        totalCount: 0,
+                      };
+                    }))
+            }
+            options={{
+              pageSize: 10,
+              headerStyle: { fontWeight: 700 },
+              minBodyHeight: 500,
+              actionsColumnIndex: -1,
+            }}
+          />
+        )}
 
       <TestJobDialog
         open={isDialogOpen}

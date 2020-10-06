@@ -1,6 +1,7 @@
 /* eslint-disable default-case */
 import useActions from "contextStore/actions";
 import { VideoTemplateContext } from "contextStore/store";
+import Alert from '@material-ui/lab/Alert';
 import React, { useContext, useEffect, useState } from "react";
 import { getLayersFromComposition } from "services/helper";
 import AddFields from "./AddFieldDialog";
@@ -36,6 +37,8 @@ export default ({ compositions, editVersion, activeVersionIndex }) => {
   const [editIndex, setEditIndex] = useState(null);
   const [isDialogVisible, setIsDialogVisible] = useState(false);
   const [restoreStatus, setRestoreStatus] = useState(false);
+
+  const layerWithProperty = videoObj.versions[activeVersionIndex]?.fields?.map(({ rendererData: { layerName, property } }) => layerName + property)
 
   useEffect(() => {
     let layers = getLayersFromComposition(
@@ -92,7 +95,6 @@ export default ({ compositions, editVersion, activeVersionIndex }) => {
         {(provided, snapshot) => (
           <FieldPreviewContainer
             provided={provided}
-
             style={getItemStyle(
               snapshot.isDragging,
               provided.draggableProps.style, styles.fieldPreview
@@ -103,6 +105,12 @@ export default ({ compositions, editVersion, activeVersionIndex }) => {
             children={
               <div
                 style={{ display: "flex", alignItems: "center", flexWrap: "wrap" }}>
+                {!currentCompositionFields.includes(item?.rendererData?.layerName)
+                  && <Alert severity="error">Layer Not Found!</Alert>
+                }
+                {layerWithProperty.filter(v => v === item?.rendererData?.layerName + item?.rendererData?.property).length !== 1
+                  && <Alert severity="error">Duplicate Layer</Alert>
+                }
                 {item?.rendererData?.type === "data" ? (
                   <>
                     <TextFields

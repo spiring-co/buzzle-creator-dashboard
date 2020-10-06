@@ -5,6 +5,10 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
+import RoleBasedView from '../components/RoleBasedView';
+import { useAuth } from 'services/auth';
+
+
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -54,6 +58,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function VerticalTabs({ tabs }) {
     const classes = useStyles();
+    const { user: { role } } = useAuth()
     const [value, setValue] = React.useState(0);
 
     const handleChange = (event, newValue) => {
@@ -72,11 +77,16 @@ export default function VerticalTabs({ tabs }) {
                 aria-label="Vertical tabs example"
                 className={classes.tabs}
             >
-                {tabs?.map(({ label }, index) => <Tab style={{ borderBottom: '1px solid lightgrey', }} label={label} {...a11yProps(index)} />)}
+                {tabs.filter(({ allowedRoles }) => allowedRoles.includes(role))?.map(({ label, }, index) =>
+                    <Tab style={{ borderBottom: '1px solid lightgrey', }}
+                        label={label} {...a11yProps(index)} />
+                )}
             </Tabs>
-            {tabs?.map(({ component }, index) => <TabPanel value={value} index={index}>
-                {component}
-            </TabPanel>)}
+            {tabs.filter(({ allowedRoles }) => allowedRoles.includes(role))?.map(({ component, allowedRoles = [] }, index) =>
+                <TabPanel value={value} index={index}>
+                    {component}
+                </TabPanel>
+            )}
         </div>
     );
 }
