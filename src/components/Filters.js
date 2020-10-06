@@ -8,7 +8,7 @@ import React, { useEffect, useRef, useState } from "react";
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 
-export default ({ value = {}, onChange, }) => {
+export default React.memo(({ value = {}, onChange, }) => {
     const [loading, setLoading] = useState(true)
     const [videoTemplates, setVideoTemplates] = useState([])
     const [filters, setFilters] = useState(value)
@@ -94,4 +94,4 @@ export default ({ value = {}, onChange, }) => {
                 />
             ) : <div />}
         </>)
-}
+}, (prev, next) => true)

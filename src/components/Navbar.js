@@ -24,7 +24,7 @@ import clsx from "clsx";
 import React, { forwardRef, useMemo, useState } from "react";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 import { useDarkMode } from "helpers/useDarkMode";
-import RoleBasedView from "components/RoleBasedView"
+import RoleBasedView from "components/RoleBasedView";
 import { useAuth } from "../services/auth";
 
 const drawerWidth = 240;
@@ -122,7 +122,7 @@ const useStyles = makeStyles((theme) =>
 
 export default function NavBar({ items }) {
   const classes = useStyles();
-  const { user } = useAuth()
+  const { user } = useAuth();
   const theme = useTheme();
   const [drawerOpen, setDrawerOpen] = useState(true);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -193,7 +193,11 @@ export default function NavBar({ items }) {
               aria-haspopup="true"
               onClick={handleMenu}
               color="inherit">
-              <Avatar style={{ height: 30, width: 30 }} alt="thumbnail" src={user?.imageUrl} />
+              <Avatar
+                style={{ height: 30, width: 30 }}
+                alt="thumbnail"
+                src={user?.imageUrl}
+              />
             </IconButton>
 
             <Menu
@@ -255,15 +259,15 @@ export default function NavBar({ items }) {
             {theme.direction === "rtl" ? (
               <ChevronRightIcon />
             ) : (
-                <ChevronLeftIcon />
-              )}
+              <ChevronLeftIcon />
+            )}
           </IconButton>
         </div>
         <Divider />
 
         <List>
           {items.map((item, index) => (
-            <RoleBasedView allowedRoles={item?.allowedRoles ?? []}>
+            <RoleBasedView key={index} allowedRoles={item?.allowedRoles ?? []}>
               <ListItemLink
                 key={index}
                 to={item.to}

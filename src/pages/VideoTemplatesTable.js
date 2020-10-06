@@ -202,7 +202,6 @@ export default (props) => {
           <MaterialTable
             tableRef={tableRef}
             title="Your Video Templates"
-
             onRowClick={(e, { id }) => {
               history.push(`${path}${id}`);
             }}

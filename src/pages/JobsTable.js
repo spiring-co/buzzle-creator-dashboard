@@ -26,7 +26,7 @@ import formatTime from "helpers/formatTime";
 import { useDarkMode } from "helpers/useDarkMode";
 
 import { useAuth } from "services/auth";
-import { Creator, Job, Search, VideoTemplate } from "services/api";
+import { Job, Search, Creator } from "services/api";
 import Filters from "components/Filters";
 
 
@@ -40,18 +40,20 @@ export default props => {
   const { user } = useAuth();
   const history = useHistory();
   let queryParam = useQuery();
-
+  const tableRef = useRef(null)
   const [darkModeTheme] = useDarkMode();
   const [error, setError] = useState(null);
-  const tableRef = useRef(null);
   const [filters, setFilters] = useState({});
+
   const handleRetry = () => {
     setError(false);
     tableRef.current && tableRef.current.onQueryChange();
   };
+
   useEffect(() => {
-    handleRetry()
-  }, [filters])
+    handleRetry();
+  }, [filters]);
+
   // progress sockets
 
   const [jobIds, setJobIds] = useState([]);
@@ -101,7 +103,6 @@ export default props => {
           selection: true,
         }}
         components={{
-          //TODO: abstract to separate component
           Toolbar: (props) => {
             return (
               <div>
@@ -110,22 +111,16 @@ export default props => {
                   style={{
                     marginLeft: 25,
                     marginTop: 10,
-                    display: 'flex',
+                    display: "flex",
                     alignItems: "baseline",
-
                   }}>
-                  {/* <ExpansionPanel >
-                    <ExpansionPanelSummary
-                      expandIcon={<ExpandMoreIcon />}>
-                      <Typography color="primary">Filters</Typography>
-                    </ExpansionPanelSummary>
-                    <ExpansionPanelDetails style={{
-                      alignItems: "baseline",
-                    }}> */}
-                  <Filters onChange={setFilters} value={filters} />
-                  {/* </ExpansionPanelDetails>
-                  </ExpansionPanel> */}
-
+                  <Filters
+                    onChange={(f) => {
+                      console.log(f);
+                      setFilters(f);
+                    }}
+                    value={filters}
+                  />
                 </div>
               </div>
             );
@@ -231,7 +226,7 @@ export default props => {
         data={(query) => {
           console.log(query)
           history.push(`?page=${query?.page ? query?.page + 1 : queryParam?.get('page') ?? 1}&size=${query?.pageSize ? query?.pageSize : queryParam?.get('size') ?? 20}`)
-          return (query?.search ? Search.getJobs(query?.page ? query?.page + 1 : queryParam?.get('page') ?? 1, query?.pageSize ? query?.pageSize : queryParam?.get('size') ?? 20).then(
+          return (query?.search ? Search.getJobs(query?.search, query?.page ? query?.page + 1 : queryParam?.get('page') ?? 1, query?.pageSize ? query?.pageSize : queryParam?.get('size') ?? 20).then(
             ({ data, count: totalCount }) => ({
               data,
               page: query?.page,
@@ -368,4 +363,13 @@ const getColorFromState = (state, percent) => {
     default:
       return "grey";
   }
+};
+
+const serialize = function (obj) {
+  var str = [];
+  for (var p in obj)
+    if (obj.hasOwnProperty(p)) {
+      str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+    }
+  return str.join("&");
 };
