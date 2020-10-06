@@ -1,19 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useHistory, useRouteMatch } from "react-router-dom";
+import { useHistory, useRouteMatch, useLocation } from "react-router-dom";
 
 import io from "socket.io-client";
 import * as timeago from "timeago.js";
 import ReactJson from "react-json-view";
 
-import DateFnsUtils from "@date-io/date-fns";
 import {
   Button,
   Chip,
-  Container, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, Typography,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
+  Container,
   Tooltip,
   Fade,
 } from "@material-ui/core";
@@ -24,7 +19,7 @@ import {
 } from "@material-ui/pickers";
 
 import MaterialTable, { MTableToolbar } from "material-table";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
+import FileCopyIcon from '@material-ui/icons/FileCopy';
 import ErrorHandler from "components/ErrorHandler";
 
 import formatTime from "helpers/formatTime";
@@ -34,10 +29,18 @@ import { useAuth } from "services/auth";
 import { Creator, Job, Search, VideoTemplate } from "services/api";
 import Filters from "components/Filters";
 
-export default () => {
+
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
+
+
+export default props => {
   const { path } = useRouteMatch();
   const { user } = useAuth();
   const history = useHistory();
+  let queryParam = useQuery();
+
   const [darkModeTheme] = useDarkMode();
   const [error, setError] = useState(null);
   const tableRef = useRef(null);
@@ -92,7 +95,7 @@ export default () => {
         tableRef={tableRef}
         title="Your Jobs"
         options={{
-          pageSize: 20,
+          pageSize: parseInt(queryParam?.get('size')),
           headerStyle: { fontWeight: 700 },
           actionsColumnIndex: -1,
           selection: true,
@@ -100,7 +103,6 @@ export default () => {
         components={{
           //TODO: abstract to separate component
           Toolbar: (props) => {
-            console.log(props);
             return (
               <div>
                 <MTableToolbar {...props} />
@@ -171,6 +173,7 @@ export default () => {
               <span>{renderTime !== -1 ? formatTime(renderTime) : "NA"}</span>
             ),
           },
+
           {
             searchable: false,
             title: "Last Updated",
@@ -225,42 +228,41 @@ export default () => {
             ),
           },
         }}
-        data={(query) =>
-          query?.search
-            ? Search.get(query?.search, query.page + 1, query.pageSize).then(
-              ({ jobs }) => ({
-                data: jobs,
-                page: query?.page,
-                totalCount: jobs.length,
-              })
-            )
-            : Creator.getJobs(user?.id, query.page + 1, query.pageSize, filters)
+        data={(query) => {
+          console.log(query)
+          history.push(`?page=${query?.page ? query?.page + 1 : queryParam?.get('page') ?? 1}&size=${query?.pageSize ? query?.pageSize : queryParam?.get('size') ?? 20}`)
+          return (query?.search ? Search.getJobs(query?.page ? query?.page + 1 : queryParam?.get('page') ?? 1, query?.pageSize ? query?.pageSize : queryParam?.get('size') ?? 20).then(
+            ({ data, count: totalCount }) => ({
+              data,
+              page: query?.page,
+              totalCount,
+            })
+          )
+            : Job.getAll(query?.page ? query?.page + 1 : queryParam?.get('page') ?? 1, query?.pageSize ? query?.pageSize : queryParam?.get('size') ?? 20, `${filters?.startDate
+              ? `dateUpdated=>=${filters?.startDate}&dateUpdated=<=${filters?.endDate
+              ?? filters?.startDate}`
+              : ''}${filters?.idVideoTemplate
+                ? `&idVideoTemplate=${filters?.idVideoTemplate}`
+                : ""}${filters?.state
+                  ? `&state=${filters?.state}`
+                  : undefined}`)
               .then((result) => {
-                //change on final deploy to .jobs to .data as per convention	
+                setJobIds(result.data.map((j) => j.id));
                 return {
-                  data: result.jobs,
-                  page: query.page,
+                  data: result.data,
+                  page: query?.page,
                   totalCount: result.count,
                 };
               })
-              // : Job.getAll(query.page + 1, query.pageSize, [], filters)
-              //   .then((result) => {
-              //     setJobIds(result.jobs.map((j) => j.id));
-              //     return {
-              //       data: result.jobs,
-              //       page: query.page,
-              //       totalCount: result.count,
-              //     };
-              //   })
               .catch((err) => {
                 setError(err);
                 return {
                   data: [],
-                  page: query.page,
+                  page: query?.page,
                   totalCount: 0,
                 };
-              })
-        }
+              }))
+        }}
         actions={[
           {
             icon: "refresh",
@@ -269,12 +271,37 @@ export default () => {
             onClick: handleRetry,
           },
           {
+            icon: () => <FileCopyIcon />,
+            tooltip: "Duplicate Job",
+            onClick: async (e, { actions,
+              data,
+              idVideoTemplate,
+              idVersion,
+              renderPrefs, }) => {
+              try {
+                await Job.create({
+                  actions,
+                  data,
+                  idVideoTemplate,
+                  idVersion,
+                  renderPrefs,
+                })
+                handleRetry()
+              }
+              catch (err) {
+                setError(err)
+              }
+            },
+            position: "row",
+
+          },
+          {
             icon: "repeat",
             tooltip: "Restart Job",
             position: "row",
-            onClick: async (e, { id, data, actions }) => {
+            onClick: async (e, { id, data, actions, renderPrefs = {} }) => {
               try {
-                await Job.update(id, { data, actions });
+                await Job.update(id, { data, actions, renderPrefs });
               } catch (err) {
                 setError(err);
               }
@@ -302,7 +329,7 @@ export default () => {
             position: "toolbarOnSelect",
             onClick: async (e, data) => {
               try {
-                await Job.updateMultiple(data);
+                await Job.updateMultiple(data.map(({ id, actions, data, renderPrefs }) => ({ id, actions, data, renderPrefs })));
               } catch (err) {
                 setError(err);
               }

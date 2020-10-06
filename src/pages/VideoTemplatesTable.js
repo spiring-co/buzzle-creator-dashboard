@@ -32,15 +32,22 @@ import React, { useEffect, useRef, useState } from "react";
 import ReactJson from "react-json-view";
 import {
   Link as RouterLink,
-  useHistory,
+  useHistory, useLocation,
   useRouteMatch,
 } from "react-router-dom";
 import { useAuth } from "services/auth";
 import * as timeago from "timeago.js";
 import RoleBasedView from "components/RoleBasedView";
 
+
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
+
 export default (props) => {
   let { url, path } = useRouteMatch();
+  let queryParam = useQuery();
+
   const history = useHistory();
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState(null);
@@ -195,6 +202,7 @@ export default (props) => {
           <MaterialTable
             tableRef={tableRef}
             title="Your Video Templates"
+
             onRowClick={(e, { id }) => {
               history.push(`${path}${id}`);
             }}
@@ -304,6 +312,7 @@ export default (props) => {
                       });
                     },
                   },
+
                   {
                     icon: "alarm-on",
                     tooltip: "Render Test Job",
@@ -347,49 +356,41 @@ export default (props) => {
                   },
                 ]
             }
-            data={(query) =>
-              query?.search
-                ? Search.get(query?.search, query.page + 1, query.pageSize).then(({ videoTemplates }) => ({
-                  data: videoTemplates,
-                  page: query?.page,
-                  totalCount: videoTemplates.length
-                }))
-                : (user?.role === 'Admin'
-                  ? VideoTemplate.getAll(query.page + 1, query.pageSize)
-                    .then((result) => {
-                      return {
-                        data: result.data,
-                        page: query.page,
-                        totalCount: result.count,
-                      };
-                    })
-                    .catch((err) => {
-                      setError(err);
-                      return {
-                        data: [],
-                        page: query.page,
-                        totalCount: 0,
-                      };
-                    })
-                  : Creator.getVideoTemplates(user?.id, query.page + 1, query.pageSize)
-                    .then((result) => {
-                      return {
-                        data: result.data,
-                        page: query.page,
-                        totalCount: result.count,
-                      };
-                    })
-                    .catch((err) => {
-                      setError(err);
-                      return {
-                        data: [],
-                        page: query.page,
-                        totalCount: 0,
-                      };
-                    }))
+            data={(query) => {
+              history.push(`?page=${query?.page ? query?.page + 1 : queryParam?.get('page') ?? 1}&size=${query?.pageSize ? query?.pageSize : queryParam?.get('size') ?? 20}`)
+              return query?.search ? Search.getVideoTemplates(query?.search, query?.page ? query?.page + 1 : queryParam?.get('page') ?? 1, query?.pageSize ? query?.pageSize : queryParam?.get('size') ?? 20).then(({ data, count: totalCount }) => ({
+                data,
+                page: query?.page,
+                totalCount
+              })).catch((err) => {
+                setError(err);
+                return {
+                  data: [],
+                  page: query.page,
+                  totalCount: 0,
+                };
+              })
+                : VideoTemplate.getAll(query?.page ? query?.page + 1 : queryParam?.get('page') ?? 1, query?.pageSize ? query?.pageSize : queryParam?.get('size') ?? 20)
+                  .then((result) => {
+                    return {
+                      data: result.data,
+                      page: query.page,
+                      totalCount: result.count,
+                    };
+                  })
+                  .catch((err) => {
+                    setError(err);
+                    return {
+                      data: [],
+                      page: query.page,
+                      totalCount: 0,
+                    };
+                  })
+            }
+
             }
             options={{
-              pageSize: 10,
+              pageSize: parseInt(queryParam?.get('size')),
               headerStyle: { fontWeight: 700 },
               minBodyHeight: 500,
               actionsColumnIndex: -1,

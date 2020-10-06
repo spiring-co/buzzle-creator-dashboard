@@ -118,9 +118,9 @@ export default () => {
 
   const handleUpdateJob = async () => {
     try {
-      const { data, actions, id } = job;
+      const { data, actions, id, renderPrefs } = job;
       setIsLoading(true);
-      await Job.update(id, { data, actions });
+      await Job.update(id, { data, actions, renderPrefs });
       setIsLoading(false);
       setRedirect("/home/jobs");
     } catch (err) {
@@ -150,7 +150,7 @@ export default () => {
     renderTime,
     queueTime,
     dateCreated,
-    dateFinished,
+    dateFinished, renderPrefs = {},
     dateStarted,
   } = job;
 
@@ -220,7 +220,7 @@ export default () => {
               className={classes.button}
               onClick={async () => {
                 try {
-                  await Job.update(id, { data });
+                  await Job.update(id, { data, actions, renderPrefs });
                   history.push("/home/jobs");
                 } catch (err) {
                   setError(err);

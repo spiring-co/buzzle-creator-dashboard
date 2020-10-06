@@ -13,7 +13,7 @@ export default ({ value = {}, onChange, }) => {
     const [videoTemplates, setVideoTemplates] = useState([])
     const [filters, setFilters] = useState(value)
     useEffect(() => {
-        VideoTemplate.getAll(1, 500).then(({ data }) => setVideoTemplates(data)).catch(console.log).finally(() => setLoading(false))
+        videoTemplates.length === 0 && VideoTemplate.getAll(1, 500).then(({ data }) => setVideoTemplates(data)).catch(console.log).finally(() => setLoading(false))
     }, [])
     useEffect(() => {
         onChange(filters)
