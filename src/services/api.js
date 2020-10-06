@@ -1,5 +1,5 @@
 
-import apiClient from "./lib/api/index";
+import apiClient from "buzzle-sdk";
 
 const API = apiClient({
     baseUrl: process.env.REACT_APP_API_URL,
