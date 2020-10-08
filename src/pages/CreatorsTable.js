@@ -11,7 +11,7 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { AccountCircle } from "@material-ui/icons";
-import { Job, VideoTemplate, Creator } from "services/api";
+import { Job, VideoTemplate, Creator, Search } from "services/api";
 import PublishIcon from '@material-ui/icons/Publish';
 import ErrorHandler from "components/ErrorHandler";
 import SnackAlert from "components/SnackAlert";
@@ -165,34 +165,35 @@ export default (props) => {
                 ]}
 
                 data={(query) =>
-                    Creator.getAll(user?.id, query.page + 1, query.pageSize)
-                        .then((result) => {
-                            return {
-                                data: query.search
-                                    ? result.data.filter(({ title }) =>
-                                        title
-                                            .toLowerCase()
-                                            .startsWith(query.search.toLowerCase())
-                                    )
-                                    : result.data,
-                                page: query.page,
-                                totalCount: query.search
-                                    ? result.data.filter(({ title }) =>
-                                        title
-                                            .toLowerCase()
-                                            .startsWith(query.search.toLowerCase())
-                                    ).length
-                                    : result.count,
-                            };
-                        })
-                        .catch((err) => {
+                    query?.search ?
+                        Search.getCreators(query?.search, query.page + 1, query.pageSize).then(({ data, count: totalCount }) => ({
+                            data,
+                            page: query.page,
+                            totalCount
+                        })).catch((err) => {
                             setError(err);
                             return {
                                 data: [],
                                 page: query.page,
                                 totalCount: 0,
                             };
-                        })
+                        }) :
+                        Creator.getAll(query.page + 1, query.pageSize)
+                            .then(({ data, count: totalCount }) => {
+                                return {
+                                    data,
+                                    page: query.page,
+                                    totalCount,
+                                };
+                            })
+                            .catch((err) => {
+                                setError(err);
+                                return {
+                                    data: [],
+                                    page: query.page,
+                                    totalCount: 0,
+                                };
+                            })
                 }
                 options={{
                     pageSize: 10,

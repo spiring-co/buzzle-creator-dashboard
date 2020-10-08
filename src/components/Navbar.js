@@ -123,7 +123,6 @@ const useStyles = makeStyles((theme) =>
 export default function NavBar({ items }) {
   const classes = useStyles();
   const { user } = useAuth();
-  console.log("user is" + JSON.stringify(user));
   const theme = useTheme();
   const [drawerOpen, setDrawerOpen] = useState(true);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -268,7 +267,7 @@ export default function NavBar({ items }) {
 
         <List>
           {items.map((item, index) => (
-            <RoleBasedView allowedRoles={item?.allowedRoles ?? []}>
+            <RoleBasedView key={index} allowedRoles={item?.allowedRoles ?? []}>
               <ListItemLink
                 key={index}
                 to={item.to}

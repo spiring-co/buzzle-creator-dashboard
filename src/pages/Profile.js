@@ -24,22 +24,12 @@ import ChangePassword from "pages/ChangePassword";
 function ProfileEdit({ creator }) {
   console.log("creator is:" + creator.imageUrl);
   const [isBlocking, setIsBlocking] = useState(true);
-  const [update, setUpdate] = useState(false);
-  const [open, setOpen] = useState(false);
+
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
-  const handleUpdate = async (data) => {
-    console.log("trying to update");
+  const handleUpdate = (data) => {
     setIsBlocking(false);
-    const updated = Creator.update(creator?.id, data);
-    if (!updated) {
-      setOpen(true);
-      setUpdate(false);
-      return console.log("failed");
-    }
-    setOpen(true);
-    setUpdate(true);
-    return console.log("succesful");
+    Creator.update(creator?.id, data);
   };
 
   const { handleChange, values, handleSubmit, setFieldValue } = useFormik({
@@ -69,20 +59,6 @@ function ProfileEdit({ creator }) {
   };
   return (
     <form onSubmit={handleSubmit}>
-      <Snackbar
-        open={open}
-        autoHideDuration={6000}
-        onClose={() => setOpen(false)}>
-        {update ? (
-          <Alert onClose={() => setOpen(false)} severity="success">
-            This is a success message!
-          </Alert>
-        ) : (
-          <Alert onClose={() => setOpen(false)} severity="warning">
-            This is a failed message!
-          </Alert>
-        )}
-      </Snackbar>
       <Container style={{ padding: 15 }}>
         <Typography variant="h5">Profile</Typography>
       </Container>
