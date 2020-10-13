@@ -6,6 +6,10 @@ import * as timeago from "timeago.js";
 import ReactJson from "react-json-view";
 
 import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
   Button,
   Chip,
   Container,
@@ -19,7 +23,7 @@ import {
 } from "@material-ui/pickers";
 
 import MaterialTable, { MTableToolbar } from "material-table";
-import FileCopyIcon from '@material-ui/icons/FileCopy';
+import FileCopyIcon from "@material-ui/icons/FileCopy";
 import ErrorHandler from "components/ErrorHandler";
 
 import formatTime from "helpers/formatTime";
@@ -29,21 +33,21 @@ import { useAuth } from "services/auth";
 import { Job, Search, Creator } from "services/api";
 import Filters from "components/Filters";
 
-
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
 
-
-export default props => {
+export default (props) => {
   const { path } = useRouteMatch();
   const { user } = useAuth();
   const history = useHistory();
   let queryParam = useQuery();
-  const tableRef = useRef(null)
+  const tableRef = useRef(null);
   const [darkModeTheme] = useDarkMode();
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({});
+  const [sort, setSort] = useState("dateUpdated");
+  const [order, setOrder] = useState("desc");
 
   const handleRetry = () => {
     setError(false);
@@ -84,6 +88,10 @@ export default props => {
     };
   }, [jobIds]);
 
+  useEffect(() => {
+    handleRetry();
+  }, [sort, order]);
+
   return (
     <Container>
       {error && (
@@ -97,10 +105,11 @@ export default props => {
         tableRef={tableRef}
         title="Your Jobs"
         options={{
-          pageSize: parseInt(queryParam?.get('size')),
+          pageSize: parseInt(queryParam?.get("size")),
           headerStyle: { fontWeight: 700 },
           actionsColumnIndex: -1,
           selection: true,
+          sorting: false,
         }}
         components={{
           Toolbar: (props) => {
@@ -121,6 +130,34 @@ export default props => {
                     }}
                     value={filters}
                   />
+                  {/* //TODO selector for sort */}
+                  <FormControl style={{ marginRight: 10, width: 150 }}>
+                    <InputLabel id="demo-simple-select-label">
+                      Sort By
+                    </InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={sort}
+                      onChange={({ target: { value } }) => setSort(value)}>
+                      <MenuItem value={"dateUpdated"}>Date Updated</MenuItem>
+                      <MenuItem value={"dateCreated"}>Date Created</MenuItem>
+                      <MenuItem value={"state"}>State</MenuItem>
+                    </Select>
+                  </FormControl>
+                  <FormControl style={{ marginRight: 10, width: 150 }}>
+                    <InputLabel id="demo-simple-select-label">
+                      Order By
+                    </InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={order}
+                      onChange={({ target: { value } }) => setOrder(value)}>
+                      <MenuItem value={"desc"}>Descending</MenuItem>
+                      <MenuItem value={"asc"}>Ascending</MenuItem>
+                    </Select>
+                  </FormControl>
                 </div>
               </div>
             );
@@ -177,7 +214,6 @@ export default props => {
             render: ({ dateUpdated }) => (
               <span>{timeago.format(new Date(dateUpdated))}</span>
             ),
-            defaultSort: "desc",
           },
           {
             searchable: false,
@@ -224,39 +260,63 @@ export default props => {
           },
         }}
         data={(query) => {
-          console.log(query)
-          history.push(`?page=${query?.page ? query?.page + 1 : queryParam?.get('page') ?? 1}&size=${query?.pageSize ? query?.pageSize : queryParam?.get('size') ?? 20}`)
-          return (query?.search ? Search.getJobs(query?.search, query?.page ? query?.page + 1 : queryParam?.get('page') ?? 1, query?.pageSize ? query?.pageSize : queryParam?.get('size') ?? 20).then(
-            ({ data, count: totalCount }) => ({
-              data,
-              page: query?.page,
-              totalCount,
-            })
-          )
-            : Job.getAll(query?.page ? query?.page + 1 : queryParam?.get('page') ?? 1, query?.pageSize ? query?.pageSize : queryParam?.get('size') ?? 20, `${filters?.startDate
-              ? `dateUpdated=>=${filters?.startDate}&dateUpdated=<=${filters?.endDate
-              ?? filters?.startDate}`
-              : ''}${filters?.idVideoTemplate
-                ? `&idVideoTemplate=${filters?.idVideoTemplate}`
-                : ""}${filters?.state
-                  ? `&state=${filters?.state}`
-                  : undefined}`)
-              .then((result) => {
-                setJobIds(result.data.map((j) => j.id));
-                return {
-                  data: result.data,
-                  page: query?.page,
-                  totalCount: result.count,
-                };
-              })
-              .catch((err) => {
-                setError(err);
-                return {
-                  data: [],
-                  page: query?.page,
-                  totalCount: 0,
-                };
+          console.log(query);
+          history.push(
+            `?page=${
+              query?.page ? query?.page + 1 : queryParam?.get("page") ?? 1
+            }&size=${
+              query?.pageSize ? query?.pageSize : queryParam?.get("size") ?? 20
+            }`
+          );
+          return query?.search
+            ? Search.getJobs(
+                query?.search,
+                query?.page ? query?.page + 1 : queryParam?.get("page") ?? 1,
+                query?.pageSize
+                  ? query?.pageSize
+                  : queryParam?.get("size") ?? 20
+              ).then(({ data, count: totalCount }) => ({
+                data,
+                page: query?.page,
+                totalCount,
               }))
+            : Job.getAll(
+                query?.page ? query?.page + 1 : queryParam?.get("page") ?? 1,
+                query?.pageSize
+                  ? query?.pageSize
+                  : queryParam?.get("size") ?? 20,
+                `${
+                  filters?.startDate
+                    ? `dateUpdated=>=${filters?.startDate}&dateUpdated=<=${
+                        filters?.endDate ?? filters?.startDate
+                      }`
+                    : ""
+                }${
+                  filters?.idVideoTemplate
+                    ? `&idVideoTemplate=${filters?.idVideoTemplate}`
+                    : ""
+                }${filters?.state ? `&state=${filters?.state}` : undefined}`,
+                sort,
+                order
+              )
+                .then((result) => {
+                  console.log("result.data is :" + result.data);
+                  console.log(sort + order);
+                  setJobIds(result.data.map((j) => j.id));
+                  return {
+                    data: result.data,
+                    page: query?.page,
+                    totalCount: result.count,
+                  };
+                })
+                .catch((err) => {
+                  setError(err);
+                  return {
+                    data: [],
+                    page: query?.page,
+                    totalCount: 0,
+                  };
+                });
         }}
         actions={[
           {
@@ -268,11 +328,10 @@ export default props => {
           {
             icon: () => <FileCopyIcon />,
             tooltip: "Duplicate Job",
-            onClick: async (e, { actions,
-              data,
-              idVideoTemplate,
-              idVersion,
-              renderPrefs, }) => {
+            onClick: async (
+              e,
+              { actions, data, idVideoTemplate, idVersion, renderPrefs }
+            ) => {
               try {
                 await Job.create({
                   actions,
@@ -280,15 +339,13 @@ export default props => {
                   idVideoTemplate,
                   idVersion,
                   renderPrefs,
-                })
-                handleRetry()
-              }
-              catch (err) {
-                setError(err)
+                });
+                handleRetry();
+              } catch (err) {
+                setError(err);
               }
             },
             position: "row",
-
           },
           {
             icon: "repeat",
@@ -324,7 +381,14 @@ export default props => {
             position: "toolbarOnSelect",
             onClick: async (e, data) => {
               try {
-                await Job.updateMultiple(data.map(({ id, actions, data, renderPrefs }) => ({ id, actions, data, renderPrefs })));
+                await Job.updateMultiple(
+                  data.map(({ id, actions, data, renderPrefs }) => ({
+                    id,
+                    actions,
+                    data,
+                    renderPrefs,
+                  }))
+                );
               } catch (err) {
                 setError(err);
               }
