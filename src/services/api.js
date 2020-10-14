@@ -1,6 +1,5 @@
-import { apiClient } from "buzzle-sdk";
-
-const API = apiClient({
+import BuzzleSdk from "buzzle-sdk";
+const API = BuzzleSdk.apiClient({
   baseUrl: process.env.REACT_APP_API_URL,
   authToken: localStorage.getItem("jwtoken"),
 });
@@ -12,7 +11,11 @@ export const ServerJobs = {
       headers: { "nexrender-secret": "myapisecret" },
     });
     if (response.ok) {
-      return await response.json();
+      return await response
+        .json()
+        .then((v) =>
+          v.sort((a, b) => new Date(b?.updatedAt) - new Date(a?.updatedAt))
+        );
     } else {
       throw new Error(
         "Wrong or no authentication secret provided. Please check the nexrender-secret header."
