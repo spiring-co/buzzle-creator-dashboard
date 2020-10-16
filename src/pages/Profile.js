@@ -11,6 +11,7 @@ import {
 import Tab from "@material-ui/core/Tab";
 import Tabs from "@material-ui/core/Tabs";
 import { Alert } from "@material-ui/lab";
+import Snackbar from "@material-ui/core/Snackbar";
 import { Job, VideoTemplate, Creator } from "services/api";
 import upload from "services/s3Upload";
 import { useFormik } from "formik";
@@ -21,6 +22,7 @@ import VerticalTabs from "components/VerticalTabs";
 import { Prompt } from "react-router-dom";
 import ChangePassword from "pages/ChangePassword";
 function ProfileEdit({ creator }) {
+  console.log("creator is:" + creator.imageUrl);
   const [isBlocking, setIsBlocking] = useState(true);
 
   const [loading, setLoading] = useState(false);
@@ -29,6 +31,7 @@ function ProfileEdit({ creator }) {
     setIsBlocking(false);
     Creator.update(creator?.id, data);
   };
+
   const { handleChange, values, handleSubmit, setFieldValue } = useFormik({
     initialValues: {
       name: creator.name,

@@ -1,4 +1,8 @@
 import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
   Box,
   Chip,
   Tooltip,
@@ -33,16 +37,25 @@ import ReactJson from "react-json-view";
 import {
   Link as RouterLink,
   useHistory,
+  useLocation,
   useRouteMatch,
 } from "react-router-dom";
 import { useAuth } from "services/auth";
 import * as timeago from "timeago.js";
 import RoleBasedView from "components/RoleBasedView";
 
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
+
 export default (props) => {
   let { url, path } = useRouteMatch();
+  let queryParam = useQuery();
+
   const history = useHistory();
   const [isDeleting, setIsDeleting] = useState(false);
+  const [sort, setSort] = useState("dateUpdated");
+  const [order, setOrder] = useState("desc");
   const [error, setError] = useState(null);
   const [testJobTemplate, setTestJobTemplate] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -100,6 +113,9 @@ export default (props) => {
     tableRef.current && tableRef.current.onQueryChange();
   };
   let { status, err } = deleteStatus;
+  useEffect(() => {
+    handleRetry();
+  }, [sort, order]);
 
   return (
     <Container>
@@ -164,6 +180,29 @@ export default (props) => {
           </Tooltip>
         </ToggleButtonGroup>
       </Box>
+      <FormControl style={{ marginRight: 10, width: 150 }}>
+        <InputLabel id="demo-simple-select-label">Sort By</InputLabel>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value={sort}
+          onChange={({ target: { value } }) => setSort(value)}>
+          <MenuItem value={"dateUpdated"}>Date Updated</MenuItem>
+          <MenuItem value={"dateCreated"}>Date Created</MenuItem>
+          <MenuItem value={"publishState"}>Publish State</MenuItem>
+        </Select>
+      </FormControl>
+      <FormControl style={{ marginRight: 10, width: 150 }}>
+        <InputLabel id="demo-simple-select-label">Order By</InputLabel>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value={order}
+          onChange={({ target: { value } }) => setOrder(value)}>
+          <MenuItem value={"desc"}>Descending</MenuItem>
+          <MenuItem value={"asc"}>Ascending</MenuItem>
+        </Select>
+      </FormControl>
 
       {view === "grid" ? (
         <Box className={classes.root}>
@@ -252,7 +291,6 @@ export default (props) => {
               render: ({ dateUpdated }) => (
                 <span>{timeago.format(dateUpdated)}</span>
               ),
-              defaultSort: "desc",
             },
           ]}
           localization={{
@@ -304,6 +342,7 @@ export default (props) => {
                       });
                     },
                   },
+
                   {
                     icon: "alarm-on",
                     tooltip: "Render Test Job",
@@ -347,17 +386,48 @@ export default (props) => {
                   },
                 ]
           }
-          data={(query) =>
-            query?.search
-              ? Search.get(query?.search, query.page + 1, query.pageSize).then(
-                  ({ videoTemplates }) => ({
-                    data: videoTemplates,
-                    page: query?.page,
-                    totalCount: videoTemplates.length,
-                  })
+          data={(query) => {
+            history.push(
+              `?page=${
+                query?.page ? query?.page + 1 : queryParam?.get("page") ?? 1
+              }&size=${
+                query?.pageSize
+                  ? query?.pageSize
+                  : queryParam?.get("size") ?? 20
+              }`
+            );
+            return query?.search
+              ? Search.getVideoTemplates(
+                  query?.search,
+                  query?.page ? query?.page + 1 : queryParam?.get("page") ?? 1,
+                  query?.pageSize
+                    ? query?.pageSize
+                    : queryParam?.get("size") ?? 20
                 )
-              : VideoTemplate.getAll(query.page + 1, query.pageSize)
+                  .then(({ data, count: totalCount }) => ({
+                    data,
+                    page: query?.page,
+                    totalCount,
+                  }))
+                  .catch((err) => {
+                    setError(err);
+                    return {
+                      data: [],
+                      page: query.page,
+                      totalCount: 0,
+                    };
+                  })
+              : VideoTemplate.getAll(
+                  query?.page ? query?.page + 1 : queryParam?.get("page") ?? 1,
+                  query?.pageSize
+                    ? query?.pageSize
+                    : queryParam?.get("size") ?? 20,
+                  "",
+                  sort,
+                  order
+                )
                   .then((result) => {
+                    console.log(sort + order);
                     return {
                       data: result.data,
                       page: query.page,
@@ -371,10 +441,11 @@ export default (props) => {
                       page: query.page,
                       totalCount: 0,
                     };
-                  })
-          }
+                  });
+          }}
           options={{
-            pageSize: 10,
+            sorting: false,
+            pageSize: parseInt(queryParam?.get("size")),
             headerStyle: { fontWeight: 700 },
             minBodyHeight: 500,
             actionsColumnIndex: -1,

@@ -1,28 +1,46 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useHistory, useRouteMatch } from "react-router-dom";
+import { useHistory, useRouteMatch, useLocation } from "react-router-dom";
 
 import io from "socket.io-client";
 import * as timeago from "timeago.js";
 import ReactJson from "react-json-view";
 
-import { Button, Chip, Container, Tooltip, Fade } from "@material-ui/core";
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Button,
+  Chip,
+  Container,
+  Tooltip,
+  Fade,
+} from "@material-ui/core";
 
 import MaterialTable, { MTableToolbar } from "material-table";
+import FileCopyIcon from "@material-ui/icons/FileCopy";
 import ErrorHandler from "components/ErrorHandler";
 
 import formatTime from "helpers/formatTime";
 import { useDarkMode } from "helpers/useDarkMode";
 
-import { Job, Search, Creator } from "services/api";
+import { Job, Search } from "services/api";
 import Filters from "components/Filters";
 
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
+
 export default () => {
-  const history = useHistory();
-  const tableRef = useRef(null);
   const { path } = useRouteMatch();
+  const history = useHistory();
+  let queryParam = useQuery();
+  const tableRef = useRef(null);
   const [darkModeTheme] = useDarkMode();
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({});
+  const [sort, setSort] = useState("dateUpdated");
+  const [order, setOrder] = useState("desc");
 
   const handleRetry = () => {
     setError(false);
@@ -34,7 +52,6 @@ export default () => {
   }, [filters]);
 
   // progress sockets
-
   const [jobIds, setJobIds] = useState([]);
   const [socket, setSocket] = useState(null);
   const [rtProgressData, setRtProgressData] = useState({});
@@ -63,6 +80,68 @@ export default () => {
     };
   }, [jobIds]);
 
+  useEffect(() => {
+    handleRetry();
+  }, [sort, order]);
+
+  const getDataFromQuery = (query) => {
+    history.push(
+      `?page=${
+        query?.page ? query?.page + 1 : queryParam?.get("page") ?? 1
+      }&size=${
+        query?.pageSize ? query?.pageSize : queryParam?.get("size") ?? 20
+      }`
+    );
+
+    // return new Promise((r) => r({ data: [], page: 1, totalCount: 0 }));
+
+    return query?.search
+      ? Search.getJobs(
+          query?.search,
+          query?.page ? query?.page + 1 : queryParam?.get("page") ?? 1,
+          query?.pageSize ? query?.pageSize : queryParam?.get("size") ?? 20
+        ).then(({ data, count: totalCount }) => ({
+          data,
+          page: query?.page,
+          totalCount,
+        }))
+      : Job.getAll(
+          query?.page ? query?.page + 1 : queryParam?.get("page") ?? 1,
+          query?.pageSize ? query?.pageSize : queryParam?.get("size") ?? 20,
+          `${
+            filters?.startDate
+              ? `dateUpdated=>=${filters?.startDate}&dateUpdated=<=${
+                  filters?.endDate ?? filters?.startDate
+                }`
+              : ""
+          }${
+            filters?.idVideoTemplate
+              ? `&idVideoTemplate=${filters?.idVideoTemplate}`
+              : ""
+          }${filters?.state ? `&state=${filters?.state}` : undefined}`,
+          sort,
+          order
+        )
+          .then((result) => {
+            console.log("result.data is :" + result.data);
+            console.log(sort + order);
+            setJobIds(result.data.map((j) => j.id));
+            return {
+              data: result.data,
+              page: query?.page,
+              totalCount: result.count,
+            };
+          })
+          .catch((err) => {
+            setError(err);
+            return {
+              data: [],
+              page: query?.page,
+              totalCount: 0,
+            };
+          });
+  };
+
   return (
     <Container>
       {error && (
@@ -76,10 +155,11 @@ export default () => {
         tableRef={tableRef}
         title="Your Jobs"
         options={{
-          pageSize: 20,
+          pageSize: parseInt(queryParam?.get("size")) || 20,
           headerStyle: { fontWeight: 700 },
           actionsColumnIndex: -1,
           selection: true,
+          sorting: true,
         }}
         components={{
           Toolbar: (props) => {
@@ -100,6 +180,34 @@ export default () => {
                     }}
                     value={filters}
                   />
+                  {/* //TODO selector for sort */}
+                  <FormControl style={{ marginRight: 10, width: 150 }}>
+                    <InputLabel id="demo-simple-select-label">
+                      Sort By
+                    </InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={sort}
+                      onChange={({ target: { value } }) => setSort(value)}>
+                      <MenuItem value={"dateUpdated"}>Date Updated</MenuItem>
+                      <MenuItem value={"dateCreated"}>Date Created</MenuItem>
+                      <MenuItem value={"state"}>State</MenuItem>
+                    </Select>
+                  </FormControl>
+                  <FormControl style={{ marginRight: 10, width: 150 }}>
+                    <InputLabel id="demo-simple-select-label">
+                      Order By
+                    </InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={order}
+                      onChange={({ target: { value } }) => setOrder(value)}>
+                      <MenuItem value={"desc"}>Descending</MenuItem>
+                      <MenuItem value={"asc"}>Ascending</MenuItem>
+                    </Select>
+                  </FormControl>
                 </div>
               </div>
             );
@@ -147,6 +255,7 @@ export default () => {
               <span>{renderTime !== -1 ? formatTime(renderTime) : "NA"}</span>
             ),
           },
+
           {
             searchable: false,
             title: "Last Updated",
@@ -155,7 +264,6 @@ export default () => {
             render: ({ dateUpdated }) => (
               <span>{timeago.format(new Date(dateUpdated))}</span>
             ),
-            defaultSort: "desc",
           },
           {
             searchable: false,
@@ -201,33 +309,7 @@ export default () => {
             ),
           },
         }}
-        data={(query) =>
-          query?.search
-            ? Search.get(query?.search, query.page + 1, query.pageSize).then(
-                ({ jobs }) => ({
-                  data: jobs,
-                  page: query?.page,
-                  totalCount: jobs.length,
-                })
-              )
-            : Job.getAll(query.page + 1, query.pageSize, serialize(filters))
-                .then((result) => {
-                  setJobIds(result.data.map((j) => j.id));
-                  return {
-                    data: result.data,
-                    page: query.page,
-                    totalCount: result.count,
-                  };
-                })
-                .catch((err) => {
-                  setError(err);
-                  return {
-                    data: [],
-                    page: query.page,
-                    totalCount: 0,
-                  };
-                })
-        }
+        data={getDataFromQuery}
         actions={[
           {
             icon: "refresh",
@@ -236,12 +318,34 @@ export default () => {
             onClick: handleRetry,
           },
           {
+            icon: () => <FileCopyIcon />,
+            tooltip: "Duplicate Job",
+            onClick: async (
+              e,
+              { actions, data, idVideoTemplate, idVersion, renderPrefs }
+            ) => {
+              try {
+                await Job.create({
+                  actions,
+                  data,
+                  idVideoTemplate,
+                  idVersion,
+                  renderPrefs,
+                });
+                handleRetry();
+              } catch (err) {
+                setError(err);
+              }
+            },
+            position: "row",
+          },
+          {
             icon: "repeat",
             tooltip: "Restart Job",
             position: "row",
-            onClick: async (e, { id, data, actions }) => {
+            onClick: async (e, { id, data, actions, renderPrefs = {} }) => {
               try {
-                await Job.update(id, { data, actions, state: "created" });
+                await Job.update(id, { data, actions, renderPrefs });
               } catch (err) {
                 setError(err);
               }
@@ -269,8 +373,14 @@ export default () => {
             position: "toolbarOnSelect",
             onClick: async (e, data) => {
               try {
-                data = data.map((j) => ({ ...j, state: "created" }));
-                await Job.updateMultiple(data);
+                await Job.updateMultiple(
+                  data.map(({ id, actions, data, renderPrefs }) => ({
+                    id,
+                    actions,
+                    data,
+                    renderPrefs,
+                  }))
+                );
               } catch (err) {
                 setError(err);
               }
