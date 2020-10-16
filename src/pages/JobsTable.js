@@ -85,6 +85,7 @@ export default () => {
   }, [sort, order]);
 
   const getDataFromQuery = (query) => {
+    console.log(query);
     history.push(
       `?page=${
         query?.page ? query?.page + 1 : queryParam?.get("page") ?? 1
