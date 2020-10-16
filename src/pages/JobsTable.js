@@ -83,7 +83,6 @@ export default () => {
         }}
         components={{
           Toolbar: (props) => {
-            console.log(props);
             return (
               <div>
                 <MTableToolbar {...props} />
@@ -211,9 +210,8 @@ export default () => {
                   totalCount: jobs.length,
                 })
               )
-            : Creator.getJobs(query.page + 1, query.pageSize, serialize(filters))
+            : Job.getAll(query.page + 1, query.pageSize, serialize(filters))
                 .then((result) => {
-                  console.log(result);
                   setJobIds(result.data.map((j) => j.id));
                   return {
                     data: result.data,
