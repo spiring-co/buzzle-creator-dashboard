@@ -34,7 +34,7 @@ function useQuery() {
 export default () => {
   const { path } = useRouteMatch();
   const history = useHistory();
-  let queryParam = useQuery();
+  const queryParam = useQuery();
   const tableRef = useRef(null);
   const [darkModeTheme] = useDarkMode();
   const [error, setError] = useState(null);
@@ -84,63 +84,67 @@ export default () => {
     handleRetry();
   }, [sort, order]);
 
+  const filterObjectToString = (f) => {
+    if (!f) return null;
+    const {
+      startDate = 0,
+      endDate = Date.now(),
+      idVideoTemplate = "",
+      state = "",
+    } = f;
+
+    return `${
+      startDate
+        ? `dateUpdated=>=${startDate}&dateUpdated=<=${endDate ?? startDate}`
+        : ""
+    }${idVideoTemplate ? `&idVideoTemplate=${idVideoTemplate}` : ""}${
+      state ? `&state=${state}` : ""
+    }`;
+  };
+
   const getDataFromQuery = (query) => {
-    console.log(query);
+    const {
+      page = 0,
+      pageSize = 20,
+      search: searchQuery = null,
+      orderBy: { field: orderBy = "dateUpdated" } = {},
+      orderDirection = "asc",
+    } = query;
+
     history.push(
-      `?page=${
-        query?.page ? query?.page + 1 : queryParam?.get("page") ?? 1
-      }&size=${
-        query?.pageSize ? query?.pageSize : queryParam?.get("size") ?? 20
+      `?page=${page + 1}&size=${pageSize}${
+        searchQuery ? "searchQuery=" + searchQuery : ""
       }`
     );
 
-    // return new Promise((r) => r({ data: [], page: 1, totalCount: 0 }));
+    // if has search query
+    if (searchQuery) {
+      return Search.getJobs(
+        searchQuery,
+        page + 1,
+        pageSize
+      ).then(({ data, count: totalCount }) => ({ data, page, totalCount }));
+    }
 
-    return query?.search
-      ? Search.getJobs(
-          query?.search,
-          query?.page ? query?.page + 1 : queryParam?.get("page") ?? 1,
-          query?.pageSize ? query?.pageSize : queryParam?.get("size") ?? 20
-        ).then(({ data, count: totalCount }) => ({
-          data,
+    return Job.getAll(
+      page + 1,
+      pageSize,
+      filterObjectToString(filters),
+      orderBy,
+      orderDirection
+    )
+      .then(({ data, count: totalCount }) => {
+        setJobIds(data.map((j) => j.id));
+        return { data, page, totalCount };
+      })
+      .catch((err) => {
+        setError(err);
+        return {
+          data: [],
           page: query?.page,
-          totalCount,
-        }))
-      : Job.getAll(
-          query?.page ? query?.page + 1 : queryParam?.get("page") ?? 1,
-          query?.pageSize ? query?.pageSize : queryParam?.get("size") ?? 20,
-          `${
-            filters?.startDate
-              ? `dateUpdated=>=${filters?.startDate}&dateUpdated=<=${
-                  filters?.endDate ?? filters?.startDate
-                }`
-              : ""
-          }${
-            filters?.idVideoTemplate
-              ? `&idVideoTemplate=${filters?.idVideoTemplate}`
-              : ""
-          }${filters?.state ? `&state=${filters?.state}` : undefined}`,
-          sort,
-          order
-        )
-          .then((result) => {
-            console.log("result.data is :" + result.data);
-            console.log(sort + order);
-            setJobIds(result.data.map((j) => j.id));
-            return {
-              data: result.data,
-              page: query?.page,
-              totalCount: result.count,
-            };
-          })
-          .catch((err) => {
-            setError(err);
-            return {
-              data: [],
-              page: query?.page,
-              totalCount: 0,
-            };
-          });
+          totalCount: 0,
+        };
+      });
   };
 
   return (
@@ -181,34 +185,6 @@ export default () => {
                     }}
                     value={filters}
                   />
-                  {/* //TODO selector for sort */}
-                  <FormControl style={{ marginRight: 10, width: 150 }}>
-                    <InputLabel id="demo-simple-select-label">
-                      Sort By
-                    </InputLabel>
-                    <Select
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value={sort}
-                      onChange={({ target: { value } }) => setSort(value)}>
-                      <MenuItem value={"dateUpdated"}>Date Updated</MenuItem>
-                      <MenuItem value={"dateCreated"}>Date Created</MenuItem>
-                      <MenuItem value={"state"}>State</MenuItem>
-                    </Select>
-                  </FormControl>
-                  <FormControl style={{ marginRight: 10, width: 150 }}>
-                    <InputLabel id="demo-simple-select-label">
-                      Order By
-                    </InputLabel>
-                    <Select
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value={order}
-                      onChange={({ target: { value } }) => setOrder(value)}>
-                      <MenuItem value={"desc"}>Descending</MenuItem>
-                      <MenuItem value={"asc"}>Ascending</MenuItem>
-                    </Select>
-                  </FormControl>
                 </div>
               </div>
             );
@@ -237,10 +213,12 @@ export default () => {
         columns={[
           {
             title: "Video Template",
+            sorting: false,
             field: "videoTemplate.title",
           },
           {
             title: "Version",
+            sorting: false,
             searchable: false,
             render: ({ videoTemplate, idVersion }) => (
               <span>
@@ -251,6 +229,8 @@ export default () => {
           },
           {
             title: "Render Time",
+            field: "renderTime",
+            sorting: false,
             searchable: false,
             render: ({ renderTime }) => (
               <span>{renderTime !== -1 ? formatTime(renderTime) : "NA"}</span>
@@ -262,6 +242,7 @@ export default () => {
             title: "Last Updated",
             field: "dateUpdated",
             type: "datetime",
+            defaultSort: "desc",
             render: ({ dateUpdated }) => (
               <span>{timeago.format(new Date(dateUpdated))}</span>
             ),

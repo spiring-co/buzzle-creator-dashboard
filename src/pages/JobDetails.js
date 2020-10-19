@@ -271,7 +271,7 @@ export default () => {
         <Paper>
           {state === "finished" ? (
             <video
-              poster={job.videoTemplate.thumbnail}
+              poster={job.videoTemplate?.thumbnail}
               style={{ height: 320, width: "100%" }}
               controls
               src={output.length && output[selectedOutputIndex].src}

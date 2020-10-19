@@ -117,6 +117,44 @@ export default (props) => {
     handleRetry();
   }, [sort, order]);
 
+  const getDataFromQuery = (query) => {
+    const {
+      page = 0,
+      pageSize = 50,
+      search: searchQuery = null,
+      orderBy: { field: orderBy = "dateUpdated" } = {},
+      orderDirection = "asc",
+    } = query;
+
+    history.push(
+      `?page=${page + 1}&size=${pageSize}${
+        searchQuery ? "searchQuery=" + searchQuery : ""
+      }`
+    );
+
+    // if has search query
+    if (searchQuery) {
+      return Search.getVideoTemplates(
+        searchQuery,
+        page + 1,
+        pageSize
+      ).then(({ data, count: totalCount }) => ({ data, page, totalCount }));
+    }
+
+    return VideoTemplate.getAll(page + 1, pageSize, "", orderBy, orderDirection)
+      .then(({ data, count: totalCount }) => {
+        return { data, page, totalCount };
+      })
+      .catch((err) => {
+        setError(err);
+        return {
+          data: [],
+          page: query?.page,
+          totalCount: 0,
+        };
+      });
+  };
+
   return (
     <Container>
       {error && (
@@ -386,63 +424,7 @@ export default (props) => {
                   },
                 ]
           }
-          data={(query) => {
-            history.push(
-              `?page=${
-                query?.page ? query?.page + 1 : queryParam?.get("page") ?? 1
-              }&size=${
-                query?.pageSize
-                  ? query?.pageSize
-                  : queryParam?.get("size") ?? 20
-              }`
-            );
-            return query?.search
-              ? Search.getVideoTemplates(
-                  query?.search,
-                  query?.page ? query?.page + 1 : queryParam?.get("page") ?? 1,
-                  query?.pageSize
-                    ? query?.pageSize
-                    : queryParam?.get("size") ?? 20
-                )
-                  .then(({ data, count: totalCount }) => ({
-                    data,
-                    page: query?.page,
-                    totalCount,
-                  }))
-                  .catch((err) => {
-                    setError(err);
-                    return {
-                      data: [],
-                      page: query.page,
-                      totalCount: 0,
-                    };
-                  })
-              : VideoTemplate.getAll(
-                  query?.page ? query?.page + 1 : queryParam?.get("page") ?? 1,
-                  query?.pageSize
-                    ? query?.pageSize
-                    : queryParam?.get("size") ?? 20,
-                  "",
-                  sort,
-                  order
-                )
-                  .then((result) => {
-                    console.log(sort + order);
-                    return {
-                      data: result.data,
-                      page: query.page,
-                      totalCount: result.count,
-                    };
-                  })
-                  .catch((err) => {
-                    setError(err);
-                    return {
-                      data: [],
-                      page: query.page,
-                      totalCount: 0,
-                    };
-                  });
-          }}
+          data={getDataFromQuery}
           options={{
             sorting: false,
             pageSize: parseInt(queryParam?.get("size")),
