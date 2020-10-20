@@ -11,7 +11,7 @@ import {
   LOAD_STATE,
   RESET_STATE,
   SWAP_FIELDS,
-  RESTORE_FIELDS
+  RESTORE_FIELDS, UPDATE_FIELD_CHANGES
 } from "./reducer";
 import { VideoTemplateContext } from "./store";
 
@@ -19,6 +19,12 @@ export default function useActions() {
   const [state, dispatch] = React.useContext(VideoTemplateContext);
 
   return {
+    restoreChanges: function (activeVersionIndex, updatedFields) {
+      dispatch({
+        type: UPDATE_FIELD_CHANGES,
+        payload: { activeVersionIndex, updatedFields },
+      });
+    },
     restoreFieldsFromPreviousVersion: function (
       activeVersionIndex,
       currentCompositionFields

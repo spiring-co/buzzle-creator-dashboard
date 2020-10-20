@@ -16,6 +16,7 @@ import {
 } from "@material-ui/core";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import { getUniqueId } from "services/helper"
 
 const validationSchema = Yup.object().shape({
@@ -116,8 +117,7 @@ export default (props) => {
     props.toggleDialog(state);
   };
 
-  const handleLayerChange = (e) => {
-    const value = e.target.value
+  const handleLayerChange = (value) => {
     setFieldValue('layerName', value)
     // set default text value to placeholder
     if (values?.type === "data") {
@@ -342,37 +342,23 @@ export default (props) => {
         return null;
     }
   };
-  const fieldsSelector = () => {
+  const renderOptions = () => {
     switch (values?.type) {
       case "data":
         if (textLayers.length) {
-          return textLayers.map((item, index) => {
-
-            return (
-              <MenuItem key={index} value={item.name}>
-                {item.name}
-              </MenuItem>
-            );
-          });
+          return textLayers.map(({ name }, index) => name);
         } else {
-          return <MenuItem disabled={true} children="No Text layer" />;
+          return [];
         }
 
       case "image":
         if (imageLayers.length) {
-          return imageLayers.map((item, index) => {
-            return (
-              <MenuItem key={index} value={item.name}>
-                {item.name}
-              </MenuItem>
-            );
-          });
+          return imageLayers.map(({ name }, index) => name);
         } else {
-          return <MenuItem disabled={true} children="No Image layer" />;
+          return [];
         }
-
       default:
-        return null;
+        return [];
     }
   };
 
@@ -420,32 +406,25 @@ export default (props) => {
             </Select>
             <FormHelperText>{touched.type && errors.type}</FormHelperText>
           </FormControl>
-          <FormControl
-            fullWidth
-            margin="dense"
-            variant="outlined"
-            error={touched.layerName && errors.layerName}
-          >
-            <InputLabel id="demo-simple-select-outlined-label">
-              Select Layer
-            </InputLabel>
-            <Select
-              required
-              labelId="demo-simple-select-outlined-label"
-              id="demo-simple-select-outlined"
-              onBlur={handleBlur}
-              onChange={handleLayerChange}
-              name="layerName"
-              value={values?.layerName}
-              placeholder="Select Layer"
-              label="Select Layer"
-            >
-              {fieldsSelector()}
-            </Select>
-            <FormHelperText>
-              {touched.layerName && errors.layerName}
-            </FormHelperText>
-          </FormControl>
+          <Autocomplete
+            value={values?.layerName}
+            onChange={(event, newValue) => {
+              handleLayerChange(newValue)
+            }}
+            autoHighlight={true}
+            id="controllable-states-demo"
+            options={renderOptions()}
+            renderInput={(params) => <TextField
+              fullWidth
+              margin="dense"
+              {...params}
+              label="Select Layer" variant="outlined"
+              error={touched.layerName && errors.layerName}
+              helperText={touched.layerName && errors.layerName}
+
+            />}
+          />
+
           {renderPropertyTypeSelector()}
           <PropertyPicker
             type={values?.type}

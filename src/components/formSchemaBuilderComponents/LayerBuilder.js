@@ -23,14 +23,14 @@ const getListStyle = (isDraggingOver) => ({
   background: !isDraggingOver ? 'white' : '#e8ffcf',
 });
 
-export default ({ compositions, editVersion, activeVersionIndex }) => {
+export default React.memo(({ compositions, editVersion, activeVersionIndex }) => {
   const [videoObj] = useContext(VideoTemplateContext);
-
   const {
     updateField,
     addField,
     removeField,
     restoreFieldsFromPreviousVersion,
+    restoreChanges,
     swapFields
   } = useActions();
   const [currentCompositionFields, setCurrentCompositionFields] = useState([]);
@@ -60,6 +60,20 @@ export default ({ compositions, editVersion, activeVersionIndex }) => {
       ) {
         restoreFieldsFromPreviousVersion(activeVersionIndex, layers);
         setRestoreStatus(true);
+      }
+    } else if (editVersion) {
+      // get common layers stringified
+      const mainVersionFields = videoObj.versions[0]?.fields.map(({ type, rendererData, constraints, placeholder, label }) =>
+        rendererData?.layerName + rendererData?.property)
+      const mainVersionFieldsStringified = videoObj.versions[0]?.fields.map(({ type, rendererData, constraints, placeholder, label }) =>
+        JSON.stringify({ type, rendererData, constraints, placeholder, label }))
+      const commonFieldsInCurrentVersion = videoObj?.versions[activeVersionIndex]?.fields?.filter(({ type, rendererData, constraints, placeholder, label }) =>
+        mainVersionFields.includes(rendererData?.layerName + rendererData?.property))
+      const isCommonLayersDifferent = !(commonFieldsInCurrentVersion.map(({ type, rendererData, constraints, placeholder, label }) =>
+        mainVersionFieldsStringified.includes(JSON.stringify({ type, rendererData, constraints, placeholder, label })))).every(value => value)
+      if (isCommonLayersDifferent) {
+        if (window.confirm("Some layers in this version are changed in the main version, Do you like to reflect the changes in this version?"))
+          restoreChanges(activeVersionIndex, mainVersionFields)
       }
     }
   }, []);
@@ -273,7 +287,10 @@ export default ({ compositions, editVersion, activeVersionIndex }) => {
       )}
     </Paper>
   );
-};
+}, (prev, next) => prev?.composition?.length === next?.composition?.length
+  && prev?.editVersion === next?.editVersion
+  && prev?.activeVersionIndex === next?.activeVersionIndex
+)
 
 const FieldPreviewContainer = ({
   _editField,

@@ -10,6 +10,10 @@ export const RESET_STATE = "RESET_STATE";
 export const LOAD_STATE = "LOAD_STATE";
 export const RESTORE_FIELDS = "RESTORE_FIELDS";
 export const SWAP_FIELDS = "SWAP_FIELDS";
+export const UPDATE_FIELD_CHANGES = 'UPDATE_FIELD_CHANGES';
+
+
+
 
 function shiftValueByIndex(arr, dropIndex, dragIndex) {
   if (dropIndex >= arr.length) {
@@ -25,6 +29,17 @@ export default (state, action) => {
   // const { user } = useAuth();
 
   switch (action.type) {
+    //payload : activeVersionIndex, updatedFields 
+    case UPDATE_FIELD_CHANGES:
+      const updatedFields = state.versions[action.payload.activeVersionIndex].fields.map(({ type, rendererData, constraints, placeholder, label }, index) => {
+        const field = rendererData?.layerName + rendererData?.property
+        if (action.payload.updatedFields.includes(field)) {
+          return state.versions[0].fields[action.payload.updatedFields.indexOf(field)]
+        } else return ({ type, rendererData, constraints, placeholder, label })
+      })
+      state.versions[action.payload.activeVersionIndex].fields = updatedFields;
+
+      return Object.assign({}, state);
     //payload : activeVersionIndex,currentCompositionFields
     case RESTORE_FIELDS:
       const fields = state.versions[0].fields.filter(({ rendererData }) =>

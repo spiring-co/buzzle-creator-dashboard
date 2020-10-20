@@ -143,7 +143,7 @@ export default () => {
   };
 
   const {
-    output,
+    output = [],
     state,
     actions,
     data,
@@ -153,7 +153,7 @@ export default () => {
     dateFinished, renderPrefs = {},
     dateStarted,
   } = job;
-
+  const sortedOutput = output?.sort((a, b) => new Date(b?.dateCreated) - new Date(a?.dateCreated))
   const content = {
     "Job ID": id,
     "Render Time": formatTime(renderTime),
@@ -242,14 +242,15 @@ export default () => {
                 console.log(e.target.value);
                 setSelectedOutputIndex(e.target.value);
               }}>
-              {output?.map((o, i) => (
+              {sortedOutput?.map((o, i) => (
                 <MenuItem key={i} value={i}>
                   {o.label}
                   <Typography
+                    style={{ marginLeft: 10 }}
                     component="span"
                     variant="body2"
                     color="textSecondary">
-                    {" " + timeago.format(new Date(o.dateCreated))}
+                    {new Date(o.dateCreated).toLocaleString()}
                   </Typography>
                 </MenuItem>
               ))}
@@ -263,7 +264,7 @@ export default () => {
             <IconButton
               aria-label="download"
               className={classes.margin}
-              href={output?.length && output[selectedOutputIndex]?.src}>
+              href={sortedOutput?.length && sortedOutput[selectedOutputIndex]?.src}>
               <DownloadIcon fontSize="inherit" />
             </IconButton>
           </Box>
@@ -274,7 +275,7 @@ export default () => {
               poster={job.videoTemplate?.thumbnail}
               style={{ height: 320, width: "100%" }}
               controls
-              src={output.length && output[selectedOutputIndex].src}
+              src={sortedOutput.length && sortedOutput[selectedOutputIndex].src}
             />
           ) : (
               <>
