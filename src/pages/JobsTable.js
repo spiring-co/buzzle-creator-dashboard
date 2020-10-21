@@ -83,23 +83,23 @@ export default () => {
   useEffect(() => {
     handleRetry();
   }, [sort, order]);
-
+  const getArrayOfIdsAsQueryString = (field, ids) => {
+    return ids.map((id, index) => `${index === 0 ? "" : "&"}${field}[]=${id}`).toString().replace(/,/g, "")
+  }
   const filterObjectToString = (f) => {
     if (!f) return null;
     const {
       startDate = 0,
       endDate = Date.now(),
-      idVideoTemplate = "",
+      idVideoTemplates = [],
       state = "",
     } = f;
 
-    return `${
-      startDate
-        ? `dateUpdated=>=${startDate}&dateUpdated=<=${endDate ?? startDate}`
-        : ""
-    }${idVideoTemplate ? `&idVideoTemplate=${idVideoTemplate}` : ""}${
-      state ? `&state=${state}` : ""
-    }`;
+    return `${startDate
+      ? `dateUpdated=>=${startDate}&dateUpdated=<=${endDate ?? startDate}`
+      : ""
+      }${idVideoTemplates.length !== 0 ? getArrayOfIdsAsQueryString('idVideoTemplate', idVideoTemplates.map(({ id }) => id)) : ""}${state ? `&state=${state}` : ""
+      }`;
   };
 
   const getDataFromQuery = (query) => {
@@ -112,8 +112,7 @@ export default () => {
     } = query;
 
     history.push(
-      `?page=${page + 1}&size=${pageSize}${
-        searchQuery ? "searchQuery=" + searchQuery : ""
+      `?page=${page + 1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
       }`
     );
 
@@ -176,11 +175,10 @@ export default () => {
                     marginLeft: 25,
                     marginTop: 10,
                     display: "flex",
-                    alignItems: "baseline",
+                    alignItems: "center",
                   }}>
                   <Filters
                     onChange={(f) => {
-                      console.log(f);
                       setFilters(f);
                     }}
                     value={filters}

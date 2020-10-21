@@ -2,8 +2,8 @@ import {
   FormControl,
   InputLabel,
   MenuItem,
-  Select,
-  Button,
+  Select, Checkbox,
+  Button, CircularProgress, TextField
 } from "@material-ui/core";
 import { Job, VideoTemplate, Creator, Search } from "services/api";
 import ErrorHandler from "components/ErrorHandler";
@@ -13,19 +13,33 @@ import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
 } from "@material-ui/pickers";
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+import { TimeToLeaveOutlined } from "@material-ui/icons";
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@material-ui/icons/CheckBox';
+
+
+
+const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+const checkedIcon = <CheckBoxIcon fontSize="small" />;
+
+
 
 export default React.memo(
   ({ value = {}, onChange }) => {
+    console.log("mounted")
     const [loading, setLoading] = useState(true);
     const [videoTemplates, setVideoTemplates] = useState([]);
     const [filters, setFilters] = useState(value);
+    const [selectedTemplates, setSelectedTemplates] = useState(value?.idVideoTemplates ?? [])
     useEffect(() => {
       videoTemplates.length === 0 &&
         VideoTemplate.getAll(1, 500)
-          .then(({ data }) => setVideoTemplates(data))
+          .then(({ data }) => setVideoTemplates(data.map(({ title, id }) => ({ title, id }))))
           .catch(console.log)
           .finally(() => setLoading(false));
     }, []);
+
     useEffect(() => {
       onChange(filters);
     }, [filters]);
@@ -68,7 +82,7 @@ export default React.memo(
             }}
           />
         </MuiPickersUtilsProvider>
-        <FormControl style={{ marginRight: 10, minWidth: 150 }}>
+        {/* <FormControl style={{ marginRight: 10, minWidth: 150 }}>
           <InputLabel id="demo-simple-select-label">Video Template</InputLabel>
           <Select
             disabled={loading}
@@ -82,7 +96,35 @@ export default React.memo(
               <MenuItem value={id}>{title}</MenuItem>
             ))}
           </Select>
-        </FormControl>
+        </FormControl> */}
+        <Autocomplete
+          multiple
+          limitTags={1}
+          id="checkboxes-tags-demo"
+          onClose={(e, r) => r ? r === 'blur' ?
+            setFilters({ ...filters, idVideoTemplates: selectedTemplates }) : console.log(r) : setFilters({ ...filters, idVideoTemplates: selectedTemplates })}
+          value={selectedTemplates}
+          options={videoTemplates}
+          loading={loading}
+          onChange={(e, v) => setSelectedTemplates(v)}
+          disableCloseOnSelect
+          getOptionLabel={({ title }) => title}
+          renderOption={(option) => (
+            <React.Fragment>
+              <Checkbox
+                icon={icon}
+                checkedIcon={checkedIcon}
+                style={{ marginRight: 8 }}
+                checked={selectedTemplates?.map(({ id }) => id).includes(option?.id)}
+              />
+              {option.title}
+            </React.Fragment>
+          )}
+          style={{ width: 250, marginRight: 10 }}
+          renderInput={(params) => (
+            <TextField {...params} label="Videotemplates" placeholder="Choose videotemplates" />
+          )}
+        />
         <FormControl style={{ marginRight: 10, width: 100 }}>
           <InputLabel id="demo-simple-select-label">Status</InputLabel>
           <Select
@@ -118,8 +160,8 @@ export default React.memo(
             }}
           />
         ) : (
-          <div />
-        )}
+            <div />
+          )}
       </>
     );
   },
