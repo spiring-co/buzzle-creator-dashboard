@@ -1670,9 +1670,9 @@
   integrity sha512-k3NqigXWRzQZVBDS5D1U70A5E8Qk4Kh+Ha/x4M8Bt9pF0X05eggfnC9+63Usc9Q928hRUIpIhTQaXsZwZBl4Ew==
 
 "@types/node@^14.11.2":
-  version "14.11.8"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.11.8.tgz#fe2012f2355e4ce08bca44aeb3abbb21cf88d33f"
-  integrity sha512-KPcKqKm5UKDkaYPTuXSx8wEP7vE9GnuaXIZKijwRYcePpZFDVuy2a57LarFKiORbHOuTOOwYzxVxcUzsh2P2Pw==
+  version "14.14.2"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.2.tgz#d25295f9e4ca5989a2c610754dc02a9721235eeb"
+  integrity sha512-jeYJU2kl7hL9U5xuI/BhKPZ4vqGM/OmK6whiFAXVhlstzZhVamWhDSmHyGLIp+RVyuF9/d0dqr2P85aFj4BvJg==
 
 "@types/parse-json@^4.0.0":
   version "4.0.0"
@@ -1710,6 +1710,11 @@
   dependencies:
     "@types/prop-types" "*"
     csstype "^2.2.0"
+
+"@types/socket.io-client@^1.4.34":
+  version "1.4.34"
+  resolved "https://registry.yarnpkg.com/@types/socket.io-client/-/socket.io-client-1.4.34.tgz#8ca5f5732a9ad92b79aba71083cda5e5821e3ed9"
+  integrity sha512-Lzia5OTQFJZJ5R4HsEEldywiiqT9+W2rDbyHJiiTGqOcju89sCsQ8aUXDljY6Ls33wKZZGC0bfMhr/VpOyjtXg==
 
 "@types/stack-utils@^1.0.1":
   version "1.0.1"
@@ -2868,11 +2873,13 @@ builtin-status-codes@^3.0.0:
   resolved "https://registry.yarnpkg.com/builtin-status-codes/-/builtin-status-codes-3.0.0.tgz#85982878e21b98e1c66425e03d0174788f569ee8"
   integrity sha1-hZgoeOIbmOHGZCXgPQF0eI9Wnug=
 
-"buzzle-sdk@https://github.com/spiring-co/buzzle-sdk.git":
-  version "1.0.2"
-  resolved "https://github.com/spiring-co/buzzle-sdk.git#3562e34431391ccfa16c230b1aee53c193a0a7fc"
+buzzle-sdk@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/buzzle-sdk/-/buzzle-sdk-1.0.5.tgz#12dc6f1c8f33d7107de61f6591f965b59f22b094"
+  integrity sha512-Edn0iTnuA0xUvSMpYstzr0o4zSKEvUMMk411AanRUgtH1H5nWWtjMQfd4J7pcJPCfxO/meG4BkOfheVKzgLXWA==
   dependencies:
     "@types/node" "^14.11.2"
+    "@types/socket.io-client" "^1.4.34"
     isomorphic-fetch "^2.2.1"
     socket.io-client "^2.3.0"
 

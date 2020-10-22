@@ -11,8 +11,8 @@ import {
   MenuItem,
   Select,
   Button,
-  Chip,
-  Container,
+  Chip, Typography,
+  Container, Paper,
   Tooltip,
   Fade,
 } from "@material-ui/core";
@@ -155,6 +155,18 @@ export default () => {
           onRetry={handleRetry}
         />
       )}
+      <Paper
+        style={{ padding: 15, marginBottom: 5 }}>
+        <Typography variant="h6">Filters</Typography>
+        <Container
+          style={{ padding: 5, alignItems: 'flex-end', display: 'flex', }}>
+          <Filters
+            onChange={(f) => {
+              setFilters(f);
+            }}
+            value={filters}
+          /></Container>
+      </Paper>
       <MaterialTable
         tableRef={tableRef}
         title="Your Jobs"
@@ -165,29 +177,7 @@ export default () => {
           selection: true,
           sorting: true,
         }}
-        components={{
-          Toolbar: (props) => {
-            return (
-              <div>
-                <MTableToolbar {...props} />
-                <div
-                  style={{
-                    marginLeft: 25,
-                    marginTop: 10,
-                    display: "flex",
-                    alignItems: "center",
-                  }}>
-                  <Filters
-                    onChange={(f) => {
-                      setFilters(f);
-                    }}
-                    value={filters}
-                  />
-                </div>
-              </div>
-            );
-          },
-        }}
+
         onRowClick={(e, { id }) => {
           // prevents redirection on link click
           if (["td", "TD"].includes(e.target.tagName))

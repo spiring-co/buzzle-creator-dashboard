@@ -101,12 +101,13 @@ export default React.memo(
           multiple
           limitTags={1}
           id="checkboxes-tags-demo"
-          onClose={(e, r) => r ? r === 'blur' ?
-            setFilters({ ...filters, idVideoTemplates: selectedTemplates }) : console.log(r) : setFilters({ ...filters, idVideoTemplates: selectedTemplates })}
-          value={selectedTemplates}
+          // onClose={(e, r) => r ? r === 'blur' ?
+          //   setFilters({ ...filters, idVideoTemplates: selectedTemplates }) : console.log(r) : setFilters({ ...filters, idVideoTemplates: selectedTemplates })}
+          // 
+          value={value?.idVideoTemplates}
           options={videoTemplates}
           loading={loading}
-          onChange={(e, v) => setSelectedTemplates(v)}
+          onChange={(e, v) => setFilters({ ...filters, idVideoTemplates: v })}
           disableCloseOnSelect
           getOptionLabel={({ title }) => title}
           renderOption={(option) => (
@@ -115,7 +116,7 @@ export default React.memo(
                 icon={icon}
                 checkedIcon={checkedIcon}
                 style={{ marginRight: 8 }}
-                checked={selectedTemplates?.map(({ id }) => id).includes(option?.id)}
+                checked={value?.idVideoTemplates?.map(({ id }) => id).includes(option?.id)}
               />
               {option.title}
             </React.Fragment>
