@@ -11,8 +11,11 @@ import {
   MenuItem,
   Paper,
   Select,
+  Chip,
   Tab,
   Tabs,
+  Tooltip,
+  Fade,
   TextField,
   Typography,
 } from "@material-ui/core";
@@ -30,6 +33,7 @@ import MaterialTable from "material-table";
 import React, { useEffect, useState } from "react";
 import { Redirect, useHistory, useParams } from "react-router-dom";
 import * as timeago from "timeago.js";
+import io from "socket.io-client";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -90,8 +94,12 @@ export default () => {
   const [error, setError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [redirect, setRedirect] = useState(null);
+  const [socket, setSocket] = useState(null);
+  // const [progress, setProgress] = useState(0);
+  const [rtProgressData, setRtProgressData] = useState({});
+
   const { id } = useParams();
-  console.log(id)
+  console.log(id);
   const history = useHistory();
   const [selectedOutputIndex, setSelectedOutputIndex] = useState(0);
   const [activeTabIndex, setActiveTabIndex] = useState(0);
@@ -100,20 +108,42 @@ export default () => {
     fetchJob();
   }, []);
 
-  useEffect(() => { }, [selectedOutputIndex]);
+  useEffect(() => {}, [selectedOutputIndex]);
+
+  useEffect(() => {
+    setSocket(io.connect(process.env.REACT_APP_EVENTS_SOCKET_URL));
+  }, []);
+
+  function subscribeToProgress(id) {
+    if (!socket) return;
+    socket.on(id, (data) =>
+      setRtProgressData({ ...rtProgressData, [id]: data })
+    );
+  }
+
+  function unsubscribeFromProgress() {
+    if (!socket) return;
+    socket.off(id);
+  }
+
+  useEffect(() => {
+    subscribeToProgress(id);
+    return () => {
+      unsubscribeFromProgress();
+    };
+  }, [id]);
 
   const fetchJob = async () => {
     try {
       setError(false);
       setIsLoading(true);
-      setJob(await Job.get(id, true))
-      setIsLoading(false)
+      setJob(await Job.get(id, true));
+      setIsLoading(false);
     } catch (err) {
-      console.log(err)
-      setError(err)
-      setIsLoading(false)
+      console.log(err);
+      setError(err);
+      setIsLoading(false);
     }
-
   };
 
   const handleUpdateJob = async () => {
@@ -142,6 +172,31 @@ export default () => {
     }
   };
 
+  const progressShow = (failureReason, state, percent) => {
+    return (
+      <Tooltip
+        TransitionComponent={Fade}
+        title={
+          state === "error"
+            ? failureReason
+              ? failureReason
+              : "Reason not given"
+            : "finished/inProgress"
+        }>
+        <Chip
+          size="small"
+          label={`${state}${percent ? " " + percent + "%" : ""}`}
+          style={{
+            transition: "background-color 0.5s ease",
+            fontWeight: 700,
+            background: getColorFromState(state, percent),
+            color: "white",
+          }}
+        />
+      </Tooltip>
+    );
+  };
+
   const {
     output = [],
     state,
@@ -150,12 +205,18 @@ export default () => {
     renderTime,
     queueTime,
     dateCreated,
-    dateFinished, renderPrefs = {},
+    dateFinished,
+    renderPrefs = {},
     dateStarted,
+    failureReason,
   } = job;
-  const sortedOutput = output?.sort((a, b) => new Date(b?.dateCreated) - new Date(a?.dateCreated))
+  const sortedOutput = output?.sort(
+    (a, b) => new Date(b?.dateCreated) - new Date(a?.dateCreated)
+  );
+  let percent = rtProgressData[id]?.percent;
   const content = {
     "Job ID": id,
+    State: progressShow(failureReason, state, percent),
     "Render Time": formatTime(renderTime),
     "Queue Time": formatTime(queueTime),
     "Created at": new Date(dateCreated).toLocaleString(),
@@ -264,7 +325,9 @@ export default () => {
             <IconButton
               aria-label="download"
               className={classes.margin}
-              href={sortedOutput?.length && sortedOutput[selectedOutputIndex]?.src}>
+              href={
+                sortedOutput?.length && sortedOutput[selectedOutputIndex]?.src
+              }>
               <DownloadIcon fontSize="inherit" />
             </IconButton>
           </Box>
@@ -278,16 +341,16 @@ export default () => {
               src={sortedOutput.length && sortedOutput[selectedOutputIndex].src}
             />
           ) : (
-              <>
-                <Box justifyContent="center" textAlign="center" height={320}>
-                  <Typography style={{ padding: 100 }}>
-                    {" "}
+            <>
+              <Box justifyContent="center" textAlign="center" height={320}>
+                <Typography style={{ padding: 100 }}>
+                  {" "}
                   No output yet.
                 </Typography>
-                </Box>
-                <Divider />
-              </>
-            )}
+              </Box>
+              <Divider />
+            </>
+          )}
           <AppBar position="static" color="transparent" elevation={0}>
             <Tabs
               value={activeTabIndex}
@@ -359,7 +422,7 @@ export default () => {
                     return (
                       <span>
                         {value.startsWith("http://") ||
-                          value.startsWith("https://")
+                        value.startsWith("https://")
                           ? "image"
                           : "string"}
                       </span>
@@ -495,6 +558,20 @@ export default () => {
       </div>
     </>
   );
+};
+const getColorFromState = (state, percent) => {
+  switch (state) {
+    case "finished":
+      return "#4caf50";
+    case "error":
+      return "#f44336";
+    case "started":
+      return "#ffa502";
+    case "rendering":
+      return `linear-gradient(90deg, #4caf50 ${percent}%, grey ${percent}%)`;
+    default:
+      return "grey";
+  }
 };
 // settingsTemplate,
 // outputModule,
