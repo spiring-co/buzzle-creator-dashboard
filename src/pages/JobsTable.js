@@ -92,14 +92,13 @@ export default () => {
       startDate = 0,
       endDate = Date.now(),
       idVideoTemplates = [],
-      state = "",
+      states = [],
     } = f;
 
     return `${startDate
       ? `dateUpdated=>=${startDate}&dateUpdated=<=${endDate ?? startDate}`
       : ""
-      }${idVideoTemplates.length !== 0 ? getArrayOfIdsAsQueryString('idVideoTemplate', idVideoTemplates.map(({ id }) => id)) : ""}${state ? `&state=${state}` : ""
-      }`;
+      }${idVideoTemplates.length !== 0 ? getArrayOfIdsAsQueryString('idVideoTemplate', states.map(({ id }) => id)) : ""}${states.length !== 0 ? getArrayOfIdsAsQueryString('state', states) : ""}`;
   };
 
   const getDataFromQuery = (query) => {

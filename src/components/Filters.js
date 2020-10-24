@@ -126,7 +126,32 @@ export default React.memo(
             <TextField {...params} label="Videotemplates" placeholder="Choose videotemplates" />
           )}
         />
-        <FormControl style={{ marginRight: 10, width: 100 }}>
+        <Autocomplete
+          multiple
+          limitTags={1}
+          id="checkboxes-tags-demo"
+          value={value?.states}
+          options={['error', 'created', 'started', 'finished']}
+          onChange={(e, v) => setFilters({ ...filters, states: v })}
+          disableCloseOnSelect
+          getOptionLabel={(a) => a}
+          renderOption={(option) => (
+            <React.Fragment>
+              <Checkbox
+                icon={icon}
+                checkedIcon={checkedIcon}
+                style={{ marginRight: 8 }}
+                checked={value?.states.includes(option)}
+              />
+              {option.toUpperCase()}
+            </React.Fragment>
+          )}
+          style={{ width: 250, marginRight: 10 }}
+          renderInput={(params) => (
+            <TextField {...params} label="Status" placeholder="Select Status" />
+          )}
+        />
+        {/* <FormControl style={{ marginRight: 10, width: 100 }}>
           <InputLabel id="demo-simple-select-label">Status</InputLabel>
           <Select
             labelId="demo-simple-select-label"
@@ -140,7 +165,7 @@ export default React.memo(
             <MenuItem value={"created"}>Created</MenuItem>
             <MenuItem value={"finished"}>Finished</MenuItem>
           </Select>
-        </FormControl>
+        </FormControl> */}
         {/* <Button
                 children="filter"
                 size="small"
