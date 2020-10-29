@@ -6,13 +6,11 @@ import * as timeago from "timeago.js";
 import ReactJson from "react-json-view";
 
 import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
   Button,
-  Chip, Typography,
-  Container, Paper,
+  Chip,
+  Typography,
+  Container,
+  Paper,
   Tooltip,
   Fade,
 } from "@material-ui/core";
@@ -84,8 +82,11 @@ export default () => {
     handleRetry();
   }, [sort, order]);
   const getArrayOfIdsAsQueryString = (field, ids) => {
-    return ids.map((id, index) => `${index === 0 ? "" : "&"}${field}[]=${id}`).toString().replace(/,/g, "")
-  }
+    return ids
+      .map((id, index) => `${index === 0 ? "" : "&"}${field}[]=${id}`)
+      .toString()
+      .replace(/,/g, "");
+  };
   const filterObjectToString = (f) => {
     if (!f) return null;
     const {
@@ -95,10 +96,18 @@ export default () => {
       states = [],
     } = f;
 
-    return `${startDate
-      ? `dateUpdated=>=${startDate}&dateUpdated=<=${endDate ?? startDate}`
-      : ""
-      }${idVideoTemplates.length !== 0 ? getArrayOfIdsAsQueryString('idVideoTemplate', states.map(({ id }) => id)) : ""}${states.length !== 0 ? getArrayOfIdsAsQueryString('state', states) : ""}`;
+    return `${
+      startDate
+        ? `dateUpdated=>=${startDate}&dateUpdated=<=${endDate ?? startDate}&`
+        : ""
+    }${
+      idVideoTemplates.length !== 0
+        ? getArrayOfIdsAsQueryString(
+            "idVideoTemplate",
+            idVideoTemplates.map(({ id }) => id)
+          ) + "&"
+        : ""
+    }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
   };
 
   const getDataFromQuery = (query) => {
@@ -111,7 +120,8 @@ export default () => {
     } = query;
 
     history.push(
-      `?page=${page + 1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
+      `?page=${page + 1}&size=${pageSize}${
+        searchQuery ? "searchQuery=" + searchQuery : ""
       }`
     );
 
@@ -154,17 +164,18 @@ export default () => {
           onRetry={handleRetry}
         />
       )}
-      <Paper
-        style={{ padding: 15, marginBottom: 5 }}>
+      <Paper style={{ padding: 15, marginBottom: 5 }}>
         <Typography variant="h6">Filters</Typography>
         <Container
-          style={{ padding: 5, alignItems: 'flex-end', display: 'flex', }}>
+          style={{ padding: 5, alignItems: "flex-end", display: "flex" }}>
           <Filters
             onChange={(f) => {
+              console.log(f);
               setFilters(f);
             }}
             value={filters}
-          /></Container>
+          />
+        </Container>
       </Paper>
       <MaterialTable
         tableRef={tableRef}
@@ -176,7 +187,6 @@ export default () => {
           selection: true,
           sorting: true,
         }}
-
         onRowClick={(e, { id }) => {
           // prevents redirection on link click
           if (["td", "TD"].includes(e.target.tagName))
@@ -232,6 +242,15 @@ export default () => {
             defaultSort: "desc",
             render: ({ dateUpdated }) => (
               <span>{timeago.format(new Date(dateUpdated))}</span>
+            ),
+          },
+          {
+            searchable: false,
+            title: "Created At",
+            field: "dateCreated",
+            type: "datetime",
+            render: ({ dateCreated }) => (
+              <span>{timeago.format(new Date(dateCreated))}</span>
             ),
           },
           {

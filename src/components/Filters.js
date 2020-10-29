@@ -1,41 +1,33 @@
-import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select, Checkbox,
-  Button, CircularProgress, TextField
-} from "@material-ui/core";
-import { Job, VideoTemplate, Creator, Search } from "services/api";
-import ErrorHandler from "components/ErrorHandler";
-import React, { useEffect, useRef, useState } from "react";
 import DateFnsUtils from "@date-io/date-fns";
+import { Button, Checkbox, TextField } from "@material-ui/core";
+import CheckBoxIcon from "@material-ui/icons/CheckBox";
+import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
-  MuiPickersUtilsProvider,
   KeyboardDatePicker,
+  MuiPickersUtilsProvider,
 } from "@material-ui/pickers";
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
-import { TimeToLeaveOutlined } from "@material-ui/icons";
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
-
-
+import React, { useEffect, useState } from "react";
+import { VideoTemplate } from "services/api";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-
-
 export default React.memo(
   ({ value = {}, onChange }) => {
-    console.log("mounted")
+    console.log("mounted");
     const [loading, setLoading] = useState(true);
     const [videoTemplates, setVideoTemplates] = useState([]);
     const [filters, setFilters] = useState(value);
-    const [selectedTemplates, setSelectedTemplates] = useState(value?.idVideoTemplates ?? [])
+    const [selectedTemplates, setSelectedTemplates] = useState(
+      value?.idVideoTemplates ?? []
+    );
     useEffect(() => {
       videoTemplates.length === 0 &&
         VideoTemplate.getAll(1, 500)
-          .then(({ data }) => setVideoTemplates(data.map(({ title, id }) => ({ title, id }))))
+          .then(({ data }) =>
+            setVideoTemplates(data.map(({ title, id }) => ({ title, id })))
+          )
           .catch(console.log)
           .finally(() => setLoading(false));
     }, []);
@@ -103,7 +95,7 @@ export default React.memo(
           id="checkboxes-tags-demo"
           // onClose={(e, r) => r ? r === 'blur' ?
           //   setFilters({ ...filters, idVideoTemplates: selectedTemplates }) : console.log(r) : setFilters({ ...filters, idVideoTemplates: selectedTemplates })}
-          // 
+          //
           value={value?.idVideoTemplates}
           options={videoTemplates}
           loading={loading}
@@ -116,14 +108,20 @@ export default React.memo(
                 icon={icon}
                 checkedIcon={checkedIcon}
                 style={{ marginRight: 8 }}
-                checked={value?.idVideoTemplates?.map(({ id }) => id).includes(option?.id)}
+                checked={value?.idVideoTemplates
+                  ?.map(({ id }) => id)
+                  .includes(option?.id)}
               />
               {option.title}
             </React.Fragment>
           )}
           style={{ width: 250, marginRight: 10 }}
           renderInput={(params) => (
-            <TextField {...params} label="Videotemplates" placeholder="Choose videotemplates" />
+            <TextField
+              {...params}
+              label="Videotemplates"
+              placeholder="Choose videotemplates"
+            />
           )}
         />
         <Autocomplete
@@ -131,7 +129,7 @@ export default React.memo(
           limitTags={1}
           id="checkboxes-tags-demo"
           value={value?.states}
-          options={['error', 'created', 'started', 'finished']}
+          options={["error", "created", "started", "finished"]}
           onChange={(e, v) => setFilters({ ...filters, states: v })}
           disableCloseOnSelect
           getOptionLabel={(a) => a}
@@ -141,7 +139,7 @@ export default React.memo(
                 icon={icon}
                 checkedIcon={checkedIcon}
                 style={{ marginRight: 8 }}
-                checked={value?.states.includes(option)}
+                checked={value?.states?.includes(option)}
               />
               {option.toUpperCase()}
             </React.Fragment>
@@ -186,8 +184,8 @@ export default React.memo(
             }}
           />
         ) : (
-            <div />
-          )}
+          <div />
+        )}
       </>
     );
   },
