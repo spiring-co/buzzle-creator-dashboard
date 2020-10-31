@@ -1,3 +1,6 @@
+import React, { useEffect, useState } from "react";
+import { Redirect, useHistory, useParams } from "react-router-dom";
+
 import {
   AppBar,
   Box,
@@ -19,21 +22,24 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+
 import DeleteIcon from "@material-ui/icons/Delete";
+import UpdateIcon from "@material-ui/icons/Update";
 import DownloadIcon from "@material-ui/icons/GetApp";
 import PublishIcon from "@material-ui/icons/Publish";
-import UpdateIcon from "@material-ui/icons/Update";
-import { Job, VideoTemplate, Creator } from "services/api";
+import { makeStyles } from "@material-ui/core/styles";
+
+import MaterialTable from "material-table";
+import io from "socket.io-client";
+
+import formatTime from "helpers/formatTime";
+
 import ActionsHandler from "components/ActionsHandler";
 import ErrorHandler from "components/ErrorHandler";
 import ImageEditRow from "components/ImageEditRow";
-import formatTime from "helpers/formatTime";
-import MaterialTable from "material-table";
-import React, { useEffect, useState } from "react";
-import { Redirect, useHistory, useParams } from "react-router-dom";
-import * as timeago from "timeago.js";
-import io from "socket.io-client";
+
+import { Job } from "services/api";
+
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -89,25 +95,26 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default () => {
-  const classes = useStyles();
+  
   const [job, setJob] = useState({});
   const [error, setError] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [redirect, setRedirect] = useState(null);
   const [socket, setSocket] = useState(null);
-  // const [progress, setProgress] = useState(0);
-  const [rtProgressData, setRtProgressData] = useState({});
-
-  const { id } = useParams();
-  console.log(id);
-  const history = useHistory();
-  const [selectedOutputIndex, setSelectedOutputIndex] = useState(0);
+  const [redirect, setRedirect] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [activeTabIndex, setActiveTabIndex] = useState(0);
+  const [rtProgressData, setRtProgressData] = useState({});
+  const [selectedOutputIndex, setSelectedOutputIndex] = useState(0);
+  
+  const { id } = useParams();
+  const classes = useStyles();
+  const history = useHistory();
 
+  // fetch job on init 
   useEffect(() => {
     fetchJob();
   }, []);
 
+  // rerender on output select 
   useEffect(() => {}, [selectedOutputIndex]);
 
   useEffect(() => {

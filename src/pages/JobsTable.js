@@ -12,10 +12,11 @@ import {
   Container,
   Paper,
   Tooltip,
+  Box,
   Fade,
 } from "@material-ui/core";
 
-import MaterialTable, { MTableToolbar } from "material-table";
+import MaterialTable from "material-table";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
 import ErrorHandler from "components/ErrorHandler";
 
@@ -37,8 +38,6 @@ export default () => {
   const [darkModeTheme] = useDarkMode();
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({});
-  const [sort, setSort] = useState("dateUpdated");
-  const [order, setOrder] = useState("desc");
 
   const handleRetry = () => {
     setError(false);
@@ -77,38 +76,6 @@ export default () => {
       unsubscribeFromProgress();
     };
   }, [jobIds]);
-
-  useEffect(() => {
-    handleRetry();
-  }, [sort, order]);
-  const getArrayOfIdsAsQueryString = (field, ids) => {
-    return ids
-      .map((id, index) => `${index === 0 ? "" : "&"}${field}[]=${id}`)
-      .toString()
-      .replace(/,/g, "");
-  };
-  const filterObjectToString = (f) => {
-    if (!f) return null;
-    const {
-      startDate = 0,
-      endDate = Date.now(),
-      idVideoTemplates = [],
-      states = [],
-    } = f;
-
-    return `${
-      startDate
-        ? `dateUpdated=>=${startDate}&dateUpdated=<=${endDate ?? startDate}&`
-        : ""
-    }${
-      idVideoTemplates.length !== 0
-        ? getArrayOfIdsAsQueryString(
-            "idVideoTemplate",
-            idVideoTemplates.map(({ id }) => id)
-          ) + "&"
-        : ""
-    }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
-  };
 
   const getDataFromQuery = (query) => {
     const {
@@ -284,17 +251,16 @@ export default () => {
               );
             },
           },
+          {
+            searchable: false,
+            title: "Revisions",
+            field: "__v",
+            type: "number",
+          },
         ]}
         localization={{
           body: {
-            emptyDataSourceMessage: error && (
-              <Button
-                onClick={handleRetry}
-                color="secondary"
-                variant="outlined"
-                children={"Retry"}
-              />
-            ),
+            emptyDataSourceMessage: <Typography>No Data to display</Typography>,
           },
         }}
         data={getDataFromQuery}
@@ -409,11 +375,31 @@ const getColorFromState = (state, percent) => {
   }
 };
 
-const serialize = function (obj) {
-  var str = [];
-  for (var p in obj)
-    if (obj.hasOwnProperty(p)) {
-      str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-    }
-  return str.join("&");
+const getArrayOfIdsAsQueryString = (field, ids) => {
+  return ids
+    .map((id, index) => `${index === 0 ? "" : "&"}${field}[]=${id}`)
+    .toString()
+    .replace(/,/g, "");
+};
+const filterObjectToString = (f) => {
+  if (!f) return null;
+  const {
+    startDate = 0,
+    endDate = Date.now(),
+    idVideoTemplates = [],
+    states = [],
+  } = f;
+
+  return `${
+    startDate
+      ? `dateUpdated=>=${startDate}&dateUpdated=<=${endDate ?? startDate}&`
+      : ""
+  }${
+    idVideoTemplates.length !== 0
+      ? getArrayOfIdsAsQueryString(
+          "idVideoTemplate",
+          idVideoTemplates.map(({ id }) => id)
+        ) + "&"
+      : ""
+  }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
 };
