@@ -125,9 +125,10 @@ export default (props) => {
       orderBy: { field: orderBy = "dateUpdated" } = {},
       orderDirection = "asc",
     } = query;
-    console.log(query)
+    console.log(query);
     history.push(
-      `?page=${page + 1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
+      `?page=${page + 1}&size=${pageSize}${
+        searchQuery ? "searchQuery=" + searchQuery : ""
       }`
     );
 
@@ -179,26 +180,31 @@ export default (props) => {
         justifyContent="space-between"
         flexDirection="row"
         p={1}>
-        <RoleBasedView allowedRoles={["Creator"]}>
-          <Box>
-            <Button
-              color="primary"
-              variant="contained"
-              className={classes.button}
-              onClick={() => history.push(`${url}/add`)}
-              children="Add Template"
-              startIcon={<AddIcon />}
-            />
-            <Button
-              color="primary"
-              variant="contained"
-              className={classes.drafted}
-              onClick={() => history.push(`${url}/drafts`)}
-              children="Drafted Templates"
-              startIcon={<QueuePlayNextIcon />}
-            />
-          </Box>
-        </RoleBasedView>
+        <div>
+          <FormControl style={{ marginRight: 10, width: 150 }}>
+            <InputLabel id="demo-simple-select-label">Sort By</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={sort}
+              onChange={({ target: { value } }) => setSort(value)}>
+              <MenuItem value={"dateUpdated"}>Date Updated</MenuItem>
+              <MenuItem value={"dateCreated"}>Date Created</MenuItem>
+              <MenuItem value={"publishState"}>Publish State</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl style={{ marginRight: 10, width: 150 }}>
+            <InputLabel id="demo-simple-select-label">Order By</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={order}
+              onChange={({ target: { value } }) => setOrder(value)}>
+              <MenuItem value={"desc"}>Descending</MenuItem>
+              <MenuItem value={"asc"}>Ascending</MenuItem>
+            </Select>
+          </FormControl>
+        </div>
         <ToggleButtonGroup
           size="small"
           value={view}
@@ -217,30 +223,6 @@ export default (props) => {
           </Tooltip>
         </ToggleButtonGroup>
       </Box>
-      <FormControl style={{ marginRight: 10, width: 150 }}>
-        <InputLabel id="demo-simple-select-label">Sort By</InputLabel>
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          value={sort}
-          onChange={({ target: { value } }) => setSort(value)}>
-          <MenuItem value={"dateUpdated"}>Date Updated</MenuItem>
-          <MenuItem value={"dateCreated"}>Date Created</MenuItem>
-          <MenuItem value={"publishState"}>Publish State</MenuItem>
-        </Select>
-      </FormControl>
-      <FormControl style={{ marginRight: 10, width: 150 }}>
-        <InputLabel id="demo-simple-select-label">Order By</InputLabel>
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          value={order}
-          onChange={({ target: { value } }) => setOrder(value)}>
-          <MenuItem value={"desc"}>Descending</MenuItem>
-          <MenuItem value={"asc"}>Ascending</MenuItem>
-        </Select>
-      </FormControl>
-
       {view === "grid" ? (
         <Box className={classes.root}>
           <GridList cellHeight={250} className={classes.gridList}>
@@ -268,105 +250,105 @@ export default (props) => {
           </GridList>
         </Box>
       ) : (
-          <MaterialTable
-            tableRef={tableRef}
-            title="Your Video Templates"
-            onRowClick={(e, { id }) => {
-              history.push(`${path}${id}`);
-            }}
-            columns={[
-              {
-                title: "Title",
-                field: "title",
-                render: ({ title, thumbnail }) => (
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      alignItems: "center",
-                    }}>
-                    <Avatar
-                      style={{ marginRight: 10, height: 30, width: 30 }}
-                      alt="thumbnail"
-                      src={thumbnail}
-                    />{" "}
-                    {title}
-                  </div>
-                ),
+        <MaterialTable
+          tableRef={tableRef}
+          title="Your Video Templates"
+          onRowClick={(e, { id }) => {
+            history.push(`${path}${id}`);
+          }}
+          columns={[
+            {
+              title: "Title",
+              field: "title",
+              render: ({ title, thumbnail }) => (
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}>
+                  <Avatar
+                    style={{ marginRight: 10, height: 30, width: 30 }}
+                    alt="thumbnail"
+                    src={thumbnail}
+                  />{" "}
+                  {title}
+                </div>
+              ),
+            },
+            {
+              title: "Versions",
+              render: ({ versions }) => <span>{versions.length}</span>,
+            },
+            {
+              title: "Publish State",
+              field: "publishState",
+              render: function ({
+                publishState = "unpublished",
+                rejectionReason = null,
+              }) {
+                return (
+                  <Tooltip
+                    TransitionComponent={Fade}
+                    title={rejectionReason ? publishState : rejectionReason}>
+                    <Chip
+                      size="small"
+                      label={publishState}
+                      style={{
+                        background: getColorFromState(publishState),
+                        color: "white",
+                      }}
+                    />
+                  </Tooltip>
+                );
               },
-              {
-                title: "Versions",
-                render: ({ versions }) => <span>{versions.length}</span>,
-              },
-              {
-                title: "Publish State",
-                field: "publishState",
-                render: function ({
-                  publishState = "unpublished",
-                  rejectionReason = null,
-                }) {
-                  return (
-                    <Tooltip
-                      TransitionComponent={Fade}
-                      title={rejectionReason ? publishState : rejectionReason}>
-                      <Chip
-                        size="small"
-                        label={publishState}
-                        style={{
-                          background: getColorFromState(publishState),
-                          color: "white",
-                        }}
-                      />
-                    </Tooltip>
-                  );
-                },
-              },
-              {
-                title: "Last Updated",
-                field: "dateUpdated",
-                type: "datetime",
-                render: ({ dateUpdated }) => (
-                  <span>{timeago.format(dateUpdated)}</span>
-                ),
-              },
-            ]}
-            localization={{
-              body: {
-                emptyDataSourceMessage: error ? (
-                  <Button
-                    onClick={handleRetry}
-                    color="secondary"
-                    variant="outlined"
-                    children={"Retry"}
-                  />
-                ) : (
-                    <Typography>
-                      <Link component={RouterLink} to={`${path}add`}>
-                        Click here
+            },
+            {
+              title: "Last Updated",
+              field: "dateUpdated",
+              type: "datetime",
+              render: ({ dateUpdated }) => (
+                <span>{timeago.format(dateUpdated)}</span>
+              ),
+            },
+          ]}
+          localization={{
+            body: {
+              emptyDataSourceMessage: error ? (
+                <Button
+                  onClick={handleRetry}
+                  color="secondary"
+                  variant="outlined"
+                  children={"Retry"}
+                />
+              ) : (
+                <Typography>
+                  <Link component={RouterLink} to={`${path}add`}>
+                    Click here
                   </Link>{" "}
                   to create a Video Template😀
-                    </Typography>
-                  ),
-              },
-            }}
-            detailPanel={[
-              {
-                render: (rowData) => (
-                  <ReactJson
-                    displayDataTypes={false}
-                    name={rowData.id}
-                    collapsed={1}
-                    src={rowData}
-                  />
-                ),
-                icon: "code",
-                tooltip: "Show Code",
-              },
-            ]}
-            actions={
-              role === "Admin"
-                ? []
-                : [
+                </Typography>
+              ),
+            },
+          }}
+          detailPanel={[
+            {
+              render: (rowData) => (
+                <ReactJson
+                  displayDataTypes={false}
+                  name={rowData.id}
+                  collapsed={1}
+                  src={rowData}
+                />
+              ),
+              icon: "code",
+              tooltip: "Show Code",
+            },
+          ]}
+          actions={
+            role === "Admin"
+              ? []
+              : [
                   {
                     icon: () => <PublishIcon />,
                     tooltip: `Publish your template`,
@@ -398,6 +380,7 @@ export default (props) => {
                     icon: "add",
                     tooltip: "Add Video Template",
                     isFreeAction: true,
+                    render: () => <RoleBasedView></RoleBasedView>,
                     onClick: () => history.push(`${url}/add`),
                   },
 
@@ -416,23 +399,33 @@ export default (props) => {
                     },
                   },
                   {
+                    icon: "sort",
+                    tooltip: "Drafted Templates",
+                    isFreeAction: true,
+                    style: { backgroundColor: "blue" },
+                    render: () => <RoleBasedView></RoleBasedView>,
+                    onClick: () => {
+                      history.push(`${url}/drafts`);
+                    },
+                  },
+                  {
                     icon: "refresh",
                     tooltip: "Refresh Data",
                     isFreeAction: true,
                     onClick: handleRetry,
                   },
                 ]
-            }
-            data={getDataFromQuery}
-            options={{
-              sorting: false,
-              pageSize: parseInt(queryParam?.get("size")) || 20,
-              headerStyle: { fontWeight: 700 },
-              minBodyHeight: 500,
-              actionsColumnIndex: -1,
-            }}
-          />
-        )}
+          }
+          data={getDataFromQuery}
+          options={{
+            sorting: false,
+            pageSize: parseInt(queryParam?.get("size")) || 20,
+            headerStyle: { fontWeight: 700 },
+            minBodyHeight: 500,
+            actionsColumnIndex: -1,
+          }}
+        />
+      )}
 
       <TestJobDialog
         open={isDialogOpen}

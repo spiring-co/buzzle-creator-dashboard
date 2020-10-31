@@ -12,6 +12,7 @@ import { Alert } from "@material-ui/lab";
 import { Job, VideoTemplate, Creator } from "services/api";
 import React, { useState, useEffect } from "react";
 import { useHistory, useParams, useRouteMatch } from "react-router-dom";
+import DeleteIcon from "@material-ui/icons/Delete";
 import useApi from "services/apiHook";
 import { zipMaker } from "helpers/downloadTemplateHelper";
 import Table from "@material-ui/core/Table";
@@ -128,33 +129,41 @@ export default () => {
     <div>
       {loading || isDeleting || isLoading ? <CustomProgress /> : ""}
       {error && <Alert severity="error" children={`${error.message}`} />}
-      <Paper style={{ padding: 20 }}>
-        <Container>
-          {(data?.versions ?? [])[0]?.sample === undefined ? (
-            <Typography>{"sample video not found"}</Typography>
-          ) : (
-            <video
-              id="sample"
-              controls={true}
-              style={{ width: 300, height: 200, marginTop: 10 }}
-              src={(data?.versions ?? [])[0]?.sample} 
-            />
-          )}
-          <div>
-            <Typography variant="h6">{data?.title}</Typography>
-            <Typography>{data?.description}</Typography>
-            <Box>
-              <Typography style={{ marginTop: 10 }}>Publish State</Typography>
-              <Chip
-                size="small"
-                label={data?.publishState?.toUpperCase() ?? "UNPUBLISHED"}
-                style={{
-                  background: getColorFromState(
-                    data?.publishState ?? "unpublished"
-                  ),
-                  color: "white",
-                }}
+      <Paper>
+        <Container style={{ display: "flex", flexDirection: "row" }}>
+          <div style={{ margin: 20 }}>
+            {(data?.versions ?? [])[0]?.sample === undefined ? (
+              <Typography>{"sample video not found"}</Typography>
+            ) : (
+              <video
+                id="sample"
+                controls={true}
+                style={{ width: 300, height: 200, marginTop: 10 }}
+                src={(data?.versions ?? [])[0]?.sample}
               />
+            )}
+          </div>
+          <div style={{ marginTop: 50 }}>
+            <Typography style={{ marginBottom: 20 }} variant="h6">
+              {data?.title}
+            </Typography>
+            <Typography>{data?.description}</Typography>
+            <Box
+              style={{
+                display: "flex",
+                flexDirection: "row",
+              }}>
+              <Typography style={{ marginTop: 10, marginBottom: 20 }}>
+                Publish State :{" "}
+              </Typography>
+              <Typography
+                style={{
+                  color: getColorFromState(data?.publishState ?? "unpublished"),
+                  marginTop: 10,
+                  marginLeft: 10,
+                }}>
+                {data?.publishState?.toUpperCase() ?? "UNPUBLISHED"}
+              </Typography>
             </Box>
             {data?.rejectionReason && (
               <Box>
@@ -271,11 +280,12 @@ export default () => {
                 {isLoading ? "Preparing..." : "Download template with assets"}
               </Button>
               <Button
-                style={{ margin: 10 }}
+                style={{ marginLeft: 20 }}
                 disabled={isDeleting}
-                variant="outlined"
+                variant="contained"
                 color="secondary"
                 onClick={handleDelete}>
+                <DeleteIcon />
                 {isDeleting ? "Deleting..." : "Delete"}
               </Button>
             </RoleBasedView>
