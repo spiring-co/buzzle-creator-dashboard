@@ -8,41 +8,28 @@ import {
   ListItemSecondaryAction,
   Paper,
   Button,
+  RootRef,
 } from "@material-ui/core";
-import RootRef from "@material-ui/core/RootRef";
+
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import EditIcon from "@material-ui/icons/Edit";
+
 import ActionDialog from "components/ActionDialog";
 import PreRender from "components/PreRender";
 import PostRender from "components/PostRender";
-// a little function to help us with reordering the result
-const reorder = (listArray, sourceIndex, targetIndex) => {
-  const temp = listArray[sourceIndex];
-  listArray[sourceIndex] = listArray[targetIndex];
-  listArray[targetIndex] = temp;
-  return listArray;
-};
 
-const getItemStyle = (isDragging, draggableStyle) => ({
-  // styles we need to apply on draggables
-  ...draggableStyle,
-  ...(isDragging && {
-    background: "rgb(235,235,235)",
-  }),
-});
-
-const getListStyle = () => ({
-  //background: isDraggingOver ? 'lightblue' : 'lightgrey',
-});
 
 export default ({ prerender, postrender, onSubmit }) => {
-  const [prerenderActions, setPrerenderActions] = useState(prerender);
-  const [editIndex, setEditIndex] = useState(0);
-  const [postrenderActions, setPostrenderActions] = useState(postrender);
-  const [actionType, setActionType] = useState(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [initialValue, setInitialValue] = useState({});
+
   const [isEdit, setIsEdit] = useState(false);
+  const [editIndex, setEditIndex] = useState(0);
+  const [actionType, setActionType] = useState(null);
+  const [initialValue, setInitialValue] = useState({});
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const [prerenderActions, setPrerenderActions] = useState(prerender);
+  const [postrenderActions, setPostrenderActions] = useState(postrender);
+
   const onDragEndPrerender = (result) => {
     // dropped outside the list
     if (!result.destination) {
@@ -52,6 +39,7 @@ export default ({ prerender, postrender, onSubmit }) => {
       reorder(prerenderActions, result.source.index, result.destination.index)
     );
   };
+
   const handleSubmit = () => {
     onSubmit({
       prerender: prerenderActions.map((action, index) =>
@@ -163,7 +151,7 @@ export default ({ prerender, postrender, onSubmit }) => {
               <List style={getListStyle(snapshot.isDraggingOver)}>
                 {prerenderActions.length !== 0 ? (
                   prerenderActions.map((item, index) => {
-                    var name = Object.keys(item)[0];
+                    const name = Object.keys(item)[0];
                     return (
                       <Draggable key={name} draggableId={name} index={index}>
                         {(provided, snapshot) => (
@@ -230,7 +218,7 @@ export default ({ prerender, postrender, onSubmit }) => {
               <List style={getListStyle(snapshot.isDraggingOver)}>
                 {postrenderActions.length !== 0 ? (
                   postrenderActions.map((item, index) => {
-                    var name = Object.keys(item)[0];
+                    const name = Object.keys(item)[0];
                     return (
                       <Draggable key={name} draggableId={name} index={index}>
                         {(provided, snapshot) => (
@@ -296,3 +284,23 @@ export default ({ prerender, postrender, onSubmit }) => {
     </Paper>
   );
 };
+
+// a little function to help us with reordering the result
+const reorder = (listArray, sourceIndex, targetIndex) => {
+  const temp = listArray[sourceIndex];
+  listArray[sourceIndex] = listArray[targetIndex];
+  listArray[targetIndex] = temp;
+  return listArray;
+};
+
+const getItemStyle = (isDragging, draggableStyle) => ({
+  // styles we need to apply on draggables
+  ...draggableStyle,
+  ...(isDragging && {
+    background: "rgb(235,235,235)",
+  }),
+});
+
+const getListStyle = () => ({
+  //background: isDraggingOver ? 'lightblue' : 'lightgrey',
+});

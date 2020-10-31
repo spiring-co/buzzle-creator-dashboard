@@ -1,7 +1,10 @@
 {
     "cSpell.ignoreWords": [
+        "actions",
         "formik",
         "jwtoken",
+        "prerender",
+        "prerender actions",
         "register"
     ],
     "cSpell.words": [

@@ -267,15 +267,15 @@ export default function NavBar({ items }) {
 
         <List>
           {items.map((item, index) => (
-            <RoleBasedView key={index} allowedRoles={item?.allowedRoles ?? []}>
-              <ListItemLink
-                key={index}
-                to={item.to}
-                primary={item.text}
-                icon={item.icon}
-              />
-            </RoleBasedView>
+            <ListItemLink
+              key={index}
+              to={item.to}
+              primary={item.text}
+              icon={item.icon}
+            />
           ))}
+          {/* <RoleBasedView key={index} allowedRoles={item?.allowedRoles ?? []}> */}
+          {/* </RoleBasedView> */}
         </List>
       </Drawer>
     </div>

@@ -40,7 +40,6 @@ import ImageEditRow from "components/ImageEditRow";
 
 import { Job } from "services/api";
 
-
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
   return (
@@ -95,7 +94,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default () => {
-  
   const [job, setJob] = useState({});
   const [error, setError] = useState(false);
   const [socket, setSocket] = useState(null);
@@ -104,19 +102,20 @@ export default () => {
   const [activeTabIndex, setActiveTabIndex] = useState(0);
   const [rtProgressData, setRtProgressData] = useState({});
   const [selectedOutputIndex, setSelectedOutputIndex] = useState(0);
-  
+
   const { id } = useParams();
   const classes = useStyles();
   const history = useHistory();
 
-  // fetch job on init 
+  // fetch job on init
   useEffect(() => {
     fetchJob();
   }, []);
 
-  // rerender on output select 
+  // rerender on output select
   useEffect(() => {}, [selectedOutputIndex]);
 
+  // init socket on mount
   useEffect(() => {
     setSocket(io.connect(process.env.REACT_APP_EVENTS_SOCKET_URL));
   }, []);
@@ -221,6 +220,7 @@ export default () => {
     (a, b) => new Date(b?.dateCreated) - new Date(a?.dateCreated)
   );
   let percent = rtProgressData[id]?.percent;
+
   const content = {
     "Job ID": id,
     State: progressShow(failureReason, state, percent),
@@ -248,7 +248,10 @@ export default () => {
     setJob({ ...job, data: job.data });
   };
 
-  if (redirect) return <Redirect to="/home/jobs" />;
+  if (redirect) {
+    return <Redirect to="/home/jobs" />;
+  }
+
   if (isLoading) {
     return (
       <Paper className={classes.loading}>
@@ -262,7 +265,7 @@ export default () => {
     <>
       {error && (
         <ErrorHandler
-          message={error?.message ?? "Oop's, Somethings went wrong!"}
+          message={error?.message ?? "Somethings went wrong!"}
           showRetry={true}
           onRetry={() =>
             Object.keys(job).length ? handleUpdateJob() : fetchJob()
@@ -270,6 +273,7 @@ export default () => {
         />
       )}
       <div className={classes.root}>
+        {/* actions bar  */}
         <Box display="flex">
           <Box p={1} justifyItems="stretch" alignItems="right" flex={1}>
             <Button
@@ -339,6 +343,8 @@ export default () => {
             </IconButton>
           </Box>
         </Box>
+
+        {/* output */}
         <Paper>
           {state === "finished" ? (
             <video
@@ -373,6 +379,7 @@ export default () => {
             </Tabs>
           </AppBar>
 
+          {/* Details tab */}
           <TabPanel value={activeTabIndex} index={0}>
             <Grid xs={12} item>
               <Box p={2}>
@@ -391,6 +398,8 @@ export default () => {
               </Box>
             </Grid>
           </TabPanel>
+
+          {/* data tab  */}
           <TabPanel value={activeTabIndex} index={1}>
             <MaterialTable
               style={{ boxShadow: "none" }}
@@ -479,6 +488,8 @@ export default () => {
               title="Data"
             />
           </TabPanel>
+
+          {/* actions tab  */}
           <TabPanel value={activeTabIndex} index={2}>
             <ActionsHandler
               onSubmit={(actions) => setJob({ ...job, actions })}
@@ -505,6 +516,8 @@ export default () => {
               }
             />
           </TabPanel>
+
+          {/* render settings tab */}
           <TabPanel value={activeTabIndex} index={3}>
             <Box display="flex" flexDirection="column" px={8}>
               <FormControl>
@@ -559,13 +572,13 @@ export default () => {
                 type="number"
               />
             </Box>
-            {/* onSubmit={(values) => setJob({ ...job, renderPrefs: values })} */}
           </TabPanel>
         </Paper>
       </div>
     </>
   );
 };
+
 const getColorFromState = (state, percent) => {
   switch (state) {
     case "finished":
@@ -580,9 +593,3 @@ const getColorFromState = (state, percent) => {
       return "grey";
   }
 };
-// settingsTemplate,
-// outputModule,
-// outputExt,
-// frameEnd,
-// frameStart,
-// incrementFrame,
