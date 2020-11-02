@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { Route, Switch, useRouteMatch } from "react-router-dom";
 import JobDetails from "./JobDetails";
-import { Route, Switch, useRouteMatch, useHistory } from "react-router-dom";
 import JobsTable from "./JobsTable";
 
 export default () => {

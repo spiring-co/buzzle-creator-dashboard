@@ -1,30 +1,32 @@
+import React, { useEffect, useState } from "react";
+import { useHistory, useParams, useRouteMatch } from "react-router-dom";
+
 import {
+  Box,
   Button,
+  Container,
   LinearProgress,
   Paper,
   Typography,
-  Container,
-  Box,
   withStyles,
-  Chip,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
 } from "@material-ui/core";
+
 import { Alert } from "@material-ui/lab";
-import { Job, VideoTemplate, Creator } from "services/api";
-import React, { useState, useEffect } from "react";
-import { useHistory, useParams, useRouteMatch } from "react-router-dom";
 import DeleteIcon from "@material-ui/icons/Delete";
-import useApi from "services/apiHook";
-import { zipMaker } from "helpers/downloadTemplateHelper";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import formatTime from "helpers/formatTime";
+
+import { VideoTemplate } from "services/api";
 import { useCurrency } from "services/currencyContext";
-import RejectionReasonPrompt from "./RejectionReasonPrompt";
+
+import { zipMaker } from "helpers/downloadTemplateHelper";
+import formatTime from "helpers/formatTime";
+
 import RoleBasedView from "components/RoleBasedView";
+import RejectionReasonPrompt from "../RejectionReasonPrompt";
 
 const CustomProgress = withStyles({
   colorPrimary: {
@@ -36,16 +38,20 @@ const CustomProgress = withStyles({
 })(LinearProgress);
 
 export default () => {
-  const { url } = useRouteMatch();
   const { id } = useParams();
+  const { url } = useRouteMatch();
   const history = useHistory();
+
   const { getConvertedCurrency } = useCurrency();
+  
   const [isDeleting, setIsDeleting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [error, setError] = useState(null);
+  
   const [data, setData] = useState({});
+  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  
   useEffect(() => {
     init();
   }, []);
@@ -65,6 +71,7 @@ export default () => {
     await zipMaker(data?.staticAssets, data?.src);
     setIsLoading(false);
   };
+
   const handleEdit = async () => {
     history.push({
       pathname: `${url}/edit`,
@@ -74,6 +81,7 @@ export default () => {
       },
     });
   };
+
   const StyledTableCell = withStyles((theme) => ({
     head: {
       backgroundColor: theme.palette.common.black,

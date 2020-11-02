@@ -274,6 +274,7 @@ export default function NavBar({ items }) {
               icon={item.icon}
             />
           ))}
+          
           {/* <RoleBasedView key={index} allowedRoles={item?.allowedRoles ?? []}> */}
           {/* </RoleBasedView> */}
         </List>
