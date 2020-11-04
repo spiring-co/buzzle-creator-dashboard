@@ -87,8 +87,7 @@ export default () => {
     } = query;
 
     history.push(
-      `?page=${page + 1}&size=${pageSize}${
-        searchQuery ? "searchQuery=" + searchQuery : ""
+      `?page=${page + 1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
       }`
     );
 
@@ -224,7 +223,7 @@ export default () => {
             searchable: false,
             title: "State",
             field: "state",
-            render: function ({ id, state, failureReason }) {
+            render: ({ id, state, failureReason }) => {
               state = rtProgressData[id]?.state || state;
               let percent = rtProgressData[id]?.percent;
               return (
@@ -390,16 +389,14 @@ const filterObjectToString = (f) => {
     states = [],
   } = f;
 
-  return `${
-    startDate
-      ? `dateUpdated=>=${startDate}&dateUpdated=<=${endDate ?? startDate}&`
-      : ""
-  }${
-    idVideoTemplates.length !== 0
+  return `${startDate
+    ? `dateUpdated=>=${startDate}&dateUpdated=<=${endDate ?? startDate}&`
+    : ""
+    }${idVideoTemplates.length !== 0
       ? getArrayOfIdsAsQueryString(
-          "idVideoTemplate",
-          idVideoTemplates.map(({ id }) => id)
-        ) + "&"
+        "idVideoTemplate",
+        idVideoTemplates.map(({ id }) => id)
+      ) + "&"
       : ""
-  }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
+    }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
 };
