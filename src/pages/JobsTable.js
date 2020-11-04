@@ -225,8 +225,7 @@ export default () => {
             field: "state",
             render: ({ id, state, failureReason }) => {
               state = rtProgressData[id]?.state || state;
-              console.log(state, "line 228", rtProgressData[id]?.state)
-              let percent = rtProgressData[id]?.percent;
+              // let percent = rtProgressData[id]?.percent;
               return (
                 <Tooltip
                   TransitionComponent={Fade}
@@ -239,11 +238,11 @@ export default () => {
                   }>
                   <Chip
                     size="small"
-                    label={`${state}${percent ? " " + percent + "%" : ""}`}
+                    label={`${state}${rtProgressData[id]?.percent ? " " + rtProgressData[id]?.percent + "%" : ""}`}
                     style={{
                       transition: "background-color 0.5s ease",
                       fontWeight: 700,
-                      background: getColorFromState(state, percent),
+                      background: getColorFromState(state, rtProgressData[id]?.percent),
                       color: "white",
                     }}
                   />
