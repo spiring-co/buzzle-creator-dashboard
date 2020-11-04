@@ -225,6 +225,7 @@ export default () => {
             field: "state",
             render: ({ id, state, failureReason }) => {
               state = rtProgressData[id]?.state || state;
+              console.log(state, "line 228", rtProgressData[id]?.state)
               let percent = rtProgressData[id]?.percent;
               return (
                 <Tooltip
