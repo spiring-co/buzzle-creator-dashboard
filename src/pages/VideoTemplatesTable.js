@@ -112,6 +112,11 @@ export default (props) => {
     setError(false);
     tableRef.current && tableRef.current.onQueryChange();
   };
+
+  useEffect(() => {
+    document.title = "Video Templates";
+  }, []);
+
   let { status, err } = deleteStatus;
   useEffect(() => {
     handleRetry();

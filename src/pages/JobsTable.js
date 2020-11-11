@@ -48,6 +48,10 @@ export default () => {
     handleRetry();
   }, [filters]);
 
+  useEffect(() => {
+    document.title = "Jobs";
+  }, []);
+
   // progress sockets
   const [jobIds, setJobIds] = useState([]);
   const [socket, setSocket] = useState(null);
@@ -66,8 +70,15 @@ export default () => {
   }
 
   useEffect(() => {
-    setSocket(io.connect(process.env.REACT_APP_EVENTS_SOCKET_URL));
+    setSocket(io.connect("http://localhost:5000"));
   }, []);
+
+  useEffect(() => {
+    if (!socket) {
+      return console.log("no socket");
+    }
+    socket.on("job:add", (data) => console.log("job add data" + data));
+  }, [socket]);
 
   useEffect(() => {
     jobIds.map(subscribeToProgress);
@@ -87,7 +98,8 @@ export default () => {
     } = query;
 
     history.push(
-      `?page=${page + 1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
+      `?page=${page + 1}&size=${pageSize}${
+        searchQuery ? "searchQuery=" + searchQuery : ""
       }`
     );
 
@@ -224,7 +236,7 @@ export default () => {
             title: "State",
             field: "state",
             render: ({ id, state, failureReason }) => {
-              const newState = (rtProgressData[id]?.state ?? state);
+              const newState = rtProgressData[id]?.state ?? state;
               // let percent = rtProgressData[id]?.percent;
               return (
                 <Tooltip
@@ -238,11 +250,18 @@ export default () => {
                   }>
                   <Chip
                     size="small"
-                    label={`${newState}${rtProgressData[id]?.percent ? " " + rtProgressData[id]?.percent + "%" : ""}`}
+                    label={`${newState}${
+                      rtProgressData[id]?.percent
+                        ? " " + rtProgressData[id]?.percent + "%"
+                        : ""
+                    }`}
                     style={{
                       transition: "background-color 0.5s ease",
                       fontWeight: 700,
-                      background: getColorFromState(newState, rtProgressData[id]?.percent),
+                      background: getColorFromState(
+                        newState,
+                        rtProgressData[id]?.percent
+                      ),
                       color: "white",
                     }}
                   />
@@ -389,14 +408,16 @@ const filterObjectToString = (f) => {
     states = [],
   } = f;
 
-  return `${startDate
-    ? `dateUpdated=>=${startDate}&dateUpdated=<=${endDate ?? startDate}&`
-    : ""
-    }${idVideoTemplates.length !== 0
-      ? getArrayOfIdsAsQueryString(
-        "idVideoTemplate",
-        idVideoTemplates.map(({ id }) => id)
-      ) + "&"
+  return `${
+    startDate
+      ? `dateUpdated=>=${startDate}&dateUpdated=<=${endDate ?? startDate}&`
       : ""
-    }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
+  }${
+    idVideoTemplates.length !== 0
+      ? getArrayOfIdsAsQueryString(
+          "idVideoTemplate",
+          idVideoTemplates.map(({ id }) => id)
+        ) + "&"
+      : ""
+  }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
 };

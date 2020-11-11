@@ -32,6 +32,10 @@ function ProfileEdit({ creator }) {
     Creator.update(creator?.id, data);
   };
 
+  useEffect(() => {
+    document.title = "Profile";
+  }, []);
+
   const { handleChange, values, handleSubmit, setFieldValue } = useFormik({
     initialValues: {
       name: creator.name,
