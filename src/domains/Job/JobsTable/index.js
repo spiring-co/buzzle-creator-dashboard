@@ -48,6 +48,10 @@ export default () => {
     handleRetry();
   }, [filters]);
 
+  useEffect(() => {
+    document.title = "Jobs";
+  }, []);
+
   // progress sockets
   const [jobIds, setJobIds] = useState([]);
   const [socket, setSocket] = useState(null);
@@ -66,8 +70,15 @@ export default () => {
   }
 
   useEffect(() => {
-    setSocket(io.connect(process.env.REACT_APP_EVENTS_SOCKET_URL));
+    setSocket(io.connect("http://localhost:5000"));
   }, []);
+
+  useEffect(() => {
+    if (!socket) {
+      return console.log("no socket");
+    }
+    socket.on("job:add", (data) => console.log("job add data" + data));
+  }, [socket]);
 
   useEffect(() => {
     jobIds.map(subscribeToProgress);
@@ -224,14 +235,14 @@ export default () => {
             searchable: false,
             title: "State",
             field: "state",
-            render: function ({ id, state, failureReason }) {
-              state = rtProgressData[id]?.state || state;
-              let percent = rtProgressData[id]?.percent;
+            render: ({ id, state, failureReason }) => {
+              const newState = rtProgressData[id]?.state ?? state;
+              // let percent = rtProgressData[id]?.percent;
               return (
                 <Tooltip
                   TransitionComponent={Fade}
                   title={
-                    state === "error"
+                    newState === "error"
                       ? failureReason
                         ? failureReason
                         : "Reason not given"
@@ -239,11 +250,18 @@ export default () => {
                   }>
                   <Chip
                     size="small"
-                    label={`${state}${percent ? " " + percent + "%" : ""}`}
+                    label={`${newState}${
+                      rtProgressData[id]?.percent
+                        ? " " + rtProgressData[id]?.percent + "%"
+                        : ""
+                    }`}
                     style={{
                       transition: "background-color 0.5s ease",
                       fontWeight: 700,
-                      background: getColorFromState(state, percent),
+                      background: getColorFromState(
+                        newState,
+                        rtProgressData[id]?.percent
+                      ),
                       color: "white",
                     }}
                   />
