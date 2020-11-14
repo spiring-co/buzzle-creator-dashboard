@@ -6,13 +6,11 @@ import * as timeago from "timeago.js";
 import ReactJson from "react-json-view";
 
 import {
-  Button,
   Chip,
   Typography,
   Container,
   Paper,
   Tooltip,
-  Box,
   Fade,
 } from "@material-ui/core";
 
@@ -70,7 +68,7 @@ export default () => {
   }
 
   useEffect(() => {
-    setSocket(io.connect("http://localhost:5000"));
+    setSocket(io.connect(process.env.REACT_APP_EVENTS_SOCKET_URL));
   }, []);
 
   useEffect(() => {
