@@ -15,9 +15,10 @@ export default () => {
       <Route path={`${path}/`} exact component={VideoTemplatesTable} />
       <Route path={`${path}/add`} exact component={VideoTemplateForm} />
       <Route path={`${path}/drafts`} exact component={VideoTemplateDrafts} />
-      <Route path={`${path}/:id`} component={VideoTemplateDetails} />
       <Route path={`${path}/:uid/edit`} component={VideoTemplateForm} />
       <Route path={`${path}/:id/publish`} component={VideoTemplatePublish} />
+      <Route path={`${path}/:id`} component={VideoTemplateDetails} />
+
 
     </Switch>
   );
