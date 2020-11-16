@@ -96,8 +96,7 @@ export default () => {
     } = query;
 
     history.push(
-      `?page=${page + 1}&size=${pageSize}${
-        searchQuery ? "searchQuery=" + searchQuery : ""
+      `?page=${page + 1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
       }`
     );
 
@@ -145,10 +144,7 @@ export default () => {
         <Container
           style={{ padding: 5, alignItems: "flex-end", display: "flex" }}>
           <Filters
-            onChange={(f) => {
-              console.log(f);
-              setFilters(f);
-            }}
+            onChange={setFilters}
             value={filters}
           />
         </Container>
@@ -248,11 +244,10 @@ export default () => {
                   }>
                   <Chip
                     size="small"
-                    label={`${newState}${
-                      rtProgressData[id]?.percent
+                    label={`${newState}${rtProgressData[id]?.percent
                         ? " " + rtProgressData[id]?.percent + "%"
                         : ""
-                    }`}
+                      }`}
                     style={{
                       transition: "background-color 0.5s ease",
                       fontWeight: 700,
@@ -406,16 +401,14 @@ const filterObjectToString = (f) => {
     states = [],
   } = f;
 
-  return `${
-    startDate
+  return `${startDate
       ? `dateUpdated=>=${startDate}&dateUpdated=<=${endDate ?? startDate}&`
       : ""
-  }${
-    idVideoTemplates.length !== 0
+    }${idVideoTemplates.length !== 0
       ? getArrayOfIdsAsQueryString(
-          "idVideoTemplate",
-          idVideoTemplates.map(({ id }) => id)
-        ) + "&"
+        "idVideoTemplate",
+        idVideoTemplates.map(({ id }) => id)
+      ) + "&"
       : ""
-  }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
+    }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
 };
