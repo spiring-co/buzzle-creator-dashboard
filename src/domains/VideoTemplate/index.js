@@ -18,8 +18,6 @@ export default () => {
       <Route path={`${path}/:uid/edit`} component={VideoTemplateForm} />
       <Route path={`${path}/:id/publish`} component={VideoTemplatePublish} />
       <Route path={`${path}/:id`} component={VideoTemplateDetails} />
-
-
     </Switch>
   );
 };

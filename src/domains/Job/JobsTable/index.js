@@ -57,8 +57,10 @@ export default () => {
 
   function subscribeToProgress(id) {
     if (!socket) return;
-    socket.on(id, (data) =>
-      setRtProgressData({ ...rtProgressData, [id]: data })
+    socket.on(id, (data) => {
+      // console.log("log", id, data, rtProgressData, { ...rtProgressData, [id]: data })
+      setRtProgressData(rtProgressData => ({ ...rtProgressData, [id]: data }))
+    }
     );
   }
 
@@ -232,6 +234,7 @@ export default () => {
             render: ({ id, state, failureReason }) => {
               const newState = rtProgressData[id]?.state ?? state;
               // let percent = rtProgressData[id]?.percent;
+              // console.log(rtProgressData, newState, rtProgressData[id]?.state, state)
               return (
                 <Tooltip
                   TransitionComponent={Fade}
@@ -245,8 +248,8 @@ export default () => {
                   <Chip
                     size="small"
                     label={`${newState}${rtProgressData[id]?.percent
-                        ? " " + rtProgressData[id]?.percent + "%"
-                        : ""
+                      ? " " + rtProgressData[id]?.percent + "%"
+                      : ""
                       }`}
                     style={{
                       transition: "background-color 0.5s ease",
@@ -402,8 +405,8 @@ const filterObjectToString = (f) => {
   } = f;
 
   return `${startDate
-      ? `dateUpdated=>=${startDate}&dateUpdated=<=${endDate ?? startDate}&`
-      : ""
+    ? `dateUpdated=>=${startDate}&dateUpdated=<=${endDate ?? startDate}&`
+    : ""
     }${idVideoTemplates.length !== 0
       ? getArrayOfIdsAsQueryString(
         "idVideoTemplate",
