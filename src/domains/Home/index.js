@@ -22,7 +22,7 @@ import RoleBasedRoute from "common/RoleBasedRoute";
 import Creators from "pages/Creators";
 import Users from "pages/Users";
 import ChangePassword from "domains/ChangePassword";
-import Servers from "Servers";
+import Servers from "domains/Servers";
 
 const useStyles = makeStyles((theme) =>
   createStyles({

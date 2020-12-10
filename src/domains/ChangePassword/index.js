@@ -17,7 +17,7 @@ import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 import { Creator } from "services/api";
 import * as Yup from "yup";
-import { useAuth } from "../services/auth";
+import { useAuth } from "services/auth";
 
 const useStyles = makeStyles((theme) =>
   createStyles({

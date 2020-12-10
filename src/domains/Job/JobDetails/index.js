@@ -34,7 +34,7 @@ import io from "socket.io-client";
 
 import formatTime from "helpers/formatTime";
 
-import ActionsHandler from "common/ActionsHandler";
+import ActionsHandler from "./ActionsHandler";
 import ErrorHandler from "common/ErrorHandler";
 import ImageEditRow from "./ImageEditRow";
 
@@ -113,7 +113,7 @@ export default () => {
   }, []);
 
   // rerender on output select
-  useEffect(() => {}, [selectedOutputIndex]);
+  useEffect(() => { }, [selectedOutputIndex]);
 
   // init socket on mount
   useEffect(() => {
@@ -354,16 +354,16 @@ export default () => {
               src={sortedOutput.length && sortedOutput[selectedOutputIndex].src}
             />
           ) : (
-            <>
-              <Box justifyContent="center" textAlign="center" height={320}>
-                <Typography style={{ padding: 100 }}>
-                  {" "}
+              <>
+                <Box justifyContent="center" textAlign="center" height={320}>
+                  <Typography style={{ padding: 100 }}>
+                    {" "}
                   No output yet.
                 </Typography>
-              </Box>
-              <Divider />
-            </>
-          )}
+                </Box>
+                <Divider />
+              </>
+            )}
           <AppBar position="static" color="transparent" elevation={0}>
             <Tabs
               value={activeTabIndex}
@@ -438,7 +438,7 @@ export default () => {
                     return (
                       <span>
                         {value.startsWith("http://") ||
-                        value.startsWith("https://")
+                          value.startsWith("https://")
                           ? "image"
                           : "string"}
                       </span>
