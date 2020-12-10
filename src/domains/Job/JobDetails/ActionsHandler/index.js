@@ -14,7 +14,7 @@ import {
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import EditIcon from "@material-ui/icons/Edit";
 
-import ActionDialog from "common/ActionDialog";
+import ActionDialog from "./ActionDialog";
 import PreRender from "common/PreRender";
 import PostRender from "common/PostRender";
 
@@ -193,8 +193,8 @@ export default ({ prerender, postrender, onSubmit }) => {
                     );
                   })
                 ) : (
-                  <p>No Action</p>
-                )}
+                    <p>No Action</p>
+                  )}
                 {provided.placeholder}
               </List>
             </RootRef>
@@ -260,8 +260,8 @@ export default ({ prerender, postrender, onSubmit }) => {
                     );
                   })
                 ) : (
-                  <p>No Action</p>
-                )}
+                    <p>No Action</p>
+                  )}
                 {provided.placeholder}
               </List>
             </RootRef>
