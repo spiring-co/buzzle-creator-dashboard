@@ -1,8 +1,8 @@
 import React from "react";
 import { Route, Switch, useRouteMatch } from "react-router-dom";
 
-import UsersTable from "pages/UsersTable";
-import UserDetails from "pages/UserDetails";
+import UsersTable from "./UserTable";
+import UserDetails from "./UserDetails";
 import { Typography } from "@material-ui/core";
 
 export default () => {

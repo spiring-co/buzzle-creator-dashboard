@@ -8,15 +8,19 @@ import { DarkModeProvider, useDarkMode } from "helpers/useDarkMode";
 import PrivateRoute from "common/PrivateRoute";
 // pages
 // import AddVideoTemplateOutline from "pages/AddVideoTemplateOutline";
-import AdminLogin from "domains/AdminLogin";
 import ForgotPassword from "domains/ForgotPassword";
-import Home from "domains/Home";
+import Domains from "domains";
+import NotFound from "domains/NotFound";
+
 import Landing from "domains/Landing";
-import Login from "domains/Login";
-import NotFoundPage from "domains/NotFoundPage";
-import Register from "domains/Register";
-import UserLogin from "domains/UserLogin";
-import UserRegister from "domains/UserRegister";
+import AdminLogin from "domains/Auth/AdminAuth/Login";
+
+import Register from "domains/Auth/CreatorAuth/Signup";
+import Login from "domains/Auth/CreatorAuth/Login";
+
+import UserLogin from "domains/Auth/UserAuth/Login";
+import UserRegister from "domains/Auth/UserAuth/Signup";
+
 
 import {
   Route,
@@ -47,8 +51,8 @@ const AppChild = () => {
 
             <Route path="/forgotPassword" component={ForgotPassword} />
 
-            <PrivateRoute path="/home" component={Home} />
-            <Route path="*" component={NotFoundPage} />
+            <PrivateRoute path="/home" component={Domains} />
+            <Route path="*" component={NotFound} />
           </Switch>
         </Router>
       </MuiThemeProvider>

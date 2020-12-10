@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import { Button } from "@material-ui/core";
-import LayerBuilder from "common/formSchemaBuildercommon/LayerBuilder";
+import LayerBuilder from "./LayerBuilder";
 import { VideoTemplateContext } from "contextStore/store";
 
 export default ({
@@ -13,7 +13,7 @@ export default ({
   onCancel,
 }) => {
   const [videoObj] = useContext(VideoTemplateContext);
-  useEffect(() => {}, [isEdit]);
+  useEffect(() => { }, [isEdit]);
   return (
     <form
       onSubmit={(e) => {

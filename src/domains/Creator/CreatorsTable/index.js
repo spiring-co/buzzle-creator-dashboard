@@ -15,7 +15,6 @@ import { Job, VideoTemplate, Creator, Search } from "services/api";
 import PublishIcon from '@material-ui/icons/Publish';
 import ErrorHandler from "common/ErrorHandler";
 import SnackAlert from "common/SnackAlert";
-import TestJobDialog from "common/TestJobDialog";
 import MaterialTable from "material-table";
 import React, { useEffect, useRef, useState } from "react";
 import ReactJson from "react-json-view";
@@ -26,7 +25,6 @@ import {
 } from "react-router-dom";
 import { useAuth } from "services/auth";
 import * as timeago from "timeago.js";
-import RoleBasedView from "common/RoleBasedView";
 
 export default (props) => {
     let { url, path } = useRouteMatch();

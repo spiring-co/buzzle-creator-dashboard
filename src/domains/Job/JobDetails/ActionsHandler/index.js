@@ -15,8 +15,8 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import EditIcon from "@material-ui/icons/Edit";
 
 import ActionDialog from "./ActionDialog";
-import PreRender from "common/PreRender";
-import PostRender from "common/PostRender";
+import PreRender from "./PreRender";
+import PostRender from "./PostRender";
 
 export default ({ prerender, postrender, onSubmit }) => {
   const [isEdit, setIsEdit] = useState(false);

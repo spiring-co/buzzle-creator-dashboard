@@ -10,19 +10,18 @@ import {
     Typography, Avatar,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import GridOnIcon from "@material-ui/icons/GridOn";
-import AddIcon from "@material-ui/icons/Add";
-import InfoIcon from "@material-ui/icons/Info";
-import QueuePlayNextIcon from '@material-ui/icons/QueuePlayNext';
-import ListIcon from "@material-ui/icons/List";
-import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
-import ToggleButton from "@material-ui/lab/ToggleButton";
-import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
+// import GridOnIcon from "@material-ui/icons/GridOn";
+// import AddIcon from "@material-ui/icons/Add";
+// import InfoIcon from "@material-ui/icons/Info";
+// import QueuePlayNextIcon from '@material-ui/icons/QueuePlayNext';
+// import ListIcon from "@material-ui/icons/List";
+// import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
+// import ToggleButton from "@material-ui/lab/ToggleButton";
+// import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import { Job, VideoTemplate, Creator } from "services/api";
-import PublishIcon from '@material-ui/icons/Publish';
+// import PublishIcon from '@material-ui/icons/Publish';
 import ErrorHandler from "common/ErrorHandler";
 import SnackAlert from "common/SnackAlert";
-import TestJobDialog from "common/TestJobDialog";
 import MaterialTable from "material-table";
 import React, { useEffect, useRef, useState } from "react";
 import ReactJson from "react-json-view";

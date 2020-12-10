@@ -27,7 +27,7 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 import * as Yup from "yup";
-import { useAuth } from "../services/auth"
+import { useAuth } from "../../services/auth"
 
 const useStyles = makeStyles((theme) =>
     createStyles({
