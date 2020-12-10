@@ -27,7 +27,7 @@ import { Alert } from "@material-ui/lab";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 
 // components
-import PublishSteps from "components/PublishSteps";
+import PublishSteps from "./PublishSteps";
 
 // services
 import useApi from "services/apiHook";

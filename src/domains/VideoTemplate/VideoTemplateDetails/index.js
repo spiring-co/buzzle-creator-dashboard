@@ -25,7 +25,7 @@ import { useCurrency } from "services/currencyContext";
 import { zipMaker } from "helpers/downloadTemplateHelper";
 import formatTime from "helpers/formatTime";
 
-import RoleBasedView from "components/RoleBasedView";
+import RoleBasedView from "common/RoleBasedView";
 import RejectionReasonPrompt from "../RejectionReasonPrompt";
 
 const CustomProgress = withStyles({

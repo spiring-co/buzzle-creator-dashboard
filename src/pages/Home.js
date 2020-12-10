@@ -1,3 +1,4 @@
+import React from "react";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
 import {
   AssignmentInd,
@@ -7,16 +8,17 @@ import {
   Work,
   SupervisedUserCircle,
 } from "@material-ui/icons";
+
 import Dashboard from "pages/Dashboard";
-import Jobs from "domains/Job";
 import Revenue from "pages/Revenue";
 import Profile from "pages/Profile";
+
+import Jobs from "domains/Job";
 import VideoTemplates from "domains/VideoTemplate";
-import React from "react";
 import StorageIcon from "@material-ui/icons/Storage";
 import { Route, Switch, useRouteMatch, Redirect } from "react-router-dom";
-import Navbar from "../components/Navbar";
-import RoleBasedRoute from "components/RoleBasedRoute";
+import Navbar from "../common/Navbar";
+import RoleBasedRoute from "common/RoleBasedRoute";
 import Creators from "pages/Creators";
 import Users from "pages/Users";
 import ChangePassword from "./ChangePassword";

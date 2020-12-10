@@ -9,7 +9,7 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import { Link, useHistory } from "react-router-dom";
-import Branding from "components/Branding";
+import Branding from "common/Branding";
 import { useTranslation } from "react-i18next";
 import notFoundIllustration from "assets/404.svg";
 import { ArrowBack } from "@material-ui/icons";

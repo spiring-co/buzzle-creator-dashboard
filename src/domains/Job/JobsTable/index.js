@@ -16,13 +16,13 @@ import {
 
 import MaterialTable from "material-table";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
-import ErrorHandler from "components/ErrorHandler";
+import ErrorHandler from "common/ErrorHandler";
 
 import formatTime from "helpers/formatTime";
 import { useDarkMode } from "helpers/useDarkMode";
 
 import { Job, Search } from "services/api";
-import Filters from "components/Filters";
+import Filters from "common/Filters";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);

@@ -20,9 +20,9 @@ import ToggleButton from "@material-ui/lab/ToggleButton";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import { Job, VideoTemplate, Creator } from "services/api";
 import PublishIcon from '@material-ui/icons/Publish';
-import ErrorHandler from "components/ErrorHandler";
-import SnackAlert from "components/SnackAlert";
-import TestJobDialog from "components/TestJobDialog";
+import ErrorHandler from "common/ErrorHandler";
+import SnackAlert from "common/SnackAlert";
+import TestJobDialog from "common/TestJobDialog";
 import MaterialTable from "material-table";
 import React, { useEffect, useRef, useState } from "react";
 import ReactJson from "react-json-view";
@@ -33,7 +33,7 @@ import {
 } from "react-router-dom";
 import { useAuth } from "services/auth";
 import * as timeago from "timeago.js";
-import RoleBasedView from "components/RoleBasedView";
+import RoleBasedView from "common/RoleBasedView";
 
 export default (props) => {
     let { url, path } = useRouteMatch();

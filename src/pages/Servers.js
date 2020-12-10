@@ -1,6 +1,6 @@
 import { Button, Chip, Container, Tooltip, } from "@material-ui/core";
 import { Job, VideoTemplate, Creator, ServerJobs } from "services/api";
-import ErrorHandler from "components/ErrorHandler";
+import ErrorHandler from "common/ErrorHandler";
 import { useDarkMode } from "helpers/useDarkMode";
 import MaterialTable from "material-table";
 import React, { useEffect, useRef, useState } from "react";

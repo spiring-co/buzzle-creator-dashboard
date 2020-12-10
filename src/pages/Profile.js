@@ -18,7 +18,7 @@ import { useFormik } from "formik";
 import React, { useEffect, useState } from "react";
 import EditIcon from "@material-ui/icons/Edit";
 import { useAuth } from "services/auth";
-import VerticalTabs from "components/VerticalTabs";
+import VerticalTabs from "common/VerticalTabs";
 import { Prompt } from "react-router-dom";
 import ChangePassword from "pages/ChangePassword";
 function ProfileEdit({ creator }) {

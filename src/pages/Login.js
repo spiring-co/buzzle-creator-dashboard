@@ -31,7 +31,7 @@ import { Alert } from "@material-ui/lab";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
-import Branding from "components/Branding";
+import Branding from "common/Branding";
 
 const useStyles = makeStyles((theme) =>
   createStyles({

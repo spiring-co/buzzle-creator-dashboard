@@ -34,9 +34,9 @@ import io from "socket.io-client";
 
 import formatTime from "helpers/formatTime";
 
-import ActionsHandler from "components/ActionsHandler";
-import ErrorHandler from "components/ErrorHandler";
-import ImageEditRow from "components/ImageEditRow";
+import ActionsHandler from "common/ActionsHandler";
+import ErrorHandler from "common/ErrorHandler";
+import ImageEditRow from "./ImageEditRow";
 
 import { Job } from "services/api";
 

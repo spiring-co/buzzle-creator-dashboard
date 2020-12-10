@@ -1,4 +1,7 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { Link, Redirect } from "react-router-dom";
+
 import {
   Button,
   Typography,
@@ -7,13 +10,14 @@ import {
   makeStyles,
   Container,
 } from "@material-ui/core";
-import { Link, Redirect } from "react-router-dom";
-import Branding from "components/Branding";
-import { useTranslation } from "react-i18next";
-import landingIllustration from "assets/landing.svg";
+
+
+import Branding from "common/Branding";
+
+import { useAuth } from "services/auth";
 import otherIllustration from "assets/404.svg";
 import videoIllustration from "assets/video.svg";
-import { useAuth } from "services/auth";
+import landingIllustration from "assets/landing.svg";
 
 const useStyles = makeStyles({
   hoverHighlight: {

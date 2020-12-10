@@ -1,17 +1,24 @@
+
+function greet(name) {
+  console.log("Hello " + name);
+}
+
+greet("Harsh");
+
+import React, { useState } from "react";
+import { Link as RouterLink, useHistory } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { useFormik } from "formik";
 import {
   Box,
   Button,
   Container,
-  FormControl,
-  FormHelperText,
   IconButton,
   InputAdornment,
-  InputLabel,
   Link,
   MenuItem,
   OutlinedInput,
   Paper,
-  Select,
   TextField,
   Typography,
 } from "@material-ui/core";
@@ -19,14 +26,10 @@ import { createStyles, makeStyles } from "@material-ui/core/styles";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import { Alert } from "@material-ui/lab";
-import { Job, VideoTemplate, Creator } from "services/api";
-import Branding from "components/Branding";
-import { countryList } from "components/CountryList";
-import { useFormik } from "formik";
-import React, { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { Link as RouterLink, useHistory } from "react-router-dom";
+
 import * as Yup from "yup";
+import Branding from "common/Branding";
+import { Creator } from "services/api";
 
 function renderCountryMenuItem(country) {
   return <MenuItem value={country}>{country}</MenuItem>;
@@ -43,6 +46,7 @@ const useStyles = makeStyles((theme) =>
     },
   })
 );
+
 
 export default () => {
   const { t } = useTranslation();
