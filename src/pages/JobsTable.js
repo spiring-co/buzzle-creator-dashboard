@@ -6,13 +6,11 @@ import * as timeago from "timeago.js";
 import ReactJson from "react-json-view";
 
 import {
-  Button,
   Chip,
   Typography,
   Container,
   Paper,
   Tooltip,
-  Box,
   Fade,
 } from "@material-ui/core";
 
@@ -235,7 +233,7 @@ export default () => {
                       ? failureReason
                         ? failureReason
                         : "Reason not given"
-                      : "finished/inProgress"
+                      : "Status"
                   }>
                   <Chip
                     size="small"

@@ -10,7 +10,7 @@
     "@material-ui/lab": "^4.0.0-alpha.53",
     "@material-ui/pickers": "^3.2.10",
     "aws-sdk": "^2.693.0",
-    "axios": "^0.19.2",
+    "axios": "^0.21.0",
     "buzzle-sdk": "^1.0.5",
     "formik": "^2.1.4",
     "get-orientation": "^1.1.2",
