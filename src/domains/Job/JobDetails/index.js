@@ -24,6 +24,7 @@ import {
 } from "@material-ui/core";
 
 import DeleteIcon from "@material-ui/icons/Delete";
+import HdIcon from '@material-ui/icons/Hd';
 import UpdateIcon from "@material-ui/icons/Update";
 import DownloadIcon from "@material-ui/icons/GetApp";
 import PublishIcon from "@material-ui/icons/Publish";
@@ -241,7 +242,18 @@ export default () => {
     console.log(job);
     setJob({ ...job, data: job.data });
   };
-
+  const renderJobInHd = async () => {
+    try {
+      const { data, actions, id, renderPrefs } = job;
+      setIsLoading(true);
+      await Job.update(id, { data, actions, renderPrefs: { settingsTemplate: 'full' } });
+      setIsLoading(false);
+      setRedirect("/home/jobs");
+    } catch (err) {
+      setIsLoading(false);
+      setError(err);
+    }
+  }
   const handleAssetDelete = async (index) => {
     const idArray = Object.keys(data);
     delete job.data[idArray[index]];
@@ -332,6 +344,12 @@ export default () => {
               aria-label="delete"
               className={classes.margin}>
               <DeleteIcon fontSize="inherit" />
+            </IconButton>
+            <IconButton
+              onClick={renderJobInHd}
+              aria-label="delete"
+              className={classes.margin}>
+              <HdIcon fontSize="inherit" />
             </IconButton>
             <IconButton
               aria-label="download"
