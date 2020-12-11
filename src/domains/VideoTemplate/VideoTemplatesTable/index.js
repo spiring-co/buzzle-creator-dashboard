@@ -86,7 +86,7 @@ export default (props) => {
       pageSize = 50,
       search: searchQuery = null,
       orderBy: { field: orderBy = "dateUpdated" } = {},
-      orderDirection = "asc",
+      orderDirection = "desc",
     } = query;
     console.log(query);
     history.push(
@@ -103,7 +103,7 @@ export default (props) => {
       ).then(({ data, count: totalCount }) => ({ data, page, totalCount }));
     }
 
-    return VideoTemplate.getAll(page + 1, pageSize, "", orderBy, 'desc')
+    return VideoTemplate.getAll(page + 1, pageSize, "", orderBy, orderDirection ? orderDirection : 'desc')
       .then(({ data, count: totalCount }) => {
         return { data, page, totalCount };
       })

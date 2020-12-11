@@ -170,7 +170,7 @@ const getColorFromState = (state, percent) => {
         case "error":
             return "#f44336";
         case "started":
-            return "#fff000";
+            return "#ffa502";
         case "rendering":
             return `linear-gradient(90deg, #ffa502 ${percent}%, grey ${percent}%)`;
         default:

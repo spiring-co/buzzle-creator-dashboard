@@ -50,22 +50,17 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
         actionName === "mergeVideos"
             ? actionValue
             : {
-                module: "action-mergeVideos",
-                input: "encoded.mp4",
-                f1: ".mp4",
-                input1: "",
-                f2: "",
-                output: "",
+                module: "action-merge-videos",
+                input2: "",
+
             }
     );
     const [addAudio, setAddAudio] = useState(
-        actionName === "action-addAudio"
+        actionName === "addAudio"
             ? actionValue
             : {
-                module: "action-addAudio",
-                inputV: "encoded.mp4",
-                inputA: "",
-                output: "",
+                module: "action-add-audio",
+                audio: ""
             }
     );
 
@@ -215,53 +210,19 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
     const renderMergeVideos = () => {
         return (
             <>
-                <TextField
-                    fullWidth
-                    variant="outlined"
-                    margin="dense"
-                    value={mergeVideos.input}
-                    onChange={(e) => {
-                        const f1 = e?.target?.value.substr(
-                            e?.target?.value.lastIndexOf(".")
-                        );
-                        setMergeVideos({ ...mergeVideos, input: e.target.value.f1 });
-                        handleEdit({
-                            mergeVideos: { ...mergeVideos, f1, input: e?.target?.value },
-                        });
-                    }}
-                    type="text"
-                    label={"Input"}
-                    placeholder={"Enter Input filename"}
-                />
                 <FileUploader
-                    value={mergeVideos.input1}
+                    value={mergeVideos.input2}
                     onError={(e) => setFileError(e.message)}
                     onChange={(url) => {
-                        const f2 = url.substr(url.lastIndexOf("."));
-                        setMergeVideos({ ...mergeVideos, input1: url, f2 });
-                        handleEdit({ mergeVideos: { ...mergeVideos, input1: url, f2 } });
+                        setMergeVideos({ ...mergeVideos, input2: url, });
+                        handleEdit({ mergeVideos: { ...mergeVideos, input2: url, } });
                     }}
                     accept={"video/*"}
-                    name={"input1"}
+                    name={"input2"}
                     label="Video File To be Merged"
                     onTouched={() => setFileError(null)}
                     error={fileError}
                     helperText={"Choose Video to be merged"}
-                />
-                <TextField
-                    fullWidth
-                    variant="outlined"
-                    margin="dense"
-                    value={mergeVideos.output}
-                    onChange={(e) => {
-                        setMergeVideos({ ...mergeVideos, output: e.target.value });
-                        handleEdit({
-                            mergeVideos: { ...mergeVideos, output: e?.target?.value },
-                        });
-                    }}
-                    type="text"
-                    label={"Output"}
-                    placeholder={"Enter Output filename"}
                 />
             </>
         );
@@ -269,45 +230,19 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
     const renderAddAudio = () => {
         return (
             <>
-                <TextField
-                    fullWidth
-                    variant="outlined"
-                    margin="dense"
-                    value={addAudio.inputV}
-                    onChange={(e) => {
-                        setAddAudio({ ...addAudio, inputV: e.target.value });
-                        handleEdit({ addAudio: { ...addAudio, inputV: e?.target?.value } });
-                    }}
-                    type="text"
-                    label={"Input"}
-                    placeholder={"Enter Input filename"}
-                />
                 <FileUploader
-                    value={addAudio.addAudio}
+                    value={addAudio.audio}
                     onError={(e) => setFileError(e.message)}
                     onChange={(url) => {
-                        setAddAudio({ ...addAudio, inputA: url });
-                        handleEdit({ addAudio: { ...addAudio, inputA: url } });
+                        setAddAudio({ ...addAudio, audio: url });
+                        handleEdit({ addAudio: { ...addAudio, audio: url } });
                     }}
                     accept={"audio/*"}
-                    name={"inputA"}
+                    name={"audio"}
                     label="Audio File"
                     onTouched={() => setFileError(null)}
                     error={fileError}
                     helperText={"Choose Audio file."}
-                />
-                <TextField
-                    fullWidth
-                    variant="outlined"
-                    margin="dense"
-                    value={addAudio.output}
-                    onChange={(e) => {
-                        setAddAudio({ ...addAudio, output: e.target.value });
-                        handleEdit({ addAudio: { ...addAudio, output: e?.target?.value } });
-                    }}
-                    type="text"
-                    label={"Output"}
-                    placeholder={"Enter Output filename"}
                 />
             </>
         );

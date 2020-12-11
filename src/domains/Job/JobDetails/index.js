@@ -509,6 +509,10 @@ export default () => {
                       return { addWaterMark: action };
                     case "@nexrender/action-upload":
                       return { upload: action };
+                    case "action-add-audio":
+                      return { addAudio: action };
+                    case "action-merge-videos":
+                      return { mergeVideos: action };
                     default:
                       return;
                   }
