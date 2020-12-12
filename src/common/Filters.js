@@ -96,7 +96,8 @@ export default React.memo(
           // onClose={(e, r) => r ? r === 'blur' ?
           //   setFilters({ ...filters, idVideoTemplates: selectedTemplates }) : console.log(r) : setFilters({ ...filters, idVideoTemplates: selectedTemplates })}
           //
-          value={value?.idVideoTemplates}
+          value={value?.idVideoTemplates ?? []}
+          // defaultValue={value?.idVideoTemplates}
           options={videoTemplates}
           loading={loading}
           onChange={(e, v) => setFilters({ ...filters, idVideoTemplates: v })}
@@ -128,7 +129,7 @@ export default React.memo(
           multiple
           limitTags={1}
           id="checkboxes-tags-demo"
-          value={value?.states}
+          value={value?.states ?? []}
           options={["error", "created", "started", "finished"]}
           onChange={(e, v) => setFilters({ ...filters, states: v })}
           disableCloseOnSelect
@@ -184,10 +185,10 @@ export default React.memo(
             }}
           />
         ) : (
-          <div />
-        )}
+            <div />
+          )}
       </>
     );
   },
-  (prev, next) => true
+  (prev, next) => JSON.stringify(prev?.value) === JSON.stringify(next?.value)
 );
