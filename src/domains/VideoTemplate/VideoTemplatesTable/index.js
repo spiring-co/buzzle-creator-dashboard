@@ -27,7 +27,7 @@ import {
 import PublishIcon from "@material-ui/icons/Publish";
 
 // components
-import SnackAlert from "components/SnackAlert";
+import SnackAlert from "common/SnackAlert";
 import TestJobDialog from "../CreateTestJobDialog";
 
 // services

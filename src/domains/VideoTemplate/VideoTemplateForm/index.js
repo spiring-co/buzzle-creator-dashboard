@@ -2,9 +2,9 @@ import React, { useState, useContext } from "react";
 import { Prompt, useHistory } from "react-router-dom";
 
 import { Alert } from "@material-ui/lab";
-import { Job, VideoTemplate, Creator } from "services/api";
+import { VideoTemplate } from "services/api";
 
-import FormBuilder from "components/formSchemaBuilderComponents/FormBuilder";
+import FormBuilder from "./FormBuilder";
 import { StateProvider, VideoTemplateContext } from "contextStore/store";
 
 const AddTemplate = ({ location }) => {

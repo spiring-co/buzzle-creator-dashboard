@@ -24,6 +24,7 @@ import {
 } from "@material-ui/core";
 
 import DeleteIcon from "@material-ui/icons/Delete";
+import HdIcon from '@material-ui/icons/Hd';
 import UpdateIcon from "@material-ui/icons/Update";
 import DownloadIcon from "@material-ui/icons/GetApp";
 import PublishIcon from "@material-ui/icons/Publish";
@@ -34,9 +35,9 @@ import io from "socket.io-client";
 
 import formatTime from "helpers/formatTime";
 
-import ActionsHandler from "components/ActionsHandler";
-import ErrorHandler from "components/ErrorHandler";
-import ImageEditRow from "components/ImageEditRow";
+import ActionsHandler from "./ActionsHandler";
+import ErrorHandler from "common/ErrorHandler";
+import ImageEditRow from "./ImageEditRow";
 
 import { Job } from "services/api";
 
@@ -113,7 +114,7 @@ export default () => {
   }, []);
 
   // rerender on output select
-  useEffect(() => {}, [selectedOutputIndex]);
+  useEffect(() => { }, [selectedOutputIndex]);
 
   // init socket on mount
   useEffect(() => {
@@ -241,7 +242,18 @@ export default () => {
     console.log(job);
     setJob({ ...job, data: job.data });
   };
-
+  const renderJobInHd = async () => {
+    try {
+      const { data, actions, id, renderPrefs } = job;
+      setIsLoading(true);
+      await Job.update(id, { data, actions, renderPrefs: { settingsTemplate: 'full' } });
+      setIsLoading(false);
+      setRedirect("/home/jobs");
+    } catch (err) {
+      setIsLoading(false);
+      setError(err);
+    }
+  }
   const handleAssetDelete = async (index) => {
     const idArray = Object.keys(data);
     delete job.data[idArray[index]];
@@ -334,6 +346,12 @@ export default () => {
               <DeleteIcon fontSize="inherit" />
             </IconButton>
             <IconButton
+              onClick={renderJobInHd}
+              aria-label="delete"
+              className={classes.margin}>
+              <HdIcon fontSize="inherit" />
+            </IconButton>
+            <IconButton
               aria-label="download"
               className={classes.margin}
               href={
@@ -354,16 +372,16 @@ export default () => {
               src={sortedOutput.length && sortedOutput[selectedOutputIndex].src}
             />
           ) : (
-            <>
-              <Box justifyContent="center" textAlign="center" height={320}>
-                <Typography style={{ padding: 100 }}>
-                  {" "}
+              <>
+                <Box justifyContent="center" textAlign="center" height={320}>
+                  <Typography style={{ padding: 100 }}>
+                    {" "}
                   No output yet.
                 </Typography>
-              </Box>
-              <Divider />
-            </>
-          )}
+                </Box>
+                <Divider />
+              </>
+            )}
           <AppBar position="static" color="transparent" elevation={0}>
             <Tabs
               value={activeTabIndex}
@@ -438,7 +456,7 @@ export default () => {
                     return (
                       <span>
                         {value.startsWith("http://") ||
-                        value.startsWith("https://")
+                          value.startsWith("https://")
                           ? "image"
                           : "string"}
                       </span>
@@ -509,6 +527,10 @@ export default () => {
                       return { addWaterMark: action };
                     case "@nexrender/action-upload":
                       return { upload: action };
+                    case "action-add-audio":
+                      return { addAudio: action };
+                    case "action-merge-videos":
+                      return { mergeVideos: action };
                     default:
                       return;
                   }
