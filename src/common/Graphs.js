@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import {
   LineChart,
   Line,
@@ -29,7 +29,8 @@ export default (from = "", to = "") => {
     setChartData(resultTwo);
   }, [data]);
 
-  useEffect(() => {}, [chartData]);
+  useEffect(() => {
+  }, [chartData]);
 
   const getDataFromQuery = (query) => {
     const {

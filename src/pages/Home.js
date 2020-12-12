@@ -12,7 +12,7 @@ import Jobs from "pages/Jobs";
 import Revenue from "pages/Revenue";
 import Profile from "pages/Profile";
 import VideoTemplates from "pages/VideoTemplates";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import StorageIcon from "@material-ui/icons/Storage";
 import { Route, Switch, useRouteMatch, Redirect } from "react-router-dom";
 import Navbar from "../components/Navbar";
