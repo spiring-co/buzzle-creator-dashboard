@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FormHelperText, Typography, Box, Button } from "@material-ui/core";
+import { FormHelperText, Typography, Box, Button, FormControl, FormControlLabel, Radio, RadioGroup, TextField } from "@material-ui/core";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import upload from "services/s3Upload";
 
@@ -23,6 +23,7 @@ export default ({
   onTouched,
 }) => {
   const [isError, setIsError] = useState(error)
+  const [type, setType] = useState('file')
   const [progress, setProgress] = useState(0);
   const [taskController, setTaskController] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -99,41 +100,66 @@ export default ({
   return (
     <Box m={1}>
       <Typography>{label}{required && " *"}</Typography>
+      <FormControl component="fieldset">
+        <RadioGroup
+          aria-label="type"
+          name="type"
+          value={type}
+          onChange={({ target: { value } }) => setType(value)}
+          row>
+          <FormControlLabel value="file" control={<Radio />} label="File" />
+          <FormControlLabel value="url" control={<Radio />} label="URL" />
+        </RadioGroup>
+      </FormControl>
       <Box my={1}>
-        <input
-          onClick={(event) => {
-            event.target.value = null
-          }}
-          accept={accept}
-          id={name}
-          type="file"
-          onFocus={() => onTouched(true)}
-          onChange={cropEnabled ? handleCropImage : handleFile}
-          style={{ display: "none" }}
-        />
-        <label htmlFor={name}>
-          <Button
-            disabled={loading}
-            variant="contained"
-            size="small"
-            color="primary"
-            startIcon={<CloudUploadIcon />}
-            component="span">
-            {value ? `Change` : `Upload`}
-          </Button>
-        </label>
-        <Typography style={{ marginLeft: 10 }} variant="body2" component={"span"} color="textSecondary">
-          {loading ? ` Uploading: ${progress}% ` : ` ${filename} `}
-        </Typography>
-        {loading && (
-          <Button
-            onClick={handleUploadCancel}
-            size="small"
-            color="secondary"
-            component="span">
-            Cancel
-          </Button>
-        )}
+        {type === 'file' ?
+          <>
+            <input
+              onClick={(event) => {
+                event.target.value = null
+              }}
+              accept={accept}
+              id={name}
+              type="file"
+              onFocus={() => onTouched(true)}
+              onChange={cropEnabled ? handleCropImage : handleFile}
+              style={{ display: "none" }}
+            />
+            <label htmlFor={name}>
+              <Button
+                disabled={loading}
+                variant="contained"
+                size="small"
+                color="primary"
+                startIcon={<CloudUploadIcon />}
+                component="span">
+                {value ? `Change` : `Upload`}
+              </Button>
+            </label>
+            <Typography style={{ marginLeft: 10 }} variant="body2" component={"span"} color="textSecondary">
+              {loading ? ` Uploading: ${progress}% ` : ` ${filename} `}
+            </Typography>
+            {loading && (
+              <Button
+                onClick={handleUploadCancel}
+                size="small"
+                color="secondary"
+                component="span">
+                Cancel
+              </Button>
+            )}
+          </> : <TextField
+            label="File URL"
+            placeholder="Paste URL here"
+            margin="dense"
+            style={{ marginRight: 20 }}
+            variant="outlined"
+            value={value}
+            onChange={({ target: { value } }) => {
+              setFilename(value.substring(value.lastIndexOf("/") + 1))
+              onChange(value)
+            }}
+          />}
       </Box>
       <FormHelperText error={isError}>
         {isError ? isError : helperText}
