@@ -13,7 +13,7 @@ import {
 
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import EditIcon from "@material-ui/icons/Edit";
-
+import DeleteIcon from '@material-ui/icons/Delete';
 import ActionDialog from "./ActionDialog";
 import PreRender from "./PreRender";
 import PostRender from "./PostRender";
@@ -185,6 +185,11 @@ export default ({ prerender, postrender, onSubmit }) => {
                                   }>
                                   <EditIcon />
                                 </IconButton>
+                                <IconButton
+                                  onClick={() => { setPrerenderActions(prerenderActions?.filter((item, i) => index !== i)) }
+                                  }>
+                                  <DeleteIcon />
+                                </IconButton>
                               </ListItemSecondaryAction>
                             </ListItem>
                           </Paper>
@@ -251,6 +256,11 @@ export default ({ prerender, postrender, onSubmit }) => {
                                     )
                                   }>
                                   <EditIcon />
+                                </IconButton>
+                                <IconButton
+                                  onClick={() => { setPostrenderActions(postrenderActions?.filter((item, i) => index !== i)) }
+                                  }>
+                                  <DeleteIcon />
                                 </IconButton>
                               </ListItemSecondaryAction>
                             </ListItem>
