@@ -114,6 +114,7 @@ export default (props) => {
       idCreator
     )
       .then(({ data, count: totalCount }) => {
+        console.log(data);
         return { data, page, totalCount };
       })
       .catch((err) => {

@@ -1,12 +1,16 @@
 import {
-    Box,
-    Button,
-    Container,
-    Divider,
-    Paper,
-    TextField,
-    Typography,
-    Tooltip,
+  Box,
+  Button,
+  Container,
+  Divider,
+  Paper,
+  TextField,
+  Typography,
+  Tooltip,
+  InputLabel,
+  MenuItem,
+  Select,
+  Input,
 } from "@material-ui/core";
 import Tab from "@material-ui/core/Tab";
 import Tabs from "@material-ui/core/Tabs";
@@ -22,210 +26,266 @@ import VerticalTabs from "common/VerticalTabs";
 import { Prompt } from "react-router-dom";
 import ChangePassword from "domains/Auth/ChangePassword";
 function ProfileEdit({ creator }) {
-    console.log("creator is:" + creator.imageUrl);
-    const [isBlocking, setIsBlocking] = useState(true);
+  console.log("creator is:" + creator.imageUrl);
+  const [isBlocking, setIsBlocking] = useState(true);
 
-    const [loading, setLoading] = useState(false);
-    const [progress, setProgress] = useState(0);
-    const handleUpdate = (data) => {
-        setIsBlocking(false);
-        Creator.update(creator?.id, data);
-    };
+  const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const handleUpdate = (data) => {
+    setIsBlocking(false);
+    Creator.update(creator?.id, data);
+  };
 
-    useEffect(() => {
-        document.title = "Profile";
-    }, []);
+  useEffect(() => {
+    document.title = "Profile";
+  }, []);
 
-    const { handleChange, values, handleSubmit, setFieldValue } = useFormik({
-        initialValues: {
-            name: creator.name,
-            email: creator.email,
-            imageUrl: creator?.imageUrl,
-        },
-        validationSchema: null,
-        onSubmit: handleUpdate,
-    });
+  const { handleChange, values, handleSubmit, setFieldValue } = useFormik({
+    initialValues: {
+      name: creator.name,
+      email: creator.email,
+      imageUrl: creator?.imageUrl,
+    },
+    validationSchema: null,
+    onSubmit: handleUpdate,
+  });
 
-    const handleUpload = async (file, extension) => {
-        try {
-            setLoading(true);
-            const task = upload(`avtars/${Date.now()}${extension}`, file);
-            task.on("httpUploadProgress", ({ loaded, total }) =>
-                setProgress(parseInt((loaded * 100) / total))
-            );
-            const { Location: uri } = await task.promise();
-            setLoading(false);
-            setFieldValue("imageUrl", uri);
-            console.log(uri);
-        } catch (err) {
-            setLoading(false);
-        }
-    };
-    return (
-        <form onSubmit={handleSubmit}>
-            <Container style={{ padding: 15 }}>
-                <Typography variant="h5">Profile</Typography>
-            </Container>
-            <Prompt
-                when={isBlocking}
-                message={`Do you want to leave, Changes will be unsaved.`}
-            />
-            <Divider />
-            <Box p={2}>
-                <Box style={{ marginBottom: 20 }} display="flex" flexDirection="column">
-                    <Box
-                        style={{
-                            height: 180,
-                            width: 180,
-                            margin: 10,
-                            borderRadius: "50%",
-                            alignSelf: "flex-start",
-                            border: "1px solid #f0f8ff",
-                            position: "relative",
-                            background: "#f0f8ff",
-                        }}>
-                        {values?.imageUrl && (
-                            <img
-                                style={{
-                                    width: "inherit",
-                                    height: "inherit",
-                                    borderRadius: "inherit",
-                                }}
-                                src={values?.imageUrl}
-                            />
-                        )}
-                        <Paper
-                            style={{
-                                position: "absolute",
-                                left: 5,
-                                bottom: 15,
-                                paddingLeft: 15,
-                                paddingRight: 15,
-                                borderRadius: 15,
-                            }}>
-                            <label>
-                                <EditIcon fontSize="small" />{" "}
-                                {loading ? `Uploading : ${progress}%` : "Edit"}
-                                {!loading && (
-                                    <input
-                                        style={{ display: "none" }}
-                                        onChange={({ target: { files } }) =>
-                                            handleUpload(
-                                                files[0],
-                                                files[0].name.substr(files[0].name.lastIndexOf("."))
-                                            )
-                                        }
-                                        type="file"
-                                        accept={"image/*"}
-                                    />
-                                )}
-                            </label>
-                        </Paper>
-                    </Box>
+  const handleUpload = async (file, extension) => {
+    try {
+      setLoading(true);
+      const task = upload(`avtars/${Date.now()}${extension}`, file);
+      task.on("httpUploadProgress", ({ loaded, total }) =>
+        setProgress(parseInt((loaded * 100) / total))
+      );
+      const { Location: uri } = await task.promise();
+      setLoading(false);
+      setFieldValue("imageUrl", uri);
+      console.log(uri);
+    } catch (err) {
+      setLoading(false);
+    }
+  };
+  return (
+    <form onSubmit={handleSubmit}>
+      <Container style={{ padding: 15 }}>
+        <Typography variant="h5">Profile</Typography>
+      </Container>
+      <Prompt
+        when={isBlocking}
+        message={`Do you want to leave, Changes will be unsaved.`}
+      />
+      <Divider />
+      <Box p={2}>
+        <Box style={{ marginBottom: 20 }} display="flex" flexDirection="column">
+          <Box
+            style={{
+              height: 180,
+              width: 180,
+              margin: 10,
+              borderRadius: "50%",
+              alignSelf: "flex-start",
+              border: "1px solid #f0f8ff",
+              position: "relative",
+              background: "#f0f8ff",
+            }}>
+            {values?.imageUrl && (
+              <img
+                style={{
+                  width: "inherit",
+                  height: "inherit",
+                  borderRadius: "inherit",
+                }}
+                src={values?.imageUrl}
+              />
+            )}
+            <Paper
+              style={{
+                position: "absolute",
+                left: 5,
+                bottom: 15,
+                paddingLeft: 15,
+                paddingRight: 15,
+                borderRadius: 15,
+              }}>
+              <label>
+                <EditIcon fontSize="small" />{" "}
+                {loading ? `Uploading : ${progress}%` : "Edit"}
+                {!loading && (
+                  <input
+                    style={{ display: "none" }}
+                    onChange={({ target: { files } }) =>
+                      handleUpload(
+                        files[0],
+                        files[0].name.substr(files[0].name.lastIndexOf("."))
+                      )
+                    }
+                    type="file"
+                    accept={"image/*"}
+                  />
+                )}
+              </label>
+            </Paper>
+          </Box>
 
-                    <div style={{ marginBottom: 10 }}>
-                        <TextField
-                            variant="outlined"
-                            onChange={handleChange}
-                            label="Name"
-                            name="name"
-                            margin="dense"
-                            value={values.name}></TextField>
-                    </div>
-                    <div>
-                        <TextField
-                            variant="outlined"
-                            onChange={handleChange}
-                            label="Email"
-                            name="email"
-                            margin="dense"
-                            value={values.email}></TextField>
-                    </div>
-                </Box>
-                <Button
-                    disabled={loading}
-                    onClick={handleSubmit}
-                    size="small"
-                    color="primary"
-                    variant="contained">
-                    Update
-          </Button>
-            </Box>
-        </form>
-    );
+          <div style={{ marginBottom: 10 }}>
+            <TextField
+              variant="outlined"
+              onChange={handleChange}
+              label="Name"
+              name="name"
+              margin="dense"
+              value={values.name}></TextField>
+          </div>
+          <div>
+            <TextField
+              variant="outlined"
+              onChange={handleChange}
+              label="Email"
+              name="email"
+              margin="dense"
+              value={values.email}></TextField>
+          </div>
+        </Box>
+        <Button
+          disabled={loading}
+          onClick={handleSubmit}
+          size="small"
+          color="primary"
+          variant="contained">
+          Update
+        </Button>
+      </Box>
+    </form>
+  );
 }
 
 function APISection() {
-    return (
-        <Container>
-            <Container style={{ padding: 15 }}>
-                <Typography variant="h5">Credentials</Typography>
-            </Container>
-            <Divider />
-            <Typography>API KEY</Typography>
-            <Typography></Typography>
-        </Container>
-    );
+  return (
+    <Container>
+      <Container style={{ padding: 15 }}>
+        <Typography variant="h5">Credentials</Typography>
+      </Container>
+      <Divider />
+      <Typography>API KEY</Typography>
+      <Typography></Typography>
+    </Container>
+  );
 }
 
 function Setting() {
-    return (
-        <Container>
-            <Container style={{ padding: 15 }}>
-                <Typography variant="h5">Setting</Typography>
-            </Container>
-            <Divider />
-        </Container>
-    );
+  return (
+    <Container>
+      <Container style={{ padding: 15 }}>
+        <Typography variant="h5">Setting</Typography>
+      </Container>
+      <Divider />
+    </Container>
+  );
 }
 
 export default () => {
-    const [creator, setCreator] = useState({});
-    const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const { user } = useAuth();
+  const [creator, setCreator] = useState({});
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+  const [webhook, setWebhook] = useState("");
+  const [webhookData, setWebhookData] = useState("");
+  const [url, setUrl] = useState("");
 
-    useEffect(() => {
-        Creator.get(user?.id)
-            .then((c) => {
-                setCreator(c);
-            })
-            .catch(setError)
-            .finally(() => setLoading(false))
-    }, []);
+  useEffect(() => {
+    Creator.get(user?.id)
+      .then((c) => {
+        setCreator(c);
+      })
+      .catch(setError)
+      .finally(() => setLoading(false));
+  }, []);
 
-    if (loading) {
-        return <Typography>loading...</Typography>;
-    }
+  useEffect(() => {
+    fetch("http://localhost:5000/webhooks/")
+      .then((response) => response.json())
+      .then((data) => setWebhookData(data));
+  }, []);
 
+  useEffect(() => {
+    console.log(webhookData);
+  }, [webhookData]);
+
+  if (loading) {
+    return <Typography>loading...</Typography>;
+  }
+  const handleChange = (event) => {
+    setWebhook(event.target.value);
+  };
+  const handleChangeUrl = (event) => {
+    setUrl(event.target.value);
+  };
+
+  function Webhooks() {
     return (
-        <Container>
-            {error && <Alert severity="error">{error.message}</Alert>}
-            <Divider />
-            <VerticalTabs
-                tabs={[
-                    {
-                        label: "Profile",
-                        component: <ProfileEdit creator={creator} />,
-                        allowedRoles: ["Admin", "Creator", "User"],
-                    },
-                    {
-                        label: "Account Security",
-                        component: <ChangePassword />,
-                        allowedRoles: ["Admin", "Creator", "User"],
-                    },
-                    {
-                        label: "Credentials",
-                        component: <APISection />,
-                        allowedRoles: ["User"],
-                    },
-                    {
-                        label: "Setting",
-                        component: <Setting />,
-                        allowedRoles: ["Admin", "Creator", "User"],
-                    },
-                ]}
-            />
+      <Container style={{ display: "flex", flexDirection: "column" }}>
+        <Typography variant="h5">Webhook</Typography>
+        <Divider />
+        <Container style={{ padding: 35 }}>
+          <Select
+            labelId="demo-simple-select-helper-label"
+            id="demo-simple-select"
+            value={webhook}
+            style={{ width: 150 }}
+            onChange={handleChangeUrl}>
+            {webhookData.map((w) => {
+              return <MenuItem value={w.id}>{w.name}</MenuItem>;
+            })}
+            {/* <MenuItem value={20}>Twenty</MenuItem>
+            <MenuItem value={30}>Thirty</MenuItem> */}
+          </Select>
         </Container>
+        <TextField
+          name="url"
+          variant="outlined"
+          onChange={handleChange}
+          value={url}
+          label="URL"></TextField>
+        <Button style={{ marginTop: 10 }} variant="contained">
+          Set
+        </Button>
+      </Container>
     );
+  }
+
+  return (
+    <Container>
+      {error && <Alert severity="error">{error.message}</Alert>}
+      <Divider />
+      <VerticalTabs
+        tabs={[
+          {
+            label: "Profile",
+            component: <ProfileEdit creator={creator} />,
+            allowedRoles: ["Admin", "Creator", "User"],
+          },
+          {
+            label: "Account Security",
+            component: <ChangePassword />,
+            allowedRoles: ["Admin", "Creator", "User"],
+          },
+          {
+            label: "Credentials",
+            component: <APISection />,
+            allowedRoles: ["User"],
+          },
+          {
+            label: "Setting",
+            component: <Setting />,
+            allowedRoles: ["Admin", "Creator", "User"],
+          },
+          {
+            label: "Webhooks",
+            component: <Webhooks />,
+            allowedRoles: ["Creator", "User"],
+          },
+        ]}
+      />
+    </Container>
+  );
 };

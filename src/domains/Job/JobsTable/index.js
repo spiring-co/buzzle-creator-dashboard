@@ -123,12 +123,13 @@ export default () => {
       pageSize,
       filterObjectToString(filters),
       orderBy,
-      orderDirection,
-      idCreator
+      orderDirection
+      // idCreator
     )
       .then(({ data, count: totalCount }) => {
         console.log(data, totalCount);
         setJobIds(data.map((j) => j.id));
+        console.log(data);
         return { data, page, totalCount };
       })
       .catch((err) => {
