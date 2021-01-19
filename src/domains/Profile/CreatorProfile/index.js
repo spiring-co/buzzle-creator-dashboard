@@ -14,8 +14,9 @@ import {
   Modal,
   Backdrop,
   Fade,
+  IconButton,
 } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Edit, Delete } from "@material-ui/icons";
 import Tab from "@material-ui/core/Tab";
 import Tabs from "@material-ui/core/Tabs";
 import { Alert } from "@material-ui/lab";
@@ -29,20 +30,7 @@ import { useAuth } from "services/auth";
 import VerticalTabs from "common/VerticalTabs";
 import { Prompt } from "react-router-dom";
 import ChangePassword from "domains/Auth/ChangePassword";
-
-const useStyles = makeStyles((theme) => ({
-  modal: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  paper: {
-    backgroundColor: theme.palette.background.paper,
-    border: "2px solid #000",
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3),
-  },
-}));
+import WebhookModal from "../Components/webhookModal.js";
 
 function ProfileEdit({ creator }) {
   console.log("creator is:" + JSON.stringify(creator));
@@ -203,15 +191,13 @@ function Setting() {
 }
 
 function Webhooks() {
-  const [webhook, setWebhook] = useState("");
-  const [webhookData, setWebhookData] = useState([]);
-  const [url, setUrl] = useState("");
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
-  const classes = useStyles();
   const [currentUser, setCurrentUser] = useState(null);
+  const [initialValue, setInitialValue] = useState(null);
 
-  const handleOpen = () => {
+  const handleOpen = (i = "") => {
+    setInitialValue(i);
     setOpen(true);
   };
 
@@ -220,30 +206,23 @@ function Webhooks() {
   };
 
   useEffect(() => {
-    console.log(JSON.stringify(user));
-    fetch("http://localhost:5000/webhooks/")
-      .then((response) => response.json())
-      .then((data) => setWebhookData(data));
-
     fetch(`http://localhost:5000/users/${user?.id}`)
       .then((response) => response.json())
       .then((data) => setCurrentUser(data));
   }, []);
 
   useEffect(() => {
-    console.log(webhookData);
-  }, [webhookData]);
-
-  useEffect(() => {
     console.log(currentUser);
   }, [currentUser]);
 
-  const handleChange = (event) => {
-    setWebhook(event.target.value);
-  };
-
-  const handleSubmit = () => {
-    console.log(user?.id);
+  const handleSubmit = (userWebhooksData, webhook, url) => {
+    const newUserWebhooksData = userWebhooksData;
+    newUserWebhooksData.push({
+      id: webhook.id,
+      name: webhook.name,
+      url: url,
+    });
+    console.log(newUserWebhooksData);
     fetch(`http://localhost:5000/users/${user?.id}`, {
       method: "PUT",
       headers: {
@@ -252,7 +231,7 @@ function Webhooks() {
           "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Im9XSXRWSE5xOCIsImVtYWlsIjoic2hpdmFtLjExOTk2NkB5YWhvby5jb20iLCJuYW1lIjoic2hpdmFtIHR5YWdpIiwicm9sZSI6IkFkbWluIiwiaW1hZ2VVcmwiOiJodHRwczovL2ltYWdlcy51bnNwbGFzaC5jb20vcGhvdG8tMTYwMDYwNDQ3NzM3MS03ZjJkZGY3ODJhMmI_aXhsaWI9cmItMS4yLjEmYXV0bz1mb3JtYXQmZml0PWNyb3Amdz02MTkmcT04MCIsImlhdCI6MTYxMDk2NjcwOCwiZXhwIjoxNjEzNTU4NzA4fQ.ZG5E2d9tc6C2JqT3DnqpxfPyGmQVEixsOUYeLTatUbY",
       },
       body: JSON.stringify({
-        webhooks: { id: webhook.id, url: url, name: webhook.name },
+        webhooks: newUserWebhooksData,
       }),
     })
       .then((response) => response.json())
@@ -266,7 +245,7 @@ function Webhooks() {
 
   return (
     <Container style={{ display: "flex", flexDirection: "column" }}>
-      <Typography variant="h5">Webhook</Typography>
+      <Typography variant="h5">Webhooks</Typography>
       <Divider />
       {currentUser
         ? currentUser?.webhooks.map((cu) => {
@@ -276,6 +255,13 @@ function Webhooks() {
                   Name: {cu.name}
                 </Typography>
                 <Typography variant="h7">URL: {cu.url}</Typography>
+                <IconButton>
+                  <Edit onClick={() => handleOpen(cu.name)} fontSize="small" />
+                </IconButton>
+                <IconButton>
+                  <Delete fontSize="small" />
+                </IconButton>
+                <Divider />
               </div>
             );
           })
@@ -288,49 +274,13 @@ function Webhooks() {
         variant="contained">
         Add a Webhook
       </Button>
-      <Modal
-        aria-labelledby="transition-modal-title"
-        aria-describedby="transition-modal-description"
+      <WebhookModal
+        initialValue={initialValue}
+        handleClose={handleClose}
         open={open}
-        className={classes.modal}
-        onClose={handleClose}
-        closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{
-          timeout: 500,
-        }}>
-        <Fade in={open}>
-          <div className={classes.paper}>
-            <Container style={{ padding: 35 }}>
-              <Select
-                labelId="demo-simple-select-helper-label"
-                id="demo-simple-select"
-                value={webhook}
-                style={{ width: 150 }}
-                onChange={handleChange}>
-                {webhookData.map((w) => {
-                  return <MenuItem value={w}>{w.name}</MenuItem>;
-                })}
-              </Select>
-            </Container>
-            <TextField
-              name="url"
-              key="random1"
-              variant="outlined"
-              onChange={(event) => {
-                setUrl(event.target.value);
-              }}
-              value={url}
-              label="URL"></TextField>
-            <Button
-              onClick={handleSubmit}
-              style={{ marginTop: 10 }}
-              variant="contained">
-              Set
-            </Button>
-          </div>
-        </Fade>
-      </Modal>
+        user={user}
+        currentUser={currentUser}
+        onSubmit={handleSubmit}></WebhookModal>
     </Container>
   );
 }
