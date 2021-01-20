@@ -31,36 +31,32 @@ export default function WebhookModal({
   user,
   currentUser,
   onSubmit,
-  initialValue = "",
+  editingValue = { url: "", id: "" },
+  webhookData,
 }) {
-  const [url, setUrl] = useState("");
-  const [webhook, setWebhook] = useState("");
-  const [webhookData, setWebhookData] = useState([]);
+  const [value, setValue] = useState(editingValue);
   const classes = useStyles();
-  const userWebhooks =
+  const userWebhooksNames =
     currentUser !== null
       ? currentUser.webhooks.map((w) => {
           return w.name;
         })
       : [];
-  const userWebhooksData =
+  const userWebhooks =
     currentUser !== null
       ? currentUser.webhooks.map((w) => {
           return w;
         })
       : [];
-  console.log(userWebhooks);
-  console.log(userWebhooksData);
 
+  console.log(userWebhooksNames);
+  console.log(userWebhooks);
   useEffect(() => {
-    console.log(JSON.stringify(user));
-    fetch("http://localhost:5000/webhooks/")
-      .then((response) => response.json())
-      .then((data) => setWebhookData(data));
-  }, []);
+    console.log(value);
+  }, [value]);
 
   const handleChange = (event) => {
-    setWebhook(event.target.value);
+    setValue({ ...value, id: event.target.value });
   };
 
   useEffect(() => {
@@ -86,12 +82,11 @@ export default function WebhookModal({
             <Select
               labelId="demo-simple-select-helper-label"
               id="demo-simple-select"
-              value={webhook}
+              value={value.id}
               style={{ width: 150 }}
               onChange={handleChange}>
-              {webhookData.map((w) => {
-                if (!userWebhooks.includes(w.name))
-                  return <MenuItem value={w}>{w.name}</MenuItem>;
+              {webhookData?.map((w) => {
+                return <MenuItem value={w?.id}>{w?.name}</MenuItem>;
               })}
             </Select>
           </Container>
@@ -101,13 +96,13 @@ export default function WebhookModal({
             variant="outlined"
             size="small"
             onChange={(event) => {
-              setUrl(event.target.value);
+              setValue({ ...value, url: event.target.value });
             }}
             style={{ marginLeft: 30 }}
-            value={url}
+            value={value.url}
             label="URL"></TextField>
           <Button
-            onClick={() => onSubmit(userWebhooksData, webhook, url)}
+            onClick={() => onSubmit(value)}
             style={{ marginLeft: 10 }}
             variant="contained">
             Set

@@ -194,16 +194,28 @@ function Webhooks() {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
-  const [initialValue, setInitialValue] = useState(null);
+  const [editing, setEditing] = useState(null);
+  const [editIndex, setEditIndex] = useState(null);
+  const [webhookData, setWebhookData] = useState([]);
+  const [error, setError] = useState("");
 
-  const handleOpen = (i = "") => {
-    setInitialValue(i);
+  const handleOpen = (i) => {
+    setEditIndex(i);
+    setEditing(currentUser.webhooks[i]);
     setOpen(true);
   };
 
   const handleClose = () => {
     setOpen(false);
   };
+
+  useEffect(() => {
+    fetch("http://localhost:5000/webhooks/")
+      .then((response) => response.json())
+      .then((data) => setWebhookData(data))
+      .catch((err) => setError(err));
+    console.log(JSON.stringify(user));
+  }, []);
 
   useEffect(() => {
     fetch(`http://localhost:5000/users/${user?.id}`)
@@ -215,14 +227,16 @@ function Webhooks() {
     console.log(currentUser);
   }, [currentUser]);
 
-  const handleSubmit = (userWebhooksData, webhook, url) => {
-    const newUserWebhooksData = userWebhooksData;
-    newUserWebhooksData.push({
-      id: webhook.id,
-      name: webhook.name,
-      url: url,
-    });
-    console.log(newUserWebhooksData);
+  const handleSubmit = (value) => {
+    console.log(value);
+    let newUserWebhooksData = currentUser.webhooks;
+    if (editIndex === null) {
+      newUserWebhooksData.push(value);
+      console.log(newUserWebhooksData);
+    } else {
+      newUserWebhooksData[editIndex] = value;
+      console.log(newUserWebhooksData);
+    }
     fetch(`http://localhost:5000/users/${user?.id}`, {
       method: "PUT",
       headers: {
@@ -243,23 +257,56 @@ function Webhooks() {
       });
   };
 
+  const handleDelete = (index) => {
+    if (index !== null) {
+      let newUserWebhooksData = currentUser.webhooks.filter(
+        (item, i) => i !== index
+      );
+      console.log(newUserWebhooksData);
+      fetch(`http://localhost:5000/users/${user?.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization:
+            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Im9XSXRWSE5xOCIsImVtYWlsIjoic2hpdmFtLjExOTk2NkB5YWhvby5jb20iLCJuYW1lIjoic2hpdmFtIHR5YWdpIiwicm9sZSI6IkFkbWluIiwiaW1hZ2VVcmwiOiJodHRwczovL2ltYWdlcy51bnNwbGFzaC5jb20vcGhvdG8tMTYwMDYwNDQ3NzM3MS03ZjJkZGY3ODJhMmI_aXhsaWI9cmItMS4yLjEmYXV0bz1mb3JtYXQmZml0PWNyb3Amdz02MTkmcT04MCIsImlhdCI6MTYxMDk2NjcwOCwiZXhwIjoxNjEzNTU4NzA4fQ.ZG5E2d9tc6C2JqT3DnqpxfPyGmQVEixsOUYeLTatUbY",
+        },
+        body: JSON.stringify({
+          webhooks: newUserWebhooksData,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Success:", data);
+          // window.location.reload();
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          // window.location.reload();
+        });
+    }
+  };
+
   return (
     <Container style={{ display: "flex", flexDirection: "column" }}>
       <Typography variant="h5">Webhooks</Typography>
       <Divider />
       {currentUser
-        ? currentUser?.webhooks.map((cu) => {
+        ? currentUser?.webhooks.map((cu, index) => {
             return (
               <div>
                 <Typography style={{ margin: 10 }} variant="h7">
-                  Name: {cu.name}
+                  Name:{" "}
+                  {webhookData.find(({ id }) => id === cu.id).name}
                 </Typography>
                 <Typography variant="h7">URL: {cu.url}</Typography>
                 <IconButton>
-                  <Edit onClick={() => handleOpen(cu.name)} fontSize="small" />
+                  <Edit onClick={() => handleOpen(index)} fontSize="small" />
                 </IconButton>
                 <IconButton>
-                  <Delete fontSize="small" />
+                  <Delete
+                    fontSize="small"
+                    onClick={() => handleDelete(index)}
+                  />
                 </IconButton>
                 <Divider />
               </div>
@@ -270,17 +317,24 @@ function Webhooks() {
         style={{ marginTop: 20 }}
         size="small"
         type="button"
-        onClick={handleOpen}
+        onClick={() => handleOpen(null)}
         variant="contained">
         Add a Webhook
       </Button>
-      <WebhookModal
-        initialValue={initialValue}
-        handleClose={handleClose}
-        open={open}
-        user={user}
-        currentUser={currentUser}
-        onSubmit={handleSubmit}></WebhookModal>
+      {open ? (
+        <WebhookModal
+          editingValue={editing}
+          handleClose={handleClose}
+          open={open}
+          user={user}
+          currentUser={currentUser}
+          onSubmit={handleSubmit}
+          webhookData={webhookData.filter(({ id }) =>
+            currentUser.webhooks.find((i) => i.id !== id)
+          )}></WebhookModal>
+      ) : (
+        <div> </div>
+      )}
     </Container>
   );
 }
