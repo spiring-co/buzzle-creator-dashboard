@@ -1,4 +1,5 @@
-import React, { useState, useMemo, createContext, useContext } from "react";
+import React, { useState, useMemo, createContext, useContext, useEffect } from "react";
+import { initNotificationService } from "./notifications";
 const jwtDecode = require("jwt-decode");
 const AuthContext = createContext();
 
@@ -21,12 +22,19 @@ function AuthProvider(props) {
       );
       console.log(exp);
       if (!(exp * 1000 > Date.now())) return null;
-      return { id, name, email, role: "Creator", imageUrl };
+      return { id, name, email, role, imageUrl };
     } catch (err) {
       return null;
     }
   };
   const [user, setUser] = useState(getUser());
+  useEffect(() => {
+    if (user) {
+      initNotificationService()
+    }
+  }, [user])
+
+
 
   const login = async (email, password, role = "Creator") => {
     const response = await fetch(
@@ -63,7 +71,7 @@ function AuthProvider(props) {
     return true;
   };
 
-  const sendOtp = async () => {};
+  const sendOtp = async () => { };
   const value = useMemo(() => {
     return {
       login,

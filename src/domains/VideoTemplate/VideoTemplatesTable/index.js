@@ -103,7 +103,7 @@ export default (props) => {
       ).then(({ data, count: totalCount }) => ({ data, page, totalCount }));
     }
 
-    return VideoTemplate.getAll(page + 1, pageSize, "", orderBy, orderDirection ? orderDirection : 'desc')
+    return VideoTemplate.getAll(page + 1, pageSize, "", orderBy, orderDirection ? orderDirection : 'desc', user?.id)
       .then(({ data, count: totalCount }) => {
         return { data, page, totalCount };
       })

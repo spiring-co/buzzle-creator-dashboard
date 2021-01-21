@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { MuiThemeProvider } from "@material-ui/core/styles";
 
@@ -28,6 +28,7 @@ import {
   Switch,
 } from "react-router-dom";
 import { AuthProvider } from "services/auth";
+import { messaging } from "services/firebase";
 
 const AppChild = () => {
   const [theme, t, componentMounted] = useDarkMode();
@@ -61,6 +62,7 @@ const AppChild = () => {
 };
 
 export default () => {
+
   return (
     <DarkModeProvider>
       <AppChild />

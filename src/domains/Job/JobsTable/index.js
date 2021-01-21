@@ -23,6 +23,7 @@ import { useDarkMode } from "helpers/useDarkMode";
 
 import { Job, Search } from "services/api";
 import Filters from "common/Filters";
+import { useAuth } from "services/auth";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -35,6 +36,7 @@ export default () => {
   const tableRef = useRef(null);
   const [darkModeTheme] = useDarkMode();
   const [error, setError] = useState(null);
+  const { user } = useAuth()
   const [filters, setFilters] = useState({});
 
   const handleRetry = () => {
@@ -96,7 +98,6 @@ export default () => {
       orderBy: { field: orderBy = "dateUpdated" } = {},
       orderDirection = "asc",
     } = query;
-
     history.push(
       `?page=${page + 1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
       }`
