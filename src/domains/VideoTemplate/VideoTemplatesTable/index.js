@@ -50,6 +50,7 @@ export default (props) => {
   const [testJobTemplate, setTestJobTemplate] = useState(null);
 
   const { user } = useAuth();
+  const idCreator = user.id;
   const { role } = user;
 
   const tableRef = useRef(null);
@@ -103,8 +104,16 @@ export default (props) => {
       ).then(({ data, count: totalCount }) => ({ data, page, totalCount }));
     }
 
-    return VideoTemplate.getAll(page + 1, pageSize, "", orderBy, orderDirection ? orderDirection : 'desc', user?.id)
+    return VideoTemplate.getAll(
+      page + 1,
+      pageSize,
+      "",
+      orderBy,
+      orderDirection ? orderDirection : "desc",
+      idCreator
+    )
       .then(({ data, count: totalCount }) => {
+        console.log(data);
         return { data, page, totalCount };
       })
       .catch((err) => {

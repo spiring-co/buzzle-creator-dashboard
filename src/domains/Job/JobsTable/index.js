@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useHistory, useRouteMatch, useLocation } from "react-router-dom";
+import { useAuth } from "../../../services/auth";
 
 import io from "socket.io-client";
 import * as timeago from "timeago.js";
@@ -39,6 +40,9 @@ export default () => {
   const { user } = useAuth()
   const [filters, setFilters] = useState({});
 
+  const { user } = useAuth();
+  const idCreator = user.id;
+
   const handleRetry = () => {
     setError(false);
     tableRef.current && tableRef.current.onQueryChange();
@@ -50,6 +54,7 @@ export default () => {
 
   useEffect(() => {
     document.title = "Jobs";
+    console.log(user.id);
   }, []);
 
   // progress sockets
@@ -61,9 +66,11 @@ export default () => {
     if (!socket) return;
     socket.on(id, (data) => {
       // console.log("log", id, data, rtProgressData, { ...rtProgressData, [id]: data })
-      setRtProgressData(rtProgressData => ({ ...rtProgressData, [id]: data }))
-    }
-    );
+      setRtProgressData((rtProgressData) => ({
+        ...rtProgressData,
+        [id]: data,
+      }));
+    });
   }
 
   function unsubscribeFromProgress() {
@@ -99,7 +106,8 @@ export default () => {
       orderDirection = "asc",
     } = query;
     history.push(
-      `?page=${page + 1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
+      `?page=${page + 1}&size=${pageSize}${
+        searchQuery ? "searchQuery=" + searchQuery : ""
       }`
     );
 
@@ -111,19 +119,22 @@ export default () => {
         pageSize
       ).then(({ data, count: totalCount }) => ({ data, page, totalCount }));
     }
-
     return Job.getAll(
       page + 1,
       pageSize,
       filterObjectToString(filters),
       orderBy,
       orderDirection
+      // idCreator
     )
       .then(({ data, count: totalCount }) => {
+        console.log(data, totalCount);
         setJobIds(data.map((j) => j.id));
+        console.log(data);
         return { data, page, totalCount };
       })
       .catch((err) => {
+        console.log(err);
         setError(err);
         return {
           data: [],
@@ -146,10 +157,7 @@ export default () => {
         <Typography variant="h6">Filters</Typography>
         <Container
           style={{ padding: 5, alignItems: "flex-end", display: "flex" }}>
-          <Filters
-            onChange={setFilters}
-            value={filters}
-          />
+          <Filters onChange={setFilters} value={filters} />
         </Container>
       </Paper>
       <MaterialTable
@@ -248,10 +256,11 @@ export default () => {
                   }>
                   <Chip
                     size="small"
-                    label={`${newState}${rtProgressData[id]?.percent
-                      ? " " + rtProgressData[id]?.percent + "%"
-                      : ""
-                      }`}
+                    label={`${newState}${
+                      rtProgressData[id]?.percent
+                        ? " " + rtProgressData[id]?.percent + "%"
+                        : ""
+                    }`}
                     style={{
                       transition: "background-color 0.5s ease",
                       fontWeight: 700,
@@ -405,19 +414,16 @@ const filterObjectToString = (f) => {
     states = [],
   } = f;
 
-  return `${startDate
-    ? `dateUpdated=>=${startDate}&dateUpdated=<=${endDate ?? startDate}&`
-    : ""
-    }${idVideoTemplates.length !== 0
-      ? getArrayOfIdsAsQueryString(
-        "idVideoTemplate",
-        idVideoTemplates.map(({ id }) => id)
-      ) + "&"
+  return `${
+    startDate
+      ? `dateUpdated=>=${startDate}&dateUpdated=<=${endDate ?? startDate}&`
       : ""
-    }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
+  }${
+    idVideoTemplates.length !== 0
+      ? getArrayOfIdsAsQueryString(
+          "idVideoTemplate",
+          idVideoTemplates.map(({ id }) => id)
+        ) + "&"
+      : ""
+  }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
 };
-
-
-
-
-

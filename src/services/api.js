@@ -11,6 +11,7 @@ export const ServerJobs = {
     const response = await fetch(uri, {
       headers: { "nexrender-secret": "myapisecret" },
     });
+    console.log("im trying to get jobs");
     if (response.ok) {
       return await response
         .json()
