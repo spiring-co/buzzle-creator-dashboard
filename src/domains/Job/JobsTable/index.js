@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useHistory, useRouteMatch, useLocation } from "react-router-dom";
-import { useAuth } from "../../../services/auth";
 
 import io from "socket.io-client";
 import * as timeago from "timeago.js";
@@ -25,7 +24,7 @@ import { useDarkMode } from "helpers/useDarkMode";
 import { Job, Search } from "services/api";
 import Filters from "common/Filters";
 import { useAuth } from "services/auth";
-
+import { SnackbarProvider, useSnackbar } from 'notistack';
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
@@ -33,14 +32,14 @@ function useQuery() {
 export default () => {
   const { path } = useRouteMatch();
   const history = useHistory();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const queryParam = useQuery();
   const tableRef = useRef(null);
   const [darkModeTheme] = useDarkMode();
   const [error, setError] = useState(null);
   const { user } = useAuth()
   const [filters, setFilters] = useState({});
-
-  const { user } = useAuth();
+  const [isDeleting, setIsDeleting] = useState(false)
   const idCreator = user.id;
 
   const handleRetry = () => {
@@ -106,8 +105,7 @@ export default () => {
       orderDirection = "asc",
     } = query;
     history.push(
-      `?page=${page + 1}&size=${pageSize}${
-        searchQuery ? "searchQuery=" + searchQuery : ""
+      `?page=${page + 1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
       }`
     );
 
@@ -127,7 +125,7 @@ export default () => {
       orderDirection
       // idCreator
     )
-      .then(({ data, count: totalCount }) => {
+      .then(({ data = [], count: totalCount }) => {
         console.log(data, totalCount);
         setJobIds(data.map((j) => j.id));
         console.log(data);
@@ -143,6 +141,96 @@ export default () => {
         };
       });
   };
+  const deleteMultipleJobs = async (array = []) => {
+    const status = { s: 0, f: 0 }
+    // show the snackbar or alert showing the progress
+    const key = enqueueSnackbar(`Deleting ${array?.length} jobs ...`, {
+      persist: true, anchorOrigin: {
+        vertical: 'bottom',
+        horizontal: 'right',
+      },
+    })
+    for (let index = 0; index < array.length; index++) {
+      const { id = false } = array[index];
+      if (!id) return;
+      try {
+        await Job.delete(id)
+        // increment the success
+        status.s++
+
+      } catch (err) {
+        // increment the failed
+        status.f++
+      }
+    }
+    closeSnackbar(key)
+    {
+      status?.s && enqueueSnackbar(`${status?.s} out of ${array?.length} jobs deleted successfully `, {
+        variant: "success",
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'right',
+        },
+      })
+    }
+    {
+      status?.f && enqueueSnackbar(`${status?.f} out of ${array?.length} jobs failed to delete `, {
+        variant: "error",
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'right',
+        },
+      })
+    }
+    tableRef.current && tableRef.current.onQueryChange();
+  }
+
+  const updateMultiple = async (array) => {
+    const status = { s: 0, f: 0 }
+    // show the snackbar or alert showing the progress
+    const key = enqueueSnackbar(`Restarting ${array?.length} jobs ...`, {
+      persist: true, anchorOrigin: {
+        vertical: 'bottom',
+        horizontal: 'right',
+      },
+      variant: "info"
+    })
+    for (let index = 0; index < array.length; index++) {
+      const { id = false, data, renderPrefs, actions } = array[index];
+      if (!id) return;
+      try {
+        await Job.update(id, { data, renderPrefs, actions })
+        // increment the success
+        status.s++
+
+      } catch (err) {
+        // increment the failed
+        status.f++
+      }
+
+    }
+    closeSnackbar(key)
+    {
+      status?.s && enqueueSnackbar(`${status?.s} out of ${array?.length} jobs restarted successfully `, {
+        variant: "success",
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'right',
+        },
+      })
+    }
+    {
+      status?.f && enqueueSnackbar(`${status?.f} out of ${array?.length} jobs failed to restart `, {
+        variant: "error",
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'right',
+        },
+      })
+    }
+    tableRef.current && tableRef.current.onQueryChange();
+  }
+
 
   return (
     <Container>
@@ -256,11 +344,10 @@ export default () => {
                   }>
                   <Chip
                     size="small"
-                    label={`${newState}${
-                      rtProgressData[id]?.percent
-                        ? " " + rtProgressData[id]?.percent + "%"
-                        : ""
-                    }`}
+                    label={`${newState}${rtProgressData[id]?.percent
+                      ? " " + rtProgressData[id]?.percent + "%"
+                      : ""
+                      }`}
                     style={{
                       transition: "background-color 0.5s ease",
                       fontWeight: 700,
@@ -350,19 +437,7 @@ export default () => {
             tooltip: "Restart All Selected Jobs",
             position: "toolbarOnSelect",
             onClick: async (e, data) => {
-              try {
-                await Job.updateMultiple(
-                  data.map(({ id, actions, data, renderPrefs }) => ({
-                    id,
-                    actions,
-                    data,
-                    renderPrefs,
-                  }))
-                );
-              } catch (err) {
-                setError(err);
-              }
-              tableRef.current && tableRef.current.onQueryChange();
+              await updateMultiple(data);
             },
           },
           {
@@ -370,12 +445,9 @@ export default () => {
             tooltip: "Delete All Selected Jobs",
             position: "toolbarOnSelect",
             onClick: async (e, data) => {
-              try {
-                await Job.deleteMultiple(data);
-              } catch (err) {
-                setError(err);
-              }
-              tableRef.current && tableRef.current.onQueryChange();
+              const action = window.confirm("Are you sure, you want to delete");
+              if (!action) return;
+              await deleteMultipleJobs(data);
             },
           },
         ]}
@@ -414,16 +486,14 @@ const filterObjectToString = (f) => {
     states = [],
   } = f;
 
-  return `${
-    startDate
-      ? `dateUpdated=>=${startDate}&dateUpdated=<=${endDate ?? startDate}&`
-      : ""
-  }${
-    idVideoTemplates.length !== 0
+  return `${startDate
+    ? `dateUpdated=>=${startDate}&dateUpdated=<=${endDate ?? startDate}&`
+    : ""
+    }${idVideoTemplates.length !== 0
       ? getArrayOfIdsAsQueryString(
-          "idVideoTemplate",
-          idVideoTemplates.map(({ id }) => id)
-        ) + "&"
+        "idVideoTemplate",
+        idVideoTemplates.map(({ id }) => id)
+      ) + "&"
       : ""
-  }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
+    }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
 };
