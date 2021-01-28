@@ -548,7 +548,10 @@ export default () => {
                 </InputLabel>
                 <Select
                   value={job.renderPrefs?.settingsTemplate || ""}
-                  // onChange={v => setJob({})}
+                  onChange={({ target: { value } }) => setJob({
+                    ...job,
+                    renderPrefs: { ...job?.renderPrefs, settingsTemplate: value }
+                  })}
                   inputProps={{
                     name: "settingsTemplate",
                     id: "settingsTemplate",
@@ -560,11 +563,14 @@ export default () => {
               </FormControl>
               <FormControl>
                 <InputLabel htmlFor="outputModule">
-                  Settings Template
+                  Output module
                 </InputLabel>
                 <Select
                   value={job.renderPrefs?.outputModule || ""}
-                  // onChange={v => setJob({})}
+                  onChange={({ target: { value } }) => setJob({
+                    ...job,
+                    renderPrefs: { ...job?.renderPrefs, outputModule: value }
+                  })}
                   inputProps={{
                     name: "outputModule",
                     id: "outputModule",
