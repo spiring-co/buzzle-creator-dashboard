@@ -144,7 +144,7 @@ export default () => {
       });
   };
   const deleteMultipleJobs = async (array = []) => {
-    let s, f = 0
+    let s = 0, f = 0
     // show the snackbar or alert showing the progress
     setOperationStatus({ ...operationStatus, total: array?.length })
     for (let index = 0; index < array.length; index++) {
@@ -187,7 +187,7 @@ export default () => {
 
   const updateMultiple = async (array) => {
     setOperationStatus({ ...operationStatus, total: array?.length })
-    let s, f = 0;
+    let s = 0, f = 0;
     for (let index = 0; index < array.length; index++) {
       const { id = false, data, renderPrefs, actions } = array[index];
       if (!id) return;
@@ -195,17 +195,18 @@ export default () => {
         await Job.update(id, { data, renderPrefs, actions })
         // increment the success
         setOperationStatus(operationStatus => ({ ...operationStatus, success: operationStatus?.success + 1 }))
-        s++
+        s = s + 1
 
       } catch (err) {
         // increment the failed
         setOperationStatus(operationStatus => ({ ...operationStatus, failed: operationStatus?.failed + 1 }))
-        f++
+        f = f + 1
       }
 
     }
 
     setOperationStatus({ total: 0, failed: 0, success: 0 })
+    console.log(s, f)
     {
       s && enqueueSnackbar(`${s} out of ${array?.length} jobs restarted successfully `, {
         variant: "success",
