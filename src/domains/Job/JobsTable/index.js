@@ -9,7 +9,7 @@ import {
   Chip,
   Typography,
   Container,
-  Paper,
+  Paper, Box,
   Tooltip,
   Fade,
 } from "@material-ui/core";
@@ -19,6 +19,7 @@ import FileCopyIcon from "@material-ui/icons/FileCopy";
 import ErrorHandler from "common/ErrorHandler";
 
 import formatTime from "helpers/formatTime";
+import Alert from '@material-ui/lab/Alert';
 import { useDarkMode } from "helpers/useDarkMode";
 
 import { Job, Search } from "services/api";
@@ -37,6 +38,7 @@ export default () => {
   const tableRef = useRef(null);
   const [darkModeTheme] = useDarkMode();
   const [error, setError] = useState(null);
+  const [operationStatus, setOperationStatus] = useState({ total: 0, success: 0, failed: 0 })
   const { user } = useAuth()
   const [filters, setFilters] = useState({});
   const [isDeleting, setIsDeleting] = useState(false)
@@ -142,30 +144,28 @@ export default () => {
       });
   };
   const deleteMultipleJobs = async (array = []) => {
-    const status = { s: 0, f: 0 }
+    let s, f = 0
     // show the snackbar or alert showing the progress
-    const key = enqueueSnackbar(`Deleting ${array?.length} jobs ...`, {
-      persist: true, anchorOrigin: {
-        vertical: 'bottom',
-        horizontal: 'right',
-      },
-    })
+    setOperationStatus({ ...operationStatus, total: array?.length })
     for (let index = 0; index < array.length; index++) {
       const { id = false } = array[index];
       if (!id) return;
       try {
         await Job.delete(id)
         // increment the success
-        status.s++
+        setOperationStatus(operationStatus => ({ ...operationStatus, success: operationStatus?.success + 1 }))
+        s++
 
       } catch (err) {
         // increment the failed
-        status.f++
+        setOperationStatus(operationStatus => ({ ...operationStatus, failed: operationStatus?.failed + 1 }))
+        f++
+
       }
     }
-    closeSnackbar(key)
+    setOperationStatus({ total: 0, failed: 0, success: 0 })
     {
-      status?.s && enqueueSnackbar(`${status?.s} out of ${array?.length} jobs deleted successfully `, {
+      s && enqueueSnackbar(`${s} out of ${array?.length} jobs deleted successfully `, {
         variant: "success",
         anchorOrigin: {
           vertical: 'bottom',
@@ -174,7 +174,7 @@ export default () => {
       })
     }
     {
-      status?.f && enqueueSnackbar(`${status?.f} out of ${array?.length} jobs failed to delete `, {
+      f && enqueueSnackbar(`${f} out of ${array?.length} jobs failed to delete `, {
         variant: "error",
         anchorOrigin: {
           vertical: 'bottom',
@@ -186,32 +186,28 @@ export default () => {
   }
 
   const updateMultiple = async (array) => {
-    const status = { s: 0, f: 0 }
-    // show the snackbar or alert showing the progress
-    const key = enqueueSnackbar(`Restarting ${array?.length} jobs ...`, {
-      persist: true, anchorOrigin: {
-        vertical: 'bottom',
-        horizontal: 'right',
-      },
-      variant: "info"
-    })
+    setOperationStatus({ ...operationStatus, total: array?.length })
+    let s, f = 0;
     for (let index = 0; index < array.length; index++) {
       const { id = false, data, renderPrefs, actions } = array[index];
       if (!id) return;
       try {
         await Job.update(id, { data, renderPrefs, actions })
         // increment the success
-        status.s++
+        setOperationStatus(operationStatus => ({ ...operationStatus, success: operationStatus?.success + 1 }))
+        s++
 
       } catch (err) {
         // increment the failed
-        status.f++
+        setOperationStatus(operationStatus => ({ ...operationStatus, failed: operationStatus?.failed + 1 }))
+        f++
       }
 
     }
-    closeSnackbar(key)
+
+    setOperationStatus({ total: 0, failed: 0, success: 0 })
     {
-      status?.s && enqueueSnackbar(`${status?.s} out of ${array?.length} jobs restarted successfully `, {
+      s && enqueueSnackbar(`${s} out of ${array?.length} jobs restarted successfully `, {
         variant: "success",
         anchorOrigin: {
           vertical: 'bottom',
@@ -220,7 +216,7 @@ export default () => {
       })
     }
     {
-      status?.f && enqueueSnackbar(`${status?.f} out of ${array?.length} jobs failed to restart `, {
+      f && enqueueSnackbar(`${f} out of ${array?.length} jobs failed to restart `, {
         variant: "error",
         anchorOrigin: {
           vertical: 'bottom',
@@ -241,6 +237,9 @@ export default () => {
           onRetry={handleRetry}
         />
       )}
+      {operationStatus?.total !== 0 && <Box style={{ marginBottom: 10 }}>
+        <Alert severity="info">{operationStatus?.success + operationStatus?.failed} out of {operationStatus?.total} Operations performed!</Alert>
+      </Box>}
       <Paper style={{ padding: 15, marginBottom: 5 }}>
         <Typography variant="h6">Filters</Typography>
         <Container
