@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   List,
   ListItem,
@@ -37,6 +37,10 @@ export default ({ prerender, postrender, onSubmit }) => {
       reorder(prerenderActions, result.source.index, result.destination.index)
     );
   };
+
+  useEffect(() => {
+    handleSubmit()
+  }, [postrenderActions, prerenderActions])
 
   const handleSubmit = () => {
     onSubmit({
