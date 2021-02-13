@@ -13,7 +13,6 @@ import {
   Tooltip,
   Fade,
 } from "@material-ui/core";
-
 import MaterialTable from "material-table";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
 import ErrorHandler from "common/ErrorHandler";
@@ -26,6 +25,7 @@ import { Job, Search } from "services/api";
 import Filters from "common/Filters";
 import { useAuth } from "services/auth";
 import { SnackbarProvider, useSnackbar } from 'notistack';
+import JSONEditorDialoge from "common/JSONEditorDialoge";
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
@@ -41,6 +41,7 @@ export default () => {
   const [operationStatus, setOperationStatus] = useState({ total: 0, success: 0, failed: 0 })
   const { user } = useAuth()
   const [filters, setFilters] = useState({});
+  const [selectedJob, setSelectedJob] = useState(null)
   const [isDeleting, setIsDeleting] = useState(false)
   const idCreator = user.id;
 
@@ -78,6 +79,7 @@ export default () => {
     if (!socket) return;
     jobIds.map(socket.off);
   }
+
 
   useEffect(() => {
     setSocket(io.connect(process.env.REACT_APP_EVENTS_SOCKET_URL));
@@ -128,9 +130,8 @@ export default () => {
       // idCreator
     )
       .then(({ data = [], count: totalCount }) => {
-        console.log(data, totalCount);
+        // unsubscribeFromProgress()s
         setJobIds(data.map((j) => j.id));
-        console.log(data);
         return { data, page, totalCount };
       })
       .catch((err) => {
@@ -185,6 +186,30 @@ export default () => {
     tableRef.current && tableRef.current.onQueryChange();
   }
 
+  const handleJobUpdate = async ({ id, data, actions, renderPrefs }) => {
+    try {
+
+      await Job.update(id, { data, actions, renderPrefs });
+      enqueueSnackbar(`Job Updated successfully!`, {
+        variant: "success",
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'right',
+        },
+      })
+      setSelectedJob(null)
+      tableRef.current && tableRef.current.onQueryChange();
+    } catch (err) {
+      enqueueSnackbar(`Failed to update, ${err?.message ?? "Something went wrong"}`, {
+        variant: "success",
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'right',
+        },
+      })
+    }
+
+  }
   const updateMultiple = async (array) => {
     setOperationStatus({ ...operationStatus, total: array?.length })
     let s = 0, f = 0;
@@ -206,7 +231,6 @@ export default () => {
     }
 
     setOperationStatus({ total: 0, failed: 0, success: 0 })
-    console.log(s, f)
     {
       s && enqueueSnackbar(`${s} out of ${array?.length} jobs restarted successfully `, {
         variant: "success",
@@ -418,6 +442,14 @@ export default () => {
             },
           },
           {
+            icon: "code",
+            tooltip: "View/Edit JSON",
+            position: "row",
+            onClick: async (event, rowData) => {
+              setSelectedJob(rowData)
+            },
+          },
+          {
             icon: "delete",
             tooltip: "Delete Job",
             position: "row",
@@ -452,6 +484,11 @@ export default () => {
           },
         ]}
       />
+      {selectedJob !== null && <JSONEditorDialoge
+        json={selectedJob}
+        onSubmit={handleJobUpdate}
+        onClose={() => setSelectedJob(null)}
+      />}
     </Container>
   );
 };
