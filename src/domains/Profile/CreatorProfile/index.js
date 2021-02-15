@@ -198,6 +198,7 @@ function Webhooks() {
   const [editIndex, setEditIndex] = useState(null);
   const [webhookData, setWebhookData] = useState([]);
   const [error, setError] = useState("");
+  const [userWebhooks, setUserWebhooks] = useState([]);
 
   const handleOpen = (i) => {
     setEditIndex(i);
@@ -220,7 +221,8 @@ function Webhooks() {
   useEffect(() => {
     fetch(`http://localhost:5000/users/${user?.id}`)
       .then((response) => response.json())
-      .then((data) => setCurrentUser(data));
+      .then((data) => setCurrentUser(data))
+      .catch((err) => setError(err));
   }, []);
 
   useEffect(() => {
@@ -254,6 +256,7 @@ function Webhooks() {
       })
       .catch((error) => {
         console.error("Error:", error);
+        setError(error);
       });
   };
 
@@ -277,17 +280,22 @@ function Webhooks() {
         .then((response) => response.json())
         .then((data) => {
           console.log("Success:", data);
+          fetch(`http://localhost:5000/users/${user?.id}`)
+            .then((response) => response.json())
+            .then((data) => setCurrentUser(data))
+            .catch((err) => setError(err));
           // window.location.reload();
         })
         .catch((error) => {
           console.error("Error:", error);
-          // window.location.reload();
+          setError(error);
         });
     }
   };
 
   return (
     <Container style={{ display: "flex", flexDirection: "column" }}>
+      {error ? <div>{error}</div> : <div></div>}
       <Typography variant="h5">Webhooks</Typography>
       <Divider />
       {currentUser
@@ -295,8 +303,7 @@ function Webhooks() {
             return (
               <div>
                 <Typography style={{ margin: 10 }} variant="h7">
-                  Name:{" "}
-                  {webhookData.find(({ id }) => id === cu.id).name}
+                  Name: {webhookData.find(({ id }) => id === cu.id)?.name}
                 </Typography>
                 <Typography variant="h7">URL: {cu.url}</Typography>
                 <IconButton>
@@ -329,9 +336,7 @@ function Webhooks() {
           user={user}
           currentUser={currentUser}
           onSubmit={handleSubmit}
-          webhookData={webhookData.filter(({ id }) =>
-            currentUser.webhooks.find((i) => i.id !== id)
-          )}></WebhookModal>
+          webhookData={webhookData}></WebhookModal>
       ) : (
         <div> </div>
       )}

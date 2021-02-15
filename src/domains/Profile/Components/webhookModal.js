@@ -36,21 +36,13 @@ export default function WebhookModal({
 }) {
   const [value, setValue] = useState(editingValue);
   const classes = useStyles();
-  const userWebhooksNames =
+  const userWebhooksIds =
     currentUser !== null
       ? currentUser.webhooks.map((w) => {
-          return w.name;
-        })
-      : [];
-  const userWebhooks =
-    currentUser !== null
-      ? currentUser.webhooks.map((w) => {
-          return w;
+          return w.id;
         })
       : [];
 
-  console.log(userWebhooksNames);
-  console.log(userWebhooks);
   useEffect(() => {
     console.log(value);
   }, [value]);
@@ -85,9 +77,11 @@ export default function WebhookModal({
               value={value.id}
               style={{ width: 150 }}
               onChange={handleChange}>
-              {webhookData?.map((w) => {
-                return <MenuItem value={w?.id}>{w?.name}</MenuItem>;
-              })}
+              {webhookData
+                ?.filter((wd) => !userWebhooksIds.includes(wd.id))
+                .map((w) => {
+                  return <MenuItem value={w?.id}>{w?.name}</MenuItem>;
+                })}
             </Select>
           </Container>
           <TextField

@@ -1,14 +1,17 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 
 import * as Yup from "yup";
 import { useFormik } from "formik";
 
+import ManualTestJob from "./manualTestJob";
+import { Job } from "services/api";
+
 import {
   Box,
   Button,
-  Dialog,
-  DialogTitle,
+  // Dialog,
+  // DialogTitle,
   FormControl,
   FormControlLabel,
   FormLabel,
@@ -23,7 +26,6 @@ import {
   TextField,
 } from "@material-ui/core";
 
-import { Job } from "services/api";
 import createTestJobs from "helpers/createTestJobs";
 
 const validationSchema = Yup.object().shape({
@@ -32,12 +34,10 @@ const validationSchema = Yup.object().shape({
     .min(1),
 });
 
-export default ({ onClose, open, idVideoTemplate, versions = [] }) => {
-  const handleClose = () => {
-    onClose();
-  };
+export default (props) => {
+  const { videoTemplate = {}, versions = [] } = props?.location?.state;
   const history = useHistory();
-
+  const [manualJob, setManualJob] = useState([]);
   const {
     handleChange,
     handleBlur,
@@ -58,7 +58,32 @@ export default ({ onClose, open, idVideoTemplate, versions = [] }) => {
     },
     validationSchema,
     onSubmit: async (options) => {
-      const jobs = await createTestJobs(idVideoTemplate, options);
+      if (manualJob.length) {
+        try {
+          const { settingsTemplate, renderSettings, incrementFrame } = options;
+          console.log("its a manual job", manualJob, videoTemplate);
+          await Promise.all(
+            manualJob.map(async (m) => {
+              const idVersion = Object.keys(m)[0];
+              await Job.create({
+                idVideoTemplate: videoTemplate.id,
+                idVersion: idVersion,
+                renderPrefs: {
+                  settingsTemplate,
+                  incrementFrame,
+                  renderSettings,
+                },
+                data: m[idVersion],
+              });
+            })
+          );
+          return history.push("/home/jobs");
+        } catch (e) {
+          console.log(e);
+        }
+      }
+      const jobs = await createTestJobs(videoTemplate.id, options);
+      console.log("jobss are", jobs, videoTemplate);
       await Promise.all(jobs.map(Job.create));
       history.push("/home/jobs");
     },
@@ -83,38 +108,13 @@ export default ({ onClose, open, idVideoTemplate, versions = [] }) => {
       ]);
     }
   };
+
+  const onSubmitJob = (data, versionId) => {
+    setManualJob([...manualJob, { [versionId]: data }]);
+  };
   return (
-    <Dialog
-      onClose={handleClose}
-      aria-labelledby="simple-dialog-title"
-      open={open}>
-      <DialogTitle id="simple-dialog-title">Configure Test Job</DialogTitle>
+    <div>
       <Box as="form" onSubmit={handleSubmit} p={4} mb={2}>
-        <FormControl component="fieldset">
-          <FormLabel component="legend">Data Fill Type</FormLabel>
-          <RadioGroup
-            aria-label="dataFillType"
-            name="dataFillType"
-            value={values.dataFillType}
-            onChange={handleChange}>
-            <FormControlLabel
-              value="maxLength"
-              control={<Radio />}
-              label="Max Length"
-            />
-            <FormControlLabel
-              value="label"
-              control={<Radio />}
-              label="Labels"
-            />
-            <FormControlLabel
-              value="placeholder"
-              control={<Radio />}
-              label="Placeholder"
-            />
-          </RadioGroup>
-        </FormControl>
-        <br />
         <FormControl
           required
           error={touched.versions && errors.versions}
@@ -143,6 +143,47 @@ export default ({ onClose, open, idVideoTemplate, versions = [] }) => {
             {errors.versions}
           </FormHelperText>
         </FormControl>
+        <br />
+        <FormControl component="fieldset">
+          <FormLabel component="legend">Data Fill Type</FormLabel>
+          <RadioGroup
+            aria-label="dataFillType"
+            name="dataFillType"
+            value={values.dataFillType}
+            onChange={handleChange}>
+            <FormControlLabel
+              value="maxLength"
+              control={<Radio />}
+              label="Max Length"
+            />
+            <FormControlLabel
+              value="label"
+              control={<Radio />}
+              label="Labels"
+            />
+            <FormControlLabel
+              value="placeholder"
+              control={<Radio />}
+              label="Placeholder"
+            />
+            <FormControlLabel
+              value="manual"
+              control={<Radio />}
+              label="Manual"
+            />
+          </RadioGroup>
+        </FormControl>
+        {values.dataFillType === "manual" && videoTemplate !== {} ? (
+          values.versions.map((version) => (
+            <ManualTestJob
+              edit={false}
+              version={version} //version.id
+              onSubmitJob={(d) => onSubmitJob(d, version.id)}></ManualTestJob>
+          ))
+        ) : (
+          <div></div>
+        )}
+
         <FormControl fullWidth margin="dense" variant="outlined">
           <InputLabel htmlFor="settingsTemplate">Output Module</InputLabel>
           <Select
@@ -238,6 +279,6 @@ export default ({ onClose, open, idVideoTemplate, versions = [] }) => {
           </Button>
         </Box>
       </Box>
-    </Dialog>
+    </div>
   );
 };

@@ -14,18 +14,15 @@ import NotFound from "domains/NotFound";
 
 import Landing from "domains/Landing";
 import AdminLogin from "domains/Auth/AdminAuth/Login";
+import TestJob from "domains/VideoTemplate/CreateTestJob";
 
 import Register from "domains/Auth/CreatorAuth/Signup";
 import Login from "domains/Auth/CreatorAuth/Login";
 
 import UserLogin from "domains/Auth/UserAuth/Login";
 import UserRegister from "domains/Auth/UserAuth/Signup";
-import { SnackbarProvider, useSnackbar } from 'notistack';
-import {
-  Route,
-  BrowserRouter as Router,
-  Switch,
-} from "react-router-dom";
+import { SnackbarProvider, useSnackbar } from "notistack";
+import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import { AuthProvider } from "services/auth";
 import { messaging } from "services/firebase";
 
@@ -46,23 +43,21 @@ const AppChild = () => {
               <Route path="/login" exact component={Login} />
               <Route path="/admin" exact component={AdminLogin} />
               <Route path="/user" exact component={UserLogin} />
-
+              <Route path="/testJob" exact component={TestJob} />
               <Route path="/register" exact component={Register} />
               <Route path="/registerUser" exact component={UserRegister} />
-
               <Route path="/forgotPassword" component={ForgotPassword} />
-
               <PrivateRoute path="/home" component={Domains} />
               <Route path="*" component={NotFound} />
             </Switch>
-          </Router></SnackbarProvider>
+          </Router>
+        </SnackbarProvider>
       </MuiThemeProvider>
     </AuthProvider>
   );
 };
 
 export default () => {
-
   return (
     <DarkModeProvider>
       <AppChild />
