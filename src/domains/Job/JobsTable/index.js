@@ -45,6 +45,7 @@ export default () => {
   const [isDeleting, setIsDeleting] = useState(false)
   const idCreator = user.id;
 
+  const filterString = filterObjectToString(filters)
   const handleRetry = () => {
     setError(false);
     tableRef.current && tableRef.current.onQueryChange();
@@ -52,7 +53,7 @@ export default () => {
 
   useEffect(() => {
     handleRetry();
-  }, [filters]);
+  }, [filterString]);
 
   useEffect(() => {
     document.title = "Jobs";
@@ -124,7 +125,7 @@ export default () => {
     return Job.getAll(
       page + 1,
       pageSize,
-      filterObjectToString(filters),
+      filterString,
       orderBy,
       orderDirection
       // idCreator
@@ -132,10 +133,34 @@ export default () => {
       .then(({ data = [], count: totalCount }) => {
         // unsubscribeFromProgress()
         // setJobIds(data.map((j) => j.id));
+        if (data?.length === 0 && totalCount) {
+          history.push(
+            `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
+            }`
+          );
+          return Job.getAll(
+            1,
+            pageSize,
+            filterString,
+            orderBy,
+            orderDirection
+            // idCreator
+          )
+            .then(({ data = [], count: totalCount }) => {
+              return { data, page: 0, totalCount };
+            })
+            .catch((err) => {
+              setError(err);
+              return {
+                data: [],
+                page: query?.page,
+                totalCount: 0,
+              };
+            })
+        }
         return { data, page, totalCount };
       })
       .catch((err) => {
-        console.log(err);
         setError(err);
         return {
           data: [],
