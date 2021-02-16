@@ -81,24 +81,24 @@ export default () => {
   }
 
 
-  useEffect(() => {
-    setSocket(io.connect(process.env.REACT_APP_EVENTS_SOCKET_URL));
-  }, []);
+  // useEffect(() => {
+  //   setSocket(io.connect(process.env.REACT_APP_EVENTS_SOCKET_URL));
+  // }, []);
 
-  useEffect(() => {
-    if (!socket) {
-      return console.log("no socket");
-    }
-    socket.on("job:add", (data) => console.log("job add data" + data));
-  }, [socket]);
+  // useEffect(() => {
+  //   if (!socket) {
+  //     return console.log("no socket");
+  //   }
+  //   socket.on("job:add", (data) => console.log("job add data" + data));
+  // }, [socket]);
 
-  useEffect(() => {
-    jobIds.map(subscribeToProgress);
+  // useEffect(() => {
+  //   jobIds.map(subscribeToProgress);
 
-    return () => {
-      unsubscribeFromProgress();
-    };
-  }, [jobIds]);
+  //   return () => {
+  //     unsubscribeFromProgress();
+  //   };
+  // }, [jobIds]);
 
   const getDataFromQuery = (query) => {
     const {
@@ -130,8 +130,8 @@ export default () => {
       // idCreator
     )
       .then(({ data = [], count: totalCount }) => {
-        // unsubscribeFromProgress()s
-        setJobIds(data.map((j) => j.id));
+        // unsubscribeFromProgress()
+        // setJobIds(data.map((j) => j.id));
         return { data, page, totalCount };
       })
       .catch((err) => {
@@ -201,7 +201,7 @@ export default () => {
       tableRef.current && tableRef.current.onQueryChange();
     } catch (err) {
       enqueueSnackbar(`Failed to update, ${err?.message ?? "Something went wrong"}`, {
-        variant: "success",
+        variant: "error",
         anchorOrigin: {
           vertical: 'bottom',
           horizontal: 'right',
@@ -287,21 +287,6 @@ export default () => {
           if (["td", "TD"].includes(e.target.tagName))
             history.push(`${path}${id}`);
         }}
-        detailPanel={[
-          {
-            render: (rowData) => (
-              <ReactJson
-                displayDataTypes={false}
-                name={rowData.id}
-                collapsed={1}
-                src={rowData}
-                theme={darkModeTheme === "dark" ? "ocean" : "rjv-default"}
-              />
-            ),
-            icon: "code",
-            tooltip: "Show Code",
-          },
-        ]}
         columns={[
           {
             title: "Video Template",

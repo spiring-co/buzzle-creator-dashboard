@@ -138,7 +138,7 @@ export default () => {
     return () => {
       unsubscribeFromProgress();
     };
-  }, [id]);
+  }, [id, socket]);
 
   const fetchJob = async () => {
     try {
@@ -220,11 +220,16 @@ export default () => {
   const sortedOutput = output?.sort(
     (a, b) => new Date(b?.dateCreated) - new Date(a?.dateCreated)
   );
-  let percent = rtProgressData[id]?.percent;
+  useEffect(() => {
+
+    if (rtProgressData[id]?.state === 'finished' && state !== 'finished') {
+      fetchJob()
+    }
+  }, [rtProgressData[id]?.state, state])
 
   const content = {
     "Job ID": id,
-    State: progressShow(failureReason, state, percent),
+    State: progressShow(failureReason, rtProgressData[id]?.state ?? state, rtProgressData[id]?.percent),
     "Render Time": formatTime(renderTime),
     "Queue Time": formatTime(queueTime),
     "Created at": new Date(dateCreated).toLocaleString(),
