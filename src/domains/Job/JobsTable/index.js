@@ -47,12 +47,13 @@ export default () => {
 
   const filterString = filterObjectToString(filters)
   const handleRetry = () => {
-    setError(false);
     tableRef.current && tableRef.current.onQueryChange();
+    setError(false);
+
   };
 
   useEffect(() => {
-    handleRetry();
+    handleRetry()
   }, [filterString]);
 
   useEffect(() => {
@@ -151,9 +152,13 @@ export default () => {
             })
             .catch((err) => {
               setError(err);
+              history.push(
+                `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
+                }`
+              );
               return {
                 data: [],
-                page: query?.page,
+                page: 0,
                 totalCount: 0,
               };
             })
@@ -162,9 +167,13 @@ export default () => {
       })
       .catch((err) => {
         setError(err);
+        history.push(
+          `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
+          }`
+        );
         return {
           data: [],
-          page: query?.page,
+          page: 0,
           totalCount: 0,
         };
       });
@@ -528,13 +537,13 @@ const filterObjectToString = (f) => {
   if (!f) return null;
   const {
     startDate = 0,
-    endDate = Date.now(),
+    endDate = 0,
     idVideoTemplates = [],
     states = [],
   } = f;
 
   return `${startDate
-    ? `dateUpdated=>=${startDate}&dateUpdated=<=${endDate ?? startDate}&`
+    ? `dateUpdated=>=${startDate}&${endDate ? `dateUpdated=<=${endDate || startDate}&` : ''}`
     : ""
     }${idVideoTemplates.length !== 0
       ? getArrayOfIdsAsQueryString(

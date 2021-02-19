@@ -49,26 +49,26 @@ export default () => {
             text: "Video Templates",
             icon: <VideoLibrary />,
             to: `${url}/videoTemplates`,
-            allowedRoles: ["Admin", "Creator", "User"],
+            allowedRoles: ["Admin", "Creator", "Platform"],
         },
         {
             text: "Jobs",
             icon: <Work />,
             to: `${url}/jobs`,
-            allowedRoles: ["Admin", "Creator", "User"],
+            allowedRoles: ["Admin", "Creator", "Platform"],
         },
 
         {
             text: "Profile and Settings",
             icon: <AssignmentInd />,
             to: `${url}/profile`,
-            allowedRoles: ["Admin", "Creator", "User"],
+            allowedRoles: ["Admin", "Creator", "Platform"],
         },
         {
             text: "Revenue",
             icon: <MonetizationOn />,
             to: `${url}/revenue`,
-            allowedRoles: ["Admin", "Creator", "User"],
+            allowedRoles: ["Admin", "Creator", "Platform"],
         },
         {
             text: "Creators",
