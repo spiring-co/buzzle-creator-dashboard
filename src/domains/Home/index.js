@@ -2,16 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Typography } from "@material-ui/core";
 import useApi from "services/apiHook";
 import {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-  Tooltip,
-} from "recharts";
-import {
   MuiPickersUtilsProvider,
   KeyboardTimePicker,
   KeyboardDatePicker,
@@ -121,24 +111,6 @@ export default () => {
             />
           </Grid>
         </MuiPickersUtilsProvider>
-        <BarChart width={600} height={300} data={chartData}>
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-          <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-          <Bar dataKey="uses" fill="#8884d8" barSize={30} />
-        </BarChart>
-        {/* <LineChart
-          width={600}
-          height={300}
-          data={chartData}
-          margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-          <Line type="monotone" dataKey="uses" stroke="#8884d8" />
-          <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-        </LineChart> */}
       </Typography>
     </div>
   );
