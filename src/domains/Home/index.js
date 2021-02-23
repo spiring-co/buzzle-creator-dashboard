@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Typography } from "@material-ui/core";
 import useApi from "services/apiHook";
-import {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-  Tooltip,
-} from "recharts";
+// import {
+//   LineChart,
+//   Line,
+//   BarChart,
+//   Bar,
+//   CartesianGrid,
+//   XAxis,
+//   YAxis,
+//   Tooltip,
+// } from "recharts";
 import {
   MuiPickersUtilsProvider,
   KeyboardTimePicker,
@@ -121,13 +121,13 @@ export default () => {
             />
           </Grid>
         </MuiPickersUtilsProvider>
-        <BarChart width={600} height={300} data={chartData}>
+        {/* <BarChart width={600} height={300} data={chartData}>
           <XAxis dataKey="name" />
           <YAxis />
           <Tooltip />
           <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
           <Bar dataKey="uses" fill="#8884d8" barSize={30} />
-        </BarChart>
+        </BarChart> */}
         {/* <LineChart
           width={600}
           height={300}

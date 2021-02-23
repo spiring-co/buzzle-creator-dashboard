@@ -24,7 +24,7 @@ import {
 } from "@material-ui/core";
 
 import DeleteIcon from "@material-ui/icons/Delete";
-import HdIcon from '@material-ui/icons/Hd';
+import HdIcon from "@material-ui/icons/Hd";
 import UpdateIcon from "@material-ui/icons/Update";
 import DownloadIcon from "@material-ui/icons/GetApp";
 import PublishIcon from "@material-ui/icons/Publish";
@@ -39,6 +39,10 @@ import ActionsHandler from "./ActionsHandler";
 import ErrorHandler from "common/ErrorHandler";
 import ImageEditRow from "./ImageEditRow";
 
+import Accordion from "@material-ui/core/Accordion";
+import AccordionSummary from "@material-ui/core/AccordionSummary";
+import AccordionDetails from "@material-ui/core/AccordionDetails";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { Job } from "services/api";
 
 function TabPanel(props) {
@@ -114,7 +118,7 @@ export default () => {
   }, []);
 
   // rerender on output select
-  useEffect(() => { }, [selectedOutputIndex]);
+  useEffect(() => {}, [selectedOutputIndex]);
 
   // init socket on mount
   useEffect(() => {
@@ -246,14 +250,18 @@ export default () => {
     try {
       const { data, actions, id, renderPrefs } = job;
       setIsLoading(true);
-      await Job.update(id, { data, actions, renderPrefs: { settingsTemplate: 'full' } });
+      await Job.update(id, {
+        data,
+        actions,
+        renderPrefs: { settingsTemplate: "full" },
+      });
       setIsLoading(false);
       setRedirect("/home/jobs");
     } catch (err) {
       setIsLoading(false);
       setError(err);
     }
-  }
+  };
   const handleAssetDelete = async (index) => {
     const idArray = Object.keys(data);
     delete job.data[idArray[index]];
@@ -372,16 +380,16 @@ export default () => {
               src={sortedOutput.length && sortedOutput[selectedOutputIndex].src}
             />
           ) : (
-              <>
-                <Box justifyContent="center" textAlign="center" height={320}>
-                  <Typography style={{ padding: 100 }}>
-                    {" "}
+            <>
+              <Box justifyContent="center" textAlign="center" height={320}>
+                <Typography style={{ padding: 100 }}>
+                  {" "}
                   No output yet.
                 </Typography>
-                </Box>
-                <Divider />
-              </>
-            )}
+              </Box>
+              <Divider />
+            </>
+          )}
           <AppBar position="static" color="transparent" elevation={0}>
             <Tabs
               value={activeTabIndex}
@@ -394,6 +402,7 @@ export default () => {
               <Tab label="Data" {...a11yProps(1)} />
               <Tab label="Actions" {...a11yProps(2)} />
               <Tab label="Render Prefs" {...a11yProps(3)} />
+              <Tab label="Logs" {...a11yProps(3)} />
             </Tabs>
           </AppBar>
 
@@ -456,7 +465,7 @@ export default () => {
                     return (
                       <span>
                         {value.startsWith("http://") ||
-                          value.startsWith("https://")
+                        value.startsWith("https://")
                           ? "image"
                           : "string"}
                       </span>
@@ -521,18 +530,18 @@ export default () => {
               postrender={
                 actions?.postrender?.map((action) => {
                   switch (action.module) {
-                    case "@nexrender/action-encode":
+                    case "buzzle-action-handbrake":
                       return { compress: action };
-                    case "action-watermark":
+                    case "buzzle-action-watermark":
                       return { addWaterMark: action };
-                    case "@nexrender/action-upload":
+                    case "buzzle-action-upload":
                       return { upload: action };
-                    case "action-add-audio":
+                    case "buzzle-action-add-audio":
                       return { addAudio: action };
-                    case "action-merge-videos":
+                    case "buzzle-action-merge-videos":
                       return { mergeVideos: action };
                     default:
-                      return;
+                      return {};
                   }
                 }) ?? []
               }
@@ -593,6 +602,31 @@ export default () => {
                 label="End Frame"
                 type="number"
               />
+            </Box>
+          </TabPanel>
+          <TabPanel value={activeTabIndex} index={4}>
+            <Box display="flex" flexDirection="column" px={8}>
+              <h1>Logs here.</h1>
+              {job?.logs?.map((l, i) => (
+                <Accordion key={i}>
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel1a-content"
+                    id="panel1a-header">
+                    <Typography>{l.label}</Typography>
+                    <Typography variant="caption">
+                      {formatTime(l.updatedAt)}
+                    </Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Typography>
+                      <code style={{ "white-space": "pre-line" }}>
+                        {l.text}
+                      </code>
+                    </Typography>
+                  </AccordionDetails>
+                </Accordion>
+              ))}
             </Box>
           </TabPanel>
         </Paper>

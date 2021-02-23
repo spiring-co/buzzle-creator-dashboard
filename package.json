@@ -11,7 +11,7 @@
     "@material-ui/pickers": "^3.2.10",
     "aws-sdk": "^2.693.0",
     "axios": "^0.21.0",
-    "buzzle-sdk": "^1.0.5",
+    "buzzle-sdk": "^1.0.7",
     "formik": "^2.1.4",
     "get-orientation": "^1.1.2",
     "i18next": "^19.4.2",
@@ -31,7 +31,7 @@
     "react-json-view": "^1.19.1",
     "react-router-dom": "^5.1.2",
     "recharts": "^2.0.3",
-    "socket.io-client": "^2.3.0",
+    "socket.io-client": "^3.1.1",
     "timeago.js": "^4.0.2",
     "typescript": "^4.0.3",
     "yup": "^0.28.3"

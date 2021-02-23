@@ -4,7 +4,7 @@ const API = BuzzleSdk.apiClient({
   authToken: localStorage.getItem("jwtoken"),
 });
 
-const uri = `${process.env.REACT_APP_RENDER_SERVER_URL}/api/v1/jobs`;
+const uri = `http://52.54.195.156:3000/api/v1/jobs`;
 
 export const ServerJobs = {
   getAll: async () => {
@@ -14,7 +14,7 @@ export const ServerJobs = {
     console.log("im trying to get jobs");
     if (response.ok) {
       return await response
-        .json() 
+        .json()
         .then((v) =>
           v.sort((a, b) => new Date(b?.updatedAt) - new Date(a?.updatedAt))
         );
