@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { MuiThemeProvider } from "@material-ui/core/styles";
 
@@ -20,14 +20,14 @@ import Login from "domains/Auth/CreatorAuth/Login";
 
 import UserLogin from "domains/Auth/UserAuth/Login";
 import UserRegister from "domains/Auth/UserAuth/Signup";
-
-
+import { SnackbarProvider, useSnackbar } from 'notistack';
 import {
   Route,
   BrowserRouter as Router,
   Switch,
 } from "react-router-dom";
 import { AuthProvider } from "services/auth";
+import { messaging } from "services/firebase";
 
 const AppChild = () => {
   const [theme, t, componentMounted] = useDarkMode();
@@ -39,28 +39,30 @@ const AppChild = () => {
   return (
     <AuthProvider>
       <MuiThemeProvider theme={themeMode}>
-        <Router>
-          <Switch>
-            <Route exact path="/" component={Landing} />
-            <Route path="/login" exact component={Login} />
-            <Route path="/admin" exact component={AdminLogin} />
-            <Route path="/user" exact component={UserLogin} />
+        <SnackbarProvider maxSnack={3}>
+          <Router>
+            <Switch>
+              <Route exact path="/" component={Landing} />
+              <Route path="/login" exact component={Login} />
+              <Route path="/admin" exact component={AdminLogin} />
+              <Route path="/user" exact component={UserLogin} />
 
-            <Route path="/register" exact component={Register} />
-            <Route path="/registerUser" exact component={UserRegister} />
+              <Route path="/register" exact component={Register} />
+              <Route path="/registerUser" exact component={UserRegister} />
 
-            <Route path="/forgotPassword" component={ForgotPassword} />
+              <Route path="/forgotPassword" component={ForgotPassword} />
 
-            <PrivateRoute path="/home" component={Domains} />
-            <Route path="*" component={NotFound} />
-          </Switch>
-        </Router>
+              <PrivateRoute path="/home" component={Domains} />
+              <Route path="*" component={NotFound} />
+            </Switch>
+          </Router></SnackbarProvider>
       </MuiThemeProvider>
     </AuthProvider>
   );
 };
 
 export default () => {
+
   return (
     <DarkModeProvider>
       <AppChild />

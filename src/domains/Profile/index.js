@@ -7,15 +7,15 @@ import UserProfile from './UserProfile'
 import CreatorProfile from './CreatorProfile'
 
 export default () => {
-    const { user: { role = "Creator" } } = useAuth()
+    const { user } = useAuth()
     // if seperate profile without code sharing than this structure
-
+    console.log(user)
     // const profilesAsPerRole = {
     //     'Admin': () => <AdminProfile />,
     //     'Creator': () => <CreatorProfile />,
-    //     'User': () => <UserProfile />
+    //     'Platform': () => <UserProfile />
     // }
-    //return profilesAsPerRole[role]()
+    // return profilesAsPerRole[user?.role]()
 
     //else just rename CreatorProfile to Profile
     return <CreatorProfile />

@@ -14,7 +14,7 @@ export const ServerJobs = {
     console.log("im trying to get jobs");
     if (response.ok) {
       return await response
-        .json() 
+        .json()
         .then((v) =>
           v.sort((a, b) => new Date(b?.updatedAt) - new Date(a?.updatedAt))
         );

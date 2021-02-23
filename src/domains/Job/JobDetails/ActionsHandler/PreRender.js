@@ -19,7 +19,7 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
         actionName === "installFonts"
             ? actionValue
             : {
-                module: "action-install-fonts",
+                module: "buzzle-action-install-fonts",
                 fonts: [{ name: "", src: "" }],
             }
     );

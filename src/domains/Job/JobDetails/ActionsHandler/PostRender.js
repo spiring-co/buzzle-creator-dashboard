@@ -15,7 +15,7 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
         actionName === "compress"
             ? actionValue
             : {
-                module: "@nexrender/action-encode",
+                module: "buzzle-action-handbrake",
                 preset: null,
                 output: "encoded.mp4",
             }
@@ -24,7 +24,7 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
         actionName === "addWaterMark"
             ? actionValue
             : {
-                module: "action-watermark",
+                module: "buzzle-action-watermark",
                 input: "encoded.mp4",
                 watermark: null,
                 output: "watermarked.mp4",
@@ -34,7 +34,7 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
         actionName === "upload"
             ? actionValue
             : {
-                module: "@nexrender/action-upload",
+                module: "buzzle-action-upload",
                 input: "encoded.mp4",
                 provider: "s3",
                 params: {
@@ -50,7 +50,7 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
         actionName === "mergeVideos"
             ? actionValue
             : {
-                module: "action-merge-videos",
+                module: "buzzle-action-merge-videos",
                 input2: "",
 
             }
@@ -59,7 +59,7 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
         actionName === "addAudio"
             ? actionValue
             : {
-                module: "action-add-audio",
+                module: "buzzle-action-add-audio",
                 audio: ""
             }
     );

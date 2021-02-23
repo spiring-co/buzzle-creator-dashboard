@@ -85,8 +85,9 @@ export default () => {
     onSubmit: async (s, { setSubmitting }) => {
       console.log("called onsubmit");
       try {
-        delete s["confirmPassword"];
-        await Creator.create(s);
+        const cp = Object.assign({},s)
+        delete cp["confirmPassword"];
+        await Creator.create(cp);
         history.push("/login", {
           message:
             "Please check your mail for a verification mail and click the link to continue.",
@@ -98,12 +99,19 @@ export default () => {
     },
   });
 
+  const onFormSubmit = (e) => {
+    console.log("onformsubmit");
+    console.log(errors);
+    e.preventDefault();
+    handleSubmit(e);
+  };
+
   return (
     <Box mt={4}>
       <Container
         component="form"
         isValidated={Object.keys(errors).length}
-        onSubmit={handleSubmit}
+        onSubmit={onFormSubmit}
         noValidate
         maxWidth={"sm"}>
         <Paper className={classes.content}>
@@ -342,7 +350,7 @@ const validationSchema = Yup.object({
     .max(40, "Should not be more than 40 characters")
     .required("Password is Required"),
   confirmPassword: Yup.string()
-    .equalTo(Yup.ref("password"), "Incorrect password!")
+    .oneOf([Yup.ref("password"), null], "Passwords must match")
     .required("Confirm password is required!"),
   // countryCode: Yup.string()
   //   .matches(/^(\+?\d{1,3}|\d{1,4})$/gm, "Country code is not valid")
