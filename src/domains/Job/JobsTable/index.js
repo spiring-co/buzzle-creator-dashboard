@@ -1,24 +1,32 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useHistory, useRouteMatch, useLocation } from "react-router-dom";
+
+import io from "socket.io-client";
+import * as timeago from "timeago.js";
+import ReactJson from "react-json-view";
+
 import {
   Chip,
   Typography,
   Container,
-  Paper,
+  Paper, Box,
   Tooltip,
   Fade,
-  Box,
 } from "@material-ui/core";
 import MaterialTable from "material-table";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
 
-import io from "socket.io-client";
-import * as timeago from "timeago.js";
+import formatTime from "helpers/formatTime";
+import Alert from '@material-ui/lab/Alert';
+import { useDarkMode } from "helpers/useDarkMode";
 
 import Filters from "common/Filters";
 import ErrorHandler from "common/ErrorHandler";
-import formatTime from "helpers/formatTime";
 import { Job, Search } from "services/api";
+
+import { useAuth } from "services/auth";
+import { SnackbarProvider, useSnackbar } from 'notistack';
+import JSONEditorDialoge from "common/JSONEditorDialoge";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -27,19 +35,27 @@ function useQuery() {
 export default () => {
   const { path } = useRouteMatch();
   const history = useHistory();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const queryParam = useQuery();
   const tableRef = useRef(null);
   const [error, setError] = useState(null);
+  const [operationStatus, setOperationStatus] = useState({ total: 0, success: 0, failed: 0 })
+  const { user } = useAuth()
   const [filters, setFilters] = useState({});
+  const [selectedJob, setSelectedJob] = useState(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const idCreator = user.id;
 
+  const filterString = filterObjectToString(filters)
   const handleRetry = () => {
-    setError(false);
     tableRef.current && tableRef.current.onQueryChange();
+    setError(false);
+
   };
 
   useEffect(() => {
-    handleRetry();
-  }, [filters]);
+    handleRetry()
+  }, [filterString]);
 
   useEffect(() => {
     document.title = "Jobs";
@@ -50,7 +66,7 @@ export default () => {
   const [activeJobs, setActiveJobs] = useState({});
 
   useEffect(() => {
-    setSocket(io.connect("http://localhost:9999"), {
+    setSocket(io.connect(process.env.REACT_APP_SOCKET_SERVER_URL), {
       withCredentials: true,
     });
   }, []);
@@ -77,10 +93,8 @@ export default () => {
       orderBy: { field: orderBy = "dateUpdated" } = {},
       orderDirection = "asc",
     } = query;
-
     history.push(
-      `?page=${page + 1}&size=${pageSize}${
-        searchQuery ? "searchQuery=" + searchQuery : ""
+      `?page=${page + 1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
       }`
     );
 
@@ -95,24 +109,166 @@ export default () => {
     return Job.getAll(
       page + 1,
       pageSize,
-      filterObjectToString(filters),
+      filterString,
       orderBy,
       orderDirection
       // idCreator
     )
-      .then(({ data, count: totalCount }) => {
+      .then(({ data = [], count: totalCount }) => {
+        // unsubscribeFromProgress()
+        // setJobIds(data.map((j) => j.id));
+        if (data?.length === 0 && totalCount) {
+          history.push(
+            `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
+            }`
+          );
+          return Job.getAll(
+            1,
+            pageSize,
+            filterString,
+            orderBy,
+            orderDirection
+            // idCreator
+          )
+            .then(({ data = [], count: totalCount }) => {
+              return { data, page: 0, totalCount };
+            })
+            .catch((err) => {
+              setError(err);
+              history.push(
+                `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
+                }`
+              );
+              return {
+                data: [],
+                page: 0,
+                totalCount: 0,
+              };
+            })
+        }
         return { data, page, totalCount };
       })
       .catch((err) => {
-        console.log(err);
         setError(err);
+        history.push(
+          `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
+          }`
+        );
         return {
           data: [],
-          page: query?.page,
+          page: 0,
           totalCount: 0,
         };
       });
   };
+  const deleteMultipleJobs = async (array = []) => {
+    let s = 0, f = 0
+    // show the snackbar or alert showing the progress
+    setOperationStatus({ ...operationStatus, total: array?.length })
+    for (let index = 0; index < array.length; index++) {
+      const { id = false } = array[index];
+      if (!id) return;
+      try {
+        await Job.delete(id)
+        // increment the success
+        setOperationStatus(operationStatus => ({ ...operationStatus, success: operationStatus?.success + 1 }))
+        s++
+
+      } catch (err) {
+        // increment the failed
+        setOperationStatus(operationStatus => ({ ...operationStatus, failed: operationStatus?.failed + 1 }))
+        f++
+
+      }
+    }
+    setOperationStatus({ total: 0, failed: 0, success: 0 })
+    {
+      s && enqueueSnackbar(`${s} out of ${array?.length} jobs deleted successfully `, {
+        variant: "success",
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'right',
+        },
+      })
+    }
+    {
+      f && enqueueSnackbar(`${f} out of ${array?.length} jobs failed to delete `, {
+        variant: "error",
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'right',
+        },
+      })
+    }
+    tableRef.current && tableRef.current.onQueryChange();
+  }
+
+  const handleJobUpdate = async ({ id, data, actions, renderPrefs }) => {
+    try {
+
+      await Job.update(id, { data, actions, renderPrefs });
+      enqueueSnackbar(`Job Updated successfully!`, {
+        variant: "success",
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'right',
+        },
+      })
+      setSelectedJob(null)
+      tableRef.current && tableRef.current.onQueryChange();
+    } catch (err) {
+      enqueueSnackbar(`Failed to update, ${err?.message ?? "Something went wrong"}`, {
+        variant: "error",
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'right',
+        },
+      })
+    }
+
+  }
+  const updateMultiple = async (array) => {
+    setOperationStatus({ ...operationStatus, total: array?.length })
+    let s = 0, f = 0;
+    for (let index = 0; index < array.length; index++) {
+      const { id = false, data, renderPrefs, actions } = array[index];
+      if (!id) return;
+      try {
+        await Job.update(id, { data, renderPrefs, actions })
+        // increment the success
+        setOperationStatus(operationStatus => ({ ...operationStatus, success: operationStatus?.success + 1 }))
+        s = s + 1
+
+      } catch (err) {
+        // increment the failed
+        setOperationStatus(operationStatus => ({ ...operationStatus, failed: operationStatus?.failed + 1 }))
+        f = f + 1
+      }
+
+    }
+
+    setOperationStatus({ total: 0, failed: 0, success: 0 })
+    {
+      s && enqueueSnackbar(`${s} out of ${array?.length} jobs restarted successfully `, {
+        variant: "success",
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'right',
+        },
+      })
+    }
+    {
+      f && enqueueSnackbar(`${f} out of ${array?.length} jobs failed to restart `, {
+        variant: "error",
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'right',
+        },
+      })
+    }
+    tableRef.current && tableRef.current.onQueryChange();
+  }
+
 
   return (
     <Container>
@@ -128,6 +284,9 @@ export default () => {
           <p key={j}>{JSON.stringify(activeJobs[j])}</p>
         ))}
       </Box>
+      {operationStatus?.total !== 0 && <Box style={{ marginBottom: 10 }}>
+        <Alert severity="info">{operationStatus?.success + operationStatus?.failed} out of {operationStatus?.total} Operations performed!</Alert>
+      </Box>}
       <Paper style={{ padding: 15, marginBottom: 5 }}>
         <Typography variant="h6">Filters</Typography>
         <Container
@@ -162,7 +321,7 @@ export default () => {
             searchable: false,
             render: ({ videoTemplate, idVersion }) => (
               <span>
-                {videoTemplate?.versions.find((v) => v?.id === idVersion)
+                {videoTemplate?.versions?.find((v) => v?.id === idVersion)
                   ?.title ?? ""}
               </span>
             ),
@@ -280,6 +439,14 @@ export default () => {
             },
           },
           {
+            icon: "code",
+            tooltip: "View/Edit JSON",
+            position: "row",
+            onClick: async (event, rowData) => {
+              setSelectedJob(rowData)
+            },
+          },
+          {
             icon: "delete",
             tooltip: "Delete Job",
             position: "row",
@@ -299,19 +466,7 @@ export default () => {
             tooltip: "Restart All Selected Jobs",
             position: "toolbarOnSelect",
             onClick: async (e, data) => {
-              try {
-                await Job.updateMultiple(
-                  data.map(({ id, actions, data, renderPrefs }) => ({
-                    id,
-                    actions,
-                    data,
-                    renderPrefs,
-                  }))
-                );
-              } catch (err) {
-                setError(err);
-              }
-              tableRef.current && tableRef.current.onQueryChange();
+              await updateMultiple(data);
             },
           },
           {
@@ -319,16 +474,18 @@ export default () => {
             tooltip: "Delete All Selected Jobs",
             position: "toolbarOnSelect",
             onClick: async (e, data) => {
-              try {
-                await Job.deleteMultiple(data);
-              } catch (err) {
-                setError(err);
-              }
-              tableRef.current && tableRef.current.onQueryChange();
+              const action = window.confirm("Are you sure, you want to delete");
+              if (!action) return;
+              await deleteMultipleJobs(data);
             },
           },
         ]}
       />
+      {selectedJob !== null && <JSONEditorDialoge
+        json={selectedJob}
+        onSubmit={handleJobUpdate}
+        onClose={() => setSelectedJob(null)}
+      />}
     </Container>
   );
 };
@@ -358,21 +515,19 @@ const filterObjectToString = (f) => {
   if (!f) return null;
   const {
     startDate = 0,
-    endDate = Date.now(),
+    endDate = 0,
     idVideoTemplates = [],
     states = [],
   } = f;
 
-  return `${
-    startDate
-      ? `dateUpdated=>=${startDate}&dateUpdated=<=${endDate ?? startDate}&`
-      : ""
-  }${
-    idVideoTemplates.length !== 0
+  return `${startDate
+    ? `dateUpdated=>=${startDate}&${endDate ? `dateUpdated=<=${endDate || startDate}&` : ''}`
+    : ""
+    }${idVideoTemplates.length !== 0
       ? getArrayOfIdsAsQueryString(
-          "idVideoTemplate",
-          idVideoTemplates.map(({ id }) => id)
-        ) + "&"
+        "idVideoTemplate",
+        idVideoTemplates.map(({ id }) => id)
+      ) + "&"
       : ""
-  }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
+    }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
 };

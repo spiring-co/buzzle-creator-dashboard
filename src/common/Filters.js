@@ -15,13 +15,9 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 export default React.memo(
   ({ value = {}, onChange }) => {
-    console.log("mounted");
     const [loading, setLoading] = useState(true);
     const [videoTemplates, setVideoTemplates] = useState([]);
     const [filters, setFilters] = useState(value);
-    const [selectedTemplates, setSelectedTemplates] = useState(
-      value?.idVideoTemplates ?? []
-    );
     useEffect(() => {
       videoTemplates.length === 0 &&
         VideoTemplate.getAll(1, 500)
@@ -45,7 +41,7 @@ export default React.memo(
             format="MM/dd/yyyy"
             id="date-picker-inline"
             label="Start date"
-            value={value?.startDate ?? null}
+            value={filters?.startDate ?? null}
             onChange={(v) =>
               setFilters({ ...filters, startDate: new Date(v).toISOString() })
             }
@@ -65,7 +61,7 @@ export default React.memo(
             format="MM/dd/yyyy"
             id="date-picker-inline"
             label="End date"
-            value={value?.endDate ?? null}
+            value={filters?.endDate ?? null}
             onChange={(v) =>
               setFilters({ ...filters, endDate: new Date(v).toISOString() })
             }
@@ -80,7 +76,7 @@ export default React.memo(
             disabled={loading}
             labelId="demo-simple-select-label"
             id="demo-simple-select"
-            value={value?.idVideoTemplate}
+            value={filters?.idVideoTemplate}
             onChange={({ target: { value } }) =>
               setFilters({ ...filters, idVideoTemplate: value })
             }>
@@ -96,8 +92,8 @@ export default React.memo(
           // onClose={(e, r) => r ? r === 'blur' ?
           //   setFilters({ ...filters, idVideoTemplates: selectedTemplates }) : console.log(r) : setFilters({ ...filters, idVideoTemplates: selectedTemplates })}
           //
-          value={value?.idVideoTemplates ?? []}
-          // defaultValue={value?.idVideoTemplates}
+          value={filters?.idVideoTemplates ?? []}
+          // defaultValue={filters?.idVideoTemplates}
           options={videoTemplates}
           loading={loading}
           onChange={(e, v) => setFilters({ ...filters, idVideoTemplates: v })}
@@ -109,9 +105,8 @@ export default React.memo(
                 icon={icon}
                 checkedIcon={checkedIcon}
                 style={{ marginRight: 8 }}
-                checked={value?.idVideoTemplates
-                  ?.map(({ id }) => id)
-                  .includes(option?.id)}
+                checked={filters?.idVideoTemplates
+                  ?.find(({ id }) => id === option?.id)}
               />
               {option.title}
             </React.Fragment>
@@ -129,7 +124,7 @@ export default React.memo(
           multiple
           limitTags={1}
           id="checkboxes-tags-demo"
-          value={value?.states ?? []}
+          value={filters?.states ?? []}
           options={["error", "created", "started", "finished"]}
           onChange={(e, v) => setFilters({ ...filters, states: v })}
           disableCloseOnSelect
@@ -140,7 +135,7 @@ export default React.memo(
                 icon={icon}
                 checkedIcon={checkedIcon}
                 style={{ marginRight: 8 }}
-                checked={value?.states?.includes(option)}
+                checked={filters?.states?.includes(option)}
               />
               {option.toUpperCase()}
             </React.Fragment>
@@ -155,7 +150,7 @@ export default React.memo(
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
-            value={value?.state}
+            value={filters?.state}
             onChange={({ target: { value } }) =>
               setFilters({ ...filters, state: value })
             }>
