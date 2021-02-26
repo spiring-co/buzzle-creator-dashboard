@@ -27,6 +27,7 @@ import { Job, Search } from "services/api";
 import { useAuth } from "services/auth";
 import { SnackbarProvider, useSnackbar } from 'notistack';
 import JSONEditorDialoge from "common/JSONEditorDialoge";
+import ActiveJobsTable from "../ActiveJobsTable"
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -43,9 +44,8 @@ export default () => {
   const { user } = useAuth()
   const [filters, setFilters] = useState({});
   const [selectedJob, setSelectedJob] = useState(null)
-  const [isDeleting, setIsDeleting] = useState(false)
-  const idCreator = user.id;
-
+  const [activeJobLogs, setActiveJobLogs] = useState({})
+  const [activeJobs, setActiveJobs] = useState({});
   const filterString = filterObjectToString(filters)
   const handleRetry = () => {
     tableRef.current && tableRef.current.onQueryChange();
@@ -63,7 +63,6 @@ export default () => {
 
   // // progress sockets
   const [socket, setSocket] = useState(null);
-  const [activeJobs, setActiveJobs] = useState({});
 
   useEffect(() => {
     setSocket(io.connect(process.env.REACT_APP_SOCKET_SERVER_URL), {
@@ -76,8 +75,10 @@ export default () => {
       return console.log("no socket");
     }
     socket.on("job-progress", ({ id, state, progress, server }) => {
-      console.log({ id, state, progress, server })
-      setActiveJobs({ ...activeJobs, [id]: { state, progress ,server} });
+      setActiveJobs(activeJobs => ({ ...activeJobs, [id]: { state, progress, server } }));
+    });
+    socket.on("job-logs", ({ id, data }) => {
+      setActiveJobLogs(activeJobLogs => ({ ...activeJobLogs, [id]: data }));
     });
   }, [socket]);
 
@@ -280,9 +281,10 @@ export default () => {
         />
       )}
       <Box>
-        {Object.keys(activeJobs).map((j) => (
-          <p key={j}>{JSON.stringify(activeJobs[j])}</p>
-        ))}
+        <ActiveJobsTable
+          activeJobsData={Object.keys(activeJobs)?.map(id => ({ id, ...activeJobs[id] }))}
+          logsData={Object.keys(activeJobLogs)?.map(id => ({ id, logs: activeJobLogs[id] }))}
+          onRowClick={id => history.push(`${path}${id}`)} />
       </Box>
       {operationStatus?.total !== 0 && <Box style={{ marginBottom: 10 }}>
         <Alert severity="info">{operationStatus?.success + operationStatus?.failed} out of {operationStatus?.total} Operations performed!</Alert>
@@ -309,86 +311,89 @@ export default () => {
           if (["td", "TD"].includes(e.target.tagName))
             history.push(`${path}${id}`);
         }}
-        columns={[
-          {
-            title: "Video Template",
-            sorting: false,
-            field: "videoTemplate.title",
-          },
-          {
-            title: "Version",
-            sorting: false,
-            searchable: false,
-            render: ({ videoTemplate, idVersion }) => (
-              <span>
-                {videoTemplate?.versions?.find((v) => v?.id === idVersion)
-                  ?.title ?? ""}
-              </span>
-            ),
-          },
-          {
-            title: "Render Time",
-            field: "renderTime",
-            sorting: false,
-            searchable: false,
-            render: ({ renderTime }) => (
-              <span>{renderTime !== -1 ? formatTime(renderTime) : "NA"}</span>
-            ),
-          },
+        columns={[{
+          title: "JobId",
+          field: "id",
+        },
+        {
+          title: "Video Template",
+          sorting: false,
+          field: "videoTemplate.title",
+        },
+        {
+          title: "Version",
+          sorting: false,
+          searchable: false,
+          render: ({ videoTemplate, idVersion }) => (
+            <span>
+              {videoTemplate?.versions?.find((v) => v?.id === idVersion)
+                ?.title ?? ""}
+            </span>
+          ),
+        },
+        {
+          title: "Render Time",
+          field: "renderTime",
+          sorting: false,
+          searchable: false,
+          render: ({ renderTime }) => (
+            <span>{renderTime !== -1 ? formatTime(renderTime) : "NA"}</span>
+          ),
+        },
 
-          {
-            searchable: false,
-            title: "Last Updated",
-            field: "dateUpdated",
-            type: "datetime",
-            defaultSort: "desc",
-            render: ({ dateUpdated }) => (
-              <span>{timeago.format(new Date(dateUpdated))}</span>
-            ),
-          },
-          {
-            searchable: false,
-            title: "Created At",
-            field: "dateCreated",
-            type: "datetime",
-            render: ({ dateCreated }) => (
-              <span>{timeago.format(new Date(dateCreated))}</span>
-            ),
-          },
-          {
-            searchable: false,
-            title: "State",
-            field: "state",
-            render: ({ state, failureReason }) => {
-              return (
-                <Tooltip
-                  TransitionComponent={Fade}
-                  title={
-                    state === "error"
+        {
+          searchable: false,
+          title: "Last Updated",
+          field: "dateUpdated",
+          type: "datetime",
+          defaultSort: "desc",
+          render: ({ dateUpdated }) => (
+            <span>{timeago.format(new Date(dateUpdated))}</span>
+          ),
+        },
+        {
+          searchable: false,
+          title: "Created At",
+          field: "dateCreated",
+          type: "datetime",
+          render: ({ dateCreated }) => (
+            <span>{timeago.format(new Date(dateCreated))}</span>
+          ),
+        },
+        {
+          searchable: false,
+          title: "State",
+          field: "state",
+          render: ({ state, failureReason }) => {
+            return (
+              <Tooltip
+                TransitionComponent={Fade}
+                title={
+                  state === "error"
+                    ? failureReason
                       ? failureReason
-                        ? failureReason
-                        : "Reason not given"
-                      : "Status"
-                  }>
-                  <Chip
-                    size="small"
-                    label={state}
-                    style={{
-                      fontWeight: 700,
-                      background: getColorFromState(state),
-                      color: "white",
-                    }}
-                  />
-                </Tooltip>
-              );
-            },
+                      : "Reason not given"
+                    : "Status"
+                }>
+                <Chip
+                  size="small"
+                  label={state}
+                  style={{
+                    fontWeight: 700,
+                    background: getColorFromState(state),
+                    color: "white",
+                  }}
+                />
+              </Tooltip>
+            );
           },
-          {
-            searchable: false,
-            title: "Revisions",
-            field: "__v",
-            type: "numeric",
-          },
+        },
+        {
+          searchable: false,
+          title: "Revisions",
+          field: "__v",
+          type: "numeric",
+        },
         ]}
         localization={{
           body: {

@@ -122,7 +122,7 @@ export default function NavBar({ items }) {
   const classes = useStyles();
   const { user } = useAuth();
   const theme = useTheme();
-  const [drawerOpen, setDrawerOpen] = useState(true);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const { logout } = useAuth();
   const history = useHistory();
@@ -257,8 +257,8 @@ export default function NavBar({ items }) {
             {theme.direction === "rtl" ? (
               <ChevronRightIcon />
             ) : (
-              <ChevronLeftIcon />
-            )}
+                <ChevronLeftIcon />
+              )}
           </IconButton>
         </div>
         <Divider />

@@ -364,27 +364,27 @@ export default () => {
           {
             label: "Profile",
             component: <ProfileEdit creator={creator} />,
-            allowedRoles: ["Admin", "Creator", "Platform"],
+            allowedRoles: ["Admin", "Creator", "Developer"],
           },
           {
             label: "Account Security",
             component: <ChangePassword />,
-            allowedRoles: ["Admin", "Creator", "Platform"],
+            allowedRoles: ["Admin", "Creator", "Developer"],
           },
           {
             label: "Credentials",
             component: <APISection />,
-            allowedRoles: ["Platform"],
+            allowedRoles: ["Developer"],
           },
           {
             label: "Setting",
             component: <Setting />,
-            allowedRoles: ["Admin", "Creator", "Platform"],
+            allowedRoles: ["Admin", "Creator", "Developer"],
           },
           {
             label: "Webhooks",
             component: <Webhooks />,
-            allowedRoles: ["Admin", "Creator", "Platform"],
+            allowedRoles: ["Admin", "Creator", "Developer"],
           },
         ]}
       />

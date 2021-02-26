@@ -13,7 +13,7 @@ export default () => {
     // const profilesAsPerRole = {
     //     'Admin': () => <AdminProfile />,
     //     'Creator': () => <CreatorProfile />,
-    //     'Platform': () => <UserProfile />
+    //     "Developer": () => <UserProfile />
     // }
     // return profilesAsPerRole[user?.role]()
 
