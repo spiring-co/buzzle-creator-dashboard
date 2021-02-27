@@ -122,7 +122,7 @@ export default () => {
 
   // init socket on mount
   useEffect(() => {
-    setSocket(io.connect(process.env.REACT_APP_EVENTS_SOCKET_URL));
+    setSocket(io.connect(process.env.REACT_APP_SOCKET_SERVER_URL));
   }, []);
 
   function subscribeToProgress(id) {
