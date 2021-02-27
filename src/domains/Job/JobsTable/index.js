@@ -382,6 +382,7 @@ export default () => {
                     fontWeight: 700,
                     background: getColorFromState(state),
                     color: "white",
+                    textTransform: 'capitalize'
                   }}
                 />
               </Tooltip>
@@ -496,7 +497,7 @@ export default () => {
 };
 
 const getColorFromState = (state, percent) => {
-  switch (state) {
+  switch (state.toLowerCase()) {
     case "finished":
       return "#4caf50";
     case "error":

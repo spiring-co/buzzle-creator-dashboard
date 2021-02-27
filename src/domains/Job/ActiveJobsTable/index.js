@@ -82,6 +82,8 @@ export default ({ onRowClick, logsData = [], activeJobsData = [] }) => {
                                                 fontWeight: 700,
                                                 background: getColorFromState(state, progress),
                                                 color: "white",
+                                                textTransform: 'capitalize'
+
                                             }}
                                         /></TableCell>
                                     <TableCell align="left"><Button
@@ -106,7 +108,7 @@ export default ({ onRowClick, logsData = [], activeJobsData = [] }) => {
 };
 
 const getColorFromState = (state, percent) => {
-    switch (state) {
+    switch (state.toLowerCase()) {
         case "finished":
             return "#4caf50";
         case "error":

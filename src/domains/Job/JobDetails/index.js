@@ -118,7 +118,7 @@ export default () => {
   }, []);
 
   // rerender on output select
-  useEffect(() => {}, [selectedOutputIndex]);
+  useEffect(() => { }, [selectedOutputIndex]);
 
   // init socket on mount
   useEffect(() => {
@@ -202,6 +202,7 @@ export default () => {
             fontWeight: 700,
             background: getColorFromState(state, percent),
             color: "white",
+            textTransform: 'capitalize'
           }}
         />
       </Tooltip>
@@ -385,16 +386,16 @@ export default () => {
               src={sortedOutput.length && sortedOutput[selectedOutputIndex].src}
             />
           ) : (
-            <>
-              <Box justifyContent="center" textAlign="center" height={320}>
-                <Typography style={{ padding: 100 }}>
-                  {" "}
+              <>
+                <Box justifyContent="center" textAlign="center" height={320}>
+                  <Typography style={{ padding: 100 }}>
+                    {" "}
                   No output yet.
                 </Typography>
-              </Box>
-              <Divider />
-            </>
-          )}
+                </Box>
+                <Divider />
+              </>
+            )}
           <AppBar position="static" color="transparent" elevation={0}>
             <Tabs
               value={activeTabIndex}
@@ -470,7 +471,7 @@ export default () => {
                     return (
                       <span>
                         {value.startsWith("http://") ||
-                        value.startsWith("https://")
+                          value.startsWith("https://")
                           ? "image"
                           : "string"}
                       </span>
@@ -647,7 +648,7 @@ export default () => {
 };
 
 const getColorFromState = (state, percent) => {
-  switch (state) {
+  switch (state.toLowerCase()) {
     case "finished":
       return "#4caf50";
     case "error":
