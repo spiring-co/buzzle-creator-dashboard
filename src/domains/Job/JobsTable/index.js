@@ -3,6 +3,7 @@ import { useHistory, useRouteMatch, useLocation } from "react-router-dom";
 
 import io from "socket.io-client";
 import * as timeago from "timeago.js";
+import ReactJson from "react-json-view";
 
 import {
   Chip,
@@ -18,14 +19,16 @@ import FileCopyIcon from "@material-ui/icons/FileCopy";
 
 import formatTime from "helpers/formatTime";
 import Alert from "@material-ui/lab/Alert";
+import { useDarkMode } from "helpers/useDarkMode";
 
 import Filters from "common/Filters";
 import ErrorHandler from "common/ErrorHandler";
 import { Job, Search } from "services/api";
 
 import { useAuth } from "services/auth";
-import {  useSnackbar } from "notistack";
+import { SnackbarProvider, useSnackbar } from "notistack";
 import JSONEditorDialoge from "common/JSONEditorDialoge";
+import ActiveJobsTable from "../ActiveJobsTable";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -43,9 +46,11 @@ export default () => {
     success: 0,
     failed: 0,
   });
+  const { user } = useAuth();
   const [filters, setFilters] = useState({});
   const [selectedJob, setSelectedJob] = useState(null);
-
+  const [activeJobLogs, setActiveJobLogs] = useState({});
+  const [activeJobs, setActiveJobs] = useState({});
   const filterString = filterObjectToString(filters);
   const handleRetry = () => {
     tableRef.current && tableRef.current.onQueryChange();
@@ -62,7 +67,6 @@ export default () => {
 
   // // progress sockets
   const [socket, setSocket] = useState(null);
-  const [activeJobs, setActiveJobs] = useState({});
 
   useEffect(() => {
     setSocket(io.connect(process.env.REACT_APP_SOCKET_SERVER_URL), {
@@ -75,7 +79,13 @@ export default () => {
       return console.log("no socket");
     }
     socket.on("job-progress", ({ id, state, progress, server }) => {
-      setActiveJobs({ ...activeJobs, [id]: { state, progress, server } });
+      setActiveJobs((activeJobs) => ({
+        ...activeJobs,
+        [id]: { state, progress, server },
+      }));
+    });
+    socket.on("job-logs", ({ id, data }) => {
+      setActiveJobLogs((activeJobLogs) => ({ ...activeJobLogs, [id]: data }));
     });
   }, [socket]);
 
@@ -305,9 +315,17 @@ export default () => {
         />
       )}
       <Box>
-        {Object.keys(activeJobs).map((j) => (
-          <p key={j}>{JSON.stringify(activeJobs[j])}</p>
-        ))}
+        <ActiveJobsTable
+          activeJobsData={Object.keys(activeJobs)?.map((id) => ({
+            id,
+            ...activeJobs[id],
+          }))}
+          logsData={Object.keys(activeJobLogs)?.map((id) => ({
+            id,
+            logs: activeJobLogs[id],
+          }))}
+          onRowClick={(id) => history.push(`${path}${id}`)}
+        />
       </Box>
       {operationStatus?.total !== 0 && (
         <Box style={{ marginBottom: 10 }}>
@@ -340,6 +358,10 @@ export default () => {
             history.push(`${path}${id}`);
         }}
         columns={[
+          {
+            title: "JobId",
+            field: "id",
+          },
           {
             title: "Video Template",
             sorting: false,
