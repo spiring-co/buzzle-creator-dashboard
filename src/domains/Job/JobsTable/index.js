@@ -9,7 +9,8 @@ import {
   Chip,
   Typography,
   Container,
-  Paper, Box,
+  Paper,
+  Box,
   Tooltip,
   Fade,
 } from "@material-ui/core";
@@ -17,7 +18,7 @@ import MaterialTable from "material-table";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
 
 import formatTime from "helpers/formatTime";
-import Alert from '@material-ui/lab/Alert';
+import Alert from "@material-ui/lab/Alert";
 import { useDarkMode } from "helpers/useDarkMode";
 
 import Filters from "common/Filters";
@@ -25,9 +26,9 @@ import ErrorHandler from "common/ErrorHandler";
 import { Job, Search } from "services/api";
 
 import { useAuth } from "services/auth";
-import { SnackbarProvider, useSnackbar } from 'notistack';
+import { SnackbarProvider, useSnackbar } from "notistack";
 import JSONEditorDialoge from "common/JSONEditorDialoge";
-import ActiveJobsTable from "../ActiveJobsTable"
+import ActiveJobsTable from "../ActiveJobsTable";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -40,21 +41,24 @@ export default () => {
   const queryParam = useQuery();
   const tableRef = useRef(null);
   const [error, setError] = useState(null);
-  const [operationStatus, setOperationStatus] = useState({ total: 0, success: 0, failed: 0 })
-  const { user } = useAuth()
+  const [operationStatus, setOperationStatus] = useState({
+    total: 0,
+    success: 0,
+    failed: 0,
+  });
+  const { user } = useAuth();
   const [filters, setFilters] = useState({});
-  const [selectedJob, setSelectedJob] = useState(null)
-  const [activeJobLogs, setActiveJobLogs] = useState({})
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [activeJobLogs, setActiveJobLogs] = useState({});
   const [activeJobs, setActiveJobs] = useState({});
-  const filterString = filterObjectToString(filters)
+  const filterString = filterObjectToString(filters);
   const handleRetry = () => {
     tableRef.current && tableRef.current.onQueryChange();
     setError(false);
-
   };
 
   useEffect(() => {
-    handleRetry()
+    handleRetry();
   }, [filterString]);
 
   useEffect(() => {
@@ -75,10 +79,13 @@ export default () => {
       return console.log("no socket");
     }
     socket.on("job-progress", ({ id, state, progress, server }) => {
-      setActiveJobs(activeJobs => ({ ...activeJobs, [id]: { state, progress, server } }));
+      setActiveJobs((activeJobs) => ({
+        ...activeJobs,
+        [id]: { state, progress, server },
+      }));
     });
     socket.on("job-logs", ({ id, data }) => {
-      setActiveJobLogs(activeJobLogs => ({ ...activeJobLogs, [id]: data }));
+      setActiveJobLogs((activeJobLogs) => ({ ...activeJobLogs, [id]: data }));
     });
   }, [socket]);
 
@@ -145,7 +152,7 @@ export default () => {
                 page: 0,
                 totalCount: 0,
               };
-            })
+            });
         }
         return { data, page, totalCount };
       })
@@ -163,113 +170,136 @@ export default () => {
       });
   };
   const deleteMultipleJobs = async (array = []) => {
-    let s = 0, f = 0
+    let s = 0,
+      f = 0;
     // show the snackbar or alert showing the progress
-    setOperationStatus({ ...operationStatus, total: array?.length })
+    setOperationStatus({ ...operationStatus, total: array?.length });
     for (let index = 0; index < array.length; index++) {
       const { id = false } = array[index];
       if (!id) return;
       try {
-        await Job.delete(id)
+        await Job.delete(id);
         // increment the success
-        setOperationStatus(operationStatus => ({ ...operationStatus, success: operationStatus?.success + 1 }))
-        s++
-
+        setOperationStatus((operationStatus) => ({
+          ...operationStatus,
+          success: operationStatus?.success + 1,
+        }));
+        s++;
       } catch (err) {
         // increment the failed
-        setOperationStatus(operationStatus => ({ ...operationStatus, failed: operationStatus?.failed + 1 }))
-        f++
-
+        setOperationStatus((operationStatus) => ({
+          ...operationStatus,
+          failed: operationStatus?.failed + 1,
+        }));
+        f++;
       }
     }
-    setOperationStatus({ total: 0, failed: 0, success: 0 })
+    setOperationStatus({ total: 0, failed: 0, success: 0 });
     {
-      s && enqueueSnackbar(`${s} out of ${array?.length} jobs deleted successfully `, {
-        variant: "success",
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'right',
-        },
-      })
+      s &&
+        enqueueSnackbar(
+          `${s} out of ${array?.length} jobs deleted successfully `,
+          {
+            variant: "success",
+            anchorOrigin: {
+              vertical: "bottom",
+              horizontal: "right",
+            },
+          }
+        );
     }
     {
-      f && enqueueSnackbar(`${f} out of ${array?.length} jobs failed to delete `, {
-        variant: "error",
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'right',
-        },
-      })
+      f &&
+        enqueueSnackbar(`${f} out of ${array?.length} jobs failed to delete `, {
+          variant: "error",
+          anchorOrigin: {
+            vertical: "bottom",
+            horizontal: "right",
+          },
+        });
     }
     tableRef.current && tableRef.current.onQueryChange();
-  }
+  };
 
   const handleJobUpdate = async ({ id, data, actions, renderPrefs }) => {
     try {
-
       await Job.update(id, { data, actions, renderPrefs });
       enqueueSnackbar(`Job Updated successfully!`, {
         variant: "success",
         anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'right',
+          vertical: "bottom",
+          horizontal: "right",
         },
-      })
-      setSelectedJob(null)
+      });
+      setSelectedJob(null);
       tableRef.current && tableRef.current.onQueryChange();
     } catch (err) {
-      enqueueSnackbar(`Failed to update, ${err?.message ?? "Something went wrong"}`, {
-        variant: "error",
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'right',
-        },
-      })
+      enqueueSnackbar(
+        `Failed to update, ${err?.message ?? "Something went wrong"}`,
+        {
+          variant: "error",
+          anchorOrigin: {
+            vertical: "bottom",
+            horizontal: "right",
+          },
+        }
+      );
     }
-
-  }
+  };
   const updateMultiple = async (array) => {
-    setOperationStatus({ ...operationStatus, total: array?.length })
-    let s = 0, f = 0;
+    setOperationStatus({ ...operationStatus, total: array?.length });
+    let s = 0,
+      f = 0;
     for (let index = 0; index < array.length; index++) {
       const { id = false, data, renderPrefs, actions } = array[index];
       if (!id) return;
       try {
-        await Job.update(id, { data, renderPrefs, actions })
+        await Job.update(id, { data, renderPrefs, actions });
         // increment the success
-        setOperationStatus(operationStatus => ({ ...operationStatus, success: operationStatus?.success + 1 }))
-        s = s + 1
-
+        setOperationStatus((operationStatus) => ({
+          ...operationStatus,
+          success: operationStatus?.success + 1,
+        }));
+        s = s + 1;
       } catch (err) {
         // increment the failed
-        setOperationStatus(operationStatus => ({ ...operationStatus, failed: operationStatus?.failed + 1 }))
-        f = f + 1
+        setOperationStatus((operationStatus) => ({
+          ...operationStatus,
+          failed: operationStatus?.failed + 1,
+        }));
+        f = f + 1;
       }
-
     }
 
-    setOperationStatus({ total: 0, failed: 0, success: 0 })
+    setOperationStatus({ total: 0, failed: 0, success: 0 });
     {
-      s && enqueueSnackbar(`${s} out of ${array?.length} jobs restarted successfully `, {
-        variant: "success",
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'right',
-        },
-      })
+      s &&
+        enqueueSnackbar(
+          `${s} out of ${array?.length} jobs restarted successfully `,
+          {
+            variant: "success",
+            anchorOrigin: {
+              vertical: "bottom",
+              horizontal: "right",
+            },
+          }
+        );
     }
     {
-      f && enqueueSnackbar(`${f} out of ${array?.length} jobs failed to restart `, {
-        variant: "error",
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'right',
-        },
-      })
+      f &&
+        enqueueSnackbar(
+          `${f} out of ${array?.length} jobs failed to restart `,
+          {
+            variant: "error",
+            anchorOrigin: {
+              vertical: "bottom",
+              horizontal: "right",
+            },
+          }
+        );
     }
     tableRef.current && tableRef.current.onQueryChange();
-  }
-
+  };
 
   return (
     <Container>
@@ -282,13 +312,25 @@ export default () => {
       )}
       <Box>
         <ActiveJobsTable
-          activeJobsData={Object.keys(activeJobs)?.map(id => ({ id, ...activeJobs[id] }))}
-          logsData={Object.keys(activeJobLogs)?.map(id => ({ id, logs: activeJobLogs[id] }))}
-          onRowClick={id => history.push(`${path}${id}`)} />
+          activeJobsData={Object.keys(activeJobs)?.map((id) => ({
+            id,
+            ...activeJobs[id],
+          }))}
+          logsData={Object.keys(activeJobLogs)?.map((id) => ({
+            id,
+            logs: activeJobLogs[id],
+          }))}
+          onRowClick={(id) => history.push(`${path}${id}`)}
+        />
       </Box>
-      {operationStatus?.total !== 0 && <Box style={{ marginBottom: 10 }}>
-        <Alert severity="info">{operationStatus?.success + operationStatus?.failed} out of {operationStatus?.total} Operations performed!</Alert>
-      </Box>}
+      {operationStatus?.total !== 0 && (
+        <Box style={{ marginBottom: 10 }}>
+          <Alert severity="info">
+            {operationStatus?.success + operationStatus?.failed} out of{" "}
+            {operationStatus?.total} Operations performed!
+          </Alert>
+        </Box>
+      )}
       <Paper style={{ padding: 15, marginBottom: 5 }}>
         <Typography variant="h6">Filters</Typography>
         <Container
@@ -311,71 +353,65 @@ export default () => {
           if (["td", "TD"].includes(e.target.tagName))
             history.push(`${path}${id}`);
         }}
-        columns={[{
-          title: "JobId",
-          field: "id",
-        },
-        {
-          title: "Video Template",
-          sorting: false,
-          field: "videoTemplate.title",
-        },
-        {
-          title: "Version",
-          sorting: false,
-          searchable: false,
-          render: ({ videoTemplate, idVersion }) => (
-            <span>
-              {videoTemplate?.versions?.find((v) => v?.id === idVersion)
-                ?.title ?? ""}
-            </span>
-          ),
-        },
-        {
-          title: "Render Time",
-          field: "renderTime",
-          sorting: false,
-          searchable: false,
-          render: ({ renderTime }) => (
-            <span>{renderTime !== -1 ? formatTime(renderTime) : "NA"}</span>
-          ),
-        },
+        columns={[
+          {
+            title: "JobId",
+            field: "id",
+          },
+          {
+            title: "Video Template",
+            sorting: false,
+            field: "videoTemplate.title",
+          },
+          {
+            title: "Version",
+            sorting: false,
+            searchable: false,
+            render: ({ videoTemplate, idVersion }) => (
+              <span>
+                {videoTemplate?.versions?.find((v) => v?.id === idVersion)
+                  ?.title ?? ""}
+              </span>
+            ),
+          },
+          {
+            title: "Render Time",
+            field: "renderTime",
+            sorting: false,
+            searchable: false,
+            render: ({ renderTime }) => (
+              <span>{renderTime !== -1 ? formatTime(renderTime) : "NA"}</span>
+            ),
+          },
 
-        {
-          searchable: false,
-          title: "Last Updated",
-          field: "dateUpdated",
-          type: "datetime",
-          defaultSort: "desc",
-          render: ({ dateUpdated }) => (
-            <span>{timeago.format(new Date(dateUpdated))}</span>
-          ),
-        },
-        {
-          searchable: false,
-          title: "Created At",
-          field: "dateCreated",
-          type: "datetime",
-          render: ({ dateCreated }) => (
-            <span>{timeago.format(new Date(dateCreated))}</span>
-          ),
-        },
-        {
-          searchable: false,
-          title: "State",
-          field: "state",
-          render: ({ state, failureReason }) => {
-            return (
-              <Tooltip
+          {
+            searchable: false,
+            title: "Last Updated",
+            field: "dateUpdated",
+            type: "datetime",
+            defaultSort: "desc",
+            render: ({ dateUpdated }) => (
+              <span>{timeago.format(new Date(dateUpdated))}</span>
+            ),
+          },
+          {
+            searchable: false,
+            title: "Created At",
+            field: "dateCreated",
+            type: "datetime",
+            render: ({ dateCreated }) => (
+              <span>{timeago.format(new Date(dateCreated))}</span>
+            ),
+          },
+          {
+            searchable: false,
+            title: "State",
+            field: "state",
+            render: ({ state, failureReason }) => {
+              return (<Tooltip
                 TransitionComponent={Fade}
-                title={
-                  state === "error"
-                    ? failureReason
-                      ? failureReason
-                      : "Reason not given"
-                    : "Status"
-                }>
-                <Chip
+                title={state === "error" ? failureReason : "Reason not given"
+                }><Chip
                   size="small"
                   label={state}
                   style={{
@@ -384,17 +420,15 @@ export default () => {
                     color: "white",
                     textTransform: 'capitalize'
                   }}
-                />
-              </Tooltip>
-            );
+                /></Tooltip >)
+            }
           },
-        },
-        {
-          searchable: false,
-          title: "Revisions",
-          field: "__v",
-          type: "numeric",
-        },
+          {
+            searchable: false,
+            title: "Revisions",
+            field: "__v",
+            type: "numeric",
+          },
         ]}
         localization={{
           body: {
@@ -449,7 +483,7 @@ export default () => {
             tooltip: "View/Edit JSON",
             position: "row",
             onClick: async (event, rowData) => {
-              setSelectedJob(rowData)
+              setSelectedJob(rowData);
             },
           },
           {
@@ -487,16 +521,18 @@ export default () => {
           },
         ]}
       />
-      {selectedJob !== null && <JSONEditorDialoge
-        json={selectedJob}
-        onSubmit={handleJobUpdate}
-        onClose={() => setSelectedJob(null)}
-      />}
+      {selectedJob !== null && (
+        <JSONEditorDialoge
+          json={selectedJob}
+          onSubmit={handleJobUpdate}
+          onClose={() => setSelectedJob(null)}
+        />
+      )}
     </Container>
   );
 };
 
-const getColorFromState = (state, percent) => {
+const getColorFromState = (state = "", percent) => {
   switch (state.toLowerCase()) {
     case "finished":
       return "#4caf50";
@@ -519,15 +555,11 @@ const getArrayOfIdsAsQueryString = (field, ids) => {
 };
 const filterObjectToString = (f) => {
   if (!f) return null;
-  const {
-    startDate = 0,
-    endDate = 0,
-    idVideoTemplates = [],
-    states = [],
-  } = f;
+  const { startDate = 0, endDate = 0, idVideoTemplates = [], states = [] } = f;
 
   return `${startDate
-    ? `dateUpdated=>=${startDate}&${endDate ? `dateUpdated=<=${endDate || startDate}&` : ''}`
+    ? `dateUpdated=>=${startDate}&${endDate ? `dateUpdated=<=${endDate || startDate}&` : ""
+    }`
     : ""
     }${idVideoTemplates.length !== 0
       ? getArrayOfIdsAsQueryString(

@@ -43,12 +43,21 @@ function useQuery() {
 }
 
 export default ({ onRowClick, logsData = [], activeJobsData = [] }) => {
+    const [activeJobs, setActiveJobs] = useState(activeJobsData)
     const { user } = useAuth()
     const [selectedJobId, setSelectedJobId] = useState(null)
-    const [index, setSelectedIndex] = useState(0)
     useEffect(() => {
-        setInterval(() => setSelectedIndex(i => i + 1), 5000)
-    }, [])
+        setActiveJobs(activeJobs)
+    }, [activeJobsData])
+    useEffect(() => {
+        const finishedJobs = activeJobs?.filter(({ state = "" }) => state.toLowerCase() !== 'finished')
+        let timeout = null
+        if (finishedJobs?.length) {
+            timeout = setTimeout(() => setActiveJobs(finishedJobs), 5000)
+        }
+        return () => timeout && clearTimeout(timeout)
+    }, [activeJobs])
+
     return (<>
         <ExpansionPanel defaultExpanded={false} style={{ marginBottom: 20 }}>
             <ExpansionPanelSummary
@@ -58,7 +67,7 @@ export default ({ onRowClick, logsData = [], activeJobsData = [] }) => {
                 <Typography variant="h6">Active Jobs</Typography>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails style={{ flexWrap: "wrap" }}>
-                {activeJobsData?.length ? <TableContainer>
+                {activeJobs?.length ? <TableContainer>
                     <Table stickyHeader size="small" aria-label="a dense table">
                         <TableHead>
                             <TableRow>
@@ -69,7 +78,7 @@ export default ({ onRowClick, logsData = [], activeJobsData = [] }) => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {activeJobsData.map(({ id, state, progress = 0 }) => (
+                            {activeJobs.map(({ id, state, progress = 0 }) => (
                                 <TableRow key={id} onClick={() => onRowClick(id)}>
                                     <TableCell component="th" scope="row">
                                         {id}
@@ -107,7 +116,7 @@ export default ({ onRowClick, logsData = [], activeJobsData = [] }) => {
     );
 };
 
-const getColorFromState = (state, percent) => {
+const getColorFromState = (state = '', percent) => {
     switch (state.toLowerCase()) {
         case "finished":
             return "#4caf50";
