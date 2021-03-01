@@ -43,7 +43,7 @@ export default ({ logs = [], onClose }) => {
             display: "flex",
             backgroundColor: "black", paddingBottom: 100, padding: 10, flexDirection: 'column'
           }}>
-          {logs.map(({ line, data, level, timestamp = new Date().toDateString() }) => <Box style={{ display: 'flex' }}>
+          {logs.map(({ line, data, level, timestamp = new Date().toLocaleString() }) => <Box style={{ display: 'flex' }}>
             <code
               style={{
                 "white-space": "pre-line",

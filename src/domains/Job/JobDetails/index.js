@@ -111,7 +111,12 @@ export default () => {
   const { id } = useParams();
   const classes = useStyles();
   const history = useHistory();
+  const logColors = {
+    warning: "yellow",
+    info: "#fff",
+    error: "red",
 
+  }
   // fetch job on init
   useEffect(() => {
     fetchJob();
@@ -631,11 +636,50 @@ export default () => {
                     </Typography>
                   </AccordionSummary>
                   <AccordionDetails>
-                    <Typography>
-                      <code style={{ "white-space": "pre-line" }}>
-                        {l.text}
-                      </code>
-                    </Typography>
+                    <div
+                      style={{
+                        display: "flex",
+                        backgroundColor: "black", paddingBottom: 100, padding: 10, flexDirection: 'column', width: '100%',
+                      }}>
+                      {l.label === 'console' ?
+                        <>
+                          {JSON.parse(l?.text)?.map(({ line, data, level, timestamp = new Date().toLocaleString() }) =>
+                            <Box style={{ display: 'flex' }}>
+                              <code
+                                style={{
+                                  "white-space": "pre-line",
+                                  fontSize: 14,
+                                  fontFamily: "monospace",
+                                  fontWeight: 600, color: '#fff',
+                                  paddingRight: 10,
+                                  textAlign: 'right',
+                                  minWidth: 40,
+                                  "border-right": "0.2px solid #fff"
+                                }}>
+                                {`${line}`}
+                              </code>
+                              <code
+                                style={{
+                                  "white-space": "pre-line",
+                                  paddingLeft: 35,
+                                  fontSize: 14,
+                                  fontFamily: "monospace",
+                                  fontWeight: 600, color: logColors[level]
+                                }}>
+                                {timestamp}: {data?.toString()?.replace(/,/g, "\n")}
+                              </code>
+                            </Box>)}
+                        </>
+                        : <code style={{
+                          "white-space": "pre-line",
+                          paddingLeft: 35,
+                          fontSize: 14,
+                          fontFamily: "monospace",
+                          fontWeight: 600, color: '#fff'
+                        }}>
+                          {l.text}
+                        </code>}
+                    </div>
                   </AccordionDetails>
                 </Accordion>
               ))}
