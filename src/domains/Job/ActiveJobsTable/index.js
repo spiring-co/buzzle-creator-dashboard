@@ -109,7 +109,7 @@ export default ({ onRowClick, logsData = [], activeJobsData = [] }) => {
                 </TableContainer> : <Box><Typography>No Active Jobs</Typography></Box>}
             </ExpansionPanelDetails>
         </ExpansionPanel>
-        {selectedJobId && <LogsDialog
+        {selectedJobId !== null && <LogsDialog
             logs={logsData?.find(({ id }) => id === selectedJobId)?.logs}
             onClose={() => setSelectedJobId(null)} />}
     </>

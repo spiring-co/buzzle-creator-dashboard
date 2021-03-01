@@ -84,8 +84,8 @@ export default () => {
         [id]: { state, progress, server },
       }));
     });
-    socket.on("job-logs", ({ id, data }) => {
-      setActiveJobLogs((activeJobLogs) => ({ ...activeJobLogs, [id]: data }));
+    socket.on("job-logs", ({ id, logs }) => {
+      setActiveJobLogs((activeJobLogs) => ({ ...activeJobLogs, [id]: logs }));
     });
   }, [socket]);
 
