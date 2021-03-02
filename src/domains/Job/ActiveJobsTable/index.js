@@ -47,7 +47,7 @@ export default ({ onRowClick, logsData = [], activeJobsData = [] }) => {
     const { user } = useAuth()
     const [selectedJobId, setSelectedJobId] = useState(null)
     useEffect(() => {
-        setActiveJobs(activeJobs)
+        setActiveJobs(activeJobsData)
     }, [activeJobsData])
     useEffect(() => {
         const finishedJobs = activeJobs?.filter(({ state = "" }) => state.toLowerCase() !== 'finished')

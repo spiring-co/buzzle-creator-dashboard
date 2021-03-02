@@ -79,6 +79,7 @@ export default () => {
       return console.log("no socket");
     }
     socket.on("job-progress", ({ id, state, progress, server }) => {
+      console.log(id, state)
       setActiveJobs((activeJobs) => ({
         ...activeJobs,
         [id]: { state, progress, server },
