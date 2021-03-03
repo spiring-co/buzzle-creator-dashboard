@@ -215,7 +215,7 @@ export default () => {
   };
 
   const {
-    outputs = [],
+    output = [],
     state,
     actions,
     data,
@@ -227,7 +227,7 @@ export default () => {
     dateStarted,
     failureReason,
   } = job;
-  const sortedOutput = outputs?.sort(
+  const sortedOutput = output?.sort(
     (a, b) => new Date(b?.dateCreated) - new Date(a?.dateCreated)
   );
   useEffect(() => {
