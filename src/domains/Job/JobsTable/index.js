@@ -9,7 +9,8 @@ import {
   Chip,
   Typography,
   Container,
-  Paper, Box,
+  Paper,
+  Box,
   Tooltip,
   Fade,
 } from "@material-ui/core";
@@ -19,13 +20,13 @@ import FileCopyIcon from "@material-ui/icons/FileCopy";
 import ErrorHandler from "common/ErrorHandler";
 
 import formatTime from "helpers/formatTime";
-import Alert from '@material-ui/lab/Alert';
+import Alert from "@material-ui/lab/Alert";
 import { useDarkMode } from "helpers/useDarkMode";
 
 import { Job, Search } from "services/api";
 import Filters from "common/Filters";
 import { useAuth } from "services/auth";
-import { SnackbarProvider, useSnackbar } from 'notistack';
+import { SnackbarProvider, useSnackbar } from "notistack";
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
@@ -38,10 +39,14 @@ export default () => {
   const tableRef = useRef(null);
   const [darkModeTheme] = useDarkMode();
   const [error, setError] = useState(null);
-  const [operationStatus, setOperationStatus] = useState({ total: 0, success: 0, failed: 0 })
-  const { user } = useAuth()
+  const [operationStatus, setOperationStatus] = useState({
+    total: 0,
+    success: 0,
+    failed: 0,
+  });
+  const { user } = useAuth();
   const [filters, setFilters] = useState({});
-  const [isDeleting, setIsDeleting] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false);
   const idCreator = user.id;
 
   const handleRetry = () => {
@@ -107,7 +112,8 @@ export default () => {
       orderDirection = "asc",
     } = query;
     history.push(
-      `?page=${page + 1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
+      `?page=${page + 1}&size=${pageSize}${
+        searchQuery ? "searchQuery=" + searchQuery : ""
       }`
     );
 
@@ -144,90 +150,112 @@ export default () => {
       });
   };
   const deleteMultipleJobs = async (array = []) => {
-    let s = 0, f = 0
+    let s = 0,
+      f = 0;
     // show the snackbar or alert showing the progress
-    setOperationStatus({ ...operationStatus, total: array?.length })
+    setOperationStatus({ ...operationStatus, total: array?.length });
     for (let index = 0; index < array.length; index++) {
       const { id = false } = array[index];
       if (!id) return;
       try {
-        await Job.delete(id)
+        await Job.delete(id);
         // increment the success
-        setOperationStatus(operationStatus => ({ ...operationStatus, success: operationStatus?.success + 1 }))
-        s++
-
+        setOperationStatus((operationStatus) => ({
+          ...operationStatus,
+          success: operationStatus?.success + 1,
+        }));
+        s++;
       } catch (err) {
         // increment the failed
-        setOperationStatus(operationStatus => ({ ...operationStatus, failed: operationStatus?.failed + 1 }))
-        f++
-
+        setOperationStatus((operationStatus) => ({
+          ...operationStatus,
+          failed: operationStatus?.failed + 1,
+        }));
+        f++;
       }
     }
-    setOperationStatus({ total: 0, failed: 0, success: 0 })
+    setOperationStatus({ total: 0, failed: 0, success: 0 });
     {
-      s && enqueueSnackbar(`${s} out of ${array?.length} jobs deleted successfully `, {
-        variant: "success",
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'right',
-        },
-      })
+      s &&
+        enqueueSnackbar(
+          `${s} out of ${array?.length} jobs deleted successfully `,
+          {
+            variant: "success",
+            anchorOrigin: {
+              vertical: "bottom",
+              horizontal: "right",
+            },
+          }
+        );
     }
     {
-      f && enqueueSnackbar(`${f} out of ${array?.length} jobs failed to delete `, {
-        variant: "error",
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'right',
-        },
-      })
+      f &&
+        enqueueSnackbar(`${f} out of ${array?.length} jobs failed to delete `, {
+          variant: "error",
+          anchorOrigin: {
+            vertical: "bottom",
+            horizontal: "right",
+          },
+        });
     }
     tableRef.current && tableRef.current.onQueryChange();
-  }
+  };
 
   const updateMultiple = async (array) => {
-    setOperationStatus({ ...operationStatus, total: array?.length })
-    let s = 0, f = 0;
+    setOperationStatus({ ...operationStatus, total: array?.length });
+    let s = 0,
+      f = 0;
     for (let index = 0; index < array.length; index++) {
       const { id = false, data, renderPrefs, actions } = array[index];
       if (!id) return;
       try {
-        await Job.update(id, { data, renderPrefs, actions })
+        await Job.update(id, { data, renderPrefs, actions });
         // increment the success
-        setOperationStatus(operationStatus => ({ ...operationStatus, success: operationStatus?.success + 1 }))
-        s = s + 1
-
+        setOperationStatus((operationStatus) => ({
+          ...operationStatus,
+          success: operationStatus?.success + 1,
+        }));
+        s = s + 1;
       } catch (err) {
         // increment the failed
-        setOperationStatus(operationStatus => ({ ...operationStatus, failed: operationStatus?.failed + 1 }))
-        f = f + 1
+        setOperationStatus((operationStatus) => ({
+          ...operationStatus,
+          failed: operationStatus?.failed + 1,
+        }));
+        f = f + 1;
       }
-
     }
 
-    setOperationStatus({ total: 0, failed: 0, success: 0 })
-    console.log(s, f)
+    setOperationStatus({ total: 0, failed: 0, success: 0 });
+    console.log(s, f);
     {
-      s && enqueueSnackbar(`${s} out of ${array?.length} jobs restarted successfully `, {
-        variant: "success",
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'right',
-        },
-      })
+      s &&
+        enqueueSnackbar(
+          `${s} out of ${array?.length} jobs restarted successfully `,
+          {
+            variant: "success",
+            anchorOrigin: {
+              vertical: "bottom",
+              horizontal: "right",
+            },
+          }
+        );
     }
     {
-      f && enqueueSnackbar(`${f} out of ${array?.length} jobs failed to restart `, {
-        variant: "error",
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'right',
-        },
-      })
+      f &&
+        enqueueSnackbar(
+          `${f} out of ${array?.length} jobs failed to restart `,
+          {
+            variant: "error",
+            anchorOrigin: {
+              vertical: "bottom",
+              horizontal: "right",
+            },
+          }
+        );
     }
     tableRef.current && tableRef.current.onQueryChange();
-  }
-
+  };
 
   return (
     <Container>
@@ -238,9 +266,14 @@ export default () => {
           onRetry={handleRetry}
         />
       )}
-      {operationStatus?.total !== 0 && <Box style={{ marginBottom: 10 }}>
-        <Alert severity="info">{operationStatus?.success + operationStatus?.failed} out of {operationStatus?.total} Operations performed!</Alert>
-      </Box>}
+      {operationStatus?.total !== 0 && (
+        <Box style={{ marginBottom: 10 }}>
+          <Alert severity="info">
+            {operationStatus?.success + operationStatus?.failed} out of{" "}
+            {operationStatus?.total} Operations performed!
+          </Alert>
+        </Box>
+      )}
       <Paper style={{ padding: 15, marginBottom: 5 }}>
         <Typography variant="h6">Filters</Typography>
         <Container
@@ -344,10 +377,11 @@ export default () => {
                   }>
                   <Chip
                     size="small"
-                    label={`${newState}${rtProgressData[id]?.percent
-                      ? " " + rtProgressData[id]?.percent + "%"
-                      : ""
-                      }`}
+                    label={`${newState}${
+                      rtProgressData[id]?.percent
+                        ? " " + rtProgressData[id]?.percent + "%"
+                        : ""
+                    }`}
                     style={{
                       transition: "background-color 0.5s ease",
                       fontWeight: 700,
@@ -367,6 +401,7 @@ export default () => {
             title: "Revisions",
             field: "__v",
             type: "number",
+            render: ({ output }) => <span>{output.length}</span>,
           },
         ]}
         localization={{
@@ -486,14 +521,16 @@ const filterObjectToString = (f) => {
     states = [],
   } = f;
 
-  return `${startDate
-    ? `dateUpdated=>=${startDate}&dateUpdated=<=${endDate ?? startDate}&`
-    : ""
-    }${idVideoTemplates.length !== 0
-      ? getArrayOfIdsAsQueryString(
-        "idVideoTemplate",
-        idVideoTemplates.map(({ id }) => id)
-      ) + "&"
+  return `${
+    startDate
+      ? `dateUpdated=>=${startDate}&dateUpdated=<=${endDate ?? startDate}&`
       : ""
-    }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
+  }${
+    idVideoTemplates.length !== 0
+      ? getArrayOfIdsAsQueryString(
+          "idVideoTemplate",
+          idVideoTemplates.map(({ id }) => id)
+        ) + "&"
+      : ""
+  }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
 };
