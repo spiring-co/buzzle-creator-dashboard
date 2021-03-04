@@ -630,9 +630,9 @@ export default () => {
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls="panel1a-content"
                     id="panel1a-header">
-                    <Typography>{l.label}</Typography>
-                    <Typography variant="caption">
-                      {formatTime(l.updatedAt)}
+                    <Typography>{l.label.toUpperCase()}</Typography>
+                    <Typography color="textSecondary" style={{ marginLeft: 30 }}>
+                      {new Date(l?.updatedAt).toLocaleString()}
                     </Typography>
                   </AccordionSummary>
                   <AccordionDetails>
