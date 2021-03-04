@@ -49,8 +49,6 @@ export default () => {
   const { user } = useAuth();
   const [filters, setFilters] = useState({});
   const [selectedJob, setSelectedJob] = useState(null);
-  const [activeJobLogs, setActiveJobLogs] = useState({});
-  const [activeJobs, setActiveJobs] = useState({});
   const filterString = filterObjectToString(filters);
   const handleRetry = () => {
     tableRef.current && tableRef.current.onQueryChange();
@@ -64,35 +62,6 @@ export default () => {
   useEffect(() => {
     document.title = "Jobs";
   }, []);
-
-  // // progress sockets
-  const [socket, setSocket] = useState(null);
-
-  useEffect(() => {
-    setSocket(io.connect(process.env.REACT_APP_SOCKET_SERVER_URL), {
-      withCredentials: true,
-    });
-  }, []);
-
-  useEffect(() => {
-    if (!socket) {
-      return console.log("no socket");
-    }
-    socket.on("job-progress", ({ id, state, progress, server }) => {
-      console.log(id, state)
-      setActiveJobs((activeJobs) => ({
-        ...activeJobs,
-        [id]: { state, progress, server },
-      }));
-    });
-    socket.on("job-logs", ({ id, logs }) => {
-      setActiveJobLogs((activeJobLogs) => ({ ...activeJobLogs, [id]: logs }));
-    });
-  }, [socket]);
-
-  useEffect(() => {
-    console.log(activeJobs);
-  }, [activeJobs]);
 
   const getDataFromQuery = (query) => {
     const {
@@ -313,14 +282,6 @@ export default () => {
       )}
       <Box>
         <ActiveJobsTable
-          activeJobsData={Object.keys(activeJobs)?.map((id) => ({
-            id,
-            ...activeJobs[id],
-          }))}
-          logsData={Object.keys(activeJobLogs)?.map((id) => ({
-            id,
-            logs: activeJobLogs[id],
-          }))}
           onRowClick={(id) => history.push(`${path}${id}`)}
         />
       </Box>

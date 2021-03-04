@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useHistory, useRouteMatch, useLocation } from "react-router-dom";
 
-import io from "socket.io-client";
 import * as timeago from "timeago.js";
 import ReactJson from "react-json-view";
+import io from "socket.io-client";
 
 import {
     Chip,
@@ -24,7 +24,7 @@ import TableFooter from '@material-ui/core/TableFooter';
 import TableRow from '@material-ui/core/TableRow';
 import MaterialTable from "material-table";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
-import { ExpandMore, ArrowForward, ArrowBack } from "@material-ui/icons";
+import { ExpandMore, ArrowForward, ArrowBack, TramRounded } from "@material-ui/icons";
 
 import formatTime from "helpers/formatTime";
 import Alert from '@material-ui/lab/Alert';
@@ -42,29 +42,119 @@ function useQuery() {
     return new URLSearchParams(useLocation().search);
 }
 
-export default ({ onRowClick, logsData = [], activeJobsData = [] }) => {
-    const [activeJobs, setActiveJobs] = useState(activeJobsData)
+export default ({ onRowClick, }) => {
+    // init socket on mount
+    const [activeJobs, setActiveJobs] = useState([])
+    const [activeJobLogs, setActiveJobLogs] = useState([])
+    const [jobsData, setJobsData] = useState([])
     const { user } = useAuth()
     const [selectedJobId, setSelectedJobId] = useState(null)
+    const [socket, setSocket] = useState(null);
+
     useEffect(() => {
-        setActiveJobs(activeJobsData)
-    }, [activeJobsData])
+        setSocket(io.connect(process.env.REACT_APP_SOCKET_SERVER_URL), {
+            withCredentials: true,
+        });
+    }, []);
+
     useEffect(() => {
+        if (!socket) {
+            return console.log("no socket");
+        }
+        socket.on("job-progress", ({ id, state, progress, server }) => {
+
+            setActiveJobs((activeJobs) => {
+                const index = activeJobs.map(({ id }) => id).indexOf(id)
+                if (index === -1) {
+                    return [...activeJobs, { id, state, progress, server }]
+                }
+                else return activeJobs?.map(data => data.id === id ? ({ id, state, progress, server }) : data)
+            });
+        });
+        socket.on("job-logs", ({ id, logs }) => {
+            setActiveJobLogs((activeJobLogs) => {
+                const index = activeJobLogs.map(({ id }) => id).indexOf(id)
+                if (index === -1) {
+                    return [...activeJobLogs, { id, logs }]
+                }
+                else return activeJobLogs?.map(log => log.id === id ? ({ id, logs }) : log)
+            });
+        });
+    }, [socket]);
+    useEffect(() => {
+        if (activeJobs?.length
+            && jobsData?.length !== activeJobs?.length) {
+            //fetch and setJobs
+            const jobIdToBeFetched = activeJobs.find(j => !(jobsData.map(({ id }) => id).includes(j?.id)))?.id
+
+            if (jobIdToBeFetched) {
+                console.log("Fetching job:", jobIdToBeFetched)
+                Job.get(jobIdToBeFetched, true)
+                    .then(d => setJobsData(j => [...j, { ...d, id: jobIdToBeFetched }]))
+                    .catch(() => setJobsData(j => [...j, { id: jobIdToBeFetched }]))
+            }
+        }
+    }, [activeJobs, jobsData])
+    useEffect(() => {
+
         const finishedJobs = activeJobs?.filter(({ state = "" }) => state.toLowerCase() !== 'finished')
         let timeout = null
-        if (finishedJobs?.length) {
-            timeout = setTimeout(() => setActiveJobs(finishedJobs), 5000)
+        if (finishedJobs?.length && activeJobs.find(({ state = "" }) => state.toLowerCase() === 'finished')) {
+            timeout = setTimeout(() => {
+                setActiveJobs(finishedJobs)
+                setJobsData(d => d?.filter(({ id }) => finishedJobs.map(({ id }) => id).includes(id)))
+            }, 5000)
         }
-        return () => timeout && clearTimeout(timeout)
     }, [activeJobs])
 
+    const ActiveJobRow = ({ id, state, progress, jobData }) => {
+        return <TableRow key={id} onClick={() => onRowClick(id)}>
+            <TableCell component="th" scope="row">
+                {id}
+            </TableCell>
+            <TableCell align="left">{jobData?.videoTemplate?.title || "loading..."}</TableCell>
+            <TableCell>{jobData?.videoTemplate?.versions?.find((v) => v?.id === jobData?.idVersion)
+                ?.title || "loading..."}</TableCell>
+            <TableCell>{timeago.format(new Date(jobData?.dateUpdated)) || "loading..."}</TableCell>
+            <TableCell>{timeago.format(new Date(jobData?.dateCreated)) || "loading..."}</TableCell>
+            <TableCell align="left">
+                <Chip
+                    size="small"
+                    label={`${state}${progress ? " " + progress + "%" : ""}`}
+                    style={{
+                        fontWeight: 700,
+                        background: getColorFromState(state, progress),
+                        color: "white",
+                        textTransform: 'capitalize'
+                    }}
+                /></TableCell>
+            <TableCell align="left"><Button
+                onClick={e => {
+                    e.stopPropagation()
+                    setSelectedJobId(id)
+                }}
+                size="small"
+                variant="contained" color="primary" children="view logs" /></TableCell>
+        </TableRow>
+    }
+
+
     return (<>
-        <ExpansionPanel defaultExpanded={false} style={{ marginBottom: 20 }}>
+        <ExpansionPanel defaultExpanded={true} style={{ marginBottom: 20 }}>
             <ExpansionPanelSummary
                 expandIcon={<ExpandMore />}
                 aria-controls="panel1c-content"
                 id="panel1c-header">
                 <Typography variant="h6">Active Jobs</Typography>
+                <Button style={{ marginLeft: 25 }}
+                    variant="contained"
+                    size="small"
+                    color="primary"
+                    children={'clear'}
+                    onClick={e => {
+                        e.stopPropagation()
+                        setActiveJobs([])
+                    }} />
             </ExpansionPanelSummary>
             <ExpansionPanelDetails style={{ flexWrap: "wrap" }}>
                 {activeJobs?.length ? <TableContainer>
@@ -72,37 +162,18 @@ export default ({ onRowClick, logsData = [], activeJobsData = [] }) => {
                         <TableHead>
                             <TableRow>
                                 <TableCell >Job Id</TableCell>
+                                <TableCell align="left">Video template</TableCell>
+                                <TableCell align="left">Version</TableCell>
+                                <TableCell align="left">Last updated</TableCell>
+                                <TableCell align="left">Created at</TableCell>
                                 <TableCell align="left">Status</TableCell>
                                 <TableCell align="left">Actions</TableCell>
 
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {activeJobs.map(({ id, state, progress = 0 }) => (
-                                <TableRow key={id} onClick={() => onRowClick(id)}>
-                                    <TableCell component="th" scope="row">
-                                        {id}
-                                    </TableCell>
-                                    <TableCell align="left">
-                                        <Chip
-                                            size="small"
-                                            label={`${state}${progress ? " " + progress + "%" : ""}`}
-                                            style={{
-                                                fontWeight: 700,
-                                                background: getColorFromState(state, progress),
-                                                color: "white",
-                                                textTransform: 'capitalize'
-
-                                            }}
-                                        /></TableCell>
-                                    <TableCell align="left"><Button
-                                        onClick={e => {
-                                            e.stopPropagation()
-                                            setSelectedJobId(id)
-                                        }}
-                                        size="small"
-                                        variant="contained" color="primary" children="view logs" /></TableCell>
-                                </TableRow>
+                            {activeJobs.map(({ id, state, progress }) => (
+                                <ActiveJobRow id={id} state={state} progress={progress} jobData={jobsData?.find((j) => j.id === id) || []} />
                             ))}
                         </TableBody>
                     </Table>
@@ -110,7 +181,7 @@ export default ({ onRowClick, logsData = [], activeJobsData = [] }) => {
             </ExpansionPanelDetails>
         </ExpansionPanel>
         {selectedJobId !== null && <LogsDialog
-            logs={logsData?.find(({ id }) => id === selectedJobId)?.logs}
+            logs={activeJobLogs?.find(({ id }) => id === selectedJobId)?.logs}
             onClose={() => setSelectedJobId(null)} />}
     </>
     );
