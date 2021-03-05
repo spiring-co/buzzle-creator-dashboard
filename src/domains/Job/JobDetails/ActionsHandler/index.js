@@ -18,7 +18,7 @@ import ActionDialog from "./ActionDialog";
 import PreRender from "./PreRender";
 import PostRender from "./PostRender";
 
-export default ({ prerender, postrender, onSubmit }) => {
+export default ({ prerender = [], postrender = [], onSubmit }) => {
   const [isEdit, setIsEdit] = useState(false);
   const [editIndex, setEditIndex] = useState(0);
   const [actionType, setActionType] = useState(null);
