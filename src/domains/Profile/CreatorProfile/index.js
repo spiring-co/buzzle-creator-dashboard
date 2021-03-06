@@ -300,25 +300,26 @@ function Webhooks() {
       <Divider />
       {currentUser
         ? currentUser?.webhooks.map((cu, index) => {
-            return (
-              <div>
-                <Typography style={{ margin: 10 }} variant="h7">
-                  Name: {webhookData.find(({ id }) => id === cu.id)?.name}
-                </Typography>
-                <Typography variant="h7">URL: {cu.url}</Typography>
-                <IconButton>
-                  <Edit onClick={() => handleOpen(index)} fontSize="small" />
-                </IconButton>
-                <IconButton>
-                  <Delete
-                    fontSize="small"
-                    onClick={() => handleDelete(index)}
-                  />
-                </IconButton>
-                <Divider />
-              </div>
-            );
-          })
+          return (
+            <div>
+              <Typography style={{ margin: 10 }} variant="h7">
+                Name:{" "}
+                {webhookData.find(({ id }) => id === cu.id).name}
+              </Typography>
+              <Typography variant="h7">URL: {cu.url}</Typography>
+              <IconButton>
+                <Edit onClick={() => handleOpen(index)} fontSize="small" />
+              </IconButton>
+              <IconButton>
+                <Delete
+                  fontSize="small"
+                  onClick={() => handleDelete(index)}
+                />
+              </IconButton>
+              <Divider />
+            </div>
+          );
+        })
         : " "}
       <Button
         style={{ marginTop: 20 }}
@@ -338,8 +339,8 @@ function Webhooks() {
           onSubmit={handleSubmit}
           webhookData={webhookData}></WebhookModal>
       ) : (
-        <div> </div>
-      )}
+          <div> </div>
+        )}
     </Container>
   );
 }
@@ -369,27 +370,27 @@ export default () => {
           {
             label: "Profile",
             component: <ProfileEdit creator={creator} />,
-            allowedRoles: ["Admin", "Creator", "User"],
+            allowedRoles: ["Admin", "Creator", "Developer"],
           },
           {
             label: "Account Security",
             component: <ChangePassword />,
-            allowedRoles: ["Admin", "Creator", "User"],
+            allowedRoles: ["Admin", "Creator", "Developer"],
           },
           {
             label: "Credentials",
             component: <APISection />,
-            allowedRoles: ["User"],
+            allowedRoles: ["Developer"],
           },
           {
             label: "Setting",
             component: <Setting />,
-            allowedRoles: ["Admin", "Creator", "User"],
+            allowedRoles: ["Admin", "Creator", "Developer"],
           },
           {
             label: "Webhooks",
             component: <Webhooks />,
-            allowedRoles: ["Admin", "Creator", "User"],
+            allowedRoles: ["Admin", "Creator", "Developer"],
           },
         ]}
       />

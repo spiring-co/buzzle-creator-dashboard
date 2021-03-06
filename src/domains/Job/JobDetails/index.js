@@ -24,7 +24,7 @@ import {
 } from "@material-ui/core";
 
 import DeleteIcon from "@material-ui/icons/Delete";
-import HdIcon from '@material-ui/icons/Hd';
+import HdIcon from "@material-ui/icons/Hd";
 import UpdateIcon from "@material-ui/icons/Update";
 import DownloadIcon from "@material-ui/icons/GetApp";
 import PublishIcon from "@material-ui/icons/Publish";
@@ -39,6 +39,10 @@ import ActionsHandler from "./ActionsHandler";
 import ErrorHandler from "common/ErrorHandler";
 import ImageEditRow from "./ImageEditRow";
 
+import Accordion from "@material-ui/core/Accordion";
+import AccordionSummary from "@material-ui/core/AccordionSummary";
+import AccordionDetails from "@material-ui/core/AccordionDetails";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { Job } from "services/api";
 
 function TabPanel(props) {
@@ -107,7 +111,12 @@ export default () => {
   const { id } = useParams();
   const classes = useStyles();
   const history = useHistory();
+  const logColors = {
+    warning: "yellow",
+    info: "#fff",
+    error: "red",
 
+  }
   // fetch job on init
   useEffect(() => {
     fetchJob();
@@ -118,7 +127,7 @@ export default () => {
 
   // init socket on mount
   useEffect(() => {
-    setSocket(io.connect(process.env.REACT_APP_EVENTS_SOCKET_URL));
+    setSocket(io.connect(process.env.REACT_APP_SOCKET_SERVER_URL));
   }, []);
 
   function subscribeToProgress(id) {
@@ -138,7 +147,7 @@ export default () => {
     return () => {
       unsubscribeFromProgress();
     };
-  }, [id]);
+  }, [id, socket]);
 
   const fetchJob = async () => {
     try {
@@ -198,6 +207,7 @@ export default () => {
             fontWeight: 700,
             background: getColorFromState(state, percent),
             color: "white",
+            textTransform: 'capitalize'
           }}
         />
       </Tooltip>
@@ -220,11 +230,16 @@ export default () => {
   const sortedOutput = output?.sort(
     (a, b) => new Date(b?.dateCreated) - new Date(a?.dateCreated)
   );
-  let percent = rtProgressData[id]?.percent;
+  useEffect(() => {
+
+    if (rtProgressData[id]?.state === 'finished' && state !== 'finished') {
+      fetchJob()
+    }
+  }, [rtProgressData[id]?.state, state])
 
   const content = {
     "Job ID": id,
-    State: progressShow(failureReason, state, percent),
+    State: progressShow(failureReason, rtProgressData[id]?.state ?? state, rtProgressData[id]?.percent),
     "Render Time": formatTime(renderTime),
     "Queue Time": formatTime(queueTime),
     "Created at": new Date(dateCreated).toLocaleString(),
@@ -246,14 +261,18 @@ export default () => {
     try {
       const { data, actions, id, renderPrefs } = job;
       setIsLoading(true);
-      await Job.update(id, { data, actions, renderPrefs: { settingsTemplate: 'full' } });
+      await Job.update(id, {
+        data,
+        actions,
+        renderPrefs: { settingsTemplate: "full" },
+      });
       setIsLoading(false);
       setRedirect("/home/jobs");
     } catch (err) {
       setIsLoading(false);
       setError(err);
     }
-  }
+  };
   const handleAssetDelete = async (index) => {
     const idArray = Object.keys(data);
     delete job.data[idArray[index]];
@@ -394,6 +413,7 @@ export default () => {
               <Tab label="Data" {...a11yProps(1)} />
               <Tab label="Actions" {...a11yProps(2)} />
               <Tab label="Render Prefs" {...a11yProps(3)} />
+              <Tab label="Logs" {...a11yProps(3)} />
             </Tabs>
           </AppBar>
 
@@ -521,18 +541,18 @@ export default () => {
               postrender={
                 actions?.postrender?.map((action) => {
                   switch (action.module) {
-                    case "@nexrender/action-encode":
+                    case "buzzle-action-handbrake":
                       return { compress: action };
-                    case "action-watermark":
+                    case "buzzle-action-watermark":
                       return { addWaterMark: action };
-                    case "@nexrender/action-upload":
+                    case "buzzle-action-upload":
                       return { upload: action };
-                    case "action-add-audio":
+                    case "buzzle-action-add-audio":
                       return { addAudio: action };
-                    case "action-merge-videos":
+                    case "buzzle-action-merge-videos":
                       return { mergeVideos: action };
                     default:
-                      return;
+                      return {};
                   }
                 }) ?? []
               }
@@ -601,14 +621,78 @@ export default () => {
               />
             </Box>
           </TabPanel>
+          <TabPanel value={activeTabIndex} index={4}>
+            <Box display="flex" flexDirection="column" px={8}>
+              <h1>Logs here.</h1>
+              {job?.logs?.map((l, i) => (
+                <Accordion key={i}>
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel1a-content"
+                    id="panel1a-header">
+                    <Typography>{l.label.toUpperCase()}</Typography>
+                    <Typography color="textSecondary" style={{ marginLeft: 30 }}>
+                      {new Date(l?.updatedAt).toLocaleString()}
+                    </Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <div
+                      style={{
+                        display: "flex",
+                        backgroundColor: "black", paddingBottom: 100, padding: 10, flexDirection: 'column', width: '100%',
+                      }}>
+                      {l.label === 'console' ?
+                        <>
+                          {JSON.parse(l?.text)?.map(({ line, data, level, timestamp = new Date().toLocaleString() }) =>
+                            <Box style={{ display: 'flex' }}>
+                              <code
+                                style={{
+                                  "white-space": "pre-line",
+                                  fontSize: 14,
+                                  fontFamily: "monospace",
+                                  fontWeight: 600, color: '#fff',
+                                  paddingRight: 10,
+                                  textAlign: 'right',
+                                  minWidth: 40,
+                                  "border-right": "0.2px solid #fff"
+                                }}>
+                                {`${line}`}
+                              </code>
+                              <code
+                                style={{
+                                  "white-space": "pre-line",
+                                  paddingLeft: 35,
+                                  fontSize: 14,
+                                  fontFamily: "monospace",
+                                  fontWeight: 600, color: logColors[level]
+                                }}>
+                                {timestamp}: {data?.toString()?.replace(/,/g, "\n")}
+                              </code>
+                            </Box>)}
+                        </>
+                        : <code style={{
+                          "white-space": "pre-line",
+                          paddingLeft: 35,
+                          fontSize: 14,
+                          fontFamily: "monospace",
+                          fontWeight: 600, color: '#fff'
+                        }}>
+                          {l.text}
+                        </code>}
+                    </div>
+                  </AccordionDetails>
+                </Accordion>
+              ))}
+            </Box>
+          </TabPanel>
         </Paper>
       </div>
     </>
   );
 };
 
-const getColorFromState = (state, percent) => {
-  switch (state) {
+const getColorFromState = (state = "", percent) => {
+  switch (state.toLowerCase()) {
     case "finished":
       return "#4caf50";
     case "error":
