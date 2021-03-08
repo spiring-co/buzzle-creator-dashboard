@@ -234,7 +234,7 @@ export default () => {
   );
   useEffect(() => {
 
-    if (progress?.state.toLowerCase() === 'finished' && state.toLowerCase() !== 'finished') {
+    if (progress?.state?.toLowerCase() === 'finished' && state?.toLowerCase() !== 'finished') {
       fetchJob()
     }
   }, [progress?.state, state])
@@ -694,7 +694,7 @@ export default () => {
 };
 
 const getColorFromState = (state = "", percent) => {
-  switch (state.toLowerCase()) {
+  switch (state?.toLowerCase()) {
     case "finished":
       return "#4caf50";
     case "error":
