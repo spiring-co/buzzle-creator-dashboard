@@ -105,7 +105,7 @@ export default () => {
   const [redirect, setRedirect] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTabIndex, setActiveTabIndex] = useState(0);
-  const [rtProgressData, setRtProgressData] = useState({});
+  const [progress, setProgress] = useState({});
   const [selectedOutputIndex, setSelectedOutputIndex] = useState(0);
 
   const { id } = useParams();
@@ -127,13 +127,15 @@ export default () => {
 
   // init socket on mount
   useEffect(() => {
-    setSocket(io.connect(process.env.REACT_APP_SOCKET_SERVER_URL));
+    setSocket(io.connect(process.env.REACT_APP_SOCKET_SERVER_URL), {
+      withCredentials: true,
+    });
   }, []);
 
-  function subscribeToProgress(id) {
+  function subscribeToProgress(jobId) {
     if (!socket) return;
-    socket.on(id, (data) =>
-      setRtProgressData({ ...rtProgressData, [id]: data })
+    socket.on("job-progress", ({ id, state, progress, server }) =>
+      jobId === id & setProgress({ id, state, progress, server })
     );
   }
 
@@ -232,14 +234,14 @@ export default () => {
   );
   useEffect(() => {
 
-    if (rtProgressData[id]?.state === 'finished' && state !== 'finished') {
+    if (progress?.state.toLowerCase() === 'finished' && state.toLowerCase() !== 'finished') {
       fetchJob()
     }
-  }, [rtProgressData[id]?.state, state])
+  }, [progress?.state, state])
 
   const content = {
     "Job ID": id,
-    State: progressShow(failureReason, rtProgressData[id]?.state ?? state, rtProgressData[id]?.percent),
+    State: progressShow(failureReason, progress?.state ?? state, progress?.progress),
     "Render Time": formatTime(renderTime),
     "Queue Time": formatTime(queueTime),
     "Created at": new Date(dateCreated).toLocaleString(),
@@ -391,16 +393,16 @@ export default () => {
               src={sortedOutput.length && sortedOutput[selectedOutputIndex].src}
             />
           ) : (
-              <>
-                <Box justifyContent="center" textAlign="center" height={320}>
-                  <Typography style={{ padding: 100 }}>
-                    {" "}
+            <>
+              <Box justifyContent="center" textAlign="center" height={320}>
+                <Typography style={{ padding: 100 }}>
+                  {" "}
                   No output yet.
                 </Typography>
-                </Box>
-                <Divider />
-              </>
-            )}
+              </Box>
+              <Divider />
+            </>
+          )}
           <AppBar position="static" color="transparent" elevation={0}>
             <Tabs
               value={activeTabIndex}
