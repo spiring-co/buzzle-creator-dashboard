@@ -61,14 +61,14 @@ export default ({ onRowClick, }) => {
         if (!socket) {
             return console.log("no socket");
         }
-        socket.on("job-progress", ({ id, state, progress, server }) => {
+        socket.on("job-progress", ({ id, state, progress, rendererInstance }) => {
 
             setActiveJobs((activeJobs) => {
                 const index = activeJobs.map(({ id }) => id).indexOf(id)
                 if (index === -1) {
-                    return [...activeJobs, { id, state, progress, server }]
+                    return [...activeJobs, { id, state, progress, rendererInstance }]
                 }
-                else return activeJobs?.map(data => data.id === id ? ({ id, state, progress, server }) : data)
+                else return activeJobs?.map(data => data.id === id ? ({ id, state, progress, rendererInstance }) : data)
             });
         });
         socket.on("job-logs", ({ id, logs }) => {
@@ -107,7 +107,7 @@ export default ({ onRowClick, }) => {
         }
     }, [activeJobs])
 
-    const ActiveJobRow = ({ id, state, progress, jobData }) => {
+    const ActiveJobRow = ({ id, state, progress, jobData, rendererInstance }) => {
         return <TableRow key={id} onClick={() => onRowClick(id)}>
             <TableCell component="th" scope="row">
                 {id}
@@ -128,6 +128,8 @@ export default ({ onRowClick, }) => {
                         textTransform: 'capitalize'
                     }}
                 /></TableCell>
+            <TableCell>{rendererInstance?.instanceId}</TableCell>
+            <TableCell>{rendererInstance?.ipv4}</TableCell>
             <TableCell align="left"><Button
                 onClick={e => {
                     e.stopPropagation()
@@ -167,13 +169,14 @@ export default ({ onRowClick, }) => {
                                 <TableCell align="left">Last updated</TableCell>
                                 <TableCell align="left">Created at</TableCell>
                                 <TableCell align="left">Status</TableCell>
+                                <TableCell align="left">Instance Id</TableCell>
+                                <TableCell align="left">Instance IP</TableCell>
                                 <TableCell align="left">Actions</TableCell>
-
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {activeJobs.map(({ id, state, progress }) => (
-                                <ActiveJobRow id={id} state={state} progress={progress} jobData={jobsData?.find((j) => j.id === id) || []} />
+                            {activeJobs.map(({ id, state, progress, rendererInstance }) => (
+                                <ActiveJobRow id={id} state={state} rendererInstance={rendererInstance} progress={progress} jobData={jobsData?.find((j) => j.id === id) || []} />
                             ))}
                         </TableBody>
                     </Table>

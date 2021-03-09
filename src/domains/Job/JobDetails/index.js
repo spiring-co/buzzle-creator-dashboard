@@ -636,6 +636,9 @@ export default () => {
                     <Typography color="textSecondary" style={{ marginLeft: 30 }}>
                       {new Date(l?.updatedAt).toLocaleString()}
                     </Typography>
+                    <Typography color="textSecondary" style={{ marginLeft: 30 }}>
+                      Instance Id: {l?.rendererInstance?.instanceId}, IPV4: {l?.rendererInstance?.ipv4}
+                    </Typography>
                   </AccordionSummary>
                   <AccordionDetails>
                     <div
