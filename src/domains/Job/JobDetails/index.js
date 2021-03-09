@@ -44,6 +44,7 @@ import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { Job } from "services/api";
+import LogsTab from "./LogsTab";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -111,12 +112,7 @@ export default () => {
   const { id } = useParams();
   const classes = useStyles();
   const history = useHistory();
-  const logColors = {
-    warning: "yellow",
-    info: "#fff",
-    error: "red",
 
-  }
   // fetch job on init
   useEffect(() => {
     fetchJob();
@@ -135,7 +131,7 @@ export default () => {
   function subscribeToProgress(jobId) {
     if (!socket) return;
     socket.on("job-progress", ({ id, state, progress, server }) =>
-      jobId === id & setProgress({ id, state, progress, server })
+      jobId === id && setProgress({ id, state, progress, server })
     );
   }
 
@@ -624,71 +620,7 @@ export default () => {
             </Box>
           </TabPanel>
           <TabPanel value={activeTabIndex} index={4}>
-            <Box display="flex" flexDirection="column" px={8}>
-              <h1>Logs here.</h1>
-              {job?.logs?.map((l, i) => (
-                <Accordion key={i}>
-                  <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    aria-controls="panel1a-content"
-                    id="panel1a-header">
-                    <Typography>{l.label.toUpperCase()}</Typography>
-                    <Typography color="textSecondary" style={{ marginLeft: 30 }}>
-                      {new Date(l?.updatedAt).toLocaleString()}
-                    </Typography>
-                    <Typography color="textSecondary" style={{ marginLeft: 30 }}>
-                      Instance Id: {l?.rendererInstance?.instanceId}, IPV4: {l?.rendererInstance?.ipv4}
-                    </Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <div
-                      style={{
-                        display: "flex",
-                        backgroundColor: "black", paddingBottom: 100, padding: 10, flexDirection: 'column', width: '100%',
-                      }}>
-                      {l.label === 'console' ?
-                        <>
-                          {JSON.parse(l?.text)?.map(({ line, data, level, timestamp = new Date().toLocaleString() }) =>
-                            <Box style={{ display: 'flex' }}>
-                              <code
-                                style={{
-                                  "white-space": "pre-line",
-                                  fontSize: 14,
-                                  fontFamily: "monospace",
-                                  fontWeight: 600, color: '#fff',
-                                  paddingRight: 10,
-                                  textAlign: 'right',
-                                  minWidth: 40,
-                                  "border-right": "0.2px solid #fff"
-                                }}>
-                                {`${line}`}
-                              </code>
-                              <code
-                                style={{
-                                  "white-space": "pre-line",
-                                  paddingLeft: 35,
-                                  fontSize: 14,
-                                  fontFamily: "monospace",
-                                  fontWeight: 600, color: logColors[level]
-                                }}>
-                                {timestamp}: {data?.toString()?.replace(/,/g, "\n")}
-                              </code>
-                            </Box>)}
-                        </>
-                        : <code style={{
-                          "white-space": "pre-line",
-                          paddingLeft: 35,
-                          fontSize: 14,
-                          fontFamily: "monospace",
-                          fontWeight: 600, color: '#fff'
-                        }}>
-                          {l.text}
-                        </code>}
-                    </div>
-                  </AccordionDetails>
-                </Accordion>
-              ))}
-            </Box>
+            <LogsTab logs={job?.logs ?? []} />
           </TabPanel>
         </Paper>
       </div>
