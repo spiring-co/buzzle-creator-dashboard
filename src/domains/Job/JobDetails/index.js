@@ -24,7 +24,7 @@ import {
 } from "@material-ui/core";
 
 import DeleteIcon from "@material-ui/icons/Delete";
-import HdIcon from '@material-ui/icons/Hd';
+import HdIcon from "@material-ui/icons/Hd";
 import UpdateIcon from "@material-ui/icons/Update";
 import DownloadIcon from "@material-ui/icons/GetApp";
 import PublishIcon from "@material-ui/icons/Publish";
@@ -39,7 +39,12 @@ import ActionsHandler from "./ActionsHandler";
 import ErrorHandler from "common/ErrorHandler";
 import ImageEditRow from "./ImageEditRow";
 
+import Accordion from "@material-ui/core/Accordion";
+import AccordionSummary from "@material-ui/core/AccordionSummary";
+import AccordionDetails from "@material-ui/core/AccordionDetails";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { Job } from "services/api";
+import LogsTab from "./LogsTab";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -101,7 +106,7 @@ export default () => {
   const [redirect, setRedirect] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTabIndex, setActiveTabIndex] = useState(0);
-  const [rtProgressData, setRtProgressData] = useState({});
+  const [progress, setProgress] = useState({});
   const [selectedOutputIndex, setSelectedOutputIndex] = useState(0);
 
   const { id } = useParams();
@@ -118,13 +123,15 @@ export default () => {
 
   // init socket on mount
   useEffect(() => {
-    setSocket(io.connect(process.env.REACT_APP_EVENTS_SOCKET_URL));
+    setSocket(io.connect(process.env.REACT_APP_SOCKET_SERVER_URL), {
+      withCredentials: true,
+    });
   }, []);
 
-  function subscribeToProgress(id) {
+  function subscribeToProgress(jobId) {
     if (!socket) return;
-    socket.on(id, (data) =>
-      setRtProgressData({ ...rtProgressData, [id]: data })
+    socket.on("job-progress", ({ id, state, progress, server }) =>
+      jobId === id && setProgress({ id, state, progress, server })
     );
   }
 
@@ -138,7 +145,7 @@ export default () => {
     return () => {
       unsubscribeFromProgress();
     };
-  }, [id]);
+  }, [id, socket]);
 
   const fetchJob = async () => {
     try {
@@ -198,6 +205,7 @@ export default () => {
             fontWeight: 700,
             background: getColorFromState(state, percent),
             color: "white",
+            textTransform: 'capitalize'
           }}
         />
       </Tooltip>
@@ -220,11 +228,16 @@ export default () => {
   const sortedOutput = output?.sort(
     (a, b) => new Date(b?.dateCreated) - new Date(a?.dateCreated)
   );
-  let percent = rtProgressData[id]?.percent;
+  useEffect(() => {
+
+    if (progress?.state?.toLowerCase() === 'finished' && state?.toLowerCase() !== 'finished') {
+      fetchJob()
+    }
+  }, [progress?.state, state])
 
   const content = {
     "Job ID": id,
-    State: progressShow(failureReason, state, percent),
+    State: progressShow(failureReason, progress?.state ?? state, progress?.progress),
     "Render Time": formatTime(renderTime),
     "Queue Time": formatTime(queueTime),
     "Created at": new Date(dateCreated).toLocaleString(),
@@ -246,14 +259,18 @@ export default () => {
     try {
       const { data, actions, id, renderPrefs } = job;
       setIsLoading(true);
-      await Job.update(id, { data, actions, renderPrefs: { settingsTemplate: 'full' } });
+      await Job.update(id, {
+        data,
+        actions,
+        renderPrefs: { settingsTemplate: "full" },
+      });
       setIsLoading(false);
       setRedirect("/home/jobs");
     } catch (err) {
       setIsLoading(false);
       setError(err);
     }
-  }
+  };
   const handleAssetDelete = async (index) => {
     const idArray = Object.keys(data);
     delete job.data[idArray[index]];
@@ -372,16 +389,16 @@ export default () => {
               src={sortedOutput.length && sortedOutput[selectedOutputIndex].src}
             />
           ) : (
-              <>
-                <Box justifyContent="center" textAlign="center" height={320}>
-                  <Typography style={{ padding: 100 }}>
-                    {" "}
+            <>
+              <Box justifyContent="center" textAlign="center" height={320}>
+                <Typography style={{ padding: 100 }}>
+                  {" "}
                   No output yet.
                 </Typography>
-                </Box>
-                <Divider />
-              </>
-            )}
+              </Box>
+              <Divider />
+            </>
+          )}
           <AppBar position="static" color="transparent" elevation={0}>
             <Tabs
               value={activeTabIndex}
@@ -394,6 +411,7 @@ export default () => {
               <Tab label="Data" {...a11yProps(1)} />
               <Tab label="Actions" {...a11yProps(2)} />
               <Tab label="Render Prefs" {...a11yProps(3)} />
+              <Tab label="Logs" {...a11yProps(3)} />
             </Tabs>
           </AppBar>
 
@@ -521,18 +539,18 @@ export default () => {
               postrender={
                 actions?.postrender?.map((action) => {
                   switch (action.module) {
-                    case "@nexrender/action-encode":
+                    case "buzzle-action-handbrake":
                       return { compress: action };
-                    case "action-watermark":
+                    case "buzzle-action-watermark":
                       return { addWaterMark: action };
-                    case "@nexrender/action-upload":
+                    case "buzzle-action-upload":
                       return { upload: action };
-                    case "action-add-audio":
+                    case "buzzle-action-add-audio":
                       return { addAudio: action };
-                    case "action-merge-videos":
+                    case "buzzle-action-merge-videos":
                       return { mergeVideos: action };
                     default:
-                      return;
+                      return {};
                   }
                 }) ?? []
               }
@@ -601,14 +619,17 @@ export default () => {
               />
             </Box>
           </TabPanel>
+          <TabPanel value={activeTabIndex} index={4}>
+            <LogsTab logs={job?.logs ?? []} />
+          </TabPanel>
         </Paper>
       </div>
     </>
   );
 };
 
-const getColorFromState = (state, percent) => {
-  switch (state) {
+const getColorFromState = (state = "", percent) => {
+  switch (state?.toLowerCase()) {
     case "finished":
       return "#4caf50";
     case "error":

@@ -4,7 +4,7 @@ const API = BuzzleSdk.apiClient({
   authToken: localStorage.getItem("jwtoken"),
 });
 
-const uri = `http://34.229.239.151:3050/api/v1/jobs`;
+const uri = `http://52.54.195.156:3000/api/v1/jobs`;
 
 export const ServerJobs = {
   getAll: async () => {

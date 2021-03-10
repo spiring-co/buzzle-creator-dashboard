@@ -338,8 +338,8 @@ function Webhooks() {
           onSubmit={handleSubmit}
           webhookData={webhookData}></WebhookModal>
       ) : (
-        <div> </div>
-      )}
+          <div> </div>
+        )}
     </Container>
   );
 }
@@ -369,27 +369,27 @@ export default () => {
           {
             label: "Profile",
             component: <ProfileEdit creator={creator} />,
-            allowedRoles: ["Admin", "Creator", "User"],
+            allowedRoles: ["Admin", "Creator", "Developer"],
           },
           {
             label: "Account Security",
             component: <ChangePassword />,
-            allowedRoles: ["Admin", "Creator", "User"],
+            allowedRoles: ["Admin", "Creator", "Developer"],
           },
           {
             label: "Credentials",
             component: <APISection />,
-            allowedRoles: ["User"],
+            allowedRoles: ["Developer"],
           },
           {
             label: "Setting",
             component: <Setting />,
-            allowedRoles: ["Admin", "Creator", "User"],
+            allowedRoles: ["Admin", "Creator", "Developer"],
           },
           {
             label: "Webhooks",
             component: <Webhooks />,
-            allowedRoles: ["Admin", "Creator", "User"],
+            allowedRoles: ["Admin", "Creator", "Developer"],
           },
         ]}
       />

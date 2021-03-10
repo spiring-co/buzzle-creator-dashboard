@@ -28,6 +28,7 @@ export default (Key, Body) => {
   });
 
   return upload;
+
   /*
   HOW TO USE?
 
