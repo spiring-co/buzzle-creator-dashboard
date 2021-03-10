@@ -254,19 +254,18 @@ export default ({ onRowClick }) => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {status.map((s,i) => (
+                  {status.map((s, i) => (
                     <TableRow>
                       <TableCell component="th" scope="row">
                         {s}
                       </TableCell>
                       <TableRow>
-                      <TableCell component="th" scope="row">
-                        {pendingJobs[i]}
-                      </TableCell>
-                    </TableRow>
+                        <TableCell component="th" scope="row">
+                          {pendingJobs[i]}
+                        </TableCell>
+                      </TableRow>
                     </TableRow>
                   ))}
-                 
                 </TableBody>
               </Table>
             </TableContainer>
