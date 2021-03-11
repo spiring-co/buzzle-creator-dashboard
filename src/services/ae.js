@@ -1,5 +1,5 @@
 const extractStructureFromFile = async (fileUrl) => {
-  const response = await fetch(`${process.env.REACT_APP_AE_SERVICE_URL}/`, {
+  const response = await fetch(`${process.env.REACT_APP_AE_SERVICE_URL}/`, {//TODO fetch
     method: "POST",
     headers: {
       Accept: "application/json",

@@ -17,11 +17,8 @@ import {
   IconButton,
 } from "@material-ui/core";
 import { Edit, Delete } from "@material-ui/icons";
-import Tab from "@material-ui/core/Tab";
-import Tabs from "@material-ui/core/Tabs";
 import { Alert } from "@material-ui/lab";
-import Snackbar from "@material-ui/core/Snackbar";
-import { Job, VideoTemplate, Creator } from "services/api";
+import { Creator, User } from "services/api";
 import upload from "services/s3Upload";
 import { useFormik } from "formik";
 import React, { useEffect, useState } from "react";
@@ -211,7 +208,7 @@ function Webhooks() {
   };
 
   useEffect(() => {
-    fetch("http://localhost:5000/webhooks/")
+    fetch("http://localhost:5000/webhooks/")//TODO fetch
       .then((response) => response.json())
       .then((data) => setWebhookData(data))
       .catch((err) => setError(err));
@@ -219,7 +216,7 @@ function Webhooks() {
   }, []);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/users/${user?.id}`)
+    fetch(`http://localhost:5000/users/${user?.id}`)//TODO fetch
       .then((response) => response.json())
       .then((data) => setCurrentUser(data))
       .catch((err) => setError(err));
@@ -239,7 +236,7 @@ function Webhooks() {
       newUserWebhooksData[editIndex] = value;
       console.log(newUserWebhooksData);
     }
-    fetch(`http://localhost:5000/users/${user?.id}`, {
+    fetch(`http://localhost:5000/users/${user?.id}`, {//TODO fetch
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -266,7 +263,7 @@ function Webhooks() {
         (item, i) => i !== index
       );
       console.log(newUserWebhooksData);
-      fetch(`http://localhost:5000/users/${user?.id}`, {
+      fetch(`http://localhost:5000/users/${user?.id}`, {//TODO fetch
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -280,7 +277,7 @@ function Webhooks() {
         .then((response) => response.json())
         .then((data) => {
           console.log("Success:", data);
-          fetch(`http://localhost:5000/users/${user?.id}`)
+          fetch(`http://localhost:5000/users/${user?.id}`)//TODO fetch
             .then((response) => response.json())
             .then((data) => setCurrentUser(data))
             .catch((err) => setError(err));

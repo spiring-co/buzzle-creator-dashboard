@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import Confetti from "react-dom-confetti";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 import * as Yup from "yup";
+import { Auth } from "services/api";
 import { useTranslation } from "react-i18next";
 import {
   Button,
@@ -44,18 +45,8 @@ export default () => {
 
   const resetPassword = async (email, newPassword, otp) => {
     try {
-      const response = await fetch(
-        process.env.REACT_APP_API_URL + "/auth/resetPassword",
-        {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, otp, newPassword }),
-        }
-      );
-      console.log(await response.json());
+      const response = Auth.resetPassword({ email, otp, newPassword });
+      console.log(response);
       setPasswordResetSuccess(true);
     } catch (e) {
       console.log(e);

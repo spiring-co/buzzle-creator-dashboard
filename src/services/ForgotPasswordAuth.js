@@ -17,7 +17,7 @@ export default () => {
           },
           body: JSON.stringify({ email, otp, newPassword }),
         }
-      );
+      );//TODO fetch
       console.log(await response.json());
       setPasswordResetSuccess(true);
     } catch (e) {
@@ -38,7 +38,7 @@ export default () => {
           },
           body: JSON.stringify({ email }),
         }
-      );
+      );//TODO fetch
       console.log(await response.json());
       setOtpEmailSent(true);
     } catch (e) {
