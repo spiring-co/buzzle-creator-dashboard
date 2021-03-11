@@ -38,7 +38,7 @@ export default ({ onRowClick }) => {
   useEffect(() => {
     setSocket(
       io.connect(process.env.REACT_APP_SOCKET_SERVER_URL, {
-        withCredentials: true,
+        withCredentials: false,
       })
     );
   }, []);
