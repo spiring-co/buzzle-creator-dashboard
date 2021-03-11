@@ -1,50 +1,26 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useHistory, useRouteMatch, useLocation } from "react-router-dom";
-
-import * as timeago from "timeago.js";
-import ReactJson from "react-json-view";
-import io from "socket.io-client";
-
 import {
-  Chip,
-  Typography,
-  Button,
-  Container,
-  Paper,
   Box,
+  Button,
+  Chip,
   ExpansionPanel,
   ExpansionPanelDetails,
   ExpansionPanelSummary,
-  Tooltip,
-  Fade,
+  Typography,
 } from "@material-ui/core";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
-import TableFooter from "@material-ui/core/TableFooter";
 import TableRow from "@material-ui/core/TableRow";
-import MaterialTable from "material-table";
-import FileCopyIcon from "@material-ui/icons/FileCopy";
-import {
-  ExpandMore,
-  ArrowForward,
-  ArrowBack,
-  TramRounded,
-} from "@material-ui/icons";
-
-import formatTime from "helpers/formatTime";
-import Alert from "@material-ui/lab/Alert";
-import { useDarkMode } from "helpers/useDarkMode";
-
-import Filters from "common/Filters";
-import ErrorHandler from "common/ErrorHandler";
-import { Job, Search } from "services/api";
-
-import { useAuth } from "services/auth";
-import { SnackbarProvider, useSnackbar } from "notistack";
+import { ExpandMore } from "@material-ui/icons";
 import LogsDialog from "common/LogsDialog";
+import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import { Job } from "services/api";
+import { useAuth } from "services/auth";
+import io from "socket.io-client";
+import * as timeago from "timeago.js";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
