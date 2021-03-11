@@ -54,7 +54,7 @@ export default () => {
   // }
 
   const getDataFromQuery = (query) => {
-    console.log("working");
+    console.log("working", localStorage.getItem("jwtoken"));
     return Job.getAll(
       1, //-1 after api updates
       100,

@@ -86,7 +86,7 @@ export default (props) => {
     );
     useEffect(() => {
         const data = async () => {
-            const response = await fetch(`${uri}?page=${1}&size=${10}`);
+            const response = await fetch(`${uri}?page=${1}&size=${10}`);//TODO fetch
             if (response.ok) {
                 const result = await response.json();
                 console.log(result);
@@ -184,7 +184,7 @@ export default (props) => {
                 ]}
 
                 data={(query) =>
-                    fetch(`${uri}?page=${query.page + 1}&size=${query.pageSize}`)
+                    fetch(`${uri}?page=${query.page + 1}&size=${query.pageSize}`)//TODO fetch
                         .then((response) => response.json())
                         .then((result) => {
                             return {

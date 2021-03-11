@@ -41,7 +41,7 @@ function AuthProvider(props) {
   }, [user]);
 
   const login = async (email, password, role = "Creator") => {
-    const response = await fetch(
+    const response = await fetch(//TODO fetch
       `${process.env.REACT_APP_API_URL}/auth/login`,
       {
         method: "POST",

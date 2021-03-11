@@ -1,8 +1,17 @@
 import BuzzleSdk from "buzzle-sdk";
-const API = BuzzleSdk.apiClient({
-  baseUrl: process.env.REACT_APP_API_URL,
-  authToken: localStorage.getItem("jwtoken"),
-});
+
+const getBuzzleApi = () => {
+  return BuzzleSdk.apiClient({
+    baseUrl: process.env.REACT_APP_API_URL,
+    authToken: localStorage.getItem("jwtoken"),
+  });
+};
+let API = getBuzzleApi();
+
+window.onstorage = () => {
+  API = getBuzzleApi();
+  console.log(localStorage.getItem("jwtoken"));
+};
 
 const uri = `http://52.54.195.156:3000/api/v1/jobs`;
 
@@ -11,7 +20,6 @@ export const ServerJobs = {
     const response = await fetch(uri, {
       headers: { "nexrender-secret": "myapisecret" },
     });
-    console.log("im trying to get jobs");
     if (response.ok) {
       return await response
         .json()
@@ -50,4 +58,4 @@ export const ServerJobs = {
   },
 };
 
-export const { Job, Creator, VideoTemplate, Font, Search } = API;
+export const { Job, Creator, VideoTemplate, Font, Search, Auth } = API;

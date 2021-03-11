@@ -12,7 +12,7 @@ export default () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(s),
-      });
+      });//TODO fetch
       setSuccess(response.ok);
       console.log(`line 16 ${response.ok}`);
       if (response.ok) {

@@ -29,12 +29,13 @@ function useQuery() {
 export default ({ onRowClick }) => {
   // init socket on mount
   const [activeJobs, setActiveJobs] = useState([]);
+  const [pendingJobs, setPendingJobs] = useState([]);
   const [activeJobLogs, setActiveJobLogs] = useState([]);
   const [jobsData, setJobsData] = useState([]);
   const { user } = useAuth();
   const [selectedJobId, setSelectedJobId] = useState(null);
   const [socket, setSocket] = useState(null);
-
+  const status = ["Error", "Render", "Started"];
   useEffect(() => {
     setSocket(
       io.connect(process.env.REACT_APP_SOCKET_SERVER_URL, {
@@ -68,6 +69,11 @@ export default ({ onRowClick }) => {
             log.id === id ? { id, logs } : log
           );
       });
+    });
+    socket.on("job-status", (data) => {
+      const { started, error } = data;
+      const render = data["render:postrender"];
+      setPendingJobs([error, render, started]);
     });
   }, [socket]);
   useEffect(() => {
@@ -216,6 +222,36 @@ export default ({ onRowClick }) => {
           )}
         </ExpansionPanelDetails>
       </ExpansionPanel>
+      <ExpansionPanelDetails>
+        {pendingJobs?.length ? (
+          <TableContainer>
+            <Table stickyHeader size="small" aria-label="a dense table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Status</TableCell>
+                  <TableCell>Number of Jobs</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {status.map((s, i) => (
+                  <TableRow>
+                    <TableCell component="th" scope="row">
+                      {s}
+                    </TableCell>
+                    <TableRow>
+                      <TableCell component="th" scope="row">
+                        {pendingJobs[i]}
+                      </TableCell>
+                    </TableRow>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        ) : (
+          ""
+        )}
+      </ExpansionPanelDetails>
       {selectedJobId !== null && (
         <LogsDialog
           logs={activeJobLogs?.find(({ id }) => id === selectedJobId)?.logs}
