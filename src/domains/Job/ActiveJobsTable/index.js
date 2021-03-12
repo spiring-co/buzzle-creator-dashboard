@@ -166,20 +166,68 @@ export default ({ onRowClick }) => {
           expandIcon={<ExpandMore />}
           aria-controls="panel1c-content"
           id="panel1c-header">
-          <Typography variant="h6">
-            Active Jobs ({activeJobs?.length} Jobs)
-          </Typography>
-          <Button
-            style={{ marginLeft: 25 }}
-            variant="contained"
-            size="small"
-            color="primary"
-            children={"clear"}
-            onClick={(e) => {
-              e.stopPropagation();
-              setActiveJobs([]);
-            }}
-          />
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              width: "100%",
+            }}>
+            <div
+              style={{ display: "flex", alignItems: "center", width: "50%" }}>
+              <Typography variant="h6">
+                Active Jobs ({activeJobs?.length} Jobs)
+              </Typography>
+              <Button
+                style={{ marginLeft: 25 }}
+                variant="contained"
+                size="small"
+                color="primary"
+                children={"clear"}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveJobs([]);
+                }}
+              />
+            </div>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                width: "50%",
+                justifyContent: "space-evenly",
+              }}>
+              <Chip
+                size="small"
+                label={`Error: ${pendingJobs[0] || "Loading..."}`}
+                style={{
+                  fontWeight: 700,
+                  background: "#f44336",
+                  color: "white",
+                  textTransform: "capitalize",
+                }}
+              />
+              <Chip
+                size="small"
+                label={`Render: ${pendingJobs[1] || "Loading..."}`}
+                style={{
+                  fontWeight: 700,
+                  background: "grey",
+                  color: "white",
+                  textTransform: "capitalize",
+                }}
+              />
+              <Chip
+                size="small"
+                label={`Start: ${pendingJobs[2] || "Loading..."}`}
+                style={{
+                  fontWeight: 700,
+                  background: "#ffa502",
+                  color: "white",
+                  textTransform: "capitalize",
+                }}
+              />
+            </div>
+          </div>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails style={{ flexWrap: "wrap" }}>
           {activeJobs?.length ? (
@@ -220,36 +268,6 @@ export default ({ onRowClick }) => {
           )}
         </ExpansionPanelDetails>
       </ExpansionPanel>
-      <ExpansionPanelDetails>
-        {pendingJobs?.length ? (
-          <TableContainer>
-            <Table stickyHeader size="small" aria-label="a dense table">
-              <TableHead>
-                <TableRow>
-                  <TableCell>Status</TableCell>
-                  <TableCell>Number of Jobs</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {status.map((s, i) => (
-                  <TableRow>
-                    <TableCell component="th" scope="row">
-                      {s}
-                    </TableCell>
-                    <TableRow>
-                      <TableCell component="th" scope="row">
-                        {pendingJobs[i]}
-                      </TableCell>
-                    </TableRow>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        ) : (
-          ""
-        )}
-      </ExpansionPanelDetails>
       {selectedJobId !== null && (
         <LogsDialog
           logs={activeJobLogs?.find(({ id }) => id === selectedJobId)?.logs}

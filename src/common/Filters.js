@@ -20,7 +20,7 @@ export default React.memo(
     const [filters, setFilters] = useState(value);
     useEffect(() => {
       videoTemplates.length === 0 &&
-        VideoTemplate.getAll(1, 500)
+        VideoTemplate.getAll(1, 500)//new api change
           .then(({ data }) =>
             setVideoTemplates(data.map(({ title, id }) => ({ title, id })))
           )

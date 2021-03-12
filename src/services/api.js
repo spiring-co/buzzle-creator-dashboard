@@ -1,4 +1,4 @@
-import BuzzleSdk from "buzzle-sdk";
+import BuzzleSdk from "./buzzle-sdk/buzzle-sdk/lib";
 
 const getBuzzleApi = () => {
   return BuzzleSdk.apiClient({
@@ -58,4 +58,4 @@ export const ServerJobs = {
   },
 };
 
-export const { Job, Creator, VideoTemplate, Font, Search, Auth } = API;
+export const { Job, Creator, VideoTemplate, Font, Search, Auth, Webhook } = API;

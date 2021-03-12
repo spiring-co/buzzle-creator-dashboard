@@ -18,7 +18,7 @@ import {
 } from "@material-ui/core";
 import { Edit, Delete } from "@material-ui/icons";
 import { Alert } from "@material-ui/lab";
-import { Creator, User } from "services/api";
+import { Creator, Webhook } from "services/api";
 import upload from "services/s3Upload";
 import { useFormik } from "formik";
 import React, { useEffect, useState } from "react";
@@ -28,6 +28,7 @@ import VerticalTabs from "common/VerticalTabs";
 import { Prompt } from "react-router-dom";
 import ChangePassword from "domains/Auth/ChangePassword";
 import WebhookModal from "../Components/webhookModal.js";
+import User from "domains/User/index.js";
 
 function ProfileEdit({ creator }) {
   console.log("creator is:" + JSON.stringify(creator));
@@ -208,16 +209,11 @@ function Webhooks() {
   };
 
   useEffect(() => {
-    fetch("http://localhost:5000/webhooks/")//TODO fetch
-      .then((response) => response.json())
-      .then((data) => setWebhookData(data))
-      .catch((err) => setError(err));
-    console.log(JSON.stringify(user));
+    setWebhookData(Webhook.getAll()); //new api change
   }, []);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/users/${user?.id}`)//TODO fetch
-      .then((response) => response.json())
+    User.get(user?.id)
       .then((data) => setCurrentUser(data))
       .catch((err) => setError(err));
   }, []);
@@ -236,17 +232,7 @@ function Webhooks() {
       newUserWebhooksData[editIndex] = value;
       console.log(newUserWebhooksData);
     }
-    fetch(`http://localhost:5000/users/${user?.id}`, {//TODO fetch
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization:
-          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Im9XSXRWSE5xOCIsImVtYWlsIjoic2hpdmFtLjExOTk2NkB5YWhvby5jb20iLCJuYW1lIjoic2hpdmFtIHR5YWdpIiwicm9sZSI6IkFkbWluIiwiaW1hZ2VVcmwiOiJodHRwczovL2ltYWdlcy51bnNwbGFzaC5jb20vcGhvdG8tMTYwMDYwNDQ3NzM3MS03ZjJkZGY3ODJhMmI_aXhsaWI9cmItMS4yLjEmYXV0bz1mb3JtYXQmZml0PWNyb3Amdz02MTkmcT04MCIsImlhdCI6MTYxMDk2NjcwOCwiZXhwIjoxNjEzNTU4NzA4fQ.ZG5E2d9tc6C2JqT3DnqpxfPyGmQVEixsOUYeLTatUbY",
-      },
-      body: JSON.stringify({
-        webhooks: newUserWebhooksData,
-      }),
-    })
+    User.update(user?.id, { webhooks: newUserWebhooksData }) //new api change
       .then((response) => response.json())
       .then((data) => {
         console.log("Success:", data);
@@ -263,24 +249,11 @@ function Webhooks() {
         (item, i) => i !== index
       );
       console.log(newUserWebhooksData);
-      fetch(`http://localhost:5000/users/${user?.id}`, {//TODO fetch
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization:
-            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Im9XSXRWSE5xOCIsImVtYWlsIjoic2hpdmFtLjExOTk2NkB5YWhvby5jb20iLCJuYW1lIjoic2hpdmFtIHR5YWdpIiwicm9sZSI6IkFkbWluIiwiaW1hZ2VVcmwiOiJodHRwczovL2ltYWdlcy51bnNwbGFzaC5jb20vcGhvdG8tMTYwMDYwNDQ3NzM3MS03ZjJkZGY3ODJhMmI_aXhsaWI9cmItMS4yLjEmYXV0bz1mb3JtYXQmZml0PWNyb3Amdz02MTkmcT04MCIsImlhdCI6MTYxMDk2NjcwOCwiZXhwIjoxNjEzNTU4NzA4fQ.ZG5E2d9tc6C2JqT3DnqpxfPyGmQVEixsOUYeLTatUbY",
-        },
-        body: JSON.stringify({
-          webhooks: newUserWebhooksData,
-        }),
-      })
+      User.update(user?.id, { webhooks: newUserWebhooksData }) //new api change
         .then((response) => response.json())
         .then((data) => {
           console.log("Success:", data);
-          fetch(`http://localhost:5000/users/${user?.id}`)//TODO fetch
-            .then((response) => response.json())
-            .then((data) => setCurrentUser(data))
-            .catch((err) => setError(err));
+          setCurrentUser(User.get(user?.id)).catch((err) => setError(err));//new api change
           // window.location.reload();
         })
         .catch((error) => {
@@ -335,8 +308,8 @@ function Webhooks() {
           onSubmit={handleSubmit}
           webhookData={webhookData}></WebhookModal>
       ) : (
-          <div> </div>
-        )}
+        <div> </div>
+      )}
     </Container>
   );
 }
