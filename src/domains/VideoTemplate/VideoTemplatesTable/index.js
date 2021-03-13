@@ -95,8 +95,7 @@ export default (props) => {
     } = query;
     console.log(query);
     history.push(
-      `?page=${page + 1}&size=${pageSize}${
-        searchQuery ? "searchQuery=" + searchQuery : ""
+      `?page=${page + 1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
       }`
     );
 
@@ -348,7 +347,13 @@ export default (props) => {
           actionsColumnIndex: -1,
         }}
       />
-
+      {selectedVideoTemplate !== null && (
+        <JSONEditorDialoge
+          json={selectedVideoTemplate}
+          onSubmit={handleVideoTemplateUpdate}
+          onClose={() => setSelectedVideoTemplate(null)}
+        />
+      )}
       {/* <TestJobDialog
         open={isDialogOpen}
         videoTemplate={testJobTemplate ?? ""}
