@@ -460,7 +460,7 @@ export default () => {
             tooltip: "View/Edit JSON",
             position: "row",
             onClick: async (event, rowData) => {
-              setSelectedJob(rowData);
+              setSelectedJob({ ...rowData });
             },
           },
           {

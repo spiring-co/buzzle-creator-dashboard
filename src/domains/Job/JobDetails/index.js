@@ -45,6 +45,7 @@ import AccordionDetails from "@material-ui/core/AccordionDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { Job } from "services/api";
 import LogsTab from "./LogsTab";
+import FileUploader from "common/FileUploader";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -330,8 +331,27 @@ export default () => {
               children="Restart Job"
               startIcon={<UpdateIcon />}
             />
+            <FileUploader
+              name={"watermarkFile"}
+              value={''}
+              onError={(e) => console.log(e.message)}
+              onChange={(src) => {
+                job.output = [...job.output, {
+                  label: "Added Manually",
+                  updatedAt: new Date().toISOString(),
+                  dateCreated: new Date().toISOString(),
+                  src
+                }]
+                console.log(job.output)
+              }}
+              accept={"video/*"}
+              uploadDirectory={"outputs"}
+              label="Add output"
+              onTouched={() => console.log("Pressed")}
+              error={false}
+              helperText={"This will append new output to this job"}
+            />
           </Box>
-
           <Box>
             <Select
               margin="dense"

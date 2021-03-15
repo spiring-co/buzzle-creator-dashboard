@@ -1,10 +1,8 @@
+import { Box, Button, TextField, Typography } from "@material-ui/core";
+import FileUploader from "common/FileUploader";
 import { useFormik } from "formik";
 import React from "react";
 import * as Yup from "yup";
-import { Box, Button, TextField, Typography } from "@material-ui/core";
-import styled from "styled-components";
-
-import FileUploader from "common/FileUploader";
 
 export default ({ version = {}, onSubmitJob }) => {
   const formikSubmit = async (data) => {

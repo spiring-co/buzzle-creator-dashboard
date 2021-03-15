@@ -71,10 +71,11 @@ export default ({ onRowClick }) => {
       });
     });
     socket.on("job-status", (data) => {
-      const { started, error, created } = data;
+      const { started = 0, error = 0, created = 0 } = data;
       console.log(data);
       const render = data["render:postrender"];
-      setPendingJobs([error, render, started, created]);
+      console.log(render, started);
+      setPendingJobs([error, render + started, created]);
     });
   }, [socket]);
   useEffect(() => {
@@ -217,16 +218,6 @@ export default ({ onRowClick }) => {
                 style={{
                   fontWeight: 700,
                   background: "grey",
-                  color: "white",
-                  textTransform: "capitalize",
-                }}
-              />
-              <Chip
-                size="small"
-                label={`Start: ${pendingJobs[2] || ""}`}
-                style={{
-                  fontWeight: 700,
-                  background: "#ffa502",
                   color: "white",
                   textTransform: "capitalize",
                 }}
