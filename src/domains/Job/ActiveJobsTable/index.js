@@ -36,8 +36,6 @@ export default ({ onRowClick }) => {
   const [selectedJobId, setSelectedJobId] = useState(null);
   const [socket, setSocket] = useState(null);
 
-  const status = ["Error", "Render", "Started"];
-
   useEffect(() => {
     setSocket(
       io.connect(process.env.REACT_APP_SOCKET_SERVER_URL, {
@@ -73,10 +71,10 @@ export default ({ onRowClick }) => {
       });
     });
     socket.on("job-status", (data) => {
-      const { started, error } = data;
+      const { started, error, created } = data;
       console.log(data);
       const render = data["render:postrender"];
-      setPendingJobs([error, render, started]);
+      setPendingJobs([error, render, started, created]);
     });
   }, [socket]);
   useEffect(() => {
@@ -205,7 +203,7 @@ export default ({ onRowClick }) => {
               }}>
               <Chip
                 size="small"
-                label={`Error: ${pendingJobs[0] || "Loading..."}`}
+                label={`Error: ${pendingJobs[0] || ""}`}
                 style={{
                   fontWeight: 700,
                   background: "#f44336",
@@ -215,7 +213,7 @@ export default ({ onRowClick }) => {
               />
               <Chip
                 size="small"
-                label={`Render: ${pendingJobs[1] || "Loading..."}`}
+                label={`Render: ${pendingJobs[1] || ""}`}
                 style={{
                   fontWeight: 700,
                   background: "grey",
@@ -225,7 +223,17 @@ export default ({ onRowClick }) => {
               />
               <Chip
                 size="small"
-                label={`Start: ${pendingJobs[2] || "Loading..."}`}
+                label={`Start: ${pendingJobs[2] || ""}`}
+                style={{
+                  fontWeight: 700,
+                  background: "#ffa502",
+                  color: "white",
+                  textTransform: "capitalize",
+                }}
+              />
+              <Chip
+                size="small"
+                label={`Created: ${pendingJobs[3] || ""}`}
                 style={{
                   fontWeight: 700,
                   background: "#ffa502",
