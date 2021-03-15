@@ -1,29 +1,11 @@
 import {
   Box,
-  Chip,
-  Tooltip,
   Container,
-  GridList,
-  GridListTile,
-  GridListTileBar,
-  Fade,
-  IconButton,
-  Link,
-  Button,
   Typography,
   Avatar,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-// import GridOnIcon from "@material-ui/icons/GridOn";
-// import AddIcon from "@material-ui/icons/Add";
-// import InfoIcon from "@material-ui/icons/Info";
-// import QueuePlayNextIcon from '@material-ui/icons/QueuePlayNext';
-// import ListIcon from "@material-ui/icons/List";
-// import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
-// import ToggleButton from "@material-ui/lab/ToggleButton";
-// import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
-import { Job, VideoTemplate, Creator } from "services/api";
-// import PublishIcon from '@material-ui/icons/Publish';
+import {  VideoTemplate } from "services/api";
 import ErrorHandler from "common/ErrorHandler";
 import SnackAlert from "common/SnackAlert";
 import MaterialTable from "material-table";
@@ -35,21 +17,16 @@ import {
   useRouteMatch,
 } from "react-router-dom";
 import { useAuth } from "services/auth";
-import * as timeago from "timeago.js";
-import RoleBasedView from "common/RoleBasedView";
+
 
 export default (props) => {
   let { url, path } = useRouteMatch();
   const history = useHistory();
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState(null);
-  const [testJobTemplate, setTestJobTemplate] = useState(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [data, setData] = useState([]);
-  const [view, setView] = useState("list");
   const tableRef = useRef(null);
   const { user } = useAuth();
-  const { role } = user;
   // const uri = `${process.env.REACT_APP_API_URL}/creators/${user?.id}/videoTemplates`;
   const handleDelete = async (id) => {
     const action = window.confirm("Are you sure, you want to delete");
@@ -194,18 +171,18 @@ export default (props) => {
           },
         ]}
         data={(query) =>
-          VideoTemplate.getAll(query.page + 1, query.pageSize)//new api change
+          VideoTemplate.getAll(query.page + 1, query.pageSize)//new api change //TODO change to user all
             .then((result) => {
               return {
                 data: query.search
                   ? result.data.filter(({ title }) =>
-                      title.toLowerCase().startsWith(query.search.toLowerCase())
+                      title?.toLowerCase()?.startsWith(query?.search?.toLowerCase())
                     )
                   : result.data,
                 page: query.page,
                 totalCount: query.search
                   ? result.data.filter(({ title }) =>
-                      title.toLowerCase().startsWith(query.search.toLowerCase())
+                      title?.toLowerCase()?.startsWith(query?.search?.toLowerCase())
                     ).length
                   : result.count,
               };

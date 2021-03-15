@@ -27,9 +27,12 @@ import {
 
 export default () => {
   const [data, setData] = useState([]);
+  const [avgRenderTime, setAvgRenderTime] = useState(0);
+  const [avgRenderHour, setAvgRenderHour] = useState([]);
   const [startDate, setStartDate] = useState(new Date("2021-02-28T21:11:54"));
   const [endDate, setEndDate] = useState(new Date("2021-03-05T21:11:54"));
   const [chartData, setChartData] = useState([]);
+  const [timeChartData, setTimeChartData] = useState([]);
   const [sum, setSum] = useState(0);
   const [lineChart, setLineChart] = useState(false);
   // const { data, loading, error } = useApi(
@@ -40,7 +43,7 @@ export default () => {
   // );
   const handleChange = (event) => {
     setLineChart(event.target.checked);
-    console.log(lineChart);
+    console.log("linechart is", lineChart);
   };
   const handleStartDateChange = (date) => {
     console.log(date);
@@ -57,6 +60,7 @@ export default () => {
 
   useEffect(() => {
     const map = data.reduce(
+      //to count frequency of array elements
       (acc, e) => acc.set(e, (acc.get(e) || 0) + 1),
       new Map()
     );
@@ -67,6 +71,20 @@ export default () => {
     setChartData([...resultTwo]);
     console.log("changed chart data" + chartData);
   }, [data]);
+
+  useEffect(() => {
+    const map = avgRenderHour.reduce(
+      //to count frequency of array elements
+      (acc, e) => acc.set(e, (acc.get(e) || 0) + 1),
+      new Map()
+    );
+    const result = [...map.entries()];
+    const resultTwo = result.map((i) => {
+      return { name: i[0], uses: i[1] };
+    });
+    setTimeChartData([...resultTwo]);
+    console.log("changed chart data" + timeChartData);
+  }, [avgRenderHour]);
 
   useEffect(() => {
     const c = chartData.map((m) => {
@@ -95,6 +113,29 @@ export default () => {
             }
           })
         );
+        console.log(data);
+        const timeTaken = data.map((j) => {
+          return j.renderTime;
+        });
+        console.log(
+          "time time ",
+          timeTaken.reduce((a, b) => a + b, 0),
+          timeTaken.length
+        );
+        setAvgRenderTime(
+          timeTaken.reduce((a, b) => a + b, 0) / timeTaken.length
+        );
+        const avgHour = data.map((j) => {
+          return new Date(j.dateCreated);
+        });
+        setAvgRenderHour(
+          avgHour
+            .map((m) => {
+              return m.getHours();
+            })
+            .sort()
+        );
+        console.log(avgHour);
       })
       .catch((err) => {
         console.log(err);
@@ -149,28 +190,58 @@ export default () => {
           </Grid>
           {/* <Graphs chartData={chartData}></Graphs> */}
           {lineChart ? (
-            <LineChart
-              width={600}
-              height={300}
-              data={chartData}
-              margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-              <Line type="monotone" dataKey="uses" stroke="#8884d8" />
-              <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-            </LineChart>
+            <div>
+              <LineChart
+                width={600}
+                height={300}
+                data={chartData}
+                margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                <Line type="monotone" dataKey="uses" stroke="#8884d8" />
+                <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+              </LineChart>
+              <LineChart
+                width={600}
+                height={300}
+                data={timeChartData}
+                margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                <Line type="monotone" dataKey="uses" stroke="#8884d8" />
+                <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+              </LineChart>
+            </div>
           ) : (
-            <BarChart width={600} height={300} data={chartData}>
-              <XAxis  dataKey="name" />
-              <YAxis />
-              <Bar dataKey="uses" barSize={10} fill="#8884d8" />
-              <Tooltip />
-            </BarChart>
+            <div>
+              <BarChart width={600} height={300} data={chartData}>
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Bar dataKey="uses" barSize={30} fill="#8884d8" />
+                <Tooltip />
+              </BarChart>
+              <BarChart width={600} height={300} data={timeChartData}>
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Bar dataKey="uses" barSize={30} fill="#8884d8" />
+                <Tooltip />
+              </BarChart>
+            </div>
           )}
         </MuiPickersUtilsProvider>
       </Typography>
       {sum ? <Typography variant="h8">Sum of Jobs : {sum}</Typography> : ""}
+      <br></br>
+      {avgRenderTime ? (
+        <Typography variant="h8">
+          average render time of Jobs : {Math.round(avgRenderTime / 1000)}{" "}
+          seconds
+        </Typography>
+      ) : (
+        ""
+      )}
     </div>
   );
 };

@@ -18,7 +18,7 @@ import {
 } from "@material-ui/core";
 import { Edit, Delete } from "@material-ui/icons";
 import { Alert } from "@material-ui/lab";
-import { Creator, Webhook } from "services/api";
+import { User, Webhook } from "services/api";
 import upload from "services/s3Upload";
 import { useFormik } from "formik";
 import React, { useEffect, useState } from "react";
@@ -28,7 +28,7 @@ import VerticalTabs from "common/VerticalTabs";
 import { Prompt } from "react-router-dom";
 import ChangePassword from "domains/Auth/ChangePassword";
 import WebhookModal from "../Components/webhookModal.js";
-import User from "domains/User/index.js";
+import Creator from "domains/Creator/index.js";
 
 function ProfileEdit({ creator }) {
   console.log("creator is:" + JSON.stringify(creator));
@@ -38,7 +38,7 @@ function ProfileEdit({ creator }) {
   const [progress, setProgress] = useState(0);
   const handleUpdate = (data) => {
     setIsBlocking(false);
-    Creator.update(creator?.id, data);
+    User.update(creator?.id, data);
   };
 
   useEffect(() => {
@@ -253,7 +253,7 @@ function Webhooks() {
         .then((response) => response.json())
         .then((data) => {
           console.log("Success:", data);
-          setCurrentUser(User.get(user?.id)).catch((err) => setError(err));//new api change
+          setCurrentUser(User.get(user?.id)).catch((err) => setError(err)); //new api change
           // window.location.reload();
         })
         .catch((error) => {
@@ -273,7 +273,7 @@ function Webhooks() {
             return (
               <div>
                 <Typography style={{ margin: 10 }} variant="h7">
-                  Name: {webhookData.find(({ id }) => id === cu.id)?.name}
+                  Name: {webhookData.find(({ id }) => id === cu.id).name}
                 </Typography>
                 <Typography variant="h7">URL: {cu.url}</Typography>
                 <IconButton>
@@ -320,13 +320,17 @@ export default () => {
   const [creator, setCreator] = useState({});
   const [error, setError] = useState(null);
   useEffect(() => {
-    Creator.get(user?.id)
+    User.get(user?.id)
       .then((c) => {
-        setCreator(c);
+        console.log(c);
       })
       .catch(setError)
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    console.log("332", creator);
+  }, [creator]);
   if (loading) {
     return <Typography>loading...</Typography>;
   }

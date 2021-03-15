@@ -9,6 +9,8 @@ import { initNotificationService } from "./notifications";
 const jwtDecode = require("jwt-decode");
 const AuthContext = createContext();
 
+const { REACT_APP_API_URL } = process.env;
+
 function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
@@ -37,6 +39,22 @@ function AuthProvider(props) {
   useEffect(() => {
     if (user) {
       const token = initNotificationService();
+      console.log(user);
+      fetch(`${REACT_APP_API_URL}/users/${user.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + `${localStorage.getItem("jwtoken")}`,
+        },
+        body: JSON.stringify({ pToken: token }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Success:", data);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
     }
   }, [user]);
 

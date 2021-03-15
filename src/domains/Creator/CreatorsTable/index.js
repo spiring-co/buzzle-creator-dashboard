@@ -11,7 +11,7 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { AccountCircle } from "@material-ui/icons";
-import { Job, VideoTemplate, Creator, Search } from "services/api";
+import { Job, VideoTemplate, User, Search } from "services/api";
 import PublishIcon from '@material-ui/icons/Publish';
 import ErrorHandler from "common/ErrorHandler";
 import SnackAlert from "common/SnackAlert";
@@ -78,7 +78,7 @@ export default (props) => {
     );
     useEffect(() => {
         const data = async () => {
-            setData(await Creator.getAll(1, 10));
+            setData(await User.getAll(1, 10));
         };
         data();
     }, []);
@@ -176,7 +176,7 @@ export default (props) => {
                                 totalCount: 0,
                             };
                         }) :
-                        Creator.getAll(query.page + 1, query.pageSize)
+                        User.getAll(query.page + 1, query.pageSize)
                             .then(({ data, count: totalCount }) => {
                                 return {
                                     data,

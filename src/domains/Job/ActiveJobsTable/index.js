@@ -35,11 +35,15 @@ export default ({ onRowClick }) => {
   const { user } = useAuth();
   const [selectedJobId, setSelectedJobId] = useState(null);
   const [socket, setSocket] = useState(null);
+
   const status = ["Error", "Render", "Started"];
+
   useEffect(() => {
-    setSocket(io.connect(process.env.REACT_APP_SOCKET_SERVER_URL), {
-      withCredentials: true,
-    });
+    setSocket(
+      io.connect(process.env.REACT_APP_SOCKET_SERVER_URL, {
+        withCredentials: false,
+      })
+    );
   }, []);
 
   useEffect(() => {
@@ -70,6 +74,7 @@ export default ({ onRowClick }) => {
     });
     socket.on("job-status", (data) => {
       const { started, error } = data;
+      console.log(data);
       const render = data["render:postrender"];
       setPendingJobs([error, render, started]);
     });
@@ -109,7 +114,11 @@ export default ({ onRowClick }) => {
     }
   }, [activeJobs]);
 
-  const ActiveJobRow = ({ id, state, progress, jobData, rendererInstance }) => {
+  useEffect(() => {
+    console.log(pendingJobs);
+  }, [pendingJobs]);
+
+  const ActiveJobRow = ({ id, state, progress, jobData }) => {
     return (
       <TableRow key={id} onClick={() => onRowClick(id)}>
         <TableCell component="th" scope="row">
@@ -141,8 +150,6 @@ export default ({ onRowClick }) => {
             }}
           />
         </TableCell>
-        <TableCell>{rendererInstance?.instanceId}</TableCell>
-        <TableCell>{rendererInstance?.ipv4}</TableCell>
         <TableCell align="left">
           <Button
             onClick={(e) => {
@@ -241,23 +248,18 @@ export default ({ onRowClick }) => {
                     <TableCell align="left">Last updated</TableCell>
                     <TableCell align="left">Created at</TableCell>
                     <TableCell align="left">Status</TableCell>
-                    <TableCell align="left">Instance Id</TableCell>
-                    <TableCell align="left">Instance IP</TableCell>
                     <TableCell align="left">Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {activeJobs.map(
-                    ({ id, state, progress, rendererInstance }) => (
-                      <ActiveJobRow
-                        id={id}
-                        state={state}
-                        rendererInstance={rendererInstance}
-                        progress={progress}
-                        jobData={jobsData?.find((j) => j.id === id) || []}
-                      />
-                    )
-                  )}
+                  {activeJobs.map(({ id, state, progress }) => (
+                    <ActiveJobRow
+                      id={id}
+                      state={state}
+                      progress={progress}
+                      jobData={jobsData?.find((j) => j.id === id) || []}
+                    />
+                  ))}
                 </TableBody>
               </Table>
             </TableContainer>
@@ -318,3 +320,5 @@ const filterObjectToString = (f) => {
       : ""
   }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
 };
+
+//job-status for job statoos

@@ -15,7 +15,7 @@ import { useFormik } from "formik";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
-import { Creator } from "services/api";
+import { Auth } from "services/api";
 import * as Yup from "yup";
 import { useAuth } from "services/auth";
 
@@ -67,7 +67,7 @@ export default () => {
     onSubmit: async (s) => {
       try {
         delete s["confirmPassword"];
-        const result = await Creator.changePassword(user?.id, s);
+        const result = await Auth.changePassword(user?.id, s);
         setStatus(result?.message ?? "Changed Successfully");
       } catch (e) {
         setError(e);
