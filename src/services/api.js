@@ -1,4 +1,4 @@
-import BuzzleSdk from "./buzzle-sdk/buzzle-sdk/lib";
+import BuzzleSdk from "buzzle-sdk";
 
 const getBuzzleApi = () => {
   return BuzzleSdk.apiClient({
