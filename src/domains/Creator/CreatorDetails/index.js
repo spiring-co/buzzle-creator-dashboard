@@ -1,9 +1,8 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import { User } from "services/api";
+import { User, Creator } from "services/api";
 
 import { Container, Typography, Card, CardContent } from "@material-ui/core";
-import Creator from "services/buzzle-sdk/buzzle-sdk/lib/api/user";
 
 export default () => {
   const { id } = useParams();
@@ -31,8 +30,8 @@ export default () => {
               }
             />
             <div style={styles.details}>
-              <Typography variant="h5">{Creator.name}</Typography>
-              <Typography>{Creator.email}</Typography>
+              <Typography variant="h5">{creator.name}</Typography>
+              <Typography>{creator.email}</Typography>
             </div>
           </div>
         </CardContent>
