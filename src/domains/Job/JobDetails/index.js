@@ -29,7 +29,13 @@ import UpdateIcon from "@material-ui/icons/Update";
 import DownloadIcon from "@material-ui/icons/GetApp";
 import PublishIcon from "@material-ui/icons/Publish";
 import { makeStyles } from "@material-ui/core/styles";
-
+import Timeline from '@material-ui/lab/Timeline';
+import TimelineItem from '@material-ui/lab/TimelineItem';
+import TimelineSeparator from '@material-ui/lab/TimelineSeparator';
+import TimelineConnector from '@material-ui/lab/TimelineConnector';
+import TimelineContent from '@material-ui/lab/TimelineContent';
+import TimelineDot from '@material-ui/lab/TimelineDot';
+import TimelineOppositeContent from '@material-ui/lab/TimelineOppositeContent';
 import MaterialTable from "material-table";
 import io from "socket.io-client";
 
@@ -43,6 +49,7 @@ import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+
 import { Job } from "services/api";
 import LogsTab from "./LogsTab";
 import FileUploader from "common/FileUploader";
@@ -224,11 +231,12 @@ export default () => {
     dateFinished,
     renderPrefs = {},
     dateStarted,
-    failureReason,
+    failureReason, timeline = [],
   } = job;
   const sortedOutput = output?.sort(
     (a, b) => new Date(b?.dateCreated) - new Date(a?.dateCreated)
   );
+
   useEffect(() => {
 
     if (progress?.state?.toLowerCase() === 'finished' && state?.toLowerCase() !== 'finished') {
@@ -451,6 +459,37 @@ export default () => {
                     </Grid>
                   </Grid>
                 ))}
+                <Accordion style={{ marginTop: 20 }}>
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel1a-content"
+                    id="panel1a-header">
+                    <Typography>Render Timeline</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Timeline align="alternate" >
+                      {timeline.length ? timeline.map(({ state, startsAt, endsAt }, index) => <TimelineItem >
+                        <TimelineOppositeContent >
+                          <Typography color="textSecondary">{((endsAt - startsAt) / 1000).toFixed(2)} secs</Typography>
+                        </TimelineOppositeContent>
+                        <TimelineSeparator >
+                          <TimelineDot style={{
+                            backgroundColor: index === 0
+                              ? "#ffa117"
+                              : (index !== (timeline?.length - 1) ? "#35a0f4" : "#65ba68")
+                          }} />
+                          {timeline?.length - 1 !== index && <TimelineConnector />}
+                        </TimelineSeparator>
+                        <TimelineContent>
+                          <span>{state}</span>
+                        </TimelineContent>
+                      </TimelineItem>) :
+                        <Typography>
+                          Not Available
+                          </Typography>}
+                    </Timeline>
+                  </AccordionDetails>
+                </Accordion>
               </Box>
             </Grid>
           </TabPanel>

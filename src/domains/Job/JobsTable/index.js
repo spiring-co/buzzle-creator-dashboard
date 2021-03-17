@@ -16,7 +16,7 @@ import {
 } from "@material-ui/core";
 import MaterialTable from "material-table";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
-
+import Popover from '@material-ui/core/Popover';
 import formatTime from "helpers/formatTime";
 import Alert from "@material-ui/lab/Alert";
 import { useDarkMode } from "helpers/useDarkMode";
@@ -24,7 +24,13 @@ import { useDarkMode } from "helpers/useDarkMode";
 import Filters from "common/Filters";
 import ErrorHandler from "common/ErrorHandler";
 import { Job, Search } from "services/api";
-
+import Timeline from '@material-ui/lab/Timeline';
+import TimelineItem from '@material-ui/lab/TimelineItem';
+import TimelineSeparator from '@material-ui/lab/TimelineSeparator';
+import TimelineConnector from '@material-ui/lab/TimelineConnector';
+import TimelineContent from '@material-ui/lab/TimelineContent';
+import TimelineDot from '@material-ui/lab/TimelineDot';
+import TimelineOppositeContent from '@material-ui/lab/TimelineOppositeContent';
 import { useAuth } from "services/auth";
 import { SnackbarProvider, useSnackbar } from "notistack";
 import JSONEditorDialoge from "common/JSONEditorDialoge";
@@ -216,6 +222,64 @@ export default () => {
       );
     }
   };
+
+
+  const TimeRenderer = ({ renderTime, id, timeline = []
+  }) => {
+    const [anchorEl, setAnchorEl] = useState(null)
+    const handlePopoverOpen = (event) => {
+      setAnchorEl(event.currentTarget);
+    };
+
+    const handlePopoverClose = () => {
+      setAnchorEl(null);
+    };
+    const open = Boolean(anchorEl);
+    return <><Typography
+      aria-owns={open ? `mouse-over-popover${id}` : undefined}
+      aria-haspopup="true"
+      onMouseEnter={handlePopoverOpen}
+      onMouseLeave={handlePopoverClose}
+    >{renderTime !== -1 ? formatTime(renderTime) : "NA"}</Typography>
+      <Popover
+        id={`mouse-over-popover${id}`}
+        open={open}
+        style={{ pointerEvents: 'none', }}
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'center',
+          horizontal: 'left',
+        }}
+        onClose={handlePopoverClose}
+        disableRestoreFocus
+      >
+        <Timeline align="alternate" >
+          {timeline.length ? timeline.map(({ state, startsAt, endsAt }, index) => <TimelineItem >
+            <TimelineOppositeContent >
+              <Typography color="textSecondary">{((endsAt - startsAt) / 1000).toFixed(2)} secs</Typography>
+            </TimelineOppositeContent>
+            <TimelineSeparator >
+              <TimelineDot style={{
+                backgroundColor: index === 0
+                  ? "#ffa117"
+                  : (index !== (timeline?.length - 1) ? "#35a0f4" : "#65ba68")
+              }} />
+              {timeline?.length - 1 !== index && <TimelineConnector />}
+            </TimelineSeparator>
+            <TimelineContent>
+              <span>{state}</span>
+            </TimelineContent>
+          </TimelineItem>) : <Typography>
+            Not Available</Typography>}
+        </Timeline>
+      </Popover>
+    </>
+  }
+
   const updateMultiple = async (array) => {
     setOperationStatus({ ...operationStatus, total: array?.length });
     let s = 0,
@@ -341,8 +405,8 @@ export default () => {
             field: "renderTime",
             sorting: false,
             searchable: false,
-            render: ({ renderTime }) => (
-              <span>{renderTime !== -1 ? formatTime(renderTime) : "NA"}</span>
+            render: ({ renderTime, id, timeline }) => (
+              <TimeRenderer renderTime={renderTime} id={id} timeline={timeline} />
             ),
           },
 
