@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Auth } from "services/api";
 
 export default () => {
   const [error, setError] = useState(null);
@@ -7,17 +8,7 @@ export default () => {
 
   const resetPassword = async (email, newPassword, otp) => {
     try {
-      const response = await fetch(
-        process.env.REACT_APP_API_URL + "/creator/resetPassword",
-        {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, otp, newPassword }),
-        }
-      );//TODO fetch
+      Auth.resetPassword({ email, otp, newPassword }); //new api change
       console.log(await response.json());
       setPasswordResetSuccess(true);
     } catch (e) {
@@ -28,17 +19,7 @@ export default () => {
 
   const sendPasswordResetOtp = async (email) => {
     try {
-      const response = await fetch(
-        process.env.REACT_APP_API_URL + "/creator/resetPasswordEmail",
-        {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email }),
-        }
-      );//TODO fetch
+      Auth.resetPasswordEmail({ email });//new api change
       console.log(await response.json());
       setOtpEmailSent(true);
     } catch (e) {

@@ -1,6 +1,6 @@
 import { Button, FormHelperText, Tooltip } from "@material-ui/core";
 import { Close } from "@material-ui/icons";
-import { Job, VideoTemplate, Creator, Font } from "services/api";
+import { Font } from "services/api";
 import React, { useState } from "react";
 import upload from "services/s3Upload";
 

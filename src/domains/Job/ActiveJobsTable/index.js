@@ -35,7 +35,7 @@ export default ({ onRowClick }) => {
   const { user } = useAuth();
   const [selectedJobId, setSelectedJobId] = useState(null);
   const [socket, setSocket] = useState(null);
-  const status = ["Error", "Render", "Started"];
+
   useEffect(() => {
     setSocket(
       io.connect(process.env.REACT_APP_SOCKET_SERVER_URL, {
@@ -71,9 +71,11 @@ export default ({ onRowClick }) => {
       });
     });
     socket.on("job-status", (data) => {
-      const { started, error } = data;
+      const { started = 0, error = 0, created = 0 } = data;
+      console.log(data);
       const render = data["render:postrender"];
-      setPendingJobs([error, render, started]);
+      console.log(render, started);
+      setPendingJobs([error, render + started, created]);
     });
   }, [socket]);
   useEffect(() => {
@@ -111,7 +113,11 @@ export default ({ onRowClick }) => {
     }
   }, [activeJobs]);
 
-  const ActiveJobRow = ({ id, state, progress, jobData, rendererInstance }) => {
+  useEffect(() => {
+    console.log(pendingJobs);
+  }, [pendingJobs]);
+
+  const ActiveJobRow = ({ id, state, progress, jobData }) => {
     return (
       <TableRow key={id} onClick={() => onRowClick(id)}>
         <TableCell component="th" scope="row">
@@ -143,8 +149,6 @@ export default ({ onRowClick }) => {
             }}
           />
         </TableCell>
-        <TableCell>{rendererInstance?.instanceId}</TableCell>
-        <TableCell>{rendererInstance?.ipv4}</TableCell>
         <TableCell align="left">
           <Button
             onClick={(e) => {
@@ -168,20 +172,68 @@ export default ({ onRowClick }) => {
           expandIcon={<ExpandMore />}
           aria-controls="panel1c-content"
           id="panel1c-header">
-          <Typography variant="h6">
-            Active Jobs ({activeJobs?.length} Jobs)
-          </Typography>
-          <Button
-            style={{ marginLeft: 25 }}
-            variant="contained"
-            size="small"
-            color="primary"
-            children={"clear"}
-            onClick={(e) => {
-              e.stopPropagation();
-              setActiveJobs([]);
-            }}
-          />
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              width: "100%",
+            }}>
+            <div
+              style={{ display: "flex", alignItems: "center", width: "50%" }}>
+              <Typography variant="h6">
+                Active Jobs ({activeJobs?.length} Jobs)
+              </Typography>
+              <Button
+                style={{ marginLeft: 25 }}
+                variant="contained"
+                size="small"
+                color="primary"
+                children={"clear"}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveJobs([]);
+                }}
+              />
+            </div>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                width: "50%",
+                justifyContent: "space-evenly",
+              }}>
+              <Chip
+                size="small"
+                label={`Error: ${pendingJobs[0] || ""}`}
+                style={{
+                  fontWeight: 700,
+                  background: "#f44336",
+                  color: "white",
+                  textTransform: "capitalize",
+                }}
+              />
+              <Chip
+                size="small"
+                label={`Render: ${pendingJobs[1] || ""}`}
+                style={{
+                  fontWeight: 700,
+                  background: "grey",
+                  color: "white",
+                  textTransform: "capitalize",
+                }}
+              />
+              <Chip
+                size="small"
+                label={`Created: ${pendingJobs[3] || ""}`}
+                style={{
+                  fontWeight: 700,
+                  background: "#ffa502",
+                  color: "white",
+                  textTransform: "capitalize",
+                }}
+              />
+            </div>
+          </div>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails style={{ flexWrap: "wrap" }}>
           {activeJobs?.length ? (
@@ -195,23 +247,18 @@ export default ({ onRowClick }) => {
                     <TableCell align="left">Last updated</TableCell>
                     <TableCell align="left">Created at</TableCell>
                     <TableCell align="left">Status</TableCell>
-                    <TableCell align="left">Instance Id</TableCell>
-                    <TableCell align="left">Instance IP</TableCell>
                     <TableCell align="left">Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {activeJobs.map(
-                    ({ id, state, progress, rendererInstance }) => (
-                      <ActiveJobRow
-                        id={id}
-                        state={state}
-                        rendererInstance={rendererInstance}
-                        progress={progress}
-                        jobData={jobsData?.find((j) => j.id === id) || []}
-                      />
-                    )
-                  )}
+                  {activeJobs.map(({ id, state, progress }) => (
+                    <ActiveJobRow
+                      id={id}
+                      state={state}
+                      progress={progress}
+                      jobData={jobsData?.find((j) => j.id === id) || []}
+                    />
+                  ))}
                 </TableBody>
               </Table>
             </TableContainer>
@@ -222,36 +269,6 @@ export default ({ onRowClick }) => {
           )}
         </ExpansionPanelDetails>
       </ExpansionPanel>
-      <ExpansionPanelDetails>
-        {pendingJobs?.length ? (
-          <TableContainer>
-            <Table stickyHeader size="small" aria-label="a dense table">
-              <TableHead>
-                <TableRow>
-                  <TableCell>Status</TableCell>
-                  <TableCell>Number of Jobs</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {status.map((s, i) => (
-                  <TableRow>
-                    <TableCell component="th" scope="row">
-                      {s}
-                    </TableCell>
-                    <TableRow>
-                      <TableCell component="th" scope="row">
-                        {pendingJobs[i]}
-                      </TableCell>
-                    </TableRow>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        ) : (
-          ""
-        )}
-      </ExpansionPanelDetails>
       {selectedJobId !== null && (
         <LogsDialog
           logs={activeJobLogs?.find(({ id }) => id === selectedJobId)?.logs}
@@ -302,3 +319,5 @@ const filterObjectToString = (f) => {
       : ""
   }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
 };
+
+//job-status for job statoos

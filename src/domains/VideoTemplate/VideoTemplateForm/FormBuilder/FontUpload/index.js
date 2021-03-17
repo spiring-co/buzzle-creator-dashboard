@@ -13,7 +13,7 @@ import { makeStyles } from "@material-ui/core/styles";
 // TODO split into individuals
 import { ArrowBack, ArrowForward } from "@material-ui/icons";
 import DoneIcon from "@material-ui/icons/Done";
-import { Job, VideoTemplate, Creator, Font } from "services/api";
+import { Font } from "services/api";
 import FileUploader from "common/FileUploader";
 import useActions from "contextStore/actions";
 import React, { useEffect, useState } from "react";
@@ -80,72 +80,72 @@ export default function FontUpload({
           <Typography>Resolving Fonts...</Typography>
         </Box>
       ) : (
-          <Box mt={2}>
-            <List className={classes.root}>
-              {fontList && fontList.length ? (
-                fontList.map((font, index) => (
-                  <Box key={font.name}>
-                    <ListItem>
-                      <ListItemText
-                        primary={font.name}
-                        secondary={
-                          font.src ? (
-                            <>
-                              <DoneIcon
-                                style={{ paddingTop: 10 }}
-                                color={"green"}
-                                size="small"
-                              />
-                              <Typography
-                                variant="span"
-                                style={{ color: "green" }}>
-                                {" "}
+        <Box mt={2}>
+          <List className={classes.root}>
+            {fontList && fontList.length ? (
+              fontList.map((font, index) => (
+                <Box key={font.name}>
+                  <ListItem>
+                    <ListItemText
+                      primary={font.name}
+                      secondary={
+                        font.src ? (
+                          <>
+                            <DoneIcon
+                              style={{ paddingTop: 10 }}
+                              color={"green"}
+                              size="small"
+                            />
+                            <Typography
+                              variant="span"
+                              style={{ color: "green" }}>
+                              {" "}
                               Resolved
                             </Typography>
-                            </>
-                          ) : (
-                              "Upload or Ignore to continue"
-                            )
-                        }
-                      />
-                      <ListItemSecondaryAction>
-                        <Button
-                          onClick={() => {
-                            setFontList(fontList.filter((a, i) => i !== index));
-                          }}
-                          color="secondary">
-                          Ignore
-                      </Button>
-                      </ListItemSecondaryAction>
-                    </ListItem>
-                    <FileUploader
-                      value={font.src}
-                      name={font.name}
-                      uploadDirectory={"fonts"}
-                      onChange={(value) => {
-                        setFontList((fl) => {
-                          fl[index]["src"] = value;
-                          return Array.from(fl);
-                        });
-                      }}
-                      accept={".ttf,.otf"}
-                      onError={null}
+                          </>
+                        ) : (
+                          "Upload or Ignore to continue"
+                        )
+                      }
                     />
-                    {index !== fontList.length - 1 && <Divider />}
-                  </Box>
-                ))
-              ) : (
-                  <Box
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    minHeight={200}>
-                    <Typography>No Font Found!</Typography>
-                  </Box>
-                )}
-            </List>
-          </Box>
-        )}
+                    <ListItemSecondaryAction>
+                      <Button
+                        onClick={() => {
+                          setFontList(fontList.filter((a, i) => i !== index));
+                        }}
+                        color="secondary">
+                        Ignore
+                      </Button>
+                    </ListItemSecondaryAction>
+                  </ListItem>
+                  <FileUploader
+                    value={font.src}
+                    name={font.name}
+                    uploadDirectory={"fonts"}
+                    onChange={(value) => {
+                      setFontList((fl) => {
+                        fl[index]["src"] = value;
+                        return Array.from(fl);
+                      });
+                    }}
+                    accept={".ttf,.otf"}
+                    onError={null}
+                  />
+                  {index !== fontList.length - 1 && <Divider />}
+                </Box>
+              ))
+            ) : (
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                minHeight={200}>
+                <Typography>No Font Found!</Typography>
+              </Box>
+            )}
+          </List>
+        </Box>
+      )}
       <Box display="flex" justifyContent="space-between" mt={4}>
         <Button
           startIcon={<ArrowBack />}

@@ -19,7 +19,7 @@ import { createStyles, makeStyles } from "@material-ui/core/styles";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import { Alert } from "@material-ui/lab";
-import { Job, VideoTemplate, Creator } from "services/api";
+import { Job, VideoTemplate, User } from "services/api";
 import Branding from "common/Branding";
 import { countryList } from "common/CountryList";
 import { useFormik } from "formik";
@@ -86,7 +86,7 @@ export default () => {
         onSubmit: async (s) => {
             try {
                 delete s["confirmPassword"];
-                await Creator.create(s);
+                await User.create(s);
                 history.push("/login", {
                     message:
                         "Please check your mail for a verification mail and click the link to continue.",

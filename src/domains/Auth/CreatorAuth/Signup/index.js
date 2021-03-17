@@ -19,7 +19,7 @@ import { createStyles, makeStyles } from "@material-ui/core/styles";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import { Alert } from "@material-ui/lab";
-import { Job, VideoTemplate, Creator } from "services/api";
+import { Job, VideoTemplate, User } from "services/api";
 import Branding from "common/Branding";
 import { useFormik } from "formik";
 import React, { useState } from "react";
@@ -87,7 +87,7 @@ export default () => {
       try {
         const cp = Object.assign({},s)
         delete cp["confirmPassword"];
-        await Creator.create(cp);
+        await User.create(cp);
         history.push("/login", {
           message:
             "Please check your mail for a verification mail and click the link to continue.",

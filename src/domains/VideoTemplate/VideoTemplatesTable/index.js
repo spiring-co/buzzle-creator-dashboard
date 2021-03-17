@@ -30,7 +30,7 @@ import PublishIcon from "@material-ui/icons/Publish";
 import SnackAlert from "common/SnackAlert";
 import TestJobDialog from "../CreateTestJob";
 
-import { SnackbarProvider, useSnackbar } from 'notistack';
+import { SnackbarProvider, useSnackbar } from "notistack";
 // services
 import { useAuth } from "services/auth";
 import { Search, VideoTemplate } from "services/api";
@@ -47,7 +47,7 @@ export default (props) => {
 
   // state variables
   const [error, setError] = useState(null);
-  const [selectedVideoTemplate, setSelectedVideoTemplate] = useState(null)
+  const [selectedVideoTemplate, setSelectedVideoTemplate] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [testJobTemplate, setTestJobTemplate] = useState(null);
@@ -131,26 +131,29 @@ export default (props) => {
   };
   const handleVideoTemplateUpdate = async (data) => {
     try {
-      await VideoTemplate.update(data?.id, { ...data })
+      await VideoTemplate.update(data?.id, { ...data });
       enqueueSnackbar(`Job Updated successfully!`, {
         variant: "success",
         anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'right',
+          vertical: "bottom",
+          horizontal: "right",
         },
-      })
-      setSelectedVideoTemplate(null)
+      });
+      setSelectedVideoTemplate(null);
       tableRef.current && tableRef.current.onQueryChange();
     } catch (err) {
-      enqueueSnackbar(`Failed to update, ${err?.message ?? "Something went wrong"}`, {
-        variant: "error",
-        anchorOrigin: {
-          vertical: 'bottom',
-          horizontal: 'right',
-        },
-      })
+      enqueueSnackbar(
+        `Failed to update, ${err?.message ?? "Something went wrong"}`,
+        {
+          variant: "error",
+          anchorOrigin: {
+            vertical: "bottom",
+            horizontal: "right",
+          },
+        }
+      );
     }
-  }
+  };
 
   return (
     <Container>
@@ -251,92 +254,95 @@ export default (props) => {
         }}
         actions={
           role === "Admin"
-            ? [{
-              icon: "code",
-              tooltip: "View/Edit JSON",
-              position: "row",
-              onClick: async (event, rowData) => {
-                setSelectedVideoTemplate(rowData)
-              },
-            },]
-            : [{
-              icon: "code",
-              tooltip: "View/Edit JSON",
-              position: "row",
-              onClick: async (event, rowData) => {
-                setSelectedVideoTemplate(rowData)
-              },
-            },
-            {
-              icon: () => <PublishIcon />,
-              tooltip: `Publish your template`,
-              onClick: (e, data) => {
-                history.push({
-                  pathname: `${url}/${data.id}/publish`,
-                  state: {
-                    videoTemplate: data,
+            ? [
+                {
+                  icon: "code",
+                  tooltip: "View/Edit JSON",
+                  position: "row",
+                  onClick: async (event, rowData) => {
+                    setSelectedVideoTemplate(rowData);
                   },
-                });
-              },
-            },
+                },
+              ]
+            : [
+                {
+                  icon: "code",
+                  tooltip: "View/Edit JSON",
+                  position: "row",
+                  onClick: async (event, rowData) => {
+                    setSelectedVideoTemplate(rowData);
+                  },
+                },
+                {
+                  icon: () => <PublishIcon />,
+                  tooltip: `Publish your template`,
+                  onClick: (e, data) => {
+                    history.push({
+                      pathname: `${url}/${data.id}/publish`,
+                      state: {
+                        videoTemplate: data,
+                      },
+                    });
+                  },
+                },
 
-            {
-              icon: "alarm-on",
-              tooltip: "Render Test Job",
-              onClick: (e, item) => {
-                // setTestJobTemplate(item);
-                history.push({
-                  pathname: "/testJob",
-                  state: {
-                    videoTemplate: item,
-                    versions: item.versions,
+                {
+                  icon: "alarm-on",
+                  tooltip: "Render Test Job",
+                  onClick: (e, item) => {
+                    // setTestJobTemplate(item);
+                    history.push({
+                      pathname: "/testJob",
+                      state: {
+                        videoTemplate: item,
+                        versions: item.versions,
+                      },
+                    });
                   },
-                });
-              },
-            },
-            {
-              icon: "delete",
-              tooltip: "Delete Template",
-              disabled: isDeleting,
-              onClick: async (event, { id }) => handleDelete(id),
-            },
-            {
-              icon: "add",
-              tooltip: "Add Video Template",
-              isFreeAction: true,
-              onClick: () => history.push(`${url}/add`),
-            },
+                },
+                {
+                  icon: "delete",
+                  tooltip: "Delete Template",
+                  disabled: isDeleting,
+                  onClick: async (event, { id }) => handleDelete(id),
+                },
+                {
+                  icon: "add",
+                  tooltip: "Add Video Template",
+                  isFreeAction: true,
+                  onClick: () => history.push(`${url}/add`),
+                },
 
-            {
-              icon: "edit",
-              tooltip: "Edit Template",
-              onClick: (e, data) => {
-                delete data["tableData"];
-                history.push({
-                  pathname: `${url}/${data.id}/edit`,
-                  state: {
-                    isEdit: true,
-                    video: data,
+                {
+                  icon: "edit",
+                  tooltip: "Edit Template",
+                  onClick: (e, data) => {
+                    delete data["tableData"];
+                    history.push({
+                      pathname: `${url}/${data.id}/edit`,
+                      state: {
+                        isEdit: true,
+                        video: data,
+                      },
+                    });
                   },
-                });
-              },
-            },
-            {
-              icon: "sort",
-              tooltip: "Drafted Templates",
-              isFreeAction: true,
-              style: { backgroundColor: "blue" },
-              onClick: () => {
-                history.push(`${url}/drafts`);
-              },
-            },
-            {
-              icon: "refresh",
-              tooltip: "Refresh Data",
-              isFreeAction: true,
-              onClick: handleRetry,
-            },
-            ]
+                },
+                {
+                  icon: "sort",
+                  tooltip: "Drafted Templates",
+                  isFreeAction: true,
+                  style: { backgroundColor: "blue" },
+                  onClick: () => {
+                    history.push(`${url}/drafts`);
+                  },
+                },
+                {
+                  icon: "refresh",
+                  tooltip: "Refresh Data",
+                  isFreeAction: true,
+                  onClick: handleRetry,
+                },
+              ]
         }
         data={getDataFromQuery}
         options={{
@@ -356,7 +362,7 @@ export default (props) => {
       )}
       {/* <TestJobDialog
         open={isDialogOpen}
-        videoTemplate={testJobTemplate ?? ""}
+        videoTemplate={testJobTemplate ?? {}}
         onClose={() => setIsDialogOpen(false)}
         versions={testJobTemplate?.versions ?? []}
       /> */}

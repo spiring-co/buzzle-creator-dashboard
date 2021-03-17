@@ -78,7 +78,8 @@ export default () => {
       orderDirection = "asc",
     } = query;
     history.push(
-      `?page=${page + 1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
+      `?page=${page + 1}&size=${pageSize}${
+        searchQuery ? "searchQuery=" + searchQuery : ""
       }`
     );
 
@@ -103,7 +104,8 @@ export default () => {
         // setJobIds(data.map((j) => j.id));
         if (data?.length === 0 && totalCount) {
           history.push(
-            `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
+            `?page=${1}&size=${pageSize}${
+              searchQuery ? "searchQuery=" + searchQuery : ""
             }`
           );
           return Job.getAll(
@@ -120,7 +122,8 @@ export default () => {
             .catch((err) => {
               setError(err);
               history.push(
-                `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
+                `?page=${1}&size=${pageSize}${
+                  searchQuery ? "searchQuery=" + searchQuery : ""
                 }`
               );
               return {
@@ -135,7 +138,8 @@ export default () => {
       .catch((err) => {
         setError(err);
         history.push(
-          `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
+          `?page=${1}&size=${pageSize}${
+            searchQuery ? "searchQuery=" + searchQuery : ""
           }`
         );
         return {
@@ -345,9 +349,7 @@ export default () => {
         />
       )}
       <Box>
-        <ActiveJobsTable
-          onRowClick={(id) => history.push(`${path}${id}`)}
-        />
+        <ActiveJobsTable onRowClick={(id) => history.push(`${path}${id}`)} />
       </Box>
       {operationStatus?.total !== 0 && (
         <Box style={{ marginBottom: 10 }}>
@@ -434,20 +436,25 @@ export default () => {
             title: "State",
             field: "state",
             render: ({ state, failureReason }) => {
-              return (<Tooltip
-                TransitionComponent={Fade}
-                title={state === "error" ? failureReason : "Reason not given"
-                }><Chip
-                  size="small"
-                  label={state}
-                  style={{
-                    fontWeight: 700,
-                    background: getColorFromState(state),
-                    color: "white",
-                    textTransform: 'capitalize'
-                  }}
-                /></Tooltip >)
-            }
+              return (
+                <Tooltip
+                  TransitionComponent={Fade}
+                  title={
+                    state === "error" ? failureReason : "Reason not given"
+                  }>
+                  <Chip
+                    size="small"
+                    label={state}
+                    style={{
+                      fontWeight: 700,
+                      background: getColorFromState(state),
+                      color: "white",
+                      textTransform: "capitalize",
+                    }}
+                  />
+                </Tooltip>
+              );
+            },
           },
           {
             searchable: false,
@@ -497,7 +504,15 @@ export default () => {
             position: "row",
             onClick: async (e, { id, data, actions, renderPrefs = {} }) => {
               try {
-                await Job.update(id, { data, actions, renderPrefs });
+                await Job.update(id, {
+                  data,
+                  actions,
+                  renderPrefs,
+                  state: "started",
+                  extraData: {
+                    forceRerender: true,
+                  },
+                });
               } catch (err) {
                 setError(err);
               }
@@ -583,15 +598,18 @@ const filterObjectToString = (f) => {
   if (!f) return null;
   const { startDate = 0, endDate = 0, idVideoTemplates = [], states = [] } = f;
 
-  return `${startDate
-    ? `dateUpdated=>=${startDate}&${endDate ? `dateUpdated=<=${endDate || startDate}&` : ""
-    }`
-    : ""
-    }${idVideoTemplates.length !== 0
-      ? getArrayOfIdsAsQueryString(
-        "idVideoTemplate",
-        idVideoTemplates.map(({ id }) => id)
-      ) + "&"
+  return `${
+    startDate
+      ? `dateUpdated=>=${startDate}&${
+          endDate ? `dateUpdated=<=${endDate || startDate}&` : ""
+        }`
       : ""
-    }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
+  }${
+    idVideoTemplates.length !== 0
+      ? getArrayOfIdsAsQueryString(
+          "idVideoTemplate",
+          idVideoTemplates.map(({ id }) => id)
+        ) + "&"
+      : ""
+  }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
 };

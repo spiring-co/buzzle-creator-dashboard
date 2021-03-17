@@ -92,6 +92,8 @@ export default () => {
     },
   }))(TableCell);
 
+  
+
   const StyledTableRow = withStyles((theme) => ({
     root: {
       "&:nth-of-type(odd)": {
