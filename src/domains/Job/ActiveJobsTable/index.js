@@ -72,9 +72,7 @@ export default ({ onRowClick }) => {
     });
     socket.on("job-status", (data) => {
       const { started = 0, error = 0, created = 0 } = data;
-      console.log(data);
       const render = data["render:postrender"];
-      console.log(render, started);
       setPendingJobs([error, render + started, created]);
     });
   }, [socket]);
@@ -304,20 +302,17 @@ const filterObjectToString = (f) => {
   if (!f) return null;
   const { startDate = 0, endDate = 0, idVideoTemplates = [], states = [] } = f;
 
-  return `${
-    startDate
-      ? `dateUpdated=>=${startDate}&${
-          endDate ? `dateUpdated=<=${endDate || startDate}&` : ""
-        }`
+  return `${startDate
+      ? `dateUpdated=>=${startDate}&${endDate ? `dateUpdated=<=${endDate || startDate}&` : ""
+      }`
       : ""
-  }${
-    idVideoTemplates.length !== 0
+    }${idVideoTemplates.length !== 0
       ? getArrayOfIdsAsQueryString(
-          "idVideoTemplate",
-          idVideoTemplates.map(({ id }) => id)
-        ) + "&"
+        "idVideoTemplate",
+        idVideoTemplates.map(({ id }) => id)
+      ) + "&"
       : ""
-  }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
+    }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
 };
 
 //job-status for job statoos

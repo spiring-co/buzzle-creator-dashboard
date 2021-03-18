@@ -1,6 +1,6 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import { User, Creator } from "services/api";
+import { User } from "services/api";
 
 import { Container, Typography, Card, CardContent } from "@material-ui/core";
 

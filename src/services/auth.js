@@ -5,6 +5,7 @@ import React, {
   useContext,
   useEffect,
 } from "react";
+import { User } from "./api";
 import { initNotificationService } from "./notifications";
 const jwtDecode = require("jwt-decode");
 const AuthContext = createContext();
@@ -40,21 +41,7 @@ function AuthProvider(props) {
     if (user) {
       const token = initNotificationService();
       console.log(user);
-      fetch(`${REACT_APP_API_URL}/users/${user.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + `${localStorage.getItem("jwtoken")}`,
-        },
-        body: JSON.stringify({ pToken: token }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log("Success:", data);
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-        });
+      User.update(user.id, { pToken: token }).then(() => console.log("push token updated successfully!")).catch(e => cosnole.log("Error updating push token, ", e?.message))
     }
   }, [user]);
 
@@ -93,7 +80,7 @@ function AuthProvider(props) {
     return true;
   };
 
-  const sendOtp = async () => {};
+  const sendOtp = async () => { };
   const value = useMemo(() => {
     return {
       login,

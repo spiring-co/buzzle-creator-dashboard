@@ -330,7 +330,12 @@ export default () => {
               className={classes.button}
               onClick={async () => {
                 try {
-                  await Job.update(id, { data, actions, renderPrefs });
+                  await Job.update(id, {
+                    state: "started",
+                    extra: {
+                      forceRerender: true,
+                    },
+                  });
                   history.push("/home/jobs");
                 } catch (err) {
                   setError(err);

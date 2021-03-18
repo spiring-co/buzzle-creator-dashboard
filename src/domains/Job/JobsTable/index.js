@@ -78,8 +78,7 @@ export default () => {
       orderDirection = "asc",
     } = query;
     history.push(
-      `?page=${page + 1}&size=${pageSize}${
-        searchQuery ? "searchQuery=" + searchQuery : ""
+      `?page=${page + 1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
       }`
     );
 
@@ -104,8 +103,7 @@ export default () => {
         // setJobIds(data.map((j) => j.id));
         if (data?.length === 0 && totalCount) {
           history.push(
-            `?page=${1}&size=${pageSize}${
-              searchQuery ? "searchQuery=" + searchQuery : ""
+            `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
             }`
           );
           return Job.getAll(
@@ -122,8 +120,7 @@ export default () => {
             .catch((err) => {
               setError(err);
               history.push(
-                `?page=${1}&size=${pageSize}${
-                  searchQuery ? "searchQuery=" + searchQuery : ""
+                `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
                 }`
               );
               return {
@@ -138,8 +135,7 @@ export default () => {
       .catch((err) => {
         setError(err);
         history.push(
-          `?page=${1}&size=${pageSize}${
-            searchQuery ? "searchQuery=" + searchQuery : ""
+          `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
           }`
         );
         return {
@@ -499,17 +495,32 @@ export default () => {
             position: "row",
           },
           {
+            icon: "repeatOne",
+            tooltip: "Restart Job with priority",
+            position: "row",
+            onClick: async (e, { id, data, actions, renderPrefs = {} }) => {
+              try {
+                await Job.update(id, {
+                  state: "started",
+                  extra: {
+                    forceRerender: true,
+                  },
+                }, { priority: 5 });
+              } catch (err) {
+                setError(err);
+              }
+              tableRef.current && tableRef.current.onQueryChange();
+            },
+          },
+          {
             icon: "repeat",
             tooltip: "Restart Job",
             position: "row",
             onClick: async (e, { id, data, actions, renderPrefs = {} }) => {
               try {
                 await Job.update(id, {
-                  data,
-                  actions,
-                  renderPrefs,
                   state: "started",
-                  extraData: {
+                  extra: {
                     forceRerender: true,
                   },
                 });
@@ -598,18 +609,15 @@ const filterObjectToString = (f) => {
   if (!f) return null;
   const { startDate = 0, endDate = 0, idVideoTemplates = [], states = [] } = f;
 
-  return `${
-    startDate
-      ? `dateUpdated=>=${startDate}&${
-          endDate ? `dateUpdated=<=${endDate || startDate}&` : ""
-        }`
-      : ""
-  }${
-    idVideoTemplates.length !== 0
+  return `${startDate
+    ? `dateUpdated=>=${startDate}&${endDate ? `dateUpdated=<=${endDate || startDate}&` : ""
+    }`
+    : ""
+    }${idVideoTemplates.length !== 0
       ? getArrayOfIdsAsQueryString(
-          "idVideoTemplate",
-          idVideoTemplates.map(({ id }) => id)
-        ) + "&"
+        "idVideoTemplate",
+        idVideoTemplates.map(({ id }) => id)
+      ) + "&"
       : ""
-  }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
+    }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
 };
