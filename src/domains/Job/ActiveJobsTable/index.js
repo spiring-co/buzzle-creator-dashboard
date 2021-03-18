@@ -71,9 +71,14 @@ export default ({ onRowClick }) => {
       });
     });
     socket.on("job-status", (data) => {
-      const { started = 0, error = 0, created = 0 } = data;
-      const render = data["render:postrender"];
-      setPendingJobs([error, render + started, created]);
+      let rendering = 0;
+      const { error = 0, created = 0 } = data;
+      Object.keys(data).map((k) => {
+        if (k.includes("render")) {
+          rendering += 1;
+        }
+      });
+      setPendingJobs({ error, rendering, created });
     });
   }, [socket]);
   useEffect(() => {
@@ -197,35 +202,40 @@ export default ({ onRowClick }) => {
               style={{
                 display: "flex",
                 alignItems: "center",
-                width: "50%",
                 justifyContent: "space-evenly",
               }}>
               <Chip
                 size="small"
-                label={`Error: ${pendingJobs[0] || ""}`}
+                label={`Error: ${pendingJobs["error"] || ""}`}
                 style={{
                   fontWeight: 700,
                   background: "#f44336",
                   color: "white",
+                  marginLeft: 10,
+
                   textTransform: "capitalize",
                 }}
               />
               <Chip
                 size="small"
-                label={`Render: ${pendingJobs[1] || ""}`}
-                style={{
-                  fontWeight: 700,
-                  background: "grey",
-                  color: "white",
-                  textTransform: "capitalize",
-                }}
-              />
-              <Chip
-                size="small"
-                label={`Created: ${pendingJobs[3] || ""}`}
+                label={`Rendering: ${pendingJobs["rendering"] || ""}`}
                 style={{
                   fontWeight: 700,
                   background: "#ffa502",
+
+                  color: "white",
+                  marginLeft: 10,
+                  textTransform: "capitalize",
+                }}
+              />
+              <Chip
+                size="small"
+                label={`Created: ${pendingJobs["created"] || ""}`}
+                style={{
+                  fontWeight: 700,
+                  marginLeft: 10,
+                  background: "grey",
+
                   color: "white",
                   textTransform: "capitalize",
                 }}
@@ -303,9 +313,9 @@ const filterObjectToString = (f) => {
   const { startDate = 0, endDate = 0, idVideoTemplates = [], states = [] } = f;
 
   return `${startDate
-      ? `dateUpdated=>=${startDate}&${endDate ? `dateUpdated=<=${endDate || startDate}&` : ""
-      }`
-      : ""
+    ? `dateUpdated=>=${startDate}&${endDate ? `dateUpdated=<=${endDate || startDate}&` : ""
+    }`
+    : ""
     }${idVideoTemplates.length !== 0
       ? getArrayOfIdsAsQueryString(
         "idVideoTemplate",
