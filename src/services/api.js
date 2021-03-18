@@ -58,4 +58,13 @@ export const ServerJobs = {
   },
 };
 
-export const { Job, User, VideoTemplate, Font, Search, Auth, Webhook } = API;
+export const {
+  Job,
+  User,
+  VideoTemplate,
+  Font,
+  Search,
+  Auth,
+  Webhook,
+  Creator,
+} = API;
