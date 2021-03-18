@@ -16,6 +16,7 @@ import {
 } from "@material-ui/core";
 import MaterialTable from "material-table";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
+import UpdateIcon from '@material-ui/icons/Update'
 import Popover from '@material-ui/core/Popover';
 import formatTime from "helpers/formatTime";
 import Alert from "@material-ui/lab/Alert";
@@ -199,7 +200,7 @@ export default () => {
 
   const handleJobUpdate = async ({ id, data, actions, renderPrefs }) => {
     try {
-      await Job.update(id, { data, actions, renderPrefs });
+      await Job.update(id, { data, actions, renderPrefs }, { noMessage: true });
       enqueueSnackbar(`Job Updated successfully!`, {
         variant: "success",
         anchorOrigin: {
@@ -288,7 +289,9 @@ export default () => {
       const { id = false, data, renderPrefs, actions } = array[index];
       if (!id) return;
       try {
-        await Job.update(id, { data, renderPrefs, actions });
+        await Job.update(id, {
+          data, renderPrefs, actions,
+        }, { noMessage: true });
         // increment the success
         setOperationStatus((operationStatus) => ({
           ...operationStatus,
@@ -495,7 +498,7 @@ export default () => {
             position: "row",
           },
           {
-            icon: "repeatOne",
+            icon: () => <UpdateIcon />,
             tooltip: "Restart Job with priority",
             position: "row",
             onClick: async (e, { id, data, actions, renderPrefs = {} }) => {

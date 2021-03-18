@@ -98,7 +98,7 @@ export default ({
     }
   }
   return (
-    <Box m={1}>
+    <Box mt={2} mb={2}>
       <Typography>{label}{required && " *"}</Typography>
       <FormControl component="fieldset">
         <RadioGroup

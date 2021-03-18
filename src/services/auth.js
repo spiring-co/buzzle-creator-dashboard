@@ -41,7 +41,7 @@ function AuthProvider(props) {
     if (user) {
       const token = initNotificationService();
       console.log(user);
-      User.update(user.id, { pToken: token }).then(() => console.log("push token updated successfully!")).catch(e => cosnole.log("Error updating push token, ", e?.message))
+      User.update(user.id, { pToken: token }).then(() => console.log("push token updated successfully!")).catch(e => console.log("Error updating push token, ", e?.message))
     }
   }, [user]);
 

@@ -89,7 +89,6 @@ export default ({ onRowClick }) => {
       )?.id;
 
       if (jobIdToBeFetched) {
-        console.log("Fetching job:", jobIdToBeFetched);
         Job.get(jobIdToBeFetched, true)
           .then((d) =>
             setJobsData((j) => [...j, { ...d, id: jobIdToBeFetched }])
@@ -98,6 +97,7 @@ export default ({ onRowClick }) => {
       }
     }
   }, [activeJobs, jobsData]);
+
   useEffect(() => {
     const finishedJobs = activeJobs?.filter(
       ({ state = "" }) => state.toLowerCase() !== "finished"
@@ -116,57 +116,38 @@ export default ({ onRowClick }) => {
     }
   }, [activeJobs]);
 
-  useEffect(() => {
-    console.log(pendingJobs);
-  }, [pendingJobs]);
-
-  const ActiveJobRow = ({ id, state, progress, jobData }) => {
-    return (
-      <TableRow key={id} onClick={() => onRowClick(id)}>
-        <TableCell component="th" scope="row">
-          {id}
-        </TableCell>
-        <TableCell align="left">
-          {jobData?.videoTemplate?.title || "loading..."}
-        </TableCell>
-        <TableCell>
-          {jobData?.videoTemplate?.versions?.find(
-            (v) => v?.id === jobData?.idVersion
-          )?.title || "loading..."}
-        </TableCell>
-        <TableCell>
-          {timeago.format(new Date(jobData?.dateUpdated)) || "loading..."}
-        </TableCell>
-        <TableCell>
-          {timeago.format(new Date(jobData?.dateCreated)) || "loading..."}
-        </TableCell>
-        <TableCell align="left">
-          <Chip
-            size="small"
-            label={`${state}${progress ? " " + progress + "%" : ""}`}
-            style={{
-              fontWeight: 700,
-              background: getColorFromState(state, progress),
-              color: "white",
-              textTransform: "capitalize",
-            }}
-          />
-        </TableCell>
-        <TableCell align="left">
-          <Button
-            onClick={(e) => {
-              e.stopPropagation();
-              setSelectedJobId(id);
-            }}
-            size="small"
-            variant="contained"
-            color="primary"
-            children="view logs"
-          />
-        </TableCell>
-      </TableRow>
-    );
-  };
+  const ActiveJobRow = ({ id, state, progress, jobData, rendererInstance }) => {
+    return <TableRow key={id} onClick={() => onRowClick(id)}>
+      <TableCell component="th" scope="row">
+        {id}
+      </TableCell>
+      <TableCell align="left">{jobData?.videoTemplate?.title || "loading..."}</TableCell>
+      <TableCell>{jobData?.videoTemplate?.versions?.find((v) => v?.id === jobData?.idVersion)
+        ?.title || "loading..."}</TableCell>
+      <TableCell>{timeago.format(new Date(jobData?.dateUpdated)) || "loading..."}</TableCell>
+      <TableCell>{timeago.format(new Date(jobData?.dateCreated)) || "loading..."}</TableCell>
+      <TableCell align="left">
+        <Chip
+          size="small"
+          label={`${state}${progress ? " " + progress + "%" : ""}`}
+          style={{
+            fontWeight: 700,
+            background: getColorFromState(state, progress),
+            color: "white",
+            textTransform: 'capitalize'
+          }}
+        /></TableCell>
+      <TableCell>{rendererInstance?.instanceId}</TableCell>
+      <TableCell>{rendererInstance?.ipv4}</TableCell>
+      <TableCell align="left"><Button
+        onClick={e => {
+          e.stopPropagation()
+          setSelectedJobId(id)
+        }}
+        size="small"
+        variant="contained" color="primary" children="view logs" /></TableCell>
+    </TableRow>
+  }
 
   return (
     <>
@@ -249,19 +230,22 @@ export default ({ onRowClick }) => {
               <Table stickyHeader size="small" aria-label="a dense table">
                 <TableHead>
                   <TableRow>
-                    <TableCell>Job Id</TableCell>
+                    <TableCell >Job Id</TableCell>
                     <TableCell align="left">Video template</TableCell>
                     <TableCell align="left">Version</TableCell>
                     <TableCell align="left">Last updated</TableCell>
                     <TableCell align="left">Created at</TableCell>
                     <TableCell align="left">Status</TableCell>
+                    <TableCell align="left">Instance Id</TableCell>
+                    <TableCell align="left">Instance IP</TableCell>
                     <TableCell align="left">Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {activeJobs.map(({ id, state, progress }) => (
+                  {activeJobs.map(({ id, state, progress, rendererInstance }) => (
                     <ActiveJobRow
                       id={id}
+                      rendererInstance={rendererInstance}
                       state={state}
                       progress={progress}
                       jobData={jobsData?.find((j) => j.id === id) || []}
