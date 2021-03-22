@@ -172,7 +172,7 @@ export default () => {
     try {
       const { data, actions, id, renderPrefs } = job;
       setIsLoading(true);
-      await Job.update(id, { data, actions, renderPrefs });
+      await Job.update(id, { data, actions, renderPrefs }, { noMessage: true });
       setIsLoading(false);
       setRedirect("/home/jobs");
     } catch (err) {
@@ -266,12 +266,19 @@ export default () => {
   };
   const renderJobInHd = async () => {
     try {
+      if (actions?.postrender?.find(({ module }) => module === 'buzzle-action-merge-videos' || module === 'action-merge-videos')) {
+        return alert("This Job has merge video action!, Request failed")
+      }
       const { data, actions, id, renderPrefs } = job;
       setIsLoading(true);
       await Job.update(id, {
         data,
         actions,
+        state: "started",
         renderPrefs: { settingsTemplate: "full" },
+        extra: {
+          forceRerender: true
+        }
       });
       setIsLoading(false);
       setRedirect("/home/jobs");
@@ -330,7 +337,13 @@ export default () => {
               className={classes.button}
               onClick={async () => {
                 try {
-                  await Job.update(id, { data, actions, renderPrefs });
+                  await Job.update(id, {
+                    state: "started",
+                    data, actions, renderPrefs,
+                    extra: {
+                      forceRerender: true,
+                    },
+                  });
                   history.push("/home/jobs");
                 } catch (err) {
                   setError(err);
@@ -339,26 +352,26 @@ export default () => {
               children="Restart Job"
               startIcon={<UpdateIcon />}
             />
-            <FileUploader
-              name={"watermarkFile"}
-              value={''}
-              onError={(e) => console.log(e.message)}
-              onChange={(src) => {
-                job.output = [...job.output, {
-                  label: "Added Manually",
-                  updatedAt: new Date().toISOString(),
-                  dateCreated: new Date().toISOString(),
-                  src
-                }]
-                console.log(job.output)
+            <Button
+              disabled={isLoading}
+              color="primary"
+              variant="contained"
+              className={classes.button}
+              onClick={async () => {
+                try {
+                  await Job.update(id, {
+                    state: "started",
+                    data, actions, renderPrefs,
+                  }, { priority: 5 });
+                  history.push("/home/jobs");
+                } catch (err) {
+                  setError(err);
+                }
               }}
-              accept={"video/*"}
-              uploadDirectory={"outputs"}
-              label="Add output"
-              onTouched={() => console.log("Pressed")}
-              error={false}
-              helperText={"This will append new output to this job"}
+              children="Update & Restart (Priority)"
+              startIcon={<UpdateIcon />}
             />
+
           </Box>
           <Box>
             <Select
@@ -447,8 +460,29 @@ export default () => {
           <TabPanel value={activeTabIndex} index={0}>
             <Grid xs={12} item>
               <Box p={2}>
+                <FileUploader
+                  name={"watermarkFile"}
+                  value={''}
+                  onError={(e) => console.log(e.message)}
+                  onChange={(src) => {
+                    job.output = [...job.output, {
+                      label: "Added Manually",
+                      updatedAt: new Date().toISOString(),
+                      dateCreated: new Date().toISOString(),
+                      src
+                    }]
+                    setJob(job)
+                  }}
+                  accept={"video/*"}
+                  uploadDirectory={"outputs"}
+                  label="Add output"
+                  onTouched={() => console.log("Pressed")}
+                  error={false}
+                  helperText={"This will append new output to this job"}
+                />
                 <Typography variant="h5">Details</Typography>
                 <br />
+
                 {Object.keys(content).map((k) => (
                   <Grid key={k} container direction={"row"} spacing={1}>
                     <Grid xs={6} item>
@@ -459,6 +493,7 @@ export default () => {
                     </Grid>
                   </Grid>
                 ))}
+
                 <Accordion style={{ marginTop: 20 }}>
                   <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
