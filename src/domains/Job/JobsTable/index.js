@@ -1,9 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useHistory, useRouteMatch, useLocation } from "react-router-dom";
 
-import io from "socket.io-client";
 import * as timeago from "timeago.js";
-import ReactJson from "react-json-view";
 
 import {
   Chip,
@@ -19,7 +17,6 @@ import FileCopyIcon from "@material-ui/icons/FileCopy";
 import Popover from "@material-ui/core/Popover";
 import formatTime from "helpers/formatTime";
 import Alert from "@material-ui/lab/Alert";
-import { useDarkMode } from "helpers/useDarkMode";
 
 import Filters from "common/Filters";
 import ErrorHandler from "common/ErrorHandler";
@@ -30,9 +27,11 @@ import TimelineSeparator from "@material-ui/lab/TimelineSeparator";
 import TimelineConnector from "@material-ui/lab/TimelineConnector";
 import TimelineContent from "@material-ui/lab/TimelineContent";
 import TimelineDot from "@material-ui/lab/TimelineDot";
+import UpdateIcon from "@material-ui/icons/Update";
+
 import TimelineOppositeContent from "@material-ui/lab/TimelineOppositeContent";
 import { useAuth } from "services/auth";
-import { SnackbarProvider, useSnackbar } from "notistack";
+import { useSnackbar } from "notistack";
 import JSONEditorDialoge from "common/JSONEditorDialoge";
 import ActiveJobsTable from "../ActiveJobsTable";
 
@@ -78,7 +77,8 @@ export default () => {
       orderDirection = "asc",
     } = query;
     history.push(
-      `?page=${page + 1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
+      `?page=${page + 1}&size=${pageSize}${
+        searchQuery ? "searchQuery=" + searchQuery : ""
       }`
     );
 
@@ -103,7 +103,8 @@ export default () => {
         // setJobIds(data.map((j) => j.id));
         if (data?.length === 0 && totalCount) {
           history.push(
-            `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
+            `?page=${1}&size=${pageSize}${
+              searchQuery ? "searchQuery=" + searchQuery : ""
             }`
           );
           return Job.getAll(
@@ -120,7 +121,8 @@ export default () => {
             .catch((err) => {
               setError(err);
               history.push(
-                `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
+                `?page=${1}&size=${pageSize}${
+                  searchQuery ? "searchQuery=" + searchQuery : ""
                 }`
               );
               return {
@@ -135,7 +137,8 @@ export default () => {
       .catch((err) => {
         setError(err);
         history.push(
-          `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
+          `?page=${1}&size=${pageSize}${
+            searchQuery ? "searchQuery=" + searchQuery : ""
           }`
         );
         return {
@@ -466,12 +469,16 @@ export default () => {
             position: "row",
             onClick: async (e, { id, data, actions, renderPrefs = {} }) => {
               try {
-                await Job.update(id, {
-                  state: "started",
-                  extra: {
-                    forceRerender: true,
+                await Job.update(
+                  id,
+                  {
+                    state: "started",
+                    extra: {
+                      forceRerender: true,
+                    },
                   },
-                }, { priority: 5 });
+                  { priority: 5 }
+                );
               } catch (err) {
                 setError(err);
               }
@@ -575,15 +582,18 @@ const filterObjectToString = (f) => {
   if (!f) return null;
   const { startDate = 0, endDate = 0, idVideoTemplates = [], states = [] } = f;
 
-  return `${startDate
-    ? `dateUpdated=>=${startDate}&${endDate ? `dateUpdated=<=${endDate || startDate}&` : ""
-    }`
-    : ""
-    }${idVideoTemplates.length !== 0
-      ? getArrayOfIdsAsQueryString(
-        "idVideoTemplate",
-        idVideoTemplates.map(({ id }) => id)
-      ) + "&"
+  return `${
+    startDate
+      ? `dateUpdated=>=${startDate}&${
+          endDate ? `dateUpdated=<=${endDate || startDate}&` : ""
+        }`
       : ""
-    }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
+  }${
+    idVideoTemplates.length !== 0
+      ? getArrayOfIdsAsQueryString(
+          "idVideoTemplate",
+          idVideoTemplates.map(({ id }) => id)
+        ) + "&"
+      : ""
+  }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
 };
