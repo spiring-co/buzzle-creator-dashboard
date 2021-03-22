@@ -20,7 +20,7 @@ export default React.memo(
     const [filters, setFilters] = useState(value);
     useEffect(() => {
       videoTemplates.length === 0 &&
-        VideoTemplate.getAll(1, 500)//new api change
+        VideoTemplate.getAll(1, 500) //new api change
           .then(({ data }) =>
             setVideoTemplates(data.map(({ title, id }) => ({ title, id })))
           )
@@ -105,8 +105,9 @@ export default React.memo(
                 icon={icon}
                 checkedIcon={checkedIcon}
                 style={{ marginRight: 8 }}
-                checked={filters?.idVideoTemplates
-                  ?.find(({ id }) => id === option?.id)}
+                checked={filters?.idVideoTemplates?.find(
+                  ({ id }) => id === option?.id
+                )}
               />
               {option.title}
             </React.Fragment>
@@ -176,12 +177,13 @@ export default React.memo(
             size="small"
             color="primary"
             onClick={() => {
+              setFilters({});
               onChange({});
             }}
           />
         ) : (
-            <div />
-          )}
+          <div />
+        )}
       </>
     );
   },

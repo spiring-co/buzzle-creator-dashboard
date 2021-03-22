@@ -16,7 +16,7 @@ import {
 } from "@material-ui/core";
 import MaterialTable from "material-table";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
-import Popover from '@material-ui/core/Popover';
+import Popover from "@material-ui/core/Popover";
 import formatTime from "helpers/formatTime";
 import Alert from "@material-ui/lab/Alert";
 import { useDarkMode } from "helpers/useDarkMode";
@@ -24,13 +24,13 @@ import { useDarkMode } from "helpers/useDarkMode";
 import Filters from "common/Filters";
 import ErrorHandler from "common/ErrorHandler";
 import { Job, Search } from "services/api";
-import Timeline from '@material-ui/lab/Timeline';
-import TimelineItem from '@material-ui/lab/TimelineItem';
-import TimelineSeparator from '@material-ui/lab/TimelineSeparator';
-import TimelineConnector from '@material-ui/lab/TimelineConnector';
-import TimelineContent from '@material-ui/lab/TimelineContent';
-import TimelineDot from '@material-ui/lab/TimelineDot';
-import TimelineOppositeContent from '@material-ui/lab/TimelineOppositeContent';
+import Timeline from "@material-ui/lab/Timeline";
+import TimelineItem from "@material-ui/lab/TimelineItem";
+import TimelineSeparator from "@material-ui/lab/TimelineSeparator";
+import TimelineConnector from "@material-ui/lab/TimelineConnector";
+import TimelineContent from "@material-ui/lab/TimelineContent";
+import TimelineDot from "@material-ui/lab/TimelineDot";
+import TimelineOppositeContent from "@material-ui/lab/TimelineOppositeContent";
 import { useAuth } from "services/auth";
 import { SnackbarProvider, useSnackbar } from "notistack";
 import JSONEditorDialoge from "common/JSONEditorDialoge";
@@ -150,53 +150,28 @@ export default () => {
       });
   };
   const deleteMultipleJobs = async (array = []) => {
-    let s = 0,
-      f = 0;
-    // show the snackbar or alert showing the progress
-    setOperationStatus({ ...operationStatus, total: array?.length });
-    for (let index = 0; index < array.length; index++) {
-      const { id = false } = array[index];
-      if (!id) return;
-      try {
-        await Job.delete(id);
-        // increment the success
-        setOperationStatus((operationStatus) => ({
-          ...operationStatus,
-          success: operationStatus?.success + 1,
-        }));
-        s++;
-      } catch (err) {
-        // increment the failed
-        setOperationStatus((operationStatus) => ({
-          ...operationStatus,
-          failed: operationStatus?.failed + 1,
-        }));
-        f++;
-      }
-    }
-    setOperationStatus({ total: 0, failed: 0, success: 0 });
-    {
-      s &&
-        enqueueSnackbar(
-          `${s} out of ${array?.length} jobs deleted successfully `,
-          {
-            variant: "success",
-            anchorOrigin: {
-              vertical: "bottom",
-              horizontal: "right",
-            },
-          }
-        );
-    }
-    {
-      f &&
-        enqueueSnackbar(`${f} out of ${array?.length} jobs failed to delete `, {
-          variant: "error",
-          anchorOrigin: {
-            vertical: "bottom",
-            horizontal: "right",
-          },
-        });
+    try {
+      const arrIds = array.map((a) => {
+        return a.id;
+      });
+      await Job.deleteMultiple({
+        ids: arrIds,
+      });
+      enqueueSnackbar(`jobs deleted successfully `, {
+        variant: "success",
+        anchorOrigin: {
+          vertical: "bottom",
+          horizontal: "right",
+        },
+      });
+    } catch (e) {
+      enqueueSnackbar(` jobs failed to delete `, {
+        variant: "error",
+        anchorOrigin: {
+          vertical: "bottom",
+          horizontal: "right",
+        },
+      });
     }
     tableRef.current && tableRef.current.onQueryChange();
   };
@@ -227,10 +202,8 @@ export default () => {
     }
   };
 
-
-  const TimeRenderer = ({ renderTime, id, timeline = []
-  }) => {
-    const [anchorEl, setAnchorEl] = useState(null)
+  const TimeRenderer = ({ renderTime, id, timeline = [] }) => {
+    const [anchorEl, setAnchorEl] = useState(null);
     const handlePopoverOpen = (event) => {
       setAnchorEl(event.currentTarget);
     };
@@ -239,103 +212,92 @@ export default () => {
       setAnchorEl(null);
     };
     const open = Boolean(anchorEl);
-    return <><Typography
-      aria-owns={open ? `mouse-over-popover${id}` : undefined}
-      aria-haspopup="true"
-      onMouseEnter={handlePopoverOpen}
-      onMouseLeave={handlePopoverClose}
-    >{renderTime !== -1 ? formatTime(renderTime) : "NA"}</Typography>
-      <Popover
-        id={`mouse-over-popover${id}`}
-        open={open}
-        style={{ pointerEvents: 'none', }}
-        anchorEl={anchorEl}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right',
-        }}
-        transformOrigin={{
-          vertical: 'center',
-          horizontal: 'left',
-        }}
-        onClose={handlePopoverClose}
-        disableRestoreFocus
-      >
-        <Timeline align="alternate" >
-          {timeline.length ? timeline.map(({ state, startsAt, endsAt }, index) => <TimelineItem >
-            <TimelineOppositeContent >
-              <Typography color="textSecondary">{((endsAt - startsAt) / 1000).toFixed(2)} secs</Typography>
-            </TimelineOppositeContent>
-            <TimelineSeparator >
-              <TimelineDot style={{
-                backgroundColor: index === 0
-                  ? "#ffa117"
-                  : (index !== (timeline?.length - 1) ? "#35a0f4" : "#65ba68")
-              }} />
-              {timeline?.length - 1 !== index && <TimelineConnector />}
-            </TimelineSeparator>
-            <TimelineContent>
-              <span>{state}</span>
-            </TimelineContent>
-          </TimelineItem>) : <Typography>
-            Not Available</Typography>}
-        </Timeline>
-      </Popover>
-    </>
-  }
+    return (
+      <>
+        <Typography
+          aria-owns={open ? `mouse-over-popover${id}` : undefined}
+          aria-haspopup="true"
+          onMouseEnter={handlePopoverOpen}
+          onMouseLeave={handlePopoverClose}>
+          {renderTime !== -1 ? formatTime(renderTime) : "NA"}
+        </Typography>
+        <Popover
+          id={`mouse-over-popover${id}`}
+          open={open}
+          style={{ pointerEvents: "none" }}
+          anchorEl={anchorEl}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "right",
+          }}
+          transformOrigin={{
+            vertical: "center",
+            horizontal: "left",
+          }}
+          onClose={handlePopoverClose}
+          disableRestoreFocus>
+          <Timeline align="alternate">
+            {timeline.length ? (
+              timeline.map(({ state, startsAt, endsAt }, index) => (
+                <TimelineItem>
+                  <TimelineOppositeContent>
+                    <Typography color="textSecondary">
+                      {((endsAt - startsAt) / 1000).toFixed(2)} secs
+                    </Typography>
+                  </TimelineOppositeContent>
+                  <TimelineSeparator>
+                    <TimelineDot
+                      style={{
+                        backgroundColor:
+                          index === 0
+                            ? "#ffa117"
+                            : index !== timeline?.length - 1
+                            ? "#35a0f4"
+                            : "#65ba68",
+                      }}
+                    />
+                    {timeline?.length - 1 !== index && <TimelineConnector />}
+                  </TimelineSeparator>
+                  <TimelineContent>
+                    <span>{state}</span>
+                  </TimelineContent>
+                </TimelineItem>
+              ))
+            ) : (
+              <Typography>Not Available</Typography>
+            )}
+          </Timeline>
+        </Popover>
+      </>
+    );
+  };
 
   const updateMultiple = async (array) => {
-    setOperationStatus({ ...operationStatus, total: array?.length });
-    let s = 0,
-      f = 0;
-    for (let index = 0; index < array.length; index++) {
-      const { id = false, data, renderPrefs, actions } = array[index];
-      if (!id) return;
-      try {
-        await Job.update(id, { data, renderPrefs, actions });
-        // increment the success
-        setOperationStatus((operationStatus) => ({
-          ...operationStatus,
-          success: operationStatus?.success + 1,
-        }));
-        s = s + 1;
-      } catch (err) {
-        // increment the failed
-        setOperationStatus((operationStatus) => ({
-          ...operationStatus,
-          failed: operationStatus?.failed + 1,
-        }));
-        f = f + 1;
-      }
+    try {
+      const arrIds = array.map((a) => {
+        return a.id;
+      });
+      await Job.updateMultiple({
+        ids: arrIds,
+        extra: { forceRerender: true },
+      });
+      enqueueSnackbar(`jobs restarted successfully `, {
+        variant: "success",
+        anchorOrigin: {
+          vertical: "bottom",
+          horizontal: "right",
+        },
+      });
+    } catch (e) {
+      enqueueSnackbar(`jobs failed to restart `, {
+        variant: "error",
+        anchorOrigin: {
+          vertical: "bottom",
+          horizontal: "right",
+        },
+      });
     }
 
-    setOperationStatus({ total: 0, failed: 0, success: 0 });
-    {
-      s &&
-        enqueueSnackbar(
-          `${s} out of ${array?.length} jobs restarted successfully `,
-          {
-            variant: "success",
-            anchorOrigin: {
-              vertical: "bottom",
-              horizontal: "right",
-            },
-          }
-        );
-    }
-    {
-      f &&
-        enqueueSnackbar(
-          `${f} out of ${array?.length} jobs failed to restart `,
-          {
-            variant: "error",
-            anchorOrigin: {
-              vertical: "bottom",
-              horizontal: "right",
-            },
-          }
-        );
-    }
     tableRef.current && tableRef.current.onQueryChange();
   };
 
@@ -408,7 +370,11 @@ export default () => {
             sorting: false,
             searchable: false,
             render: ({ renderTime, id, timeline }) => (
-              <TimeRenderer renderTime={renderTime} id={id} timeline={timeline} />
+              <TimeRenderer
+                renderTime={renderTime}
+                id={id}
+                timeline={timeline}
+              />
             ),
           },
 

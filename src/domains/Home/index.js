@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Typography } from "@material-ui/core";
+import { Typography, Card, CardActions, CardContent } from "@material-ui/core";
 import useApi from "services/apiHook";
 import {
   MuiPickersUtilsProvider,
@@ -21,6 +21,9 @@ import {
   Tooltip,
   BarChart,
   Bar,
+  PieChart,
+  Pie,
+  ResponsiveContainer,
 } from "recharts";
 
 // import { Chart } from "react-charts";
@@ -66,7 +69,7 @@ export default () => {
     );
     const result = [...map.entries()];
     const resultTwo = result.map((i) => {
-      return { name: i[0], uses: i[1] };
+      return { name: i[0], jobs: i[1] };
     });
     setChartData([...resultTwo]);
     console.log("changed chart data" + chartData);
@@ -80,7 +83,7 @@ export default () => {
     );
     const result = [...map.entries()];
     const resultTwo = result.map((i) => {
-      return { name: i[0], uses: i[1] };
+      return { name: i[0], jobs: i[1] };
     });
     setTimeChartData([...resultTwo]);
     console.log("changed chart data" + timeChartData);
@@ -88,7 +91,7 @@ export default () => {
 
   useEffect(() => {
     const c = chartData.map((m) => {
-      return m.uses;
+      return m.jobs;
     });
     var sum = c.reduce(function (a, b) {
       return a + b;
@@ -188,60 +191,91 @@ export default () => {
               label="Line Chart"
             />
           </Grid>
-          {/* <Graphs chartData={chartData}></Graphs> */}
-          {lineChart ? (
+          <div style={{ display: "flex" }}>
             <div>
-              <LineChart
-                width={600}
-                height={300}
-                data={chartData}
-                margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-                <Line type="monotone" dataKey="uses" stroke="#8884d8" />
-                <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-              </LineChart>
-              <LineChart
-                width={600}
-                height={300}
-                data={timeChartData}
-                margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-                <Line type="monotone" dataKey="uses" stroke="#8884d8" />
-                <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-              </LineChart>
+              {lineChart ? (
+                <div>
+                  <Card style={{ maxWidth: 700, margin: 10, padding: 20 }}>
+                    <Typography variant="h10" style={{marginBottom:20}}>
+                      Number of jobs per template
+                    </Typography>
+                    <LineChart
+                      width={600}
+                      height={300}
+                      data={chartData}
+                      margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                      <Line type="monotone" dataKey="jobs" stroke="#8884d8" />
+                      <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                    </LineChart>
+                  </Card>
+                  <Card style={{ maxWidth: 700, margin: 10, padding: 20 }}>
+                    <Typography variant="h10" style={{marginBottom:20}}>Jobs coming per hour</Typography>
+                    <LineChart
+                      width={600}
+                      height={300}
+                      data={timeChartData}
+                      margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                      <Line type="monotone" dataKey="jobs" stroke="#8884d8" />
+                      <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                    </LineChart>
+                  </Card>
+                </div>
+              ) : (
+                <div>
+                  <Card style={{ maxWidth: 700, margin: 10, padding: 20 }}>
+                    <Typography variant="h10" style={{ marginBottom: 20 }}>
+                      Number of jobs per template
+                    </Typography>
+                    <BarChart width={600} height={300} data={chartData}>
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Bar dataKey="jobs" barSize={30} fill="#8884d8" />
+                      <Tooltip />
+                    </BarChart>
+                  </Card>
+                  <Card style={{ maxWidth: 700, margin: 10, padding: 20 }}>
+                    <Typography variant="h10" style={{ marginBottom: 20 }}>
+                      Jobs coming per hour
+                    </Typography>
+                    <BarChart width={600} height={300} data={timeChartData}>
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Bar dataKey="jobs" barSize={30} fill="#8884d8" />
+                      <Tooltip />
+                    </BarChart>
+                  </Card>
+                </div>
+              )}
             </div>
-          ) : (
             <div>
-              <BarChart width={600} height={300} data={chartData}>
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Bar dataKey="uses" barSize={30} fill="#8884d8" />
-                <Tooltip />
-              </BarChart>
-              <BarChart width={600} height={300} data={timeChartData}>
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Bar dataKey="uses" barSize={30} fill="#8884d8" />
-                <Tooltip />
-              </BarChart>
+              <Card style={{ marginTop: 10 }}>
+                <CardContent>
+                  {avgRenderTime ? (
+                    <Typography variant="h10">
+                      Average render time of Jobs :{" "}
+                      {Math.round(avgRenderTime / 1000)} seconds
+                    </Typography>
+                  ) : (
+                    ""
+                  )}
+                  <br></br>
+                  {sum ? (
+                    <Typography variant="h10">Sum of Jobs : {sum}</Typography>
+                  ) : (
+                    ""
+                  )}
+                </CardContent>
+              </Card>
             </div>
-          )}
+          </div>
         </MuiPickersUtilsProvider>
       </Typography>
-      {sum ? <Typography variant="h8">Sum of Jobs : {sum}</Typography> : ""}
-      <br></br>
-      {avgRenderTime ? (
-        <Typography variant="h8">
-          average render time of Jobs : {Math.round(avgRenderTime / 1000)}{" "}
-          seconds
-        </Typography>
-      ) : (
-        ""
-      )}
     </div>
   );
 };
