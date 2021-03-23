@@ -95,7 +95,8 @@ export default (props) => {
     } = query;
     console.log(query);
     history.push(
-      `?page=${page + 1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
+      `?page=${page + 1}&size=${pageSize}${
+        searchQuery ? "searchQuery=" + searchQuery : ""
       }`
     );
 
@@ -167,6 +168,19 @@ export default (props) => {
         }
         onClose={() => setDeleteStatus({ status: false, err: false })}
       />
+      <Button
+        color="primary"
+        style={{ justifyItems: "flex-end" }}
+        onClick={() => history.push(`${url}/add`)}>
+        Add Template
+      </Button>
+      <Button
+        style={{ justifyItems: "flex-end" }}
+        onClick={() => {
+          history.push(`${url}/drafts`);
+        }}>
+        Drafted Templates
+      </Button>
 
       <MaterialTable
         tableRef={tableRef}
@@ -306,12 +320,12 @@ export default (props) => {
                   disabled: isDeleting,
                   onClick: async (event, { id }) => handleDelete(id),
                 },
-                {
-                  icon: "add",
-                  tooltip: "Add Video Template",
-                  isFreeAction: true,
-                  onClick: () => history.push(`${url}/add`),
-                },
+                // {
+                //   icon: "add",
+                //   tooltip: "Add Video Template",
+                //   isFreeAction: true,
+                //   onClick: () => history.push(`${url}/add`),
+                // },
 
                 {
                   icon: "edit",
@@ -327,15 +341,15 @@ export default (props) => {
                     });
                   },
                 },
-                {
-                  icon: "sort",
-                  tooltip: "Drafted Templates",
-                  isFreeAction: true,
-                  style: { backgroundColor: "blue" },
-                  onClick: () => {
-                    history.push(`${url}/drafts`);
-                  },
-                },
+                // {
+                //   icon: "sort",
+                //   tooltip: "Drafted Templates",
+                //   isFreeAction: true,
+                //   style: { backgroundColor: "blue" },
+                //   onClick: () => {
+                //     history.push(`${url}/drafts`);
+                //   },
+                // },
                 {
                   icon: "refresh",
                   tooltip: "Refresh Data",
@@ -360,12 +374,6 @@ export default (props) => {
           onClose={() => setSelectedVideoTemplate(null)}
         />
       )}
-      {/* <TestJobDialog
-        open={isDialogOpen}
-        videoTemplate={testJobTemplate ?? {}}
-        onClose={() => setIsDialogOpen(false)}
-        versions={testJobTemplate?.versions ?? []}
-      /> */}
     </Container>
   );
 };

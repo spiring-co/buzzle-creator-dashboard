@@ -29,13 +29,13 @@ import UpdateIcon from "@material-ui/icons/Update";
 import DownloadIcon from "@material-ui/icons/GetApp";
 import PublishIcon from "@material-ui/icons/Publish";
 import { makeStyles } from "@material-ui/core/styles";
-import Timeline from '@material-ui/lab/Timeline';
-import TimelineItem from '@material-ui/lab/TimelineItem';
-import TimelineSeparator from '@material-ui/lab/TimelineSeparator';
-import TimelineConnector from '@material-ui/lab/TimelineConnector';
-import TimelineContent from '@material-ui/lab/TimelineContent';
-import TimelineDot from '@material-ui/lab/TimelineDot';
-import TimelineOppositeContent from '@material-ui/lab/TimelineOppositeContent';
+import Timeline from "@material-ui/lab/Timeline";
+import TimelineItem from "@material-ui/lab/TimelineItem";
+import TimelineSeparator from "@material-ui/lab/TimelineSeparator";
+import TimelineConnector from "@material-ui/lab/TimelineConnector";
+import TimelineContent from "@material-ui/lab/TimelineContent";
+import TimelineDot from "@material-ui/lab/TimelineDot";
+import TimelineOppositeContent from "@material-ui/lab/TimelineOppositeContent";
 import MaterialTable from "material-table";
 import io from "socket.io-client";
 
@@ -127,7 +127,7 @@ export default () => {
   }, []);
 
   // rerender on output select
-  useEffect(() => { }, [selectedOutputIndex]);
+  useEffect(() => {}, [selectedOutputIndex]);
 
   // init socket on mount
   useEffect(() => {
@@ -138,8 +138,10 @@ export default () => {
 
   function subscribeToProgress(jobId) {
     if (!socket) return;
-    socket.on("job-progress", ({ id, state, progress, server }) =>
-      jobId === id && setProgress({ id, state, progress, server })
+    socket.on(
+      "job-progress",
+      ({ id, state, progress, server }) =>
+        jobId === id && setProgress({ id, state, progress, server })
     );
   }
 
@@ -213,7 +215,7 @@ export default () => {
             fontWeight: 700,
             background: getColorFromState(state, percent),
             color: "white",
-            textTransform: 'capitalize'
+            textTransform: "capitalize",
           }}
         />
       </Tooltip>
@@ -231,22 +233,29 @@ export default () => {
     dateFinished,
     renderPrefs = {},
     dateStarted,
-    failureReason, timeline = [],
+    failureReason,
+    timeline = [],
   } = job;
   const sortedOutput = output?.sort(
     (a, b) => new Date(b?.dateCreated) - new Date(a?.dateCreated)
   );
 
   useEffect(() => {
-
-    if (progress?.state?.toLowerCase() === 'finished' && state?.toLowerCase() !== 'finished') {
-      fetchJob()
+    if (
+      progress?.state?.toLowerCase() === "finished" &&
+      state?.toLowerCase() !== "finished"
+    ) {
+      fetchJob();
     }
-  }, [progress?.state, state])
+  }, [progress?.state, state]);
 
   const content = {
     "Job ID": id,
-    State: progressShow(failureReason, progress?.state ?? state, progress?.progress),
+    State: progressShow(
+      failureReason,
+      progress?.state ?? state,
+      progress?.progress
+    ),
     "Render Time": formatTime(renderTime),
     "Queue Time": formatTime(queueTime),
     "Created at": new Date(dateCreated).toLocaleString(),
@@ -266,8 +275,14 @@ export default () => {
   };
   const renderJobInHd = async () => {
     try {
-      if (actions?.postrender?.find(({ module }) => module === 'buzzle-action-merge-videos' || module === 'action-merge-videos')) {
-        return alert("This Job has merge video action!, Request failed")
+      if (
+        actions?.postrender?.find(
+          ({ module }) =>
+            module === "buzzle-action-merge-videos" ||
+            module === "action-merge-videos"
+        )
+      ) {
+        return alert("This Job has merge video action!, Request failed");
       }
       const { data, actions, id, renderPrefs } = job;
       setIsLoading(true);
@@ -277,8 +292,8 @@ export default () => {
         state: "started",
         renderPrefs: { settingsTemplate: "full" },
         extra: {
-          forceRerender: true
-        }
+          forceRerender: true,
+        },
       });
       setIsLoading(false);
       setRedirect("/home/jobs");
@@ -339,7 +354,9 @@ export default () => {
                 try {
                   await Job.update(id, {
                     state: "started",
-                    data, actions, renderPrefs,
+                    data,
+                    actions,
+                    renderPrefs,
                     extra: {
                       forceRerender: true,
                     },
@@ -359,10 +376,16 @@ export default () => {
               className={classes.button}
               onClick={async () => {
                 try {
-                  await Job.update(id, {
-                    state: "started",
-                    data, actions, renderPrefs,
-                  }, { priority: 5 });
+                  await Job.update(
+                    id,
+                    {
+                      state: "started",
+                      data,
+                      actions,
+                      renderPrefs,
+                    },
+                    { priority: 5 }
+                  );
                   history.push("/home/jobs");
                 } catch (err) {
                   setError(err);
@@ -371,7 +394,6 @@ export default () => {
               children="Update & Restart (Priority)"
               startIcon={<UpdateIcon />}
             />
-
           </Box>
           <Box>
             <Select
@@ -462,16 +484,19 @@ export default () => {
               <Box p={2}>
                 <FileUploader
                   name={"watermarkFile"}
-                  value={''}
+                  value={""}
                   onError={(e) => console.log(e.message)}
                   onChange={(src) => {
-                    job.output = [...job.output, {
-                      label: "Added Manually",
-                      updatedAt: new Date().toISOString(),
-                      dateCreated: new Date().toISOString(),
-                      src
-                    }]
-                    setJob(job)
+                    job.output = [
+                      ...job.output,
+                      {
+                        label: "Added Manually",
+                        updatedAt: new Date().toISOString(),
+                        dateCreated: new Date().toISOString(),
+                        src,
+                      },
+                    ];
+                    setJob(job);
                   }}
                   accept={"video/*"}
                   uploadDirectory={"outputs"}
@@ -502,26 +527,38 @@ export default () => {
                     <Typography>Render Timeline</Typography>
                   </AccordionSummary>
                   <AccordionDetails>
-                    <Timeline align="alternate" >
-                      {timeline.length ? timeline.map(({ state, startsAt, endsAt }, index) => <TimelineItem >
-                        <TimelineOppositeContent >
-                          <Typography color="textSecondary">{((endsAt - startsAt) / 1000).toFixed(2)} secs</Typography>
-                        </TimelineOppositeContent>
-                        <TimelineSeparator >
-                          <TimelineDot style={{
-                            backgroundColor: index === 0
-                              ? "#ffa117"
-                              : (index !== (timeline?.length - 1) ? "#35a0f4" : "#65ba68")
-                          }} />
-                          {timeline?.length - 1 !== index && <TimelineConnector />}
-                        </TimelineSeparator>
-                        <TimelineContent>
-                          <span>{state}</span>
-                        </TimelineContent>
-                      </TimelineItem>) :
-                        <Typography>
-                          Not Available
-                          </Typography>}
+                    <Timeline align="alternate">
+                      {timeline.length ? (
+                        timeline.map(({ state, startsAt, endsAt }, index) => (
+                          <TimelineItem>
+                            <TimelineOppositeContent>
+                              <Typography color="textSecondary">
+                                {((endsAt - startsAt) / 1000).toFixed(2)} secs
+                              </Typography>
+                            </TimelineOppositeContent>
+                            <TimelineSeparator>
+                              <TimelineDot
+                                style={{
+                                  backgroundColor:
+                                    index === 0
+                                      ? "#ffa117"
+                                      : index !== timeline?.length - 1
+                                      ? "#35a0f4"
+                                      : "#65ba68",
+                                }}
+                              />
+                              {timeline?.length - 1 !== index && (
+                                <TimelineConnector />
+                              )}
+                            </TimelineSeparator>
+                            <TimelineContent>
+                              <span>{state}</span>
+                            </TimelineContent>
+                          </TimelineItem>
+                        ))
+                      ) : (
+                        <Typography>Not Available</Typography>
+                      )}
                     </Timeline>
                   </AccordionDetails>
                 </Accordion>
@@ -568,7 +605,7 @@ export default () => {
                     return (
                       <span>
                         {value.startsWith("http://") ||
-                          value.startsWith("https://")
+                        value.startsWith("https://")
                           ? "image"
                           : "string"}
                       </span>
@@ -579,7 +616,11 @@ export default () => {
                 {
                   title: "Value",
                   field: "value",
-                  editComponent: ({ rowData: { key }, onChange, value }) => {
+                  editComponent: ({
+                    rowData: { key, constraints },
+                    onChange,
+                    value,
+                  }) => {
                     if (
                       value.startsWith("http://") ||
                       value.startsWith("https://")
@@ -660,10 +701,15 @@ export default () => {
                 </InputLabel>
                 <Select
                   value={job.renderPrefs?.settingsTemplate || ""}
-                  onChange={({ target: { value } }) => setJob({
-                    ...job,
-                    renderPrefs: { ...job?.renderPrefs, settingsTemplate: value }
-                  })}
+                  onChange={({ target: { value } }) =>
+                    setJob({
+                      ...job,
+                      renderPrefs: {
+                        ...job?.renderPrefs,
+                        settingsTemplate: value,
+                      },
+                    })
+                  }
                   inputProps={{
                     name: "settingsTemplate",
                     id: "settingsTemplate",
@@ -674,15 +720,15 @@ export default () => {
                 </Select>
               </FormControl>
               <FormControl>
-                <InputLabel htmlFor="outputModule">
-                  Output module
-                </InputLabel>
+                <InputLabel htmlFor="outputModule">Output module</InputLabel>
                 <Select
                   value={job.renderPrefs?.outputModule || ""}
-                  onChange={({ target: { value } }) => setJob({
-                    ...job,
-                    renderPrefs: { ...job?.renderPrefs, outputModule: value }
-                  })}
+                  onChange={({ target: { value } }) =>
+                    setJob({
+                      ...job,
+                      renderPrefs: { ...job?.renderPrefs, outputModule: value },
+                    })
+                  }
                   inputProps={{
                     name: "outputModule",
                     id: "outputModule",

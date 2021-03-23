@@ -212,7 +212,7 @@ export default function NavBar({ items }) {
               }}
               open={open}
               onClose={handleClose}>
-              <MenuItem onClick={handleClose}>Profile</MenuItem>
+              <MenuItem onClick={handleClose}>Logged in as {user.role}</MenuItem>
               <MenuItem
                 onClick={() => {
                   logout();

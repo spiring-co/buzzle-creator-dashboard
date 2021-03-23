@@ -20,6 +20,11 @@ import Popover from "@material-ui/core/Popover";
 import formatTime from "helpers/formatTime";
 import Alert from "@material-ui/lab/Alert";
 import { useDarkMode } from "helpers/useDarkMode";
+import UpdateIcon from "@material-ui/icons/Update";
+
+import CallMergeIcon from "@material-ui/icons/CallMerge";
+import AudiotrackIcon from "@material-ui/icons/Audiotrack";
+import BrandingWatermarkIcon from "@material-ui/icons/BrandingWatermark";
 
 import Filters from "common/Filters";
 import ErrorHandler from "common/ErrorHandler";
@@ -78,7 +83,8 @@ export default () => {
       orderDirection = "asc",
     } = query;
     history.push(
-      `?page=${page + 1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
+      `?page=${page + 1}&size=${pageSize}${
+        searchQuery ? "searchQuery=" + searchQuery : ""
       }`
     );
 
@@ -103,7 +109,8 @@ export default () => {
         // setJobIds(data.map((j) => j.id));
         if (data?.length === 0 && totalCount) {
           history.push(
-            `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
+            `?page=${1}&size=${pageSize}${
+              searchQuery ? "searchQuery=" + searchQuery : ""
             }`
           );
           return Job.getAll(
@@ -120,7 +127,8 @@ export default () => {
             .catch((err) => {
               setError(err);
               history.push(
-                `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
+                `?page=${1}&size=${pageSize}${
+                  searchQuery ? "searchQuery=" + searchQuery : ""
                 }`
               );
               return {
@@ -135,7 +143,8 @@ export default () => {
       .catch((err) => {
         setError(err);
         history.push(
-          `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
+          `?page=${1}&size=${pageSize}${
+            searchQuery ? "searchQuery=" + searchQuery : ""
           }`
         );
         return {
@@ -420,9 +429,36 @@ export default () => {
           },
           {
             searchable: false,
-            title: "Revisions",
+            title: "Current Actions",
             field: "__v",
             type: "numeric",
+            render: ({ actions }) => {
+              const { postrender, prerender } = actions;
+              return (
+                <div>
+                  {postrender?.map((post) => {
+                    if (post?.input2) {
+                      return (
+                        <CallMergeIcon
+                          style={{ height: 16, width: 16 }}></CallMergeIcon>
+                      );
+                    }
+                    if (post?.audio) {
+                      return (
+                        <AudiotrackIcon
+                          style={{ height: 16, width: 16 }}></AudiotrackIcon>
+                      );
+                    }
+                    if (post?.watermark) {
+                      return (
+                        <BrandingWatermarkIcon
+                          style={{ height: 16, width: 16 }}></BrandingWatermarkIcon>
+                      );
+                    }
+                  })}
+                </div>
+              );
+            },
           },
         ]}
         localization={{
@@ -466,12 +502,16 @@ export default () => {
             position: "row",
             onClick: async (e, { id, data, actions, renderPrefs = {} }) => {
               try {
-                await Job.update(id, {
-                  state: "started",
-                  extra: {
-                    forceRerender: true,
+                await Job.update(
+                  id,
+                  {
+                    state: "started",
+                    extra: {
+                      forceRerender: true,
+                    },
                   },
-                }, { priority: 5 });
+                  { priority: 5 }
+                );
               } catch (err) {
                 setError(err);
               }
@@ -575,15 +615,18 @@ const filterObjectToString = (f) => {
   if (!f) return null;
   const { startDate = 0, endDate = 0, idVideoTemplates = [], states = [] } = f;
 
-  return `${startDate
-    ? `dateUpdated=>=${startDate}&${endDate ? `dateUpdated=<=${endDate || startDate}&` : ""
-    }`
-    : ""
-    }${idVideoTemplates.length !== 0
-      ? getArrayOfIdsAsQueryString(
-        "idVideoTemplate",
-        idVideoTemplates.map(({ id }) => id)
-      ) + "&"
+  return `${
+    startDate
+      ? `dateUpdated=>=${startDate}&${
+          endDate ? `dateUpdated=<=${endDate || startDate}&` : ""
+        }`
       : ""
-    }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
+  }${
+    idVideoTemplates.length !== 0
+      ? getArrayOfIdsAsQueryString(
+          "idVideoTemplate",
+          idVideoTemplates.map(({ id }) => id)
+        ) + "&"
+      : ""
+  }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
 };

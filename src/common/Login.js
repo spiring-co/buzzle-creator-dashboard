@@ -12,6 +12,8 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core";
+import { Link } from "react-router-dom";
+
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
 import Visibility from "@material-ui/icons/Visibility";
@@ -181,12 +183,21 @@ export default ({ heading, subHeading, role }) => {
           </Box>
 
           <Button
-            color="primary"
             variant="contained"
             type="submit"
+            style={{ background: "white" }}
             children={loading ? "Loading..." : "Login"}
             disabled={loading}
           />
+          <Box display="inline-block" m={1}>
+            <Button
+              component={Link}
+              to="/register"
+              variant="contained"
+              color="primary">
+              Register
+            </Button>
+          </Box>
         </Paper>
       </Container>
       <Branding dark />

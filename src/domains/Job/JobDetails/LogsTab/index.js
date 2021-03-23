@@ -27,7 +27,7 @@ export default ({ logs: data }) => {
 
     }
     return <Box display="flex" flexDirection="column" px={8}>
-        <h1>Logs here.</h1>
+        {/* <h1>Logs here.</h1> */}
         {loading ? <p>loading...</p> : logs?.map((l, i) => (
             <Accordion key={i}>
                 <AccordionSummary
