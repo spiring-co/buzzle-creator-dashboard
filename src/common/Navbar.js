@@ -212,7 +212,33 @@ export default function NavBar({ items }) {
               }}
               open={open}
               onClose={handleClose}>
-              <MenuItem onClick={handleClose}>Logged in as {user.role}</MenuItem>
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                <Typography
+                  noWrap
+                  variant="h8"
+                  color="textPrimary"
+                  style={{
+                    paddingLeft: 10,
+                    paddingRight: 10,
+                    textDecoration: "none",
+                  }}>
+                  Signed in as
+                </Typography>
+                <Typography
+                  noWrap
+                  variant="h8"
+                  color="textPrimary"
+                  style={{
+                    paddingLeft: 10,
+                    paddingRight: 10,
+                    textDecoration: "none",
+                    fontFamily: "Poppins",
+                  }}>
+                  {user.email}
+                </Typography>
+                <Divider />
+              </div>
+              <MenuItem onClick={handleClose}>Profile</MenuItem>
               <MenuItem
                 onClick={() => {
                   logout();
@@ -257,8 +283,8 @@ export default function NavBar({ items }) {
             {theme.direction === "rtl" ? (
               <ChevronRightIcon />
             ) : (
-                <ChevronLeftIcon />
-              )}
+              <ChevronLeftIcon />
+            )}
           </IconButton>
         </div>
         <Divider />

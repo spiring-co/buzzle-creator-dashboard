@@ -8,7 +8,6 @@ import {
 
 // libs
 import * as timeago from "timeago.js";
-import ReactJson from "react-json-view";
 import MaterialTable from "material-table";
 
 import {
@@ -28,7 +27,6 @@ import PublishIcon from "@material-ui/icons/Publish";
 
 // components
 import SnackAlert from "common/SnackAlert";
-import TestJobDialog from "../CreateTestJob";
 
 import { SnackbarProvider, useSnackbar } from "notistack";
 // services
@@ -49,12 +47,9 @@ export default (props) => {
   const [error, setError] = useState(null);
   const [selectedVideoTemplate, setSelectedVideoTemplate] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [testJobTemplate, setTestJobTemplate] = useState(null);
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const { user } = useAuth();
-  const idCreator = user.id;
   const { role } = user;
 
   const tableRef = useRef(null);

@@ -369,12 +369,8 @@ export default () => {
             title: "State",
             field: "state",
             render: ({ state, failureReason }) => {
-              return (
-                <Tooltip
-                  TransitionComponent={Fade}
-                  title={
-                    state === "error" ? failureReason : "Reason not given"
-                  }>
+              return state === "error" ? (
+                <Tooltip TransitionComponent={Fade} title={failureReason}>
                   <Chip
                     size="small"
                     label={state}
@@ -386,6 +382,17 @@ export default () => {
                     }}
                   />
                 </Tooltip>
+              ) : (
+                <Chip
+                  size="small"
+                  label={state}
+                  style={{
+                    fontWeight: 700,
+                    background: getColorFromState(state),
+                    color: "white",
+                    textTransform: "capitalize",
+                  }}
+                />
               );
             },
           },
@@ -402,25 +409,43 @@ export default () => {
                     if (post?.input2) {
                       return (
                         <CallMergeIcon
-                          style={{ height: 16, width: 16 }}></CallMergeIcon>
+                          style={{
+                            height: 16,
+                            width: 16,
+                            color: "grey",
+                          }}></CallMergeIcon>
                       );
                     }
                     if (post?.audio) {
                       return (
                         <AudiotrackIcon
-                          style={{ height: 16, width: 16 }}></AudiotrackIcon>
+                          style={{
+                            height: 16,
+                            width: 16,
+                            color: "grey",
+                          }}></AudiotrackIcon>
                       );
                     }
                     if (post?.watermark) {
                       return (
                         <BrandingWatermarkIcon
-                          style={{ height: 16, width: 16 }}></BrandingWatermarkIcon>
+                          style={{
+                            height: 16,
+                            width: 16,
+                            color: "grey",
+                          }}></BrandingWatermarkIcon>
                       );
                     }
                   })}
                 </div>
               );
             },
+          },
+          {
+            searchable: false,
+            title: "Revisions",
+            field: "Revisions",
+            render: ({ output }) => <span>{output.length}</span>,
           },
         ]}
         localization={{

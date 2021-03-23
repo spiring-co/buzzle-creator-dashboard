@@ -213,6 +213,7 @@ function Webhooks() {
   }, []);
 
   useEffect(() => {
+    console.log(User);
     User.get(user?.id)
       .then((data) => setCurrentUser(data))
       .catch((err) => setError(err));

@@ -32,6 +32,10 @@ import {
 import { useAuth } from "services/auth";
 import * as Yup from "yup";
 
+import Card from "@material-ui/core/Card";
+import CardActions from "@material-ui/core/CardActions";
+import CardContent from "@material-ui/core/CardContent";
+
 const useStyles = makeStyles((theme) =>
   createStyles({
     content: {
@@ -185,20 +189,24 @@ export default ({ heading, subHeading, role }) => {
           <Button
             variant="contained"
             type="submit"
-            style={{ background: "white" }}
+            color="primary"
             children={loading ? "Loading..." : "Login"}
             disabled={loading}
           />
-          <Box display="inline-block" m={1}>
-            <Button
-              component={Link}
-              to="/register"
-              variant="contained"
-              color="primary">
-              Register
-            </Button>
-          </Box>
         </Paper>
+        <Card style={{ marginTop: 10 }}>
+          <CardContent style={{ display: "flex", flexDirection: "row" }}>
+            <Typography
+              color="textSecondary"
+              gutterBottom
+              style={{ marginTop: 5 }}>
+              New to Buzzle?
+            </Typography>
+            <Button component={Link} to="/register" color="primary">
+              Create an account
+            </Button>
+          </CardContent>
+        </Card>
       </Container>
       <Branding dark />
     </Box>
