@@ -35,6 +35,7 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
             : {
                 module: "buzzle-action-add-thumbnail",
                 thumbnail: null,
+                thumbnailDuration: 1,
             }
     );
     const [upload, setUpload] = useState(
@@ -183,20 +184,34 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
         );
     };
     const renderAddThumbnail = () => {
-        return <><FileUploader
-            name={"thumbnailFile"}
-            value={thumbnail.thumbnail}
-            onError={(e) => setFileError(e.message)}
-            onChange={(url) => {
-                setThumbnail({ ...thumbnail, thumbnail: url });
-                handleEdit({ addThumbnail: { ...thumbnail, thumbnail: url } });
-            }}
-            accept={"image/*"}
-            label="Thumbnail"
-            onTouched={() => setFileError(null)}
-            error={fileError}
-            helperText={"Thumbnail would be resized to fit."}
-        />
+        return <>
+            <TextField
+                fullWidth
+                variant="outlined"
+                margin="dense"
+                value={thumbnail.thumbnailDuration}
+                onChange={(e) => {
+                    setThumbnail({ ...thumbnail, thumbnailDuration: e.target.value });
+                    handleEdit({ addThumbnail: { ...thumbnail, thumbnailDuration: e?.target?.value } });
+                }}
+                type="text"
+                label={"Thumbnail durationa in frames"}
+                placeholder={"Enter duration number"}
+            />
+            <FileUploader
+                name={"thumbnailFile"}
+                value={thumbnail.thumbnail}
+                onError={(e) => setFileError(e.message)}
+                onChange={(url) => {
+                    setThumbnail({ ...thumbnail, thumbnail: url });
+                    handleEdit({ addThumbnail: { ...thumbnail, thumbnail: url } });
+                }}
+                accept={"image/*"}
+                label="Thumbnail"
+                onTouched={() => setFileError(null)}
+                error={fileError}
+                helperText={"Thumbnail would be resized to fit."}
+            />
         </>
     }
     const renderMergeVideos = () => {
