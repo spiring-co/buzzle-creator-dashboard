@@ -531,11 +531,10 @@ export default () => {
                       {timeline.length ? (
                         timeline.map(({ state, startsAt, endsAt }, index) => (
                           <TimelineItem>
-                            {!(index === 0 || timeline?.length - 1 !== index) &&
-                              <TimelineOppositeContent>
-                                <Typography color="textSecondary">
-                                  {((endsAt - startsAt) / 1000).toFixed(2)} secs</Typography>
-                              </TimelineOppositeContent>}
+                            {(index !== 0 && timeline?.length - 1 !== index) && <TimelineOppositeContent>
+                              <Typography color="textSecondary">
+                                {((endsAt - startsAt) / 1000).toFixed(2)} secs</Typography>
+                            </TimelineOppositeContent>}
                             <TimelineSeparator>
                               <TimelineDot
                                 style={{
@@ -678,6 +677,8 @@ export default () => {
                       return { compress: action };
                     case "buzzle-action-watermark":
                       return { addWaterMark: action };
+                    case "buzzle-action-add-thumbnail":
+                      return { addThumbnail: action };
                     case "buzzle-action-upload":
                       return { upload: action };
                     case "buzzle-action-add-audio":
