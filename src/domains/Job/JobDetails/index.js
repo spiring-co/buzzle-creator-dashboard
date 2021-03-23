@@ -24,6 +24,7 @@ import {
 } from "@material-ui/core";
 
 import DeleteIcon from "@material-ui/icons/Delete";
+import AddBoxIcon from "@material-ui/icons/AddBox";
 import HdIcon from "@material-ui/icons/Hd";
 import UpdateIcon from "@material-ui/icons/Update";
 import DownloadIcon from "@material-ui/icons/GetApp";
@@ -39,11 +40,15 @@ import TimelineOppositeContent from "@material-ui/lab/TimelineOppositeContent";
 import MaterialTable from "material-table";
 import io from "socket.io-client";
 
+import DialogTitle from "@material-ui/core/DialogTitle";
+import Dialog from "@material-ui/core/Dialog";
+
 import formatTime from "helpers/formatTime";
 
 import ActionsHandler from "./ActionsHandler";
 import ErrorHandler from "common/ErrorHandler";
 import ImageEditRow from "./ImageEditRow";
+import TextEditRow from "./TextEditRow";
 
 import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
@@ -110,6 +115,7 @@ const useStyles = makeStyles((theme) => ({
 export default () => {
   const [job, setJob] = useState({});
   const [error, setError] = useState(false);
+  const [open, setOpen] = useState(false);
   const [socket, setSocket] = useState(null);
   const [redirect, setRedirect] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -482,29 +488,42 @@ export default () => {
           <TabPanel value={activeTabIndex} index={0}>
             <Grid xs={12} item>
               <Box p={2}>
-                <FileUploader
-                  name={"watermarkFile"}
-                  value={""}
-                  onError={(e) => console.log(e.message)}
-                  onChange={(src) => {
-                    job.output = [
-                      ...job.output,
-                      {
-                        label: "Added Manually",
-                        updatedAt: new Date().toISOString(),
-                        dateCreated: new Date().toISOString(),
-                        src,
-                      },
-                    ];
-                    setJob(job);
-                  }}
-                  accept={"video/*"}
-                  uploadDirectory={"outputs"}
-                  label="Add output"
-                  onTouched={() => console.log("Pressed")}
-                  error={false}
-                  helperText={"This will append new output to this job"}
-                />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => setOpen(true)}
+                  startIcon={<AddBoxIcon />}
+                  style={{ marginBottom: 10 }}>
+                  Add Output
+                </Button>
+                <Dialog onClose={() => setOpen(false)} open={open}>
+                  <div style={{ margin: 10 }}>
+                    <DialogTitle>Add output</DialogTitle>
+                    <FileUploader
+                      name={"watermarkFile"}
+                      value={""}
+                      onError={(e) => console.log(e.message)}
+                      onChange={(src) => {
+                        job.output = [
+                          ...job.output,
+                          {
+                            label: "Added Manually",
+                            updatedAt: new Date().toISOString(),
+                            dateCreated: new Date().toISOString(),
+                            src,
+                          },
+                        ];
+                        setJob(job);
+                      }}
+                      accept={"video/*"}
+                      uploadDirectory={"outputs"}
+                      label="Add output"
+                      onTouched={() => console.log("Pressed")}
+                      error={false}
+                      helperText={"This will append new output to this job"}
+                    />
+                  </div>
+                </Dialog>
                 <Typography variant="h5">Details</Typography>
                 <br />
 
@@ -621,16 +640,16 @@ export default () => {
                     onChange,
                     value,
                   }) => {
+                    const version = job.videoTemplate.versions.find(
+                      (v) => v.id === job.idVersion
+                    );
+                    const {
+                      constraints: { height = 100, width = 100, maxLength },
+                    } = version.fields.find((f) => f.key === key);
                     if (
-                      value.startsWith("http://") ||
-                      value.startsWith("https://")
+                      value?.startsWith("http://") ||
+                      value?.startsWith("https://")
                     ) {
-                      const version = job.videoTemplate.versions.find(
-                        (v) => v.id === job.idVersion
-                      );
-                      const {
-                        constraints: { height = 100, width = 100 },
-                      } = version.fields.find((f) => f.key === key);
                       console.log(height, width);
                       return (
                         <ImageEditRow
@@ -642,11 +661,10 @@ export default () => {
                       );
                     } else {
                       return (
-                        <TextField
-                          fullWidth
+                        <TextEditRow
+                          maxLength={maxLength}
                           value={value}
-                          onChange={(e) => onChange(e?.target?.value)}
-                        />
+                          onChange={onChange}></TextEditRow>
                       );
                     }
                   },
