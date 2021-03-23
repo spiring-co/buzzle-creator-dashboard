@@ -90,8 +90,7 @@ export default (props) => {
     } = query;
     console.log(query);
     history.push(
-      `?page=${page + 1}&size=${pageSize}${
-        searchQuery ? "searchQuery=" + searchQuery : ""
+      `?page=${page + 1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
       }`
     );
 
@@ -129,10 +128,7 @@ export default (props) => {
       await VideoTemplate.update(data?.id, { ...data });
       enqueueSnackbar(`Job Updated successfully!`, {
         variant: "success",
-        anchorOrigin: {
-          vertical: "bottom",
-          horizontal: "right",
-        },
+
       });
       setSelectedVideoTemplate(null);
       tableRef.current && tableRef.current.onQueryChange();
@@ -263,94 +259,94 @@ export default (props) => {
         actions={
           role === "Admin"
             ? [
-                {
-                  icon: "code",
-                  tooltip: "View/Edit JSON",
-                  position: "row",
-                  onClick: async (event, rowData) => {
-                    setSelectedVideoTemplate(rowData);
-                  },
+              {
+                icon: "code",
+                tooltip: "View/Edit JSON",
+                position: "row",
+                onClick: async (event, rowData) => {
+                  setSelectedVideoTemplate(rowData);
                 },
-              ]
+              },
+            ]
             : [
-                {
-                  icon: "code",
-                  tooltip: "View/Edit JSON",
-                  position: "row",
-                  onClick: async (event, rowData) => {
-                    setSelectedVideoTemplate(rowData);
-                  },
+              {
+                icon: "code",
+                tooltip: "View/Edit JSON",
+                position: "row",
+                onClick: async (event, rowData) => {
+                  setSelectedVideoTemplate(rowData);
                 },
-                {
-                  icon: () => <PublishIcon />,
-                  tooltip: `Publish your template`,
-                  onClick: (e, data) => {
-                    history.push({
-                      pathname: `${url}/${data.id}/publish`,
-                      state: {
-                        videoTemplate: data,
-                      },
-                    });
-                  },
+              },
+              {
+                icon: () => <PublishIcon />,
+                tooltip: `Publish your template`,
+                onClick: (e, data) => {
+                  history.push({
+                    pathname: `${url}/${data.id}/publish`,
+                    state: {
+                      videoTemplate: data,
+                    },
+                  });
                 },
+              },
 
-                {
-                  icon: "alarm-on",
-                  tooltip: "Render Test Job",
-                  onClick: (e, item) => {
-                    // setTestJobTemplate(item);
-                    history.push({
-                      pathname: "/testJob",
-                      state: {
-                        videoTemplate: item,
-                        versions: item.versions,
-                      },
-                    });
-                  },
+              {
+                icon: "alarm-on",
+                tooltip: "Render Test Job",
+                onClick: (e, item) => {
+                  // setTestJobTemplate(item);
+                  history.push({
+                    pathname: "/testJob",
+                    state: {
+                      videoTemplate: item,
+                      versions: item.versions,
+                    },
+                  });
                 },
-                {
-                  icon: "delete",
-                  tooltip: "Delete Template",
-                  disabled: isDeleting,
-                  onClick: async (event, { id }) => handleDelete(id),
-                },
-                // {
-                //   icon: "add",
-                //   tooltip: "Add Video Template",
-                //   isFreeAction: true,
-                //   onClick: () => history.push(`${url}/add`),
-                // },
+              },
+              {
+                icon: "delete",
+                tooltip: "Delete Template",
+                disabled: isDeleting,
+                onClick: async (event, { id }) => handleDelete(id),
+              },
+              // {
+              //   icon: "add",
+              //   tooltip: "Add Video Template",
+              //   isFreeAction: true,
+              //   onClick: () => history.push(`${url}/add`),
+              // },
 
-                {
-                  icon: "edit",
-                  tooltip: "Edit Template",
-                  onClick: (e, data) => {
-                    delete data["tableData"];
-                    history.push({
-                      pathname: `${url}/${data.id}/edit`,
-                      state: {
-                        isEdit: true,
-                        video: data,
-                      },
-                    });
-                  },
+              {
+                icon: "edit",
+                tooltip: "Edit Template",
+                onClick: (e, data) => {
+                  delete data["tableData"];
+                  history.push({
+                    pathname: `${url}/${data.id}/edit`,
+                    state: {
+                      isEdit: true,
+                      video: data,
+                    },
+                  });
                 },
-                // {
-                //   icon: "sort",
-                //   tooltip: "Drafted Templates",
-                //   isFreeAction: true,
-                //   style: { backgroundColor: "blue" },
-                //   onClick: () => {
-                //     history.push(`${url}/drafts`);
-                //   },
-                // },
-                {
-                  icon: "refresh",
-                  tooltip: "Refresh Data",
-                  isFreeAction: true,
-                  onClick: handleRetry,
-                },
-              ]
+              },
+              // {
+              //   icon: "sort",
+              //   tooltip: "Drafted Templates",
+              //   isFreeAction: true,
+              //   style: { backgroundColor: "blue" },
+              //   onClick: () => {
+              //     history.push(`${url}/drafts`);
+              //   },
+              // },
+              {
+                icon: "refresh",
+                tooltip: "Refresh Data",
+                isFreeAction: true,
+                onClick: handleRetry,
+              },
+            ]
         }
         data={getDataFromQuery}
         options={{

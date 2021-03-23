@@ -133,7 +133,7 @@ export default () => {
   }, []);
 
   // rerender on output select
-  useEffect(() => {}, [selectedOutputIndex]);
+  useEffect(() => { }, [selectedOutputIndex]);
 
   // init socket on mount
   useEffect(() => {
@@ -295,7 +295,7 @@ export default () => {
       await Job.update(id, {
         data,
         actions,
-        state: "started",
+        state: "created",
         renderPrefs: { settingsTemplate: "full" },
         extra: {
           forceRerender: true,
@@ -359,7 +359,7 @@ export default () => {
               onClick={async () => {
                 try {
                   await Job.update(id, {
-                    state: "started",
+                    state: "created",
                     data,
                     actions,
                     renderPrefs,
@@ -385,7 +385,7 @@ export default () => {
                   await Job.update(
                     id,
                     {
-                      state: "started",
+                      state: "created",
                       data,
                       actions,
                       renderPrefs,
@@ -550,11 +550,11 @@ export default () => {
                       {timeline.length ? (
                         timeline.map(({ state, startsAt, endsAt }, index) => (
                           <TimelineItem>
-                            <TimelineOppositeContent>
-                              <Typography color="textSecondary">
-                                {((endsAt - startsAt) / 1000).toFixed(2)} secs
-                              </Typography>
-                            </TimelineOppositeContent>
+                            {!(index === 0 || timeline?.length - 1 !== index) &&
+                              <TimelineOppositeContent>
+                                <Typography color="textSecondary">
+                                  {((endsAt - startsAt) / 1000).toFixed(2)} secs</Typography>
+                              </TimelineOppositeContent>}
                             <TimelineSeparator>
                               <TimelineDot
                                 style={{
@@ -562,8 +562,8 @@ export default () => {
                                     index === 0
                                       ? "#ffa117"
                                       : index !== timeline?.length - 1
-                                      ? "#35a0f4"
-                                      : "#65ba68",
+                                        ? "#35a0f4"
+                                        : "#65ba68",
                                 }}
                               />
                               {timeline?.length - 1 !== index && (
@@ -624,7 +624,7 @@ export default () => {
                     return (
                       <span>
                         {value.startsWith("http://") ||
-                        value.startsWith("https://")
+                          value.startsWith("https://")
                           ? "image"
                           : "string"}
                       </span>
