@@ -1,9 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useHistory, useRouteMatch, useLocation } from "react-router-dom";
 
-import io from "socket.io-client";
 import * as timeago from "timeago.js";
-import ReactJson from "react-json-view";
 
 import {
   Chip,
@@ -20,7 +18,6 @@ import Popover from "@material-ui/core/Popover";
 import formatTime from "helpers/formatTime";
 import Alert from "@material-ui/lab/Alert";
 import { useDarkMode } from "helpers/useDarkMode";
-import UpdateIcon from "@material-ui/icons/Update";
 
 import CallMergeIcon from "@material-ui/icons/CallMerge";
 import AudiotrackIcon from "@material-ui/icons/Audiotrack";
@@ -35,9 +32,11 @@ import TimelineSeparator from "@material-ui/lab/TimelineSeparator";
 import TimelineConnector from "@material-ui/lab/TimelineConnector";
 import TimelineContent from "@material-ui/lab/TimelineContent";
 import TimelineDot from "@material-ui/lab/TimelineDot";
+import UpdateIcon from "@material-ui/icons/Update";
+
 import TimelineOppositeContent from "@material-ui/lab/TimelineOppositeContent";
 import { useAuth } from "services/auth";
-import { SnackbarProvider, useSnackbar } from "notistack";
+import { useSnackbar } from "notistack";
 import JSONEditorDialoge from "common/JSONEditorDialoge";
 import ActiveJobsTable from "../ActiveJobsTable";
 
