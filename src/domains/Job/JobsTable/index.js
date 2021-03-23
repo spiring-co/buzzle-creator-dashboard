@@ -51,11 +51,6 @@ export default () => {
   const queryParam = useQuery();
   const tableRef = useRef(null);
   const [error, setError] = useState(null);
-  const [operationStatus, setOperationStatus] = useState({
-    total: 0,
-    success: 0,
-    failed: 0,
-  });
   const { user } = useAuth();
   const [filters, setFilters] = useState({});
   const [selectedJob, setSelectedJob] = useState(null);
@@ -82,8 +77,7 @@ export default () => {
       orderDirection = "asc",
     } = query;
     history.push(
-      `?page=${page + 1}&size=${pageSize}${
-        searchQuery ? "searchQuery=" + searchQuery : ""
+      `?page=${page + 1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
       }`
     );
 
@@ -108,8 +102,7 @@ export default () => {
         // setJobIds(data.map((j) => j.id));
         if (data?.length === 0 && totalCount) {
           history.push(
-            `?page=${1}&size=${pageSize}${
-              searchQuery ? "searchQuery=" + searchQuery : ""
+            `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
             }`
           );
           return Job.getAll(
@@ -126,8 +119,7 @@ export default () => {
             .catch((err) => {
               setError(err);
               history.push(
-                `?page=${1}&size=${pageSize}${
-                  searchQuery ? "searchQuery=" + searchQuery : ""
+                `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
                 }`
               );
               return {
@@ -142,8 +134,7 @@ export default () => {
       .catch((err) => {
         setError(err);
         history.push(
-          `?page=${1}&size=${pageSize}${
-            searchQuery ? "searchQuery=" + searchQuery : ""
+          `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
           }`
         );
         return {
@@ -155,26 +146,15 @@ export default () => {
   };
   const deleteMultipleJobs = async (array = []) => {
     try {
-      const arrIds = array.map((a) => {
-        return a.id;
-      });
       await Job.deleteMultiple({
-        ids: arrIds,
+        ids: array.map(a => a.id),
       });
       enqueueSnackbar(`jobs deleted successfully `, {
         variant: "success",
-        anchorOrigin: {
-          vertical: "bottom",
-          horizontal: "right",
-        },
       });
     } catch (e) {
-      enqueueSnackbar(` jobs failed to delete `, {
+      enqueueSnackbar(`jobs failed to delete `, {
         variant: "error",
-        anchorOrigin: {
-          vertical: "bottom",
-          horizontal: "right",
-        },
       });
     }
     tableRef.current && tableRef.current.onQueryChange();
@@ -185,10 +165,7 @@ export default () => {
       await Job.update(id, { data, actions, renderPrefs }, { noMessage: true });
       enqueueSnackbar(`Job Updated successfully!`, {
         variant: "success",
-        anchorOrigin: {
-          vertical: "bottom",
-          horizontal: "right",
-        },
+
       });
       setSelectedJob(null);
       tableRef.current && tableRef.current.onQueryChange();
@@ -244,11 +221,11 @@ export default () => {
             {timeline.length ? (
               timeline.map(({ state, startsAt, endsAt }, index) => (
                 <TimelineItem>
-                  <TimelineOppositeContent>
+                  {!(index === 0 || timeline?.length - 1 !== index) && <TimelineOppositeContent>
                     <Typography color="textSecondary">
                       {((endsAt - startsAt) / 1000).toFixed(2)} secs
                     </Typography>
-                  </TimelineOppositeContent>
+                  </TimelineOppositeContent>}
                   <TimelineSeparator>
                     <TimelineDot
                       style={{
@@ -256,8 +233,8 @@ export default () => {
                           index === 0
                             ? "#ffa117"
                             : index !== timeline?.length - 1
-                            ? "#35a0f4"
-                            : "#65ba68",
+                              ? "#35a0f4"
+                              : "#65ba68",
                       }}
                     />
                     {timeline?.length - 1 !== index && <TimelineConnector />}
@@ -276,29 +253,23 @@ export default () => {
     );
   };
 
-  const updateMultiple = async (array) => {
+  const restartMultiple = async (array) => {
     try {
       const arrIds = array.map((a) => {
         return a.id;
       });
       await Job.updateMultiple({
         ids: arrIds,
+        state: 'created',
         extra: { forceRerender: true },
       });
       enqueueSnackbar(`jobs restarted successfully `, {
         variant: "success",
-        anchorOrigin: {
-          vertical: "bottom",
-          horizontal: "right",
-        },
       });
     } catch (e) {
       enqueueSnackbar(`jobs failed to restart `, {
         variant: "error",
-        anchorOrigin: {
-          vertical: "bottom",
-          horizontal: "right",
-        },
+
       });
     }
 
@@ -317,14 +288,6 @@ export default () => {
       <Box>
         <ActiveJobsTable onRowClick={(id) => history.push(`${path}${id}`)} />
       </Box>
-      {operationStatus?.total !== 0 && (
-        <Box style={{ marginBottom: 10 }}>
-          <Alert severity="info">
-            {operationStatus?.success + operationStatus?.failed} out of{" "}
-            {operationStatus?.total} Operations performed!
-          </Alert>
-        </Box>
-      )}
       <Paper style={{ padding: 15, marginBottom: 5 }}>
         <Typography variant="h6">Filters</Typography>
         <Container
@@ -504,7 +467,7 @@ export default () => {
                 await Job.update(
                   id,
                   {
-                    state: "started",
+                    state: "created",
                     extra: {
                       forceRerender: true,
                     },
@@ -524,7 +487,7 @@ export default () => {
             onClick: async (e, { id, data, actions, renderPrefs = {} }) => {
               try {
                 await Job.update(id, {
-                  state: "started",
+                  state: "created",
                   extra: {
                     forceRerender: true,
                   },
@@ -563,7 +526,7 @@ export default () => {
             tooltip: "Restart All Selected Jobs",
             position: "toolbarOnSelect",
             onClick: async (e, data) => {
-              await updateMultiple(data);
+              await restartMultiple(data);
             },
           },
           {
@@ -614,18 +577,15 @@ const filterObjectToString = (f) => {
   if (!f) return null;
   const { startDate = 0, endDate = 0, idVideoTemplates = [], states = [] } = f;
 
-  return `${
-    startDate
-      ? `dateUpdated=>=${startDate}&${
-          endDate ? `dateUpdated=<=${endDate || startDate}&` : ""
-        }`
-      : ""
-  }${
-    idVideoTemplates.length !== 0
+  return `${startDate
+    ? `dateUpdated=>=${startDate}&${endDate ? `dateUpdated=<=${endDate || startDate}&` : ""
+    }`
+    : ""
+    }${idVideoTemplates.length !== 0
       ? getArrayOfIdsAsQueryString(
-          "idVideoTemplate",
-          idVideoTemplates.map(({ id }) => id)
-        ) + "&"
+        "idVideoTemplate",
+        idVideoTemplates.map(({ id }) => id)
+      ) + "&"
       : ""
-  }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
+    }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
 };

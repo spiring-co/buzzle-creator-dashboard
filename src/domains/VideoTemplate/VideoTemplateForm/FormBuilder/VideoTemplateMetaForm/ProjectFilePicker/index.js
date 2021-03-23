@@ -59,6 +59,7 @@ export default ({
 }) => {
   const classes = useStyles();
   const [value, setValue] = useState(v);
+  const [aeURL, setAEURL] = useState(process.env.REACT_APP_AE_SERVICE_URL)
   const [edit, setEdit] = useState(isEdit);
   const [type, setType] = useState("file");
   const [hasPickedFile, setHasPickedFile] = useState(!!v);
@@ -125,7 +126,7 @@ export default ({
         var uri = value;
       }
       setMessage("Extracting Layer and compositions ...");
-      const { compositions, staticAssets } = await extractStructureFromFile(
+      const { compositions, staticAssets } = await extractStructureFromFile(aeURL,
         uri
       );
       console.log(staticAssets);
@@ -164,9 +165,8 @@ export default ({
           return [...textLayers, ...imageLayers];
         })
         .flat();
-      return `${Object.keys(c).length} compositions & ${
-        allLayers.length
-      } layers found`;
+      return `${Object.keys(c).length} compositions & ${allLayers.length
+        } layers found`;
     } catch (err) {
       onError(err);
     }
@@ -190,8 +190,8 @@ export default ({
               hasExtractedData && hasPickedFile
                 ? false
                 : hasPickedFile
-                ? true
-                : false
+                  ? true
+                  : false
             }
             size="small"
             variant="outlined"
@@ -200,8 +200,8 @@ export default ({
               hasExtractedData && hasPickedFile
                 ? "Change"
                 : hasPickedFile
-                ? "Extracting ..."
-                : "Extract"
+                  ? "Extracting ..."
+                  : "Extract"
             }
             onClick={() => {
               setEdit(true);
@@ -288,6 +288,15 @@ export default ({
           row>
           <FormControlLabel value="file" control={<Radio />} label="File" />
           <FormControlLabel value="url" control={<Radio />} label="URL" />
+          <TextField
+            label="AE extract URL"
+            placeholder="Paste URL here"
+            margin="dense"
+            style={{ marginLeft: 20 }}
+            variant="outlined"
+            value={aeURL}
+            onChange={({ target: { value } }) => setAEURL(value)}
+          />
         </RadioGroup>
       </FormControl>
       {render[type]}

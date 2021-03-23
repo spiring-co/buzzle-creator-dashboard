@@ -36,7 +36,10 @@ const AppChild = () => {
   return (
     <AuthProvider>
       <MuiThemeProvider theme={themeMode}>
-        <SnackbarProvider maxSnack={3}>
+        <SnackbarProvider maxSnack={3} anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}>
           <Router>
             <Switch>
               <Route exact path="/" component={Landing} />
