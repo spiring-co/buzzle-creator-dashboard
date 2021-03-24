@@ -19,7 +19,7 @@ import formatTime from "helpers/formatTime";
 import Alert from "@material-ui/lab/Alert";
 import { useDarkMode } from "helpers/useDarkMode";
 
-import CallMergeIcon from "@material-ui/icons/CallMerge";
+import VideoLibrary from "@material-ui/icons/VideoLibrary";
 import AudiotrackIcon from "@material-ui/icons/Audiotrack";
 import BrandingWatermarkIcon from "@material-ui/icons/BrandingWatermark";
 
@@ -303,6 +303,7 @@ export default () => {
           headerStyle: { fontWeight: 700 },
           actionsColumnIndex: -1,
           selection: true,
+          // padding: 'dense',
           sorting: true,
         }}
         onRowClick={(e, { id }) => {
@@ -398,44 +399,32 @@ export default () => {
           },
           {
             searchable: false,
-            title: "Current Actions",
-            field: "__v",
-            type: "numeric",
+            title: "Render Actions",
             render: ({ actions }) => {
               const { postrender, prerender } = actions;
               return (
                 <div>
-                  {postrender?.map((post) => {
-                    if (post?.input2) {
+                  {postrender?.map(({ module }) => {
+                    if (module === 'buzzle-action-merge-videos') {
                       return (
-                        <CallMergeIcon
-                          style={{
-                            height: 16,
-                            width: 16,
-                            color: "grey",
-                          }}></CallMergeIcon>
+                        <Tooltip title="Merge Video"><VideoLibrary
+                          color="disabled" /></Tooltip>
                       );
                     }
-                    if (post?.audio) {
+                    else if (module === 'buzzle-action-add-audio') {
                       return (
-                        <AudiotrackIcon
-                          style={{
-                            height: 16,
-                            width: 16,
-                            color: "grey",
-                          }}></AudiotrackIcon>
+                        <Tooltip title="Add Audio"><AudiotrackIcon
+                          color="disabled"
+                        /></Tooltip>
                       );
                     }
-                    if (post?.watermark) {
+                    else if (module === 'buzzle-action-watermark') {
                       return (
-                        <BrandingWatermarkIcon
-                          style={{
-                            height: 16,
-                            width: 16,
-                            color: "grey",
-                          }}></BrandingWatermarkIcon>
+                        <Tooltip title="Watermark action"><BrandingWatermarkIcon
+                          color="disabled"
+                        /></Tooltip>
                       );
-                    }
+                    } else return <div />
                   })}
                 </div>
               );
@@ -443,8 +432,7 @@ export default () => {
           },
           {
             searchable: false,
-            title: "Revisions",
-            field: "Revisions",
+            title: "Outputs",
             render: ({ output }) => <span>{output.length}</span>,
           },
         ]}
