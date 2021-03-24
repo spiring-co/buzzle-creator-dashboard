@@ -202,8 +202,8 @@ export default ({ prerender = [], postrender = [], onSubmit }) => {
                     );
                   })
                 ) : (
-                    <p>No Action</p>
-                  )}
+                  <p>No Action</p>
+                )}
                 {provided.placeholder}
               </List>
             </RootRef>
@@ -274,8 +274,8 @@ export default ({ prerender = [], postrender = [], onSubmit }) => {
                     );
                   })
                 ) : (
-                    <p>No Action</p>
-                  )}
+                  <p>No Action</p>
+                )}
                 {provided.placeholder}
               </List>
             </RootRef>

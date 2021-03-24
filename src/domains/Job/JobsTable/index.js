@@ -224,13 +224,11 @@ export default () => {
             {timeline.length ? (
               timeline.map(({ state, startsAt, endsAt }, index) => (
                 <TimelineItem>
-                  {!(index === 0 || timeline?.length - 1 !== index) && (
-                    <TimelineOppositeContent>
-                      <Typography color="textSecondary">
-                        {((endsAt - startsAt) / 1000).toFixed(2)} secs
-                      </Typography>
-                    </TimelineOppositeContent>
-                  )}
+                  {(index !== 0 && timeline?.length - 1 !== index) && <TimelineOppositeContent>
+                    <Typography color="textSecondary">
+                      {((endsAt - startsAt) / 1000).toFixed(2)} secs
+                    </Typography>
+                  </TimelineOppositeContent>}
                   <TimelineSeparator>
                     <TimelineDot
                       style={{

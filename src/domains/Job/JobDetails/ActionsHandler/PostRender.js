@@ -10,6 +10,7 @@ import FileUploader from "common/FileUploader";
 
 export default ({ initialValue, onSubmit, handleEdit }) => {
     const actionName = Object.keys(initialValue)[0];
+    console.log(initialValue)
     const actionValue = initialValue[actionName];
     const [compress, setCompress] = useState(
         actionName === "compress"
@@ -25,9 +26,16 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
             ? actionValue
             : {
                 module: "buzzle-action-watermark",
-                input: "encoded.mp4",
                 watermark: null,
-                output: "watermarked.mp4",
+            }
+    );
+    const [thumbnail, setThumbnail] = useState(
+        actionName === "addThumbnail"
+            ? actionValue
+            : {
+                module: "buzzle-action-add-thumbnail",
+                thumbnail: null,
+                thumbnailDuration: 1,
             }
     );
     const [upload, setUpload] = useState(
@@ -158,55 +166,54 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
     };
     const renderWatermark = () => {
         return (
-            <>
-                <TextField
-                    fullWidth
-                    variant="outlined"
-                    margin="dense"
-                    value={watermark.input}
-                    onChange={(e) => {
-                        setWaterMark({ ...watermark, input: e.target.value });
-                        handleEdit({
-                            watermark: { ...watermark, input: e?.target?.value },
-                        });
-                    }}
-                    type="text"
-                    label={"Input"}
-                    placeholder={"Enter Input filename"}
-                />
-                <FileUploader
-                    name={"watermarkFile"}
-                    value={watermark.watermark}
-                    onError={(e) => setFileError(e.message)}
-                    onChange={(url) => {
-                        setWaterMark({ ...watermark, watermark: url });
-                        handleEdit({ watermark: { ...watermark, watermark: url } });
-                    }}
-                    accept={"image/*"}
-                    uploadDirectory={"watermarks"}
-                    label="Watermark"
-                    onTouched={() => setFileError(null)}
-                    error={fileError}
-                    helperText={"Watermark should be transparent."}
-                />
-                <TextField
-                    fullWidth
-                    variant="outlined"
-                    margin="dense"
-                    value={watermark.output}
-                    onChange={(e) => {
-                        setWaterMark({ ...watermark, output: e.target.value });
-                        handleEdit({
-                            watermark: { ...watermark, output: e?.target?.value },
-                        });
-                    }}
-                    type="text"
-                    label={"Output"}
-                    placeholder={"Enter Output filename"}
-                />
+            <><FileUploader
+                name={"watermarkFile"}
+                value={watermark.watermark}
+                onError={(e) => setFileError(e.message)}
+                onChange={(url) => {
+                    setWaterMark({ ...watermark, watermark: url });
+                    handleEdit({ addWaterMark: { ...watermark, watermark: url } });
+                }}
+                accept={"image/*"}
+                label="Watermark"
+                onTouched={() => setFileError(null)}
+                error={fileError}
+                helperText={"Watermark should be transparent."}
+            />
             </>
         );
     };
+    const renderAddThumbnail = () => {
+        return <>
+            <TextField
+                fullWidth
+                variant="outlined"
+                margin="dense"
+                value={thumbnail.thumbnailDuration}
+                onChange={(e) => {
+                    setThumbnail({ ...thumbnail, thumbnailDuration: e.target.value });
+                    handleEdit({ addThumbnail: { ...thumbnail, thumbnailDuration: e?.target?.value } });
+                }}
+                type="text"
+                label={"Thumbnail durationa in frames"}
+                placeholder={"Enter duration number"}
+            />
+            <FileUploader
+                name={"thumbnailFile"}
+                value={thumbnail.thumbnail}
+                onError={(e) => setFileError(e.message)}
+                onChange={(url) => {
+                    setThumbnail({ ...thumbnail, thumbnail: url });
+                    handleEdit({ addThumbnail: { ...thumbnail, thumbnail: url } });
+                }}
+                accept={"image/*"}
+                label="Thumbnail"
+                onTouched={() => setFileError(null)}
+                error={fileError}
+                helperText={"Thumbnail would be resized to fit."}
+            />
+        </>
+    }
     const renderMergeVideos = () => {
         return (
             <>
@@ -254,6 +261,7 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
         addWaterMark: renderWatermark(),
         mergeVideos: renderMergeVideos(),
         addAudio: renderAddAudio(),
+        addThumbnail: renderAddThumbnail()
     };
 
     return (
