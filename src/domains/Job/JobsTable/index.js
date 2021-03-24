@@ -64,9 +64,6 @@ export default () => {
     handleRetry();
   }, [filterString]);
 
-  useEffect(() => {
-    document.title = "Jobs";
-  }, []);
 
   const getDataFromQuery = (query) => {
     const {
@@ -77,8 +74,7 @@ export default () => {
       orderDirection = "asc",
     } = query;
     history.push(
-      `?page=${page + 1}&size=${pageSize}${
-        searchQuery ? "searchQuery=" + searchQuery : ""
+      `?page=${page + 1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
       }`
     );
 
@@ -103,8 +99,7 @@ export default () => {
         // setJobIds(data.map((j) => j.id));
         if (data?.length === 0 && totalCount) {
           history.push(
-            `?page=${1}&size=${pageSize}${
-              searchQuery ? "searchQuery=" + searchQuery : ""
+            `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
             }`
           );
           return Job.getAll(
@@ -121,8 +116,7 @@ export default () => {
             .catch((err) => {
               setError(err);
               history.push(
-                `?page=${1}&size=${pageSize}${
-                  searchQuery ? "searchQuery=" + searchQuery : ""
+                `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
                 }`
               );
               return {
@@ -137,8 +131,7 @@ export default () => {
       .catch((err) => {
         setError(err);
         history.push(
-          `?page=${1}&size=${pageSize}${
-            searchQuery ? "searchQuery=" + searchQuery : ""
+          `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
           }`
         );
         return {
@@ -236,8 +229,8 @@ export default () => {
                           index === 0
                             ? "#ffa117"
                             : index !== timeline?.length - 1
-                            ? "#35a0f4"
-                            : "#65ba68",
+                              ? "#35a0f4"
+                              : "#65ba68",
                       }}
                     />
                     {timeline?.length - 1 !== index && <TimelineConnector />}
@@ -594,18 +587,15 @@ const filterObjectToString = (f) => {
   if (!f) return null;
   const { startDate = 0, endDate = 0, idVideoTemplates = [], states = [] } = f;
 
-  return `${
-    startDate
-      ? `dateUpdated=>=${startDate}&${
-          endDate ? `dateUpdated=<=${endDate || startDate}&` : ""
-        }`
+  return `${startDate
+      ? `dateUpdated=>=${startDate}&${endDate ? `dateUpdated=<=${endDate || startDate}&` : ""
+      }`
       : ""
-  }${
-    idVideoTemplates.length !== 0
+    }${idVideoTemplates.length !== 0
       ? getArrayOfIdsAsQueryString(
-          "idVideoTemplate",
-          idVideoTemplates.map(({ id }) => id)
-        ) + "&"
+        "idVideoTemplate",
+        idVideoTemplates.map(({ id }) => id)
+      ) + "&"
       : ""
-  }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
+    }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
 };

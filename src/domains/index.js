@@ -22,6 +22,7 @@ import Servers from "domains/Servers";
 import Creators from "domains/Creator";
 import VideoTemplates from "domains/VideoTemplate";
 import Jobs from "domains/Job";
+import Page from "common/Page";
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -96,15 +97,42 @@ export default () => {
             <main className={classes.content}>
                 <div className={classes.toolbar} />
                 <Switch>
-                    <Route path={`${path}/`} exact component={Home} />
-                    <Route path={`${path}/profile`} component={Profile} />
-                    <Route path={`${path}/videoTemplates`} component={VideoTemplates} />
-                    <Route path={`${path}/revenue`} component={Revenue} />
-                    <Route path={`${path}/jobs`} component={Jobs} />
+                    <Route path={`${path}/`} exact
+                        render={props => (
+                            <Page {...props} component={Home} title="Buzzle" />
+                        )}
+                    />
+                    <Route path={`${path}/profile`}
+                        render={props => (
+                            <Page {...props} component={Profile} title="Buzzle | Profile" />
+                        )} />
+                    <Route path={`${path}/videoTemplates`}
+                        render={props => (
+                            <Page {...props} component={VideoTemplates} title="Buzzle | Video Templates" />
+                        )}
+                    />
+                    <Route path={`${path}/revenue`}
+                        render={props => (
+                            <Page {...props} component={Revenue} title="Buzzle | Revenue" />
+                        )} />
+                    <Route path={`${path}/jobs`}
+                        render={props => (
+                            <Page {...props} component={Jobs} title="Buzzle | Jobs" />
+                        )} />
                     <RoleBasedRoute allowedRoles={["Admin"]}>
-                        <Route path={`${path}/creators`} component={Creators} />
-                        <Route path={`${path}/users`} component={Users} />
-                        <Route path={`${path}/servers`} component={Servers} />
+                        <Route path={`${path}/creators`}
+                            render={props => (
+                                <Page {...props} component={Creators} title="Buzzle | Creators" />
+                            )} />
+                        <Route path={`${path}/users`}
+                            render={props => (
+                                <Page {...props} component={Users} title="Buzzle | Developers" />
+                            )} />
+                        <Route path={`${path}/servers`}
+                            render={props => (
+                                <Page {...props} component={Servers} title="Buzzle | Servers" />
+                            )}
+                        />
                     </RoleBasedRoute>
                     <Redirect to={"/NotFound"} />
                 </Switch>

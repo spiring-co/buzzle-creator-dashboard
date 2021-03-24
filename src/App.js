@@ -25,6 +25,7 @@ import { SnackbarProvider, useSnackbar } from "notistack";
 import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import { AuthProvider } from "services/auth";
 import { messaging } from "services/firebase";
+import Page from "common/Page";
 
 const AppChild = () => {
   const [theme, t, componentMounted] = useDarkMode();
@@ -42,16 +43,51 @@ const AppChild = () => {
         }}>
           <Router>
             <Switch>
-              <Route exact path="/" component={Landing} />
-              <Route path="/login" exact component={Login} />
-              <Route path="/admin" exact component={AdminLogin} />
-              <Route path="/user" exact component={UserLogin} />
-              <Route path="/testJob" exact component={TestJob} />
-              <Route path="/register" exact component={Register} />
-              <Route path="/registerUser" exact component={UserRegister} />
-              <Route path="/forgotPassword" component={ForgotPassword} />
-              <PrivateRoute path="/home" component={Domains} />
-              <Route path="*" component={NotFound} />
+              <Route exact path="/"
+                render={props => (
+                  <Page {...props} component={Landing} title="Buzzle" />
+                )} />
+              <Route path="/login" exact
+                render={props => (
+                  <Page {...props} component={Login} title="Buzzle | Creator Login" />
+                )}
+              />
+              <Route path="/admin" exact
+                render={props => (
+                  <Page {...props} component={AdminLogin} title="Buzzle | Admin Login" />
+                )} />
+              <Route path="/user" exact
+                render={props => (
+                  <Page {...props} component={UserLogin} title="Buzzle | Developer Login" />
+                )} />
+              <Route path="/testJob" exact
+                render={props => (
+                  <Page {...props} component={TestJob} title="Buzzle | Test Job" />
+                )}
+              />
+              <Route path="/register" exact
+                render={props => (
+                  <Page {...props} component={Register} title="Buzzle | Register" />
+                )}
+              />
+              <Route path="/registerUser" exact
+                render={props => (
+                  <Page {...props} component={UserRegister} title="Buzzle | Register" />
+                )} />
+              <Route path="/forgotPassword"
+                render={props => (
+                  <Page {...props} component={ForgotPassword} title="Buzzle | Forgot password" />
+                )} />
+              <PrivateRoute path="/home"
+                render={props => (
+                  <Page {...props} component={Domains} title="Buzzle" />
+                )}
+              />
+              <Route path="*"
+                render={props => (
+                  <Page {...props} component={NotFound} title="Buzzle | 404 - Not Found" />
+                )}
+              />
             </Switch>
           </Router>
         </SnackbarProvider>

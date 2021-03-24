@@ -41,9 +41,6 @@ function ProfileEdit({ creator }) {
     User.update(creator?.id, data);
   };
 
-  useEffect(() => {
-    document.title = "Profile";
-  }, []);
 
   const { handleChange, values, handleSubmit, setFieldValue } = useFormik({
     initialValues: {
@@ -271,25 +268,25 @@ function Webhooks() {
       <Divider />
       {currentUser
         ? currentUser?.webhooks.map((cu, index) => {
-            return (
-              <div>
-                <Typography style={{ margin: 10 }} variant="h7">
-                  Name: {webhookData.find(({ id }) => id === cu.id).name}
-                </Typography>
-                <Typography variant="h7">URL: {cu.url}</Typography>
-                <IconButton>
-                  <Edit onClick={() => handleOpen(index)} fontSize="small" />
-                </IconButton>
-                <IconButton>
-                  <Delete
-                    fontSize="small"
-                    onClick={() => handleDelete(index)}
-                  />
-                </IconButton>
-                <Divider />
-              </div>
-            );
-          })
+          return (
+            <div>
+              <Typography style={{ margin: 10 }} variant="h7">
+                Name: {webhookData.find(({ id }) => id === cu.id).name}
+              </Typography>
+              <Typography variant="h7">URL: {cu.url}</Typography>
+              <IconButton>
+                <Edit onClick={() => handleOpen(index)} fontSize="small" />
+              </IconButton>
+              <IconButton>
+                <Delete
+                  fontSize="small"
+                  onClick={() => handleDelete(index)}
+                />
+              </IconButton>
+              <Divider />
+            </div>
+          );
+        })
         : " "}
       <Button
         style={{ marginTop: 20 }}

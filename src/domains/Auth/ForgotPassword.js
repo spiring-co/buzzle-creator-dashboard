@@ -1,5 +1,5 @@
 import { useFormik } from "formik";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Confetti from "react-dom-confetti";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 import * as Yup from "yup";
@@ -20,6 +20,7 @@ export default () => {
   const [otpEmailSent, setOtpEmailSent] = useState(false);
   const [passwordResetSuccess, setPasswordResetSuccess] = useState(false);
   const history = useHistory();
+
   const {
     handleChange,
     handleBlur,
@@ -151,8 +152,8 @@ export default () => {
                       ? "Resetting password..."
                       : "Reset"
                     : isSubmitting
-                    ? "Sending OTP..."
-                    : "Proceed"
+                      ? "Sending OTP..."
+                      : "Proceed"
                 }
                 disabled={isSubmitting}
               />

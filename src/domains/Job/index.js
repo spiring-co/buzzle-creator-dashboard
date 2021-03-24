@@ -2,13 +2,21 @@ import React from "react";
 import { Route, Switch, useRouteMatch } from "react-router-dom";
 import JobDetails from "./JobDetails";
 import JobsTable from "./JobsTable";
+import Page from "common/Page";
 
 export default () => {
   let { path } = useRouteMatch();
   return (
     <Switch>
-      <Route path={`${path}/`} exact component={JobsTable} />
-      <Route path={`${path}/:id`} component={JobDetails} />
+      <Route path={`${path}/`} exact
+        render={props => (
+          <Page {...props} component={JobsTable} title="Buzzle | Jobs" />
+        )} />
+      <Route path={`${path}/:id`}
+        render={props => (
+          <Page {...props} component={JobDetails} title="Buzzle | Job details" />
+        )}
+      />
     </Switch>
   );
 };
