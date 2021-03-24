@@ -77,7 +77,8 @@ export default () => {
       orderDirection = "asc",
     } = query;
     history.push(
-      `?page=${page + 1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
+      `?page=${page + 1}&size=${pageSize}${
+        searchQuery ? "searchQuery=" + searchQuery : ""
       }`
     );
 
@@ -102,7 +103,8 @@ export default () => {
         // setJobIds(data.map((j) => j.id));
         if (data?.length === 0 && totalCount) {
           history.push(
-            `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
+            `?page=${1}&size=${pageSize}${
+              searchQuery ? "searchQuery=" + searchQuery : ""
             }`
           );
           return Job.getAll(
@@ -119,7 +121,8 @@ export default () => {
             .catch((err) => {
               setError(err);
               history.push(
-                `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
+                `?page=${1}&size=${pageSize}${
+                  searchQuery ? "searchQuery=" + searchQuery : ""
                 }`
               );
               return {
@@ -134,7 +137,8 @@ export default () => {
       .catch((err) => {
         setError(err);
         history.push(
-          `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
+          `?page=${1}&size=${pageSize}${
+            searchQuery ? "searchQuery=" + searchQuery : ""
           }`
         );
         return {
@@ -147,7 +151,7 @@ export default () => {
   const deleteMultipleJobs = async (array = []) => {
     try {
       await Job.deleteMultiple({
-        ids: array.map(a => a.id),
+        ids: array.map((a) => a.id),
       });
       enqueueSnackbar(`jobs deleted successfully `, {
         variant: "success",
@@ -165,7 +169,6 @@ export default () => {
       await Job.update(id, { data, actions, renderPrefs }, { noMessage: true });
       enqueueSnackbar(`Job Updated successfully!`, {
         variant: "success",
-
       });
       setSelectedJob(null);
       tableRef.current && tableRef.current.onQueryChange();
@@ -221,11 +224,13 @@ export default () => {
             {timeline.length ? (
               timeline.map(({ state, startsAt, endsAt }, index) => (
                 <TimelineItem>
-                  {!(index === 0 || timeline?.length - 1 !== index) && <TimelineOppositeContent>
-                    <Typography color="textSecondary">
-                      {((endsAt - startsAt) / 1000).toFixed(2)} secs
-                    </Typography>
-                  </TimelineOppositeContent>}
+                  {!(index === 0 || timeline?.length - 1 !== index) && (
+                    <TimelineOppositeContent>
+                      <Typography color="textSecondary">
+                        {((endsAt - startsAt) / 1000).toFixed(2)} secs
+                      </Typography>
+                    </TimelineOppositeContent>
+                  )}
                   <TimelineSeparator>
                     <TimelineDot
                       style={{
@@ -233,8 +238,8 @@ export default () => {
                           index === 0
                             ? "#ffa117"
                             : index !== timeline?.length - 1
-                              ? "#35a0f4"
-                              : "#65ba68",
+                            ? "#35a0f4"
+                            : "#65ba68",
                       }}
                     />
                     {timeline?.length - 1 !== index && <TimelineConnector />}
@@ -260,7 +265,7 @@ export default () => {
       });
       await Job.updateMultiple({
         ids: arrIds,
-        state: 'created',
+        state: "created",
         extra: { forceRerender: true },
       });
       enqueueSnackbar(`jobs restarted successfully `, {
@@ -269,7 +274,6 @@ export default () => {
     } catch (e) {
       enqueueSnackbar(`jobs failed to restart `, {
         variant: "error",
-
       });
     }
 
@@ -370,7 +374,9 @@ export default () => {
             field: "state",
             render: ({ state, failureReason }) => {
               return state === "error" ? (
-                <Tooltip TransitionComponent={Fade} title={failureReason}>
+                <Tooltip
+                  TransitionComponent={Fade}
+                  title={failureReason ? failureReason : "Reason not given"}>
                   <Chip
                     size="small"
                     label={state}
@@ -602,15 +608,18 @@ const filterObjectToString = (f) => {
   if (!f) return null;
   const { startDate = 0, endDate = 0, idVideoTemplates = [], states = [] } = f;
 
-  return `${startDate
-    ? `dateUpdated=>=${startDate}&${endDate ? `dateUpdated=<=${endDate || startDate}&` : ""
-    }`
-    : ""
-    }${idVideoTemplates.length !== 0
-      ? getArrayOfIdsAsQueryString(
-        "idVideoTemplate",
-        idVideoTemplates.map(({ id }) => id)
-      ) + "&"
+  return `${
+    startDate
+      ? `dateUpdated=>=${startDate}&${
+          endDate ? `dateUpdated=<=${endDate || startDate}&` : ""
+        }`
       : ""
-    }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
+  }${
+    idVideoTemplates.length !== 0
+      ? getArrayOfIdsAsQueryString(
+          "idVideoTemplate",
+          idVideoTemplates.map(({ id }) => id)
+        ) + "&"
+      : ""
+  }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
 };
