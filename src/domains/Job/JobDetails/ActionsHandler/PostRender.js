@@ -251,6 +251,9 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
                     error={fileError}
                     helperText={"Choose Audio file."}
                 />
+                {addAudio.audio && <audio controls>
+                    <source src={addAudio.audio} type="audio/mpeg" />
+                </audio>}
             </>
         );
     };

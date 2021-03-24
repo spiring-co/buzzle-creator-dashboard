@@ -19,7 +19,7 @@ import formatTime from "helpers/formatTime";
 import Alert from "@material-ui/lab/Alert";
 import { useDarkMode } from "helpers/useDarkMode";
 
-import CallMergeIcon from "@material-ui/icons/CallMerge";
+import VideoLibrary from "@material-ui/icons/VideoLibrary";
 import AudiotrackIcon from "@material-ui/icons/Audiotrack";
 import BrandingWatermarkIcon from "@material-ui/icons/BrandingWatermark";
 
@@ -64,9 +64,6 @@ export default () => {
     handleRetry();
   }, [filterString]);
 
-  useEffect(() => {
-    document.title = "Jobs";
-  }, []);
 
   const getDataFromQuery = (query) => {
     const {
@@ -77,8 +74,7 @@ export default () => {
       orderDirection = "asc",
     } = query;
     history.push(
-      `?page=${page + 1}&size=${pageSize}${
-        searchQuery ? "searchQuery=" + searchQuery : ""
+      `?page=${page + 1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
       }`
     );
 
@@ -103,8 +99,7 @@ export default () => {
         // setJobIds(data.map((j) => j.id));
         if (data?.length === 0 && totalCount) {
           history.push(
-            `?page=${1}&size=${pageSize}${
-              searchQuery ? "searchQuery=" + searchQuery : ""
+            `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
             }`
           );
           return Job.getAll(
@@ -121,8 +116,7 @@ export default () => {
             .catch((err) => {
               setError(err);
               history.push(
-                `?page=${1}&size=${pageSize}${
-                  searchQuery ? "searchQuery=" + searchQuery : ""
+                `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
                 }`
               );
               return {
@@ -137,8 +131,7 @@ export default () => {
       .catch((err) => {
         setError(err);
         history.push(
-          `?page=${1}&size=${pageSize}${
-            searchQuery ? "searchQuery=" + searchQuery : ""
+          `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
           }`
         );
         return {
@@ -236,8 +229,8 @@ export default () => {
                           index === 0
                             ? "#ffa117"
                             : index !== timeline?.length - 1
-                            ? "#35a0f4"
-                            : "#65ba68",
+                              ? "#35a0f4"
+                              : "#65ba68",
                       }}
                     />
                     {timeline?.length - 1 !== index && <TimelineConnector />}
@@ -305,6 +298,7 @@ export default () => {
           headerStyle: { fontWeight: 700 },
           actionsColumnIndex: -1,
           selection: true,
+          // padding: 'dense',
           sorting: true,
         }}
         onRowClick={(e, { id }) => {
@@ -402,44 +396,32 @@ export default () => {
           },
           {
             searchable: false,
-            title: "Current Actions",
-            field: "__v",
-            type: "numeric",
+            title: "Render Actions",
             render: ({ actions }) => {
               const { postrender, prerender } = actions;
               return (
                 <div>
-                  {postrender?.map((post) => {
-                    if (post?.input2) {
+                  {postrender?.map(({ module }) => {
+                    if (module === 'buzzle-action-merge-videos') {
                       return (
-                        <CallMergeIcon
-                          style={{
-                            height: 16,
-                            width: 16,
-                            color: "grey",
-                          }}></CallMergeIcon>
+                        <Tooltip title="Merge Video"><VideoLibrary
+                          color="disabled" /></Tooltip>
                       );
                     }
-                    if (post?.audio) {
+                    else if (module === 'buzzle-action-add-audio') {
                       return (
-                        <AudiotrackIcon
-                          style={{
-                            height: 16,
-                            width: 16,
-                            color: "grey",
-                          }}></AudiotrackIcon>
+                        <Tooltip title="Add Audio"><AudiotrackIcon
+                          color="disabled"
+                        /></Tooltip>
                       );
                     }
-                    if (post?.watermark) {
+                    else if (module === 'buzzle-action-watermark') {
                       return (
-                        <BrandingWatermarkIcon
-                          style={{
-                            height: 16,
-                            width: 16,
-                            color: "grey",
-                          }}></BrandingWatermarkIcon>
+                        <Tooltip title="Watermark action"><BrandingWatermarkIcon
+                          color="disabled"
+                        /></Tooltip>
                       );
-                    }
+                    } else return <div />
                   })}
                 </div>
               );
@@ -447,8 +429,7 @@ export default () => {
           },
           {
             searchable: false,
-            title: "Revisions",
-            field: "Revisions",
+            title: "Outputs",
             render: ({ output }) => <span>{output.length}</span>,
           },
         ]}
@@ -606,18 +587,15 @@ const filterObjectToString = (f) => {
   if (!f) return null;
   const { startDate = 0, endDate = 0, idVideoTemplates = [], states = [] } = f;
 
-  return `${
-    startDate
-      ? `dateUpdated=>=${startDate}&${
-          endDate ? `dateUpdated=<=${endDate || startDate}&` : ""
-        }`
+  return `${startDate
+      ? `dateUpdated=>=${startDate}&${endDate ? `dateUpdated=<=${endDate || startDate}&` : ""
+      }`
       : ""
-  }${
-    idVideoTemplates.length !== 0
+    }${idVideoTemplates.length !== 0
       ? getArrayOfIdsAsQueryString(
-          "idVideoTemplate",
-          idVideoTemplates.map(({ id }) => id)
-        ) + "&"
+        "idVideoTemplate",
+        idVideoTemplates.map(({ id }) => id)
+      ) + "&"
       : ""
-  }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
+    }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
 };

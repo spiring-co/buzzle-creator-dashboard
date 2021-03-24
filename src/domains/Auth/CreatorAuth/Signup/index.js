@@ -22,7 +22,7 @@ import { Alert } from "@material-ui/lab";
 import { Job, VideoTemplate, User } from "services/api";
 import Branding from "common/Branding";
 import { useFormik } from "formik";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 import * as Yup from "yup";
@@ -85,7 +85,7 @@ export default () => {
     onSubmit: async (s, { setSubmitting }) => {
       console.log("called onsubmit");
       try {
-        const cp = Object.assign({},s)
+        const cp = Object.assign({}, s)
         delete cp["confirmPassword"];
         await User.create(cp);
         history.push("/login", {

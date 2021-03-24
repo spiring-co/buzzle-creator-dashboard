@@ -89,11 +89,17 @@ export default ({ onRowClick }) => {
       )?.id;
 
       if (jobIdToBeFetched) {
+        setJobsData(j => [...j, { id: jobIdToBeFetched }])
         Job.get(jobIdToBeFetched, true)
           .then((d) =>
-            setJobsData((j) => [...j, { ...d, id: jobIdToBeFetched }])
+            setJobsData((j) => {
+              //check if jobIdTobefetched is already inside j, if not then append else replace
+              return j.find(({ id }) => id === jobIdToBeFetched) ? j.map((data) => data?.id === jobIdToBeFetched ? ({ ...d, id: jobIdToBeFetched }) : data)
+                : [...j, { ...d, id: jobIdToBeFetched }]
+            })
           )
           .catch(() => setJobsData((j) => [...j, { id: jobIdToBeFetched }]));
+
       }
     }
   }, [activeJobs, jobsData]);

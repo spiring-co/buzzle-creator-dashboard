@@ -151,8 +151,8 @@ export default () => {
                       ? "Resetting password..."
                       : "Reset"
                     : isSubmitting
-                    ? "Sending OTP..."
-                    : "Proceed"
+                      ? "Sending OTP..."
+                      : "Proceed"
                 }
                 disabled={isSubmitting}
               />
