@@ -236,6 +236,18 @@ export default function NavBar({ items }) {
                   }}>
                   {user.email}
                 </Typography>
+                <Typography
+                  noWrap
+                  variant="h8"
+                  color="textPrimary"
+                  style={{
+                    paddingLeft: 10,
+                    paddingRight: 10,
+                    textDecoration: "none",
+                    fontFamily: "Poppins",
+                  }}>
+                  {user.role}
+                </Typography>
                 <Divider />
               </div>
               <MenuItem onClick={handleClose}>Profile</MenuItem>
