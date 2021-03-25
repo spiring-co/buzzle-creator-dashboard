@@ -45,47 +45,47 @@ const AppChild = () => {
             <Switch>
               <Route exact path="/"
                 render={props => (
-                  <Page {...props} component={Landing} title="Buzzle" />
+                  <Page props={props} component={Landing} title="Buzzle" />
                 )} />
               <Route path="/login" exact
                 render={props => (
-                  <Page {...props} component={Login} title="Buzzle | Creator Login" />
+                  <Page props={props} component={Login} title="Buzzle | Creator Login" />
                 )}
               />
               <Route path="/admin" exact
                 render={props => (
-                  <Page {...props} component={AdminLogin} title="Buzzle | Admin Login" />
+                  <Page props={props} component={AdminLogin} title="Buzzle | Admin Login" />
                 )} />
               <Route path="/user" exact
                 render={props => (
-                  <Page {...props} component={UserLogin} title="Buzzle | Developer Login" />
+                  <Page props={props} component={UserLogin} title="Buzzle | Developer Login" />
                 )} />
               <Route path="/testJob" exact
                 render={props => (
-                  <Page {...props} component={TestJob} title="Buzzle | Test Job" />
+                  <Page props={props} component={TestJob} title="Buzzle | Test Job" />
                 )}
               />
               <Route path="/register" exact
                 render={props => (
-                  <Page {...props} component={Register} title="Buzzle | Register" />
+                  <Page props={props} component={Register} title="Buzzle | Register" />
                 )}
               />
               <Route path="/registerUser" exact
                 render={props => (
-                  <Page {...props} component={UserRegister} title="Buzzle | Register" />
+                  <Page props={props} component={UserRegister} title="Buzzle | Register" />
                 )} />
               <Route path="/forgotPassword"
                 render={props => (
-                  <Page {...props} component={ForgotPassword} title="Buzzle | Forgot password" />
+                  <Page props={props} component={ForgotPassword} title="Buzzle | Forgot password" />
                 )} />
               <PrivateRoute path="/home"
                 render={props => (
-                  <Page {...props} component={Domains} title="Buzzle" />
+                  <Page props={props} component={Domains} title="Buzzle" />
                 )}
               />
               <Route path="*"
                 render={props => (
-                  <Page {...props} component={NotFound} title="Buzzle | 404 - Not Found" />
+                  <Page props={props} component={NotFound} title="Buzzle | 404 - Not Found" />
                 )}
               />
             </Switch>

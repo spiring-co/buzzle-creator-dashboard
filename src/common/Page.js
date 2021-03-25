@@ -1,10 +1,10 @@
 import React, { useEffect } from "react"
 
-export default ({ component: Component, title }) => {
+export default ({ component: Component, title, props }) => {
 
     useEffect(() => {
         document.title = title
     }, [title])
 
-    return <Component />
+    return <Component {...props} />
 }

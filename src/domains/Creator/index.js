@@ -12,12 +12,12 @@ export default () => {
         <Switch>
             <Route path={`${path}/`} exact
                 render={props => (
-                    <Page {...props} component={CreatorsTable} title="Buzzle | Creators" />
+                    <Page props={props} component={CreatorsTable} title="Buzzle | Creators" />
                 )}
             />
             <Route path={`${path}/:id`}
                 render={props => (
-                    <Page {...props} component={CreatorDetails} title="Buzzle | Creator details" />
+                    <Page props={props} component={CreatorDetails} title="Buzzle | Creator details" />
                 )}
             />
         </Switch>
