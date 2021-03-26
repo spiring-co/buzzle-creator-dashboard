@@ -1,11 +1,18 @@
 import {
-  Box,
+  Box, Chip, Tooltip,
   Container,
+  GridList,
+  GridListTile,
+  GridListTileBar, Fade,
+  IconButton,
+  Link, Avatar,
+  Button,
   Typography,
-  Avatar,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import {  VideoTemplate } from "services/api";
+import { AccountCircle } from "@material-ui/icons";
+import { Job, VideoTemplate, User, Search } from "services/api";
+import PublishIcon from '@material-ui/icons/Publish';
 import ErrorHandler from "common/ErrorHandler";
 import SnackAlert from "common/SnackAlert";
 import MaterialTable from "material-table";
@@ -17,24 +24,28 @@ import {
   useRouteMatch,
 } from "react-router-dom";
 import { useAuth } from "services/auth";
-
+import * as timeago from "timeago.js";
 
 export default (props) => {
   let { url, path } = useRouteMatch();
   const history = useHistory();
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState(null);
+  const [testJobTemplate, setTestJobTemplate] = useState(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [data, setData] = useState([]);
+  const [view, setView] = useState("list");
   const tableRef = useRef(null);
   const { user } = useAuth();
-  // const uri = `${process.env.REACT_APP_API_URL}/creators/${user?.id}/videoTemplates`;
+  const { role } = user
+  const uri = `${process.env.REACT_APP_API_URL}/creators/`;
   const handleDelete = async (id) => {
     const action = window.confirm("Are you sure, you want to delete");
     if (!action) return;
 
     try {
       setIsDeleting(true);
-      console.log("delete ", id);
+      console.log("delete ", id)
       await VideoTemplate.delete(id);
     } catch (err) {
       setError(err);
@@ -57,8 +68,8 @@ export default (props) => {
       color: "rgba(255, 255, 255, 0.54)",
     },
     drafted: {
-      marginLeft: 10,
-    },
+      marginLeft: 10
+    }
   }));
   const classes = useStyles();
 
@@ -67,12 +78,7 @@ export default (props) => {
   );
   useEffect(() => {
     const data = async () => {
-      const response = await VideoTemplate.getAll(1, 10); //new api change
-      if (response.ok) {
-        const result = await response.json();
-        console.log(result);
-        setData(result.data);
-      }
+      setData(await User.getAll(1, 10));
     };
     data();
   }, []);
@@ -107,53 +113,38 @@ export default (props) => {
         alignItems="end"
         justifyContent="space-between"
         flexDirection="row"
-        p={1}></Box>
+        p={1}>
+
+      </Box>
       <MaterialTable
         tableRef={tableRef}
-        title="Users"
+        title="Creators"
         onRowClick={(e, { id }) => {
           history.push(`${path}${id}`);
         }}
         columns={[
           {
             title: "Name",
-            render: ({ thumbnail, title }) => (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                }}>
-                <Avatar
-                  style={{ marginRight: 10, height: 30, width: 30 }}
-                  alt="thumbnail"
-                  src={thumbnail}
-                />
-                {title}
-              </div>
-            ),
+            field: "name",
+            //change thumbnail to imageUrl and title to name
+            render: ({ imageUrl, name }) => <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+              <Avatar style={{ marginRight: 10, height: 30, width: 30 }} alt="thumbnail" src={imageUrl} />
+              {name}
+            </div>
           },
           {
-            title: "API Key",
-            field: "title",
-            render: ({ versions }) => <span>9867y89xwtgiuegdi79</span>,
+            title: "Creator Id",
+            field: "id",
+
           },
           {
             title: "Email",
             field: "email",
-            render: ({ versions }) => <span>{versions.length}</span>,
-          },
-
-          {
-            title: "Phone Number",
-            field: "dateUpdated",
-            type: "datetime",
-            render: ({ dateUpdated }) => <span>554545454545</span>,
           },
         ]}
         localization={{
           body: {
-            emptyDataSourceMessage: <Typography>No Creator Found.</Typography>,
+            emptyDataSourceMessage: <Typography>No Creator Found.</Typography>
           },
         }}
         detailPanel={[
@@ -170,31 +161,37 @@ export default (props) => {
             tooltip: "Show Code",
           },
         ]}
+
         data={(query) =>
-          VideoTemplate.getAll(query.page + 1, query.pageSize)//new api change //TODO change to user all
-            .then((result) => {
-              return {
-                data: query.search
-                  ? result.data.filter(({ title }) =>
-                      title?.toLowerCase()?.startsWith(query?.search?.toLowerCase())
-                    )
-                  : result.data,
-                page: query.page,
-                totalCount: query.search
-                  ? result.data.filter(({ title }) =>
-                      title?.toLowerCase()?.startsWith(query?.search?.toLowerCase())
-                    ).length
-                  : result.count,
-              };
-            })
-            .catch((err) => {
+          query?.search ?
+            Search.getCreators(query?.search, query.page + 1, query.pageSize).then(({ data, count: totalCount }) => ({
+              data,
+              page: query.page,
+              totalCount
+            })).catch((err) => {
               setError(err);
               return {
                 data: [],
                 page: query.page,
                 totalCount: 0,
               };
-            })
+            }) :
+            User.getAll(query.page + 1, query.pageSize)
+              .then(({ data, count: totalCount }) => {
+                return {
+                  data,
+                  page: query.page,
+                  totalCount,
+                };
+              })
+              .catch((err) => {
+                setError(err);
+                return {
+                  data: [],
+                  page: query.page,
+                  totalCount: 0,
+                };
+              })
         }
         options={{
           pageSize: 10,

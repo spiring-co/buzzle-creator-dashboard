@@ -4,7 +4,7 @@ import { useAuth } from 'services/auth';
 
 export default ({ allowedRoles, children, redirectTo = null }) => {
     const { user: { role } } = useAuth()
-    if (!allowedRoles.includes(role)) {
+    if (!allowedRoles.includes(role) && allowedRoles !== "*") {
         return redirectTo !== null ? redirectTo : <div />
     }
     return children
