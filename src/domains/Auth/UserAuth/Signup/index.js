@@ -76,6 +76,7 @@ export default () => {
             email: "",
             countryCode: "",
             password: "",
+            role: "Developer",
             confirmPassword: "",
             gender: "",
             country: "",

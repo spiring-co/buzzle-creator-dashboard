@@ -11,10 +11,8 @@ const AddTemplate = ({ location }) => {
   const [isBlocking, setIsBlocking] = useState(true);
   const [error, setError] = useState(null);
   const [videoObj] = useContext(VideoTemplateContext);
-
   const { video, isEdit, draftIndex = null } = location?.state ?? {};
   const history = useHistory();
-  console.log("jwt token is" + localStorage.getItem("jwtoken"));
 
   const handleSubmit = async (data) => {
     console.log(data);
@@ -29,9 +27,8 @@ const AddTemplate = ({ location }) => {
         state: {
           statusObj: {
             status: {
-              message: `Video Template ${
-                isEdit ? "Edited" : "Added"
-              } Successfully.`,
+              message: `Video Template ${isEdit ? "Edited" : "Added"
+                } Successfully.`,
             },
             err: false,
           },

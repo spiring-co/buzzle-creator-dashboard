@@ -50,45 +50,39 @@ export default () => {
             text: "Video Templates",
             icon: <VideoLibrary />,
             to: `${url}/videoTemplates`,
-            allowedRoles: ["Admin", "Creator", "Developer"],
+            allowedRoles: "*",
         },
         {
             text: "Jobs",
             icon: <Work />,
             to: `${url}/jobs`,
-            allowedRoles: ["Admin", "Creator", "Developer"],
+            allowedRoles: "*",
         },
 
         {
             text: "Profile and Settings",
             icon: <AssignmentInd />,
             to: `${url}/profile`,
-            allowedRoles: ["Admin", "Creator", "Developer"],
+            allowedRoles: "*",
         },
-        {
-            text: "Revenue",
-            icon: <MonetizationOn />,
-            to: `${url}/revenue`,
-            allowedRoles: ["Admin", "Creator", "Developer"],
-        },
-        {
-            text: "Creators",
-            icon: <SupervisedUserCircle />,
-            to: `${url}/creators`,
-            allowedRoles: ["Admin"],
-        },
+        // {
+        //     text: "Revenue",
+        //     icon: <MonetizationOn />,
+        //     to: `${url}/revenue`,
+        //     allowedRoles: "*",
+        // },
         {
             text: "Users",
             icon: <Stars />,
             to: `${url}/users`,
             allowedRoles: ["Admin"],
         },
-        {
-            text: "Render Server",
-            icon: <StorageIcon />,
-            to: `${url}/servers`,
-            allowedRoles: ["Admin"],
-        },
+        // {
+        //     text: "Render Server",
+        //     icon: <StorageIcon />,
+        //     to: `${url}/servers`,
+        //     allowedRoles: ["Admin"],
+        // },
     ];
 
     return (
@@ -99,44 +93,42 @@ export default () => {
                 <Switch>
                     <Route path={`${path}/`} exact
                         render={props => (
-                            <Page {...props} component={Home} title="Buzzle" />
+                            <Page props={props} component={Home} title="Buzzle" />
                         )}
                     />
-                    <Route path={`${path}/profile`}
+                    <RoleBasedRoute path={`${path}/profile`}
+                        allowedRoles={"*"}
                         render={props => (
-                            <Page {...props} component={Profile} title="Buzzle | Profile" />
+                            <Page props={props} component={Profile} title="Buzzle | Profile" />
                         )} />
-                    <Route path={`${path}/videoTemplates`}
+                    <RoleBasedRoute path={`${path}/videoTemplates`}
+                        allowedRoles={"*"}
                         render={props => (
-                            <Page {...props} component={VideoTemplates} title="Buzzle | Video Templates" />
+                            <Page props={props} component={VideoTemplates} title="Buzzle | Video Templates" />
                         )}
                     />
-                    <Route path={`${path}/revenue`}
+                    {/* <Route path={`${path}/revenue`}
                         render={props => (
-                            <Page {...props} component={Revenue} title="Buzzle | Revenue" />
-                        )} />
-                    <Route path={`${path}/jobs`}
+                            <Page props={props} component={Revenue} title="Buzzle | Revenue" />
+                        )} /> */}
+                    <RoleBasedRoute path={`${path}/jobs`}
+                        allowedRoles={"*"}
                         render={props => (
-                            <Page {...props} component={Jobs} title="Buzzle | Jobs" />
+                            <Page props={props} component={Jobs} title="Buzzle | Jobs" />
                         )} />
-                    <RoleBasedRoute allowedRoles={["Admin"]}>
-                        <Route path={`${path}/creators`}
-                            render={props => (
-                                <Page {...props} component={Creators} title="Buzzle | Creators" />
-                            )} />
-                        <Route path={`${path}/users`}
-                            render={props => (
-                                <Page {...props} component={Users} title="Buzzle | Developers" />
-                            )} />
-                        <Route path={`${path}/servers`}
-                            render={props => (
-                                <Page {...props} component={Servers} title="Buzzle | Servers" />
-                            )}
-                        />
-                    </RoleBasedRoute>
+                    <RoleBasedRoute path={`${path}/users`}
+                        allowedRoles={["Admin"]}
+                        render={props => (
+                            <Page props={props} component={Users} title="Buzzle | Users" />
+                        )} />
+                    {/* <Route path={`${path}/servers`}
+                        render={props => (
+                            <Page props={props} component={Servers} title="Buzzle | Servers" />
+                        )}
+                    /> */}
                     <Redirect to={"/NotFound"} />
                 </Switch>
             </main>
-        </div>
+        </div >
     );
 };

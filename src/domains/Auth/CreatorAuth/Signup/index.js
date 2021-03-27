@@ -76,6 +76,7 @@ export default () => {
       // countryCode: "",
       password: "",
       confirmPassword: "",
+      role: "Creator",
       // gender: "",
       // country: "",
       // phoneNumber: "",

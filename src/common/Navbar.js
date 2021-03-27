@@ -24,6 +24,7 @@ import { useDarkMode } from "helpers/useDarkMode";
 import React, { forwardRef, useMemo, useState } from "react";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 import { useAuth } from "../services/auth";
+import RoleBasedView from "./RoleBasedView";
 
 const drawerWidth = 240;
 
@@ -316,16 +317,16 @@ export default function NavBar({ items }) {
 
         <List>
           {items.map((item, index) => (
-            <ListItemLink
-              key={index}
-              to={item.to}
-              primary={item.text}
-              icon={item.icon}
-            />
+            <RoleBasedView key={index} allowedRoles={item?.allowedRoles ?? []}>
+              <ListItemLink
+                key={index}
+                to={item.to}
+                primary={item.text}
+                icon={item.icon}
+              />
+            </RoleBasedView>
           ))}
 
-          {/* <RoleBasedView key={index} allowedRoles={item?.allowedRoles ?? []}> */}
-          {/* </RoleBasedView> */}
         </List>
       </Drawer>
     </div>
