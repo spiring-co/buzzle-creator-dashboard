@@ -165,7 +165,20 @@ export default function NavBar({ items }) {
             })}>
             <MenuIcon />
           </IconButton>
-
+          {drawerOpen ? (
+            <div></div>
+          ) : (
+            <Typography
+              noWrap
+              variant="h5"
+              style={{
+                textDecoration: "none",
+                fontWeight: 800,
+                fontFamily: "Poppins",
+              }}>
+              Buzzle!
+            </Typography>
+          )}
           <div className={classes.menu}>
             <IconButton
               aria-label="toggle dark mode"

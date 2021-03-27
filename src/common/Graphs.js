@@ -1,75 +1,50 @@
-import React, { useMemo, useState, useEffect } from "react";
-// import {
-//   LineChart,
-//   Line,
-//   CartesianGrid,
-//   XAxis,
-//   YAxis,
-//   Tooltip,
-// } from "recharts";
-// import { Job } from "services/api";
+import React, { useState, useEffect } from "react";
+import { Bar } from "react-chartjs-2";
 
-export default (chartData) => {
-//   const [data, setData] = useState([]);
-//   const [chartData, setChartData] = useState([]);
+export default ({ chartData }) => {
+  const [values, setValues] = useState([]);
+  const [labels, setLabels] = useState([]);
 
-//   useEffect(() => {
-//     getDataFromQuery();
-//   }, []);
+  useEffect(() => {
+    console.log(chartData, "graphs.js ");
+    setValues(
+      chartData?.map((c) => {
+        return c.jobs;
+      })
+    );
+    setLabels(
+      chartData?.map((c) => {
+        return c.name;
+      })
+    );
+  }, [chartData]);
 
-//   useEffect(() => {
-//     const map = data.reduce(
-//       (acc, e) => acc.set(e, (acc.get(e) || 0) + 1),
-//       new Map()
-//     );
-//     const result = [...map.entries()];
-//     const resultTwo = result.map((i) => {
-//       return { name: i[0], uses: i[1] };
-//     });
-//     setChartData(resultTwo);
-//   }, [data]);
-
-//   useEffect(() => {}, [chartData]);
-
-  //   const getDataFromQuery = (query) => {
-  //     const {
-  //       page = 0,
-  //       pageSize = 100,
-  //       orderBy: { field: orderBy = "dateUpdated" } = {},
-  //       orderDirection = "asc",
-  //     } = query;
-  //     return Job.getAll(page + 1, pageSize, orderBy, orderDirection)
-  //       .then(({ data, count: totalCount }) => {
-  //         setData(
-  //           data.map((j) => {
-  //             if (j.state !== "error" && j.videoTemplate !== null) {
-  //               return j.videoTemplate.title;
-  //             }
-  //           })
-  //         );
-  //         return { data, page, totalCount };
-  //       })
-  //       .catch((err) => {
-  //         console.log(err);
-  //         return {
-  //           data: [],
-  //           page: query?.page,
-  //           totalCount: 0,
-  //         };
-  //       });
-  //   };
+  const data = {
+    labels: labels,
+    datasets: [
+      {
+        label: "Number of jobs",
+        backgroundColor: "rgba(56,68,252)",
+        borderColor: "rgba(56,68,252,1)",
+        borderWidth: 1,
+        hoverBackgroundColor: "rgba(56,68,252,0.8)",
+        hoverBorderColor: "rgba(56,68,252,1)",
+        data: values,
+      },
+    ],
+  };
 
   return (
-    <LineChart
-      width={600}
-      height={300}
-      data={chartData}
-      margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-      <Line type="monotone" dataKey="uses" stroke="#8884d8" />
-      <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-      <XAxis dataKey="name" />
-      <YAxis />
-      <Tooltip />
-    </LineChart>
+    <div >
+      <Bar
+        data={data}
+        width={410}
+        height={310}
+        redraw={true}
+        options={{
+          maintainAspectRatio: true,
+        }}
+      />
+    </div>
   );
 };

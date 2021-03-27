@@ -7,6 +7,7 @@ import {
   Container,
   LinearProgress,
   Paper,
+  Divider,
   Typography,
   withStyles,
   Table,
@@ -43,15 +44,15 @@ export default () => {
   const history = useHistory();
 
   const { getConvertedCurrency } = useCurrency();
-  
+
   const [isDeleting, setIsDeleting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  
+
   const [data, setData] = useState({});
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-  
+
   useEffect(() => {
     init();
   }, []);
@@ -91,8 +92,6 @@ export default () => {
       fontSize: 14,
     },
   }))(TableCell);
-
-  
 
   const StyledTableRow = withStyles((theme) => ({
     root: {
@@ -140,23 +139,27 @@ export default () => {
       {loading || isDeleting || isLoading ? <CustomProgress /> : ""}
       {error && <Alert severity="error" children={`${error.message}`} />}
       <Paper>
-        <Container style={{ display: "flex", flexDirection: "row" }}>
-          <div style={{ margin: 20 }}>
+        <Container>
+          <div>
             {(data?.versions ?? [])[0]?.sample === undefined ? (
               <Typography>{"sample video not found"}</Typography>
             ) : (
               <video
                 id="sample"
                 controls={true}
-                style={{ width: 300, height: 200, marginTop: 10 }}
+                style={{ height: 320, width: "100%" }}
                 src={(data?.versions ?? [])[0]?.sample}
               />
             )}
           </div>
           <div style={{ marginTop: 50 }}>
-            <Typography style={{ marginBottom: 20 }} variant="h6">
+            <Typography style={{ marginBottom: 20 }} variant="h5">
               {data?.title}
             </Typography>
+            <Typography style={{ marginBottom: 20 }} variant="h6">
+              DETAILS
+            </Typography>
+            <Divider />
             <Typography>{data?.description}</Typography>
             <Box
               style={{
@@ -188,11 +191,11 @@ export default () => {
                 </Typography>
               </Box>
             )}
-            <RoleBasedView allowedRoles={["Admin"]}>
+            <RoleBasedView allowedRoles={["Developer"]}>
               <Table
                 size="small"
                 aria-label="a dense table"
-                style={{ marginTop: 20, marginBottom: 20 }}>
+                style={{ marginTop: 10, marginBottom: 20 }}>
                 <TableHead>
                   <StyledTableRow>
                     <StyledTableCell>Version Name</StyledTableCell>
