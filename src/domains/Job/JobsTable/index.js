@@ -272,7 +272,7 @@ export default () => {
   };
 
   return (
-    <Container>
+    <div>
       {error && (
         <ErrorHandler
           message={error.message}
@@ -558,7 +558,7 @@ export default () => {
           onClose={() => setSelectedJob(null)}
         />
       )}
-    </Container>
+    </div>
   );
 };
 
@@ -588,9 +588,9 @@ const filterObjectToString = (f) => {
   const { startDate = 0, endDate = 0, idVideoTemplates = [], states = [] } = f;
 
   return `${startDate
-      ? `dateUpdated=>=${startDate}&${endDate ? `dateUpdated=<=${endDate || startDate}&` : ""
-      }`
-      : ""
+    ? `dateUpdated=>=${startDate}&${endDate ? `dateUpdated=<=${endDate || startDate}&` : ""
+    }`
+    : ""
     }${idVideoTemplates.length !== 0
       ? getArrayOfIdsAsQueryString(
         "idVideoTemplate",
