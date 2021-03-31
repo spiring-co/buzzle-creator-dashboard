@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Bar } from "react-chartjs-2";
+import { Bar, Line } from "react-chartjs-2";
 
-export default ({ chartData }) => {
+export default ({ chartData, time = false }) => {
   const [values, setValues] = useState([]);
   const [labels, setLabels] = useState([]);
 
@@ -30,21 +30,33 @@ export default ({ chartData }) => {
         hoverBackgroundColor: "rgba(56,68,252,0.8)",
         hoverBorderColor: "rgba(56,68,252,1)",
         data: values,
+        fill: false,
       },
     ],
   };
 
   return (
-    <div >
-      <Bar
-        data={data}
-        width={410}
-        height={310}
-        redraw={true}
-        options={{
-          maintainAspectRatio: true,
-        }}
-      />
+    <div>
+      {!time ? (
+        <Bar
+          data={data}
+          width={410}
+          height={310}
+          redraw={true}
+          options={{
+            maintainAspectRatio: true,
+          }}
+        />
+      ) : (
+        <Line
+          width={410}
+          height={310}
+          data={data}
+          options={{
+            maintainAspectRatio: true,
+          }}
+        />
+      )}
     </div>
   );
 };

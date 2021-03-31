@@ -55,11 +55,19 @@ export default () => {
   }, [jobsTime]);
 
   const jobsCountFetch = () => {
-    fetch(
-      `http://localhost:5000/jobs/count?dateUpdated=${Date.now()}&dateStarted=${
-        Date.now() - jobsTime
-      }`
-    )
+    var d = new Date();
+    var f = new Date();
+    if (jobsTime === 30) {
+      d.setMonth(d.getMonth() - 1);
+    }
+    if (jobsTime === 7) {
+      d.setDate(d.getDate() - 7);
+    }
+    if (jobsTime === 1) {
+      d.setMonth(d.getDate() - 1);
+    }
+    console.log(f, d);
+    fetch(`http://localhost:5000/jobs/count?dateUpdated=${f}&dateStarted=${d}`)
       .then((response) => response.json())
       .then((data) => setJobsCount(data));
   };
@@ -71,9 +79,13 @@ export default () => {
       new Map()
     );
     const result = [...map.entries()];
-    const resultTwo = result.map((i) => {
-      return { name: i[0], jobs: i[1] };
-    });
+    const resultTwo = result
+      .map((i) => {
+        return { name: i[0], jobs: i[1] };
+      })
+      .sort((a, b) => {
+        return a.name - b.name;
+      });
     setTimeChartData([...resultTwo]);
     console.log("changed chart data" + timeChartData);
   }, [avgRenderHour]);
@@ -220,7 +232,7 @@ export default () => {
             <h3 style={{ marginLeft: 20 }}>Jobs per hour</h3>
             <CardContent>
               {timeChartData?.length ? (
-                <Graphs chartData={timeChartData}></Graphs>
+                <Graphs chartData={timeChartData} time={true}></Graphs>
               ) : (
                 <div></div>
               )}

@@ -152,12 +152,9 @@ export default () => {
               />
             )}
           </div>
-          <div style={{ marginTop: 50 }}>
-            <Typography style={{ marginBottom: 20 }} variant="h5">
+          <div style={{ marginTop: 20 }}>
+            <Typography style={{ marginBottom: 0 }} variant="h5">
               {data?.title}
-            </Typography>
-            <Typography style={{ marginBottom: 20 }} variant="h6">
-              DETAILS
             </Typography>
             <Divider />
             <Typography>{data?.description}</Typography>
