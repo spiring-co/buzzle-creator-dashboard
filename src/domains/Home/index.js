@@ -16,8 +16,9 @@ export default () => {
   const [startDate, setStartDate] = useState(new Date("2021-02-28T21:11:54"));
   const [endDate, setEndDate] = useState(new Date("2021-03-05T21:11:54"));
   const [chartData, setChartData] = useState([]);
-  const [jobsTime, setJobsTime] = useState(1);
-  const [jobsCount, setJobsCount] = useState(1);
+  const [jobsCountDay, setJobsCountDay] = useState(0);
+  const [jobsCountWeek, setJobsCountWeek] = useState(0);
+  const [jobsCountMonth, setJobsCountMonth] = useState(0);
   const [timeChartData, setTimeChartData] = useState([]);
   const [sum, setSum] = useState(0);
   const handleStartDateChange = (date) => {
@@ -50,26 +51,25 @@ export default () => {
   }, [data]);
 
   useEffect(() => {
-    console.log(jobsTime);
     jobsCountFetch();
-  }, [jobsTime]);
+  }, []);
 
-  const jobsCountFetch = () => {
+  useEffect(() => {
+    console.log(jobsCountWeek);
+  }, [jobsCountWeek]);
+
+  const jobsCountFetch = async () => {
     var d = new Date();
+    var w = new Date();
+    var m = new Date();
     var f = new Date();
-    if (jobsTime === 30) {
-      d.setMonth(d.getMonth() - 1);
-    }
-    if (jobsTime === 7) {
-      d.setDate(d.getDate() - 7);
-    }
-    if (jobsTime === 1) {
-      d.setMonth(d.getDate() - 1);
-    }
-    console.log(f, d);
-    fetch(`http://localhost:5000/jobs/count?dateUpdated=${f}&dateStarted=${d}`)
-      .then((response) => response.json())
-      .then((data) => setJobsCount(data));
+    var day = new Date(d.setDate(d.getDate() - 1));
+    var week = new Date(w.setDate(w.getDate() - 7));
+    var month = new Date(m.setMonth(m.getMonth() - 1));
+    console.log(day, week, month);
+    setJobsCountDay(await Job.getCount(f, day));
+    setJobsCountWeek(await Job.getCount(f, week));
+    setJobsCountMonth(await Job.getCount(f, month));
   };
 
   useEffect(() => {
@@ -81,10 +81,23 @@ export default () => {
     const result = [...map.entries()];
     const resultTwo = result
       .map((i) => {
-        return { name: i[0], jobs: i[1] };
+        if (i[0] === 0) {
+          return { name: 12 + " am", jobs: i[1] };
+        }
+        if (i[0] < 12) {
+          return { name: i[0] + " am", jobs: i[1] };
+        }
+        if (i[0] === 12) {
+          return { name: i[0] + " pm", jobs: i[1] };
+        }
+        if (i[0] > 12) {
+          return { name: i[0] - 12 + " pm", jobs: i[1] };
+        }
       })
       .sort((a, b) => {
-        return a.name - b.name;
+        let i = a.name.split(" ");
+        let j = b.name.split(" ");
+        return i[0] - j[0];
       });
     setTimeChartData([...resultTwo]);
     console.log("changed chart data" + timeChartData);
@@ -211,18 +224,20 @@ export default () => {
             ) : (
               ""
             )}
-            {jobsCount ? (
+            {jobsCountDay ? (
               <Card style={{ marginTop: 10, margin: 4 }}>
-                <Button size="small" onClick={() => setJobsTime(30)}>
-                  month
-                </Button>
-                <Button size="small" onClick={() => setJobsTime(7)}>
-                  week
-                </Button>
-                <Button size="small" onClick={() => setJobsTime(1)}>
-                  day
-                </Button>
-                <CardContent> {jobsCount.count}</CardContent>
+                <CardContent>
+                  Jobs last day:{" "}
+                  {<Typography variant="h8">{jobsCountDay.count}</Typography>}
+                </CardContent>
+                <CardContent>
+                  Jobs last week:{" "}
+                  {<Typography variant="h8">{jobsCountWeek.count}</Typography>}
+                </CardContent>
+                <CardContent>
+                  Jobs last month:{" "}
+                  {<Typography variant="h8">{jobsCountMonth.count}</Typography>}
+                </CardContent>
               </Card>
             ) : (
               <div></div>

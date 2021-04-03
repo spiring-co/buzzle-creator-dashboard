@@ -64,7 +64,6 @@ export default () => {
     handleRetry();
   }, [filterString]);
 
-
   const getDataFromQuery = (query) => {
     const {
       page = 0,
@@ -74,7 +73,8 @@ export default () => {
       orderDirection = "asc",
     } = query;
     history.push(
-      `?page=${page + 1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
+      `?page=${page + 1}&size=${pageSize}${
+        searchQuery ? "searchQuery=" + searchQuery : ""
       }`
     );
 
@@ -99,7 +99,8 @@ export default () => {
         // setJobIds(data.map((j) => j.id));
         if (data?.length === 0 && totalCount) {
           history.push(
-            `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
+            `?page=${1}&size=${pageSize}${
+              searchQuery ? "searchQuery=" + searchQuery : ""
             }`
           );
           return Job.getAll(
@@ -116,7 +117,8 @@ export default () => {
             .catch((err) => {
               setError(err);
               history.push(
-                `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
+                `?page=${1}&size=${pageSize}${
+                  searchQuery ? "searchQuery=" + searchQuery : ""
                 }`
               );
               return {
@@ -131,7 +133,8 @@ export default () => {
       .catch((err) => {
         setError(err);
         history.push(
-          `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
+          `?page=${1}&size=${pageSize}${
+            searchQuery ? "searchQuery=" + searchQuery : ""
           }`
         );
         return {
@@ -217,11 +220,13 @@ export default () => {
             {timeline.length ? (
               timeline.map(({ state, startsAt, endsAt }, index) => (
                 <TimelineItem>
-                  {(index !== 0 && timeline?.length - 1 !== index) && <TimelineOppositeContent>
-                    <Typography color="textSecondary">
-                      {((endsAt - startsAt) / 1000).toFixed(2)} secs
-                    </Typography>
-                  </TimelineOppositeContent>}
+                  {index !== 0 && timeline?.length - 1 !== index && (
+                    <TimelineOppositeContent>
+                      <Typography color="textSecondary">
+                        {((endsAt - startsAt) / 1000).toFixed(2)} secs
+                      </Typography>
+                    </TimelineOppositeContent>
+                  )}
                   <TimelineSeparator>
                     <TimelineDot
                       style={{
@@ -229,8 +234,8 @@ export default () => {
                           index === 0
                             ? "#ffa117"
                             : index !== timeline?.length - 1
-                              ? "#35a0f4"
-                              : "#65ba68",
+                            ? "#35a0f4"
+                            : "#65ba68",
                       }}
                     />
                     {timeline?.length - 1 !== index && <TimelineConnector />}
@@ -304,7 +309,7 @@ export default () => {
         onRowClick={(e, { id }) => {
           // prevents redirection on link click
           if (["td", "TD"].includes(e.target.tagName))
-            history.push(`${path}${id}`);
+            window.open(`${path}${id}`);
         }}
         columns={[
           {
@@ -402,26 +407,25 @@ export default () => {
               return (
                 <div>
                   {postrender?.map(({ module }) => {
-                    if (module === 'buzzle-action-merge-videos') {
+                    if (module === "buzzle-action-merge-videos") {
                       return (
-                        <Tooltip title="Merge Video"><VideoLibrary
-                          color="disabled" /></Tooltip>
+                        <Tooltip title="Merge Video">
+                          <VideoLibrary color="disabled" />
+                        </Tooltip>
                       );
-                    }
-                    else if (module === 'buzzle-action-add-audio') {
+                    } else if (module === "buzzle-action-add-audio") {
                       return (
-                        <Tooltip title="Add Audio"><AudiotrackIcon
-                          color="disabled"
-                        /></Tooltip>
+                        <Tooltip title="Add Audio">
+                          <AudiotrackIcon color="disabled" />
+                        </Tooltip>
                       );
-                    }
-                    else if (module === 'buzzle-action-watermark') {
+                    } else if (module === "buzzle-action-watermark") {
                       return (
-                        <Tooltip title="Watermark action"><BrandingWatermarkIcon
-                          color="disabled"
-                        /></Tooltip>
+                        <Tooltip title="Watermark action">
+                          <BrandingWatermarkIcon color="disabled" />
+                        </Tooltip>
                       );
-                    } else return <div />
+                    } else return <div />;
                   })}
                 </div>
               );
@@ -587,15 +591,18 @@ const filterObjectToString = (f) => {
   if (!f) return null;
   const { startDate = 0, endDate = 0, idVideoTemplates = [], states = [] } = f;
 
-  return `${startDate
-    ? `dateUpdated=>=${startDate}&${endDate ? `dateUpdated=<=${endDate || startDate}&` : ""
-    }`
-    : ""
-    }${idVideoTemplates.length !== 0
-      ? getArrayOfIdsAsQueryString(
-        "idVideoTemplate",
-        idVideoTemplates.map(({ id }) => id)
-      ) + "&"
+  return `${
+    startDate
+      ? `dateUpdated=>=${startDate}&${
+          endDate ? `dateUpdated=<=${endDate || startDate}&` : ""
+        }`
       : ""
-    }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
+  }${
+    idVideoTemplates.length !== 0
+      ? getArrayOfIdsAsQueryString(
+          "idVideoTemplate",
+          idVideoTemplates.map(({ id }) => id)
+        ) + "&"
+      : ""
+  }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
 };

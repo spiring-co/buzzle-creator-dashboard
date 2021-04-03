@@ -36,11 +36,11 @@ export default ({ chartData, time = false }) => {
   };
 
   return (
-    <div>
+    <div >
       {!time ? (
         <Bar
           data={data}
-          width={410}
+          width={510}
           height={310}
           redraw={true}
           options={{
