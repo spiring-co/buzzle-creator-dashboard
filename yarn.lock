@@ -3448,10 +3448,10 @@ builtin-status-codes@^3.0.0:
   resolved "https://registry.yarnpkg.com/builtin-status-codes/-/builtin-status-codes-3.0.0.tgz#85982878e21b98e1c66425e03d0174788f569ee8"
   integrity sha1-hZgoeOIbmOHGZCXgPQF0eI9Wnug=
 
-buzzle-sdk@^1.1.4:
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/buzzle-sdk/-/buzzle-sdk-1.1.4.tgz#43c8de762e9b79dbbc7781299dfe77ecbcd5f9e4"
-  integrity sha512-0s6P5Gm39lOyaiAky47eiqOjsG1UmC4l8XrUkVzXfXvvJDejTftCNNFE2n6wmgX47S00c/J7Kq1iVqHiA6yMRg==
+buzzle-sdk@^1.2.4:
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/buzzle-sdk/-/buzzle-sdk-1.2.4.tgz#4cf866e47c856a31d8af03401e097d798ad45b3e"
+  integrity sha512-A5MITcjuvllHxXJipBpnIzlUqqYkO4g6mW3hl812vIGNn7HB7jgZ2aQhFMVhnS0tDxdiTkPpgOkKrfzu54op2w==
   dependencies:
     isomorphic-fetch "^2.2.1"
     socket.io-client "^2.3.0"

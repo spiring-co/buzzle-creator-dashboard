@@ -41,6 +41,10 @@ function ProfileEdit({ creator }) {
     User.update(creator?.id, data);
   };
 
+  useEffect(() => {
+    console.log(User, Webhook);
+  }, []);
+
   const { handleChange, values, handleSubmit, setFieldValue } = useFormik({
     initialValues: {
       name: creator.name,
@@ -206,8 +210,14 @@ function Webhooks() {
 
   useEffect(() => {
     console.log("208", User);
-    setWebhookData(Webhook.getAll()); //new api change
+    Webhook.getAll()
+      .then(setWebhookData)
+      .catch((err) => setError(err));
   }, []);
+
+  useEffect(() => {
+    console.log(webhookData);
+  }, [webhookData]);
 
   useEffect(() => {
     console.log(User);
@@ -261,17 +271,22 @@ function Webhooks() {
     }
   };
 
+  if (!webhookData.length) {
+    return <div>No webhooks found</div>;
+  }
+
   return (
     <Container style={{ display: "flex", flexDirection: "column" }}>
       {error ? <div>{error}</div> : <div></div>}
       <Typography variant="h5">Webhooks</Typography>
       <Divider />
       {currentUser
-        ? currentUser?.webhooks.map((cu, index) => {
+        ? currentUser?.webhooks?.map((cu, index) => {
             return (
               <div>
                 <Typography style={{ margin: 10 }} variant="h7">
-                  Name: {webhookData.find(({ id }) => id === cu.id).name}
+                  {console.log(webhookData)}
+                  Name: {webhookData?.find(({ id }) => id === cu.id).name}
                 </Typography>
                 <Typography variant="h7">URL: {cu.url}</Typography>
                 <IconButton>

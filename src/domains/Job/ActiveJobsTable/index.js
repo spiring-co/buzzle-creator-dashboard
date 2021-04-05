@@ -73,11 +73,11 @@ export default ({ onRowClick }) => {
     socket.on("job-status", (data) => {
       let rendering = 0;
       const { error = 0, created = 0 } = data;
-      Object.keys(data).map((k) => {
-        if (k.includes("render")) {
-          rendering += 1;
-        }
-      });
+      let download = data["render:download"];
+      let postrender = data["render:postrender"];
+      let script = data["render:script"];
+      // console.log(data);
+      rendering = download + postrender + script;
       setPendingJobs({ error, rendering, created });
     });
   }, [socket]);
@@ -89,17 +89,21 @@ export default ({ onRowClick }) => {
       )?.id;
 
       if (jobIdToBeFetched) {
-        setJobsData(j => [...j, { id: jobIdToBeFetched }])
+        setJobsData((j) => [...j, { id: jobIdToBeFetched }]);
         Job.get(jobIdToBeFetched, true)
           .then((d) =>
             setJobsData((j) => {
               //check if jobIdTobefetched is already inside j, if not then append else replace
-              return j.find(({ id }) => id === jobIdToBeFetched) ? j.map((data) => data?.id === jobIdToBeFetched ? ({ ...d, id: jobIdToBeFetched }) : data)
-                : [...j, { ...d, id: jobIdToBeFetched }]
+              return j.find(({ id }) => id === jobIdToBeFetched)
+                ? j.map((data) =>
+                    data?.id === jobIdToBeFetched
+                      ? { ...d, id: jobIdToBeFetched }
+                      : data
+                  )
+                : [...j, { ...d, id: jobIdToBeFetched }];
             })
           )
           .catch(() => setJobsData((j) => [...j, { id: jobIdToBeFetched }]));
-
       }
     }
   }, [activeJobs, jobsData]);
@@ -123,37 +127,54 @@ export default ({ onRowClick }) => {
   }, [activeJobs]);
 
   const ActiveJobRow = ({ id, state, progress, jobData, rendererInstance }) => {
-    return <TableRow key={id} onClick={() => onRowClick(id)}>
-      <TableCell component="th" scope="row">
-        {id}
-      </TableCell>
-      <TableCell align="left">{jobData?.videoTemplate?.title || "loading..."}</TableCell>
-      <TableCell>{jobData?.videoTemplate?.versions?.find((v) => v?.id === jobData?.idVersion)
-        ?.title || "loading..."}</TableCell>
-      <TableCell>{timeago.format(new Date(jobData?.dateUpdated)) || "loading..."}</TableCell>
-      <TableCell>{timeago.format(new Date(jobData?.dateCreated)) || "loading..."}</TableCell>
-      <TableCell align="left">
-        <Chip
-          size="small"
-          label={`${state}${progress ? " " + progress + "%" : ""}`}
-          style={{
-            fontWeight: 700,
-            background: getColorFromState(state, progress),
-            color: "white",
-            textTransform: 'capitalize'
-          }}
-        /></TableCell>
-      <TableCell>{rendererInstance?.instanceId}</TableCell>
-      <TableCell>{rendererInstance?.ipv4}</TableCell>
-      <TableCell align="left"><Button
-        onClick={e => {
-          e.stopPropagation()
-          setSelectedJobId(id)
-        }}
-        size="small"
-        variant="contained" color="primary" children="view logs" /></TableCell>
-    </TableRow>
-  }
+    return (
+      <TableRow key={id} onClick={() => onRowClick(id)}>
+        <TableCell component="th" scope="row">
+          {id}
+        </TableCell>
+        <TableCell align="left">
+          {jobData?.videoTemplate?.title || "loading..."}
+        </TableCell>
+        <TableCell>
+          {jobData?.videoTemplate?.versions?.find(
+            (v) => v?.id === jobData?.idVersion
+          )?.title || "loading..."}
+        </TableCell>
+        <TableCell>
+          {timeago.format(new Date(jobData?.dateUpdated)) || "loading..."}
+        </TableCell>
+        <TableCell>
+          {timeago.format(new Date(jobData?.dateCreated)) || "loading..."}
+        </TableCell>
+        <TableCell align="left">
+          <Chip
+            size="small"
+            label={`${state}${progress ? " " + progress + "%" : ""}`}
+            style={{
+              fontWeight: 700,
+              background: getColorFromState(state, progress),
+              color: "white",
+              textTransform: "capitalize",
+            }}
+          />
+        </TableCell>
+        <TableCell>{rendererInstance?.instanceId}</TableCell>
+        <TableCell>{rendererInstance?.ipv4}</TableCell>
+        <TableCell align="left">
+          <Button
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedJobId(id);
+            }}
+            size="small"
+            variant="contained"
+            color="primary"
+            children="view logs"
+          />
+        </TableCell>
+      </TableRow>
+    );
+  };
 
   return (
     <>
@@ -236,7 +257,7 @@ export default ({ onRowClick }) => {
               <Table stickyHeader size="small" aria-label="a dense table">
                 <TableHead>
                   <TableRow>
-                    <TableCell >Job Id</TableCell>
+                    <TableCell>Job Id</TableCell>
                     <TableCell align="left">Video template</TableCell>
                     <TableCell align="left">Version</TableCell>
                     <TableCell align="left">Last updated</TableCell>
@@ -248,15 +269,17 @@ export default ({ onRowClick }) => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {activeJobs.map(({ id, state, progress, rendererInstance }) => (
-                    <ActiveJobRow
-                      id={id}
-                      rendererInstance={rendererInstance}
-                      state={state}
-                      progress={progress}
-                      jobData={jobsData?.find((j) => j.id === id) || []}
-                    />
-                  ))}
+                  {activeJobs.map(
+                    ({ id, state, progress, rendererInstance }) => (
+                      <ActiveJobRow
+                        id={id}
+                        rendererInstance={rendererInstance}
+                        state={state}
+                        progress={progress}
+                        jobData={jobsData?.find((j) => j.id === id) || []}
+                      />
+                    )
+                  )}
                 </TableBody>
               </Table>
             </TableContainer>
@@ -302,17 +325,20 @@ const filterObjectToString = (f) => {
   if (!f) return null;
   const { startDate = 0, endDate = 0, idVideoTemplates = [], states = [] } = f;
 
-  return `${startDate
-    ? `dateUpdated=>=${startDate}&${endDate ? `dateUpdated=<=${endDate || startDate}&` : ""
-    }`
-    : ""
-    }${idVideoTemplates.length !== 0
-      ? getArrayOfIdsAsQueryString(
-        "idVideoTemplate",
-        idVideoTemplates.map(({ id }) => id)
-      ) + "&"
+  return `${
+    startDate
+      ? `dateUpdated=>=${startDate}&${
+          endDate ? `dateUpdated=<=${endDate || startDate}&` : ""
+        }`
       : ""
-    }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
+  }${
+    idVideoTemplates.length !== 0
+      ? getArrayOfIdsAsQueryString(
+          "idVideoTemplate",
+          idVideoTemplates.map(({ id }) => id)
+        ) + "&"
+      : ""
+  }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
 };
 
 //job-status for job statoos
