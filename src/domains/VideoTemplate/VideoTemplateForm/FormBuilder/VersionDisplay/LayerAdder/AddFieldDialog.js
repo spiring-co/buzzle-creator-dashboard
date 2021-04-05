@@ -55,7 +55,7 @@ export default (props) => {
   const { textLayers = [], imageLayers = [] } = props;
 
   const onSubmit = (data) => {
-    const { key, property, placeholder, extension, propertyType, type, label, required, maxLength, layerName, width, height } = data;
+    const { key, property, placeholder, extension = 'png', propertyType, type, label, required, maxLength, layerName, width, height } = data;
 
     switch (type) {
       case "data":
@@ -130,7 +130,8 @@ export default (props) => {
       const layerNames = imageLayers.map(({ name }) => name)
       setFieldValue('height', imageLayers[layerNames.indexOf(value)]["height"])
       setFieldValue('width', imageLayers[layerNames.indexOf(value)]["width"])
-      setFieldValue('extension', imageLayers[layerNames.indexOf(value)]?.extension ?? "png")
+      setFieldValue('extension', 'png'//imageLayers[layerNames.indexOf(value)]?.extension ?? "png"
+      )
     }
   }
   function PropertyPicker({
