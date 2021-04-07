@@ -37,6 +37,9 @@ export default ({
       onChange(value);
     }
   }, []);
+  useEffect(() => {
+    setIsError(error)
+  }, [error])
 
   const handleFile = async (e) => {
     const file =

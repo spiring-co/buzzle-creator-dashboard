@@ -16,7 +16,9 @@ const imageEditComponent = {
     onError,
     key,
     height,
-    width
+    width,
+    isValid,
+
   ) {
     return (
       <FileUploader
@@ -27,6 +29,7 @@ const imageEditComponent = {
         onChange={onChange}
         uploadDirectory={"jobImages"}
         onError={null}
+        error={isValid ? null : "Invalid image/format"}
         name={key}
       />
     );
@@ -41,11 +44,16 @@ const imageEditComponent = {
     );
   },
 };
-export default ({ onChange, value, height, width }) => {
+export default ({ onChange, value, height, width, extension = 'png' }) => {
   const [imageEditType, setImageEditType] = useState("image");
+  const [isValid, setIsValid] = useState(value.split(".").pop() === extension)
+  const handleChange = (v) => {
+    setIsValid(v.split(".").pop() === extension)
+    onChange(v)
+  }
   return (
     <>
-      <FormControl component="fieldset">
+      {/* <FormControl component="fieldset">
         <RadioGroup
           value={imageEditType}
           onChange={(e) => setImageEditType(e.target.value)}
@@ -63,16 +71,29 @@ export default ({ onChange, value, height, width }) => {
             labelPlacement="end"
           />
         </RadioGroup>
-      </FormControl>
-      {imageEditComponent[imageEditType](
+      </FormControl> 
+       {imageEditComponent[imageEditType](
         value,
         onChange,
         "jobImages",
         null,
         Date.now(),
         height,
-        width
+        width, isValid
       )}
+      */}
+      <FileUploader
+        value={value}
+        cropEnabled={true}
+        height={height}
+        width={width}
+        onChange={handleChange}
+        uploadDirectory={"jobImages"}
+        onError={null}
+        error={isValid ? null : "Invalid image/format"}
+        name={null}
+      />
+
     </>
   );
 };
