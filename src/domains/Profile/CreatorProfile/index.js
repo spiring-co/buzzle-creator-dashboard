@@ -19,7 +19,7 @@ import {
 import { Edit, Delete } from "@material-ui/icons";
 import { Alert } from "@material-ui/lab";
 import { User, Webhook } from "services/api";
-import upload from "services/s3Upload";
+import { upload } from "services/awsService";
 import { useFormik } from "formik";
 import React, { useEffect, useState } from "react";
 import EditIcon from "@material-ui/icons/Edit";
@@ -282,26 +282,26 @@ function Webhooks() {
       <Divider />
       {currentUser
         ? currentUser?.webhooks?.map((cu, index) => {
-            return (
-              <div>
-                <Typography style={{ margin: 10 }} variant="h7">
-                  {console.log(webhookData)}
+          return (
+            <div>
+              <Typography style={{ margin: 10 }} variant="h7">
+                {console.log(webhookData)}
                   Name: {webhookData?.find(({ id }) => id === cu.id).name}
-                </Typography>
-                <Typography variant="h7">URL: {cu.url}</Typography>
-                <IconButton>
-                  <Edit onClick={() => handleOpen(index)} fontSize="small" />
-                </IconButton>
-                <IconButton>
-                  <Delete
-                    fontSize="small"
-                    onClick={() => handleDelete(index)}
-                  />
-                </IconButton>
-                <Divider />
-              </div>
-            );
-          })
+              </Typography>
+              <Typography variant="h7">URL: {cu.url}</Typography>
+              <IconButton>
+                <Edit onClick={() => handleOpen(index)} fontSize="small" />
+              </IconButton>
+              <IconButton>
+                <Delete
+                  fontSize="small"
+                  onClick={() => handleDelete(index)}
+                />
+              </IconButton>
+              <Divider />
+            </div>
+          );
+        })
         : " "}
       <Button
         style={{ marginTop: 20 }}

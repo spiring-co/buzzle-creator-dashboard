@@ -3,18 +3,22 @@ import AWS from "aws-sdk";
 const bucketName = "spiring-creator";
 const bucketRegion = "us-east-1";
 
-AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+const myCredentials = new AWS.CognitoIdentityCredentials({
   IdentityPoolId: "us-east-1:06431ed0-60d3-457c-9c6c-7866955fc5e5",
 });
+AWS.config.credentials = myCredentials
 AWS.config.update({
   region: bucketRegion,
 });
-
+AWS.config.apiVersions = {
+  ec2: '2016-11-15',
+  // other service API versions
+};
 /**
  * @param  {String} Key Path of the file
  * @param  {} Body File body
  */
-export default (Key, Body) => {
+export const upload = (Key, Body) => {
   var upload = new AWS.S3.ManagedUpload({
     partSize: 15 * 1024 * 1024,
     queueSize: 5,
@@ -40,3 +44,10 @@ export default (Key, Body) => {
   
   */
 };
+
+
+export const getInstanceInfo = async () => {
+  const response = await (new AWS.EC2().describeInstances()).promise();
+  console.log(response);
+  return response
+}

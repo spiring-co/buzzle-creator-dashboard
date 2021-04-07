@@ -17,7 +17,7 @@ import {
   OndemandVideo,
 } from "@material-ui/icons";
 import React, { useEffect, useState } from "react";
-import upload from "services/s3Upload";
+import { upload } from "services/awsService";
 export default function AssetUploader({
   asset,
   handleDelete,

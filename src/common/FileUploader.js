@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FormHelperText, Typography, Box, Button, FormControl, FormControlLabel, Radio, RadioGroup, TextField } from "@material-ui/core";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
-import upload from "services/s3Upload";
+import { upload } from "services/awsService";
 
 import { readFile, ORIENTATION_TO_ANGLE, getRotatedImage } from "helpers/CreateImage"
 import { getOrientation } from 'get-orientation/browser'
