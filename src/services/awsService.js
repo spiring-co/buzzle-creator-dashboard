@@ -3,17 +3,13 @@ import AWS from "aws-sdk";
 const bucketName = "spiring-creator";
 const bucketRegion = "us-east-1";
 
-const myCredentials = new AWS.CognitoIdentityCredentials({
+AWS.config.credentials = new AWS.CognitoIdentityCredentials({
   IdentityPoolId: "us-east-1:06431ed0-60d3-457c-9c6c-7866955fc5e5",
 });
-AWS.config.credentials = myCredentials
 AWS.config.update({
   region: bucketRegion,
 });
-AWS.config.apiVersions = {
-  ec2: '2016-11-15',
-  // other service API versions
-};
+
 /**
  * @param  {String} Key Path of the file
  * @param  {} Body File body

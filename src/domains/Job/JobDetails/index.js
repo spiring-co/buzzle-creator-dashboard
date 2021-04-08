@@ -637,10 +637,10 @@ export default () => {
                     const version = job.videoTemplate.versions.find(
                       (v) => v.id === job.idVersion
                     );
-                    const value = value.startsWith('http') ? (version.fields.find((f) => f.key === key)?.rendererData?.extension ?? 'png') : version.fields.find((f) => f.key === key)?.constraints?.maxLength
+                    const v = value.startsWith('http') ? (version.fields.find((f) => f.key === key)?.rendererData?.extension ?? 'png') : version.fields.find((f) => f.key === key)?.constraints?.maxLength
                     return (
                       <span>
-                        {value}
+                        {v}
                       </span>
                     );
                   },
@@ -680,6 +680,7 @@ export default () => {
                       return (
                         <ImageEditRow
                           value={value}
+                          extension={extension}
                           onChange={onChange}
                           height={height}
                           width={width}
