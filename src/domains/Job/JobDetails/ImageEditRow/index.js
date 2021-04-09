@@ -1,13 +1,13 @@
-import React, { useState } from "react";
+import React, { createRef, useEffect, useState } from "react";
 import {
   RadioGroup,
   FormControl,
   FormControlLabel,
   Radio,
-  TextField,
+  TextField, Button
 } from "@material-ui/core";
 import FileUploader from "common/FileUploader";
-
+import Jimp from 'jimp/es';
 const imageEditComponent = {
   image: function (
     value,
@@ -47,10 +47,24 @@ const imageEditComponent = {
 export default ({ onChange, value, height, width, extension = 'png' }) => {
   const [imageEditType, setImageEditType] = useState("image");
   const [isValid, setIsValid] = useState(value.split(".").pop() === extension)
+  const [isConverting, setIsConverting] = useState(false)
+  const ref = createRef()
   const handleChange = (v) => {
     setIsValid(v.split(".").pop() === extension)
     onChange(v)
   }
+  const handleConvert = async () => {
+    if (ref?.current) {
+      setIsConverting(true)
+      let image = await Jimp.read(value)
+      image = await image.quality(extension === 'png' ? 5 : 20).getBufferAsync(extension === 'png' ? Jimp.MIME_PNG : Jimp.MIME_JPEG)
+      setIsConverting(false)
+      setIsValid(true)
+      await ref?.current?.handleUpload(image, extension)
+    }
+  }
+  useEffect(() => {
+  }, [ref])
   return (
     <>
       {/* <FormControl component="fieldset">
@@ -83,17 +97,28 @@ export default ({ onChange, value, height, width, extension = 'png' }) => {
       )}
       */}
       <FileUploader
+        ref={ref}
         value={value}
+        extension={extension}
         cropEnabled={true}
         height={height}
         width={width}
+        accept={`image/${extension}`}
         onChange={handleChange}
         uploadDirectory={"jobImages"}
         onError={null}
         error={isValid ? null : "Invalid image/format"}
         name={null}
       />
-
+      {!isValid && <div style={{ marginTop: 5 }}>
+        <Button
+          children={isConverting ? 'converting...' : `Convert to ${extension}`}
+          color="primary"
+          variant="contained"
+          disabled={isConverting}
+          onClick={handleConvert}
+        />
+      </div>}
     </>
   );
 };

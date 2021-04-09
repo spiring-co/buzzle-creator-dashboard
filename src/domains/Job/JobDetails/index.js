@@ -589,7 +589,7 @@ export default () => {
             <MaterialTable
               style={{ boxShadow: "none" }}
               options={{
-                pageSize: 5,
+                pageSize: 30,
                 headerStyle: { fontWeight: 700 },
                 actionsColumnIndex: -1,
               }}
