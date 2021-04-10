@@ -29,7 +29,7 @@ function useQuery() {
 export default ({ onRowClick }) => {
   // init socket on mount
   const [activeJobs, setActiveJobs] = useState([]);
-  const [pendingJobs, setPendingJobs] = useState([]);
+  const [jobStats, setJobStats] = useState({});
   const [activeJobLogs, setActiveJobLogs] = useState([]);
   const [jobsData, setJobsData] = useState([]);
   const { user } = useAuth();
@@ -73,12 +73,14 @@ export default ({ onRowClick }) => {
     socket.on("job-status", (data) => {
       let rendering = 0;
       const { error = 0, created = 0 } = data;
-      let download = data["render:download"];
-      let postrender = data["render:postrender"];
-      let script = data["render:script"];
+      let download = data["render:download"] || 0;
+      let dorender = data["render:dorender"] || 0;
+      let postrender = data["render:postrender"] || 0;
+      let prerender = data["render:prerender"] || 0;
+      let script = data["render:script"] || 0;
       // console.log(data);
-      rendering = download + postrender + script;
-      setPendingJobs({ error, rendering, created });
+      rendering = download + postrender + script + dorender + prerender;
+      setJobStats({ error, rendering, created });
     });
   }, [socket]);
   useEffect(() => {
@@ -96,10 +98,10 @@ export default ({ onRowClick }) => {
               //check if jobIdTobefetched is already inside j, if not then append else replace
               return j.find(({ id }) => id === jobIdToBeFetched)
                 ? j.map((data) =>
-                    data?.id === jobIdToBeFetched
-                      ? { ...d, id: jobIdToBeFetched }
-                      : data
-                  )
+                  data?.id === jobIdToBeFetched
+                    ? { ...d, id: jobIdToBeFetched }
+                    : data
+                )
                 : [...j, { ...d, id: jobIdToBeFetched }];
             })
           )
@@ -214,7 +216,7 @@ export default ({ onRowClick }) => {
               }}>
               <Chip
                 size="small"
-                label={`Error: ${pendingJobs["error"] || ""}`}
+                label={`Error: ${jobStats["error"] || 0}`}
                 style={{
                   fontWeight: 700,
                   background: "#f44336",
@@ -226,7 +228,7 @@ export default ({ onRowClick }) => {
               />
               <Chip
                 size="small"
-                label={`Rendering: ${pendingJobs["rendering"] || ""}`}
+                label={`Rendering: ${jobStats["rendering"] || 0}`}
                 style={{
                   fontWeight: 700,
                   background: "#ffa502",
@@ -238,7 +240,7 @@ export default ({ onRowClick }) => {
               />
               <Chip
                 size="small"
-                label={`Created: ${pendingJobs["created"] || ""}`}
+                label={`Created: ${jobStats["created"] || 0}`}
                 style={{
                   fontWeight: 700,
                   marginLeft: 10,
@@ -325,20 +327,17 @@ const filterObjectToString = (f) => {
   if (!f) return null;
   const { startDate = 0, endDate = 0, idVideoTemplates = [], states = [] } = f;
 
-  return `${
-    startDate
-      ? `dateUpdated=>=${startDate}&${
-          endDate ? `dateUpdated=<=${endDate || startDate}&` : ""
-        }`
-      : ""
-  }${
-    idVideoTemplates.length !== 0
+  return `${startDate
+    ? `dateUpdated=>=${startDate}&${endDate ? `dateUpdated=<=${endDate || startDate}&` : ""
+    }`
+    : ""
+    }${idVideoTemplates.length !== 0
       ? getArrayOfIdsAsQueryString(
-          "idVideoTemplate",
-          idVideoTemplates.map(({ id }) => id)
-        ) + "&"
+        "idVideoTemplate",
+        idVideoTemplates.map(({ id }) => id)
+      ) + "&"
       : ""
-  }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
+    }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
 };
 
 //job-status for job statoos
