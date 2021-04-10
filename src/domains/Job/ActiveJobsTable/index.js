@@ -75,11 +75,12 @@ export default ({ onRowClick }) => {
       const { error = 0, created = 0 } = data;
       let download = data["render:download"] || 0;
       let dorender = data["render:dorender"] || 0;
+      let render = data["rendering"] || 0;
       let postrender = data["render:postrender"] || 0;
       let prerender = data["render:prerender"] || 0;
       let script = data["render:script"] || 0;
       // console.log(data);
-      rendering = download + postrender + script + dorender + prerender;
+      rendering = download + postrender + script + dorender + prerender + render;
       setJobStats({ error, rendering, created });
     });
   }, [socket]);
