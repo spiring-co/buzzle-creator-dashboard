@@ -502,6 +502,7 @@ export default () => {
                     <FileUploader
                       name={"watermarkFile"}
                       value={""}
+                      storageType="deleteAfter90Days"
                       onError={(e) => console.log(e.message)}
                       onChange={(src) => {
                         job.output = [

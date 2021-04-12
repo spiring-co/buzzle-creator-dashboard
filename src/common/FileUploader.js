@@ -21,6 +21,7 @@ export default forwardRef(({
   helperText,
   height = 400, width = 600,
   onTouched,
+  storageType = 'archive'
 }, ref) => {
   ref = ref ? ref : { current: "" }
   const [isError, setIsError] = useState(error)
@@ -58,7 +59,7 @@ export default forwardRef(({
       setLoading(true);
       const task = upload(
         `${uploadDirectory}/${Date.now()}.${extension}`,
-        file
+        file, storageType
       );
       setTaskController(task);
       task.on("httpUploadProgress", ({ loaded, total }) =>

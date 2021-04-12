@@ -2,7 +2,11 @@ import AWS from "aws-sdk";
 
 const bucketName = "spiring-creator";
 const bucketRegion = "us-east-1";
-
+const tagsByUseCase = {
+  'archive': 'true',
+  deleteAfter7Days: '1 week',
+  deleteAfter90Days: '90 Days'
+}
 AWS.config.credentials = new AWS.CognitoIdentityCredentials({
   IdentityPoolId: "us-east-1:06431ed0-60d3-457c-9c6c-7866955fc5e5",
 });
@@ -14,7 +18,7 @@ AWS.config.update({
  * @param  {String} Key Path of the file
  * @param  {} Body File body
  */
-export const upload = (Key, Body) => {
+export const upload = (Key, Body, tag = 'archive') => {
   var upload = new AWS.S3.ManagedUpload({
     partSize: 15 * 1024 * 1024,
     queueSize: 5,
@@ -25,6 +29,7 @@ export const upload = (Key, Body) => {
       Body,
       ACL: "public-read",
     },
+    tags: [Key: tag, Value: tagsByUseCase[tag]]
   });
 
   return upload;
