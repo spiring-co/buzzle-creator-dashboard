@@ -32,7 +32,7 @@ export default ({
             sample: url,
           })
         }
-        name={"sample"}
+
         label="Version Sample Video"
         onTouched={() => setError(null)}
         error={error}
