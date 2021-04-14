@@ -175,9 +175,7 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
                     handleEdit({ addWaterMark: { ...watermark, watermark: url } });
                 }}
                 accept={"image/*"}
-
                 uploadDirectory={"jobImages"}
-
                 label="Watermark"
                 onTouched={() => setFileError(null)}
                 error={fileError}

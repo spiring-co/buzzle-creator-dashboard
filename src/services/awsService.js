@@ -29,7 +29,7 @@ export const upload = (Key, Body, tag = 'archive') => {
       Body,
       ACL: "public-read",
     },
-    tags: [Key: tag, Value: tagsByUseCase[tag]]
+    tags: [{ Key: tag, Value: tagsByUseCase[tag] }]
   });
 
   return upload;
