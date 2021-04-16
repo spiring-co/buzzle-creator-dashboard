@@ -13,6 +13,7 @@ import Domains from "domains";
 import NotFound from "domains/NotFound";
 
 import Landing from "domains/Landing";
+import LandingDeveloper from "domains/LandingDeveloper";
 import AdminLogin from "domains/Auth/AdminAuth/Login";
 import TestJob from "domains/VideoTemplate/CreateTestJob";
 
@@ -46,6 +47,10 @@ const AppChild = () => {
               <Route exact path="/"
                 render={props => (
                   <Page props={props} component={Landing} title="Buzzle" />
+                )} />
+                <Route exact path="/developer"
+                render={props => (
+                  <Page props={props} component={LandingDeveloper} title="Buzzle" />
                 )} />
               <Route path="/login" exact
                 render={props => (

@@ -122,11 +122,11 @@ export default () => {
       "dateUpdated",
       "desc"
     )
-      .then(({ data, count: totalCount }) => {
+      .then(({ data }) => {
         console.log(data);
         setData(
           data.map((j) => {
-            if (j.state !== "error" && j.videoTemplate !== null) {
+            if (j.videoTemplate !== null) {
               return j.videoTemplate.title;
             }
           })
