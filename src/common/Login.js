@@ -59,7 +59,7 @@ export default ({ heading, subHeading, role }) => {
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const {
@@ -85,8 +85,7 @@ export default ({ heading, subHeading, role }) => {
         setLoading(true);
         const l = await login(email, password, role);
         if (l) {
-          setIsLoggedIn(true);
-          history.push("/home");
+          window.location = "/home"
         }
       } catch (e) {
         setError(e);
@@ -103,7 +102,7 @@ export default ({ heading, subHeading, role }) => {
     event.preventDefault();
   };
 
-  if (isLoggedIn) return <Redirect to={"/home"} />;
+  // if (isLoggedIn) return <Redirect to={"/home"} />;
 
   return (
     <Box mt={5}>

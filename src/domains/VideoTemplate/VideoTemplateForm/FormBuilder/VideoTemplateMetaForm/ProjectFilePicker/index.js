@@ -16,7 +16,7 @@ import {
 } from "@material-ui/core";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
-import upload from "services/s3Upload";
+import { upload } from "services/awsService";
 import { extractStructureFromFile } from "services/ae";
 import { getLayersFromComposition } from "services/helper";
 const useStyles = makeStyles((theme) =>

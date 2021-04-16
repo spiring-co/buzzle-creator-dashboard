@@ -162,45 +162,45 @@ export default React.memo(({ compositions, editVersion, activeVersionIndex }) =>
                     </Typography>
                   </>
                 ) : (
-                    <>
-                      <Wallpaper
-                        style={{
-                          fontSize: 40,
-                          margin: 10,
-                          padding: 5,
-                          border: "1px solid grey",
-                        }}
-                      />
-                      {item?.constraints?.width && (
-                        <Typography>
-                          <strong>Width:</strong> {item?.constraints?.width}, &nbsp;{" "}
-                        </Typography>
-                      )}
-                      {item?.constraints?.height && (
-                        <Typography>
-                          {" "}
-                          <strong>Height:</strong> {item?.constraints?.height}, &nbsp;{" "}
-                        </Typography>
-                      )}
+                  <>
+                    <Wallpaper
+                      style={{
+                        fontSize: 40,
+                        margin: 10,
+                        padding: 5,
+                        border: "1px solid grey",
+                      }}
+                    />
+                    {item?.constraints?.width && (
+                      <Typography>
+                        <strong>Width:</strong> {item?.constraints?.width}, &nbsp;{" "}
+                      </Typography>
+                    )}
+                    {item?.constraints?.height && (
                       <Typography>
                         {" "}
-                        <strong>Layer name:</strong> {item?.rendererData?.layerName},
+                        <strong>Height:</strong> {item?.constraints?.height}, &nbsp;{" "}
+                      </Typography>
+                    )}
+                    <Typography>
+                      {" "}
+                      <strong>Layer name:</strong> {item?.rendererData?.layerName},
                   &nbsp;{" "}
-                      </Typography>
-                      {item?.rendererData?.property && (
-                        <Typography>
-                          {" "}
-                          <strong>Property:</strong> {item?.rendererData?.property}
-                    ,&nbsp;
-                        </Typography>
-                      )}
+                    </Typography>
+                    {item?.rendererData?.property && (
                       <Typography>
                         {" "}
-                        <strong>Required:</strong>{" "}
-                        {item?.constraints?.required ? "true" : "false"}
+                        <strong>Property:</strong> {item?.rendererData?.property}
+                    ,&nbsp;
                       </Typography>
-                    </>
-                  )}
+                    )}
+                    <Typography>
+                      {" "}
+                      <strong>Required:</strong>{" "}
+                      {item?.constraints?.required ? "true" : "false"}
+                    </Typography>
+                  </>
+                )}
               </div>
             }
           />)}</Draggable>
@@ -272,7 +272,7 @@ export default React.memo(({ compositions, editVersion, activeVersionIndex }) =>
                 ?.constraints?.width ?? 400,
             extension:
               videoObj.versions[activeVersionIndex]?.fields[editIndex]
-                ?.rendererData?.extension ?? ".png",
+                ?.rendererData?.extension ?? "png",
             height:
               videoObj.versions[activeVersionIndex]?.fields[editIndex]
                 ?.constraints?.height ?? 400,

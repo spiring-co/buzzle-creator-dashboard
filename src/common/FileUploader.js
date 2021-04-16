@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, forwardRef } from "react";
 import { FormHelperText, Typography, Box, Button, FormControl, FormControlLabel, Radio, RadioGroup, TextField } from "@material-ui/core";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
-import upload from "services/s3Upload";
+import { upload } from "services/awsService";
 
 import { readFile, ORIENTATION_TO_ANGLE, getRotatedImage } from "helpers/CreateImage"
 import { getOrientation } from 'get-orientation/browser'
 import ImageCropperDialog from "common/ImageCropperDialog"
 
-export default ({
+export default forwardRef(({
   required,
   name,
   value,
   onChange,
-  label,
+  label, extension = 'png',
   accept,
   uploadDirectory,
   onError,
@@ -21,7 +21,9 @@ export default ({
   helperText,
   height = 400, width = 600,
   onTouched,
-}) => {
+  storageType = 'archive'
+}, ref) => {
+  ref = ref ? ref : { current: "" }
   const [isError, setIsError] = useState(error)
   const [type, setType] = useState('file')
   const [progress, setProgress] = useState(0);
@@ -37,6 +39,9 @@ export default ({
       onChange(value);
     }
   }, []);
+  useEffect(() => {
+    setIsError(error)
+  }, [error])
 
   const handleFile = async (e) => {
     const file =
@@ -47,16 +52,14 @@ export default ({
     }
     onError ? onError({}) : setIsError(null)
     setFilename(file.name);
-    await handleUpload(file, file.name.substr(
-      file.name.lastIndexOf(".")
-    ))
+    await handleUpload(file, file.name.split(".").pop())
   }
   const handleUpload = async (file, extension) => {
     try {
       setLoading(true);
       const task = upload(
-        `${uploadDirectory}/${Date.now()}${extension}`,
-        file
+        `${uploadDirectory}/${Date.now()}.${extension}`,
+        file, storageType
       );
       setTaskController(task);
       task.on("httpUploadProgress", ({ loaded, total }) =>
@@ -64,6 +67,7 @@ export default ({
       );
       const { Location: uri } = await task.promise();
       setLoading(false);
+      setFilename(uri.substring(uri.lastIndexOf("/") + 1))
       onChange(uri);
     } catch (err) {
       setTaskController(null)
@@ -97,6 +101,7 @@ export default ({
       setIsCropperOpen(true)
     }
   }
+  ref.current = { handleCropImage, handleUploadCancel, handleUpload }
   return (
     <Box mt={2} mb={2}>
       <Typography>{label}{required && " *"}</Typography>
@@ -171,7 +176,7 @@ export default ({
         onUpload={base64 => {
           setIsCropperOpen(false)
           const base64Data = new Buffer.from(base64.replace(/^data:image\/\w+;base64,/, ""), 'base64');
-          handleUpload(base64Data, ".png")
+          handleUpload(base64Data, extension)
         }
         }
         onCancel={() => {
@@ -181,4 +186,4 @@ export default ({
       }
     </Box>
   );
-};
+})

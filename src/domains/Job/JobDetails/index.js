@@ -502,6 +502,7 @@ export default () => {
                     <FileUploader
                       name={"watermarkFile"}
                       value={""}
+                      storageType="deleteAfter90Days"
                       onError={(e) => console.log(e.message)}
                       onChange={(src) => {
                         job.output = [
@@ -589,7 +590,7 @@ export default () => {
             <MaterialTable
               style={{ boxShadow: "none" }}
               options={{
-                pageSize: 5,
+                pageSize: 30,
                 headerStyle: { fontWeight: 700 },
                 actionsColumnIndex: -1,
               }}
@@ -632,8 +633,35 @@ export default () => {
                   editable: "never",
                 },
                 {
+                  title: "valid length/format",
+                  render: ({ value, key }) => {
+                    const version = job.videoTemplate.versions.find(
+                      (v) => v.id === job.idVersion
+                    );
+                    const v = value.startsWith('http') ? (version.fields.find((f) => f.key === key)?.rendererData?.extension ?? 'png') : version.fields.find((f) => f.key === key)?.constraints?.maxLength
+                    return (
+                      <span>
+                        {v}
+                      </span>
+                    );
+                  },
+                  editable: "never",
+                },
+                {
                   title: "Value",
                   field: "value",
+                  render: ({ value, key }) => {
+                    const version = job.videoTemplate.versions.find(
+                      (v) => v.id === job.idVersion
+                    );
+                    const isValid = value.startsWith('http') ? value.split(".").pop() === (
+                      version.fields.find((f) => f.key === key)?.rendererData?.extension ?? 'png') : value.length <= version.fields.find((f) => f.key === key)?.constraints?.maxLength
+                    return (
+                      <Typography color={isValid ? 'textPrimary' : 'secondary'}>
+                        {value}
+                      </Typography>
+                    );
+                  },
                   editComponent: ({
                     rowData: { key, constraints },
                     onChange,
@@ -643,7 +671,7 @@ export default () => {
                       (v) => v.id === job.idVersion
                     );
                     const {
-                      constraints: { height = 100, width = 100, maxLength },
+                      constraints: { height = 100, width = 100, maxLength }, rendererData: { extension = 'png' }
                     } = version.fields.find((f) => f.key === key);
                     if (
                       value?.startsWith("http://") ||
@@ -653,6 +681,7 @@ export default () => {
                       return (
                         <ImageEditRow
                           value={value}
+                          extension={extension}
                           onChange={onChange}
                           height={height}
                           width={width}

@@ -175,6 +175,7 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
                     handleEdit({ addWaterMark: { ...watermark, watermark: url } });
                 }}
                 accept={"image/*"}
+                uploadDirectory={"jobImages"}
                 label="Watermark"
                 onTouched={() => setFileError(null)}
                 error={fileError}
@@ -206,6 +207,7 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
                     setThumbnail({ ...thumbnail, thumbnail: url });
                     handleEdit({ addThumbnail: { ...thumbnail, thumbnail: url } });
                 }}
+                uploadDirectory={"jobImages"}
                 accept={"image/*"}
                 label="Thumbnail"
                 onTouched={() => setFileError(null)}
@@ -225,6 +227,8 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
                         handleEdit({ mergeVideos: { ...mergeVideos, input2: url, } });
                     }}
                     accept={"video/*"}
+                    uploadDirectory={"jobImages"}
+
                     name={"input2"}
                     label="Video File To be Merged"
                     onTouched={() => setFileError(null)}
@@ -245,6 +249,7 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
                         handleEdit({ addAudio: { ...addAudio, audio: url } });
                     }}
                     accept={"audio/*"}
+                    uploadDirectory={"jobImages"}
                     name={"audio"}
                     label="Audio File"
                     onTouched={() => setFileError(null)}
