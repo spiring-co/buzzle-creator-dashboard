@@ -8,7 +8,6 @@ import {
 } from "@material-ui/core";
 import Login from "common/Login";
 import {  Redirect } from "react-router-dom";
-import Branding from "common/Branding";
 import { useTranslation } from "react-i18next";
 import uploadIllustration from "assets/upload.svg";
 import downloadIllustration from "assets/download.svg";

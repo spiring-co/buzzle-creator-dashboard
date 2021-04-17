@@ -290,7 +290,7 @@ export default () => {
       ) {
         return alert("This Job has merge video action!, Request failed");
       }
-      const { data, actions, id, renderPrefs } = job;
+      const { data, actions, id } = job;
       setIsLoading(true);
       await Job.update(id, {
         data,
