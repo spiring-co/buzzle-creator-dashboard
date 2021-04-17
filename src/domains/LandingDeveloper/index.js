@@ -5,13 +5,11 @@ import {
   Box,
   Grid,
   makeStyles,
-  Container,
 } from "@material-ui/core";
 import Login from "common/Login";
-import { Link, Redirect } from "react-router-dom";
+import {  Redirect } from "react-router-dom";
 import Branding from "common/Branding";
 import { useTranslation } from "react-i18next";
-import landingIllustration from "assets/landing.svg";
 import uploadIllustration from "assets/upload.svg";
 import downloadIllustration from "assets/download.svg";
 import apiIllustration from "assets/api.svg";
@@ -19,8 +17,6 @@ import developerIllustration from "assets/developer.svg";
 import analyticsIllustration from "assets/analytics.png";
 import editIllustration from "assets/edit.jpg";
 import timeIllustration from "assets/time.png";
-import otherIllustration from "assets/404.svg";
-import videoIllustration from "assets/video.svg";
 import { useAuth } from "services/auth";
 import Fade from 'react-reveal/Fade';
 

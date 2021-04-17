@@ -440,9 +440,8 @@ export default () => {
             <IconButton
               aria-label="download"
               className={classes.margin}
-              href={
-                sortedOutput?.length && sortedOutput[selectedOutputIndex]?.src
-              }>
+              onClick={() => window.open(sortedOutput?.length && sortedOutput[selectedOutputIndex]?.src)}
+            >
               <DownloadIcon fontSize="inherit" />
             </IconButton>
           </Box>

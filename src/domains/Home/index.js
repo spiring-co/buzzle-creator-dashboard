@@ -165,99 +165,100 @@ export default () => {
       <Typography variant="h4">Hello Creator!</Typography>
       {/* <Typography>
         Generic dashboard here with charts and graphs and an overview. */}
-      <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <Grid>
-          <KeyboardDatePicker
-            format="MM/dd/yyyy"
-            margin="normal"
-            id="date-picker-dialog"
-            label="Start Date"
-            value={startDate}
-            onChange={handleStartDateChange}
-            KeyboardButtonProps={{
-              "aria-label": "change date",
-            }}
-          />
-          <KeyboardDatePicker
-            format="MM/dd/yyyy"
-            margin="normal"
-            id="date-picker-dialog"
-            label="End Date"
-            value={endDate}
-            onChange={handleEndDateChange}
-            KeyboardButtonProps={{
-              "aria-label": "change date",
-            }}
-          />
-        </Grid>
-        <div style={{ display: "flex", flexDirection: "row" }}>
-          <Card style={{ marginTop: 10, margin: 4 }}>
-            <h3 style={{ marginLeft: 20 }}>Jobs per invite</h3>
-            <CardContent>
-              {chartData?.length ? (
-                <Graphs chartData={chartData}></Graphs>
+      {chartData?.length ? (
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+          <Grid>
+            <KeyboardDatePicker
+              format="MM/dd/yyyy"
+              margin="normal"
+              id="date-picker-dialog"
+              label="Start Date"
+              value={startDate}
+              onChange={handleStartDateChange}
+              KeyboardButtonProps={{
+                "aria-label": "change date",
+              }}
+            />
+            <KeyboardDatePicker
+              format="MM/dd/yyyy"
+              margin="normal"
+              id="date-picker-dialog"
+              label="End Date"
+              value={endDate}
+              onChange={handleEndDateChange}
+              KeyboardButtonProps={{
+                "aria-label": "change date",
+              }}
+            />
+          </Grid>
+          <div style={{ display: "flex", flexDirection: "row" }}>
+            <Card style={{ marginTop: 10, margin: 4 }}>
+              <h3 style={{ marginLeft: 20 }}>Jobs per invite</h3>
+              <CardContent>
+                {chartData?.length ? (
+                  <Graphs chartData={chartData}></Graphs>
+                ) : (
+                  <div></div>
+                )}
+              </CardContent>
+            </Card>
+            <div>
+              {avgRenderTime ? (
+                <Card style={{ marginTop: 10, margin: 4 }}>
+                  <CardContent>
+                    <Typography variant="h10">
+                      Average render time of Jobs :{" "}
+                    </Typography>
+                    <Typography variant="h5">
+                      {Math.round(avgRenderTime / 1000)} seconds
+                  </Typography>
+                  </CardContent>
+                </Card>
+              ) : (
+                ""
+              )}
+              {sum ? (
+                <Card style={{ margin: 4 }}>
+                  <CardContent>
+                    <Typography variant="h10">Sum of Jobs : {""}</Typography>
+                    <Typography variant="h5">{sum} jobs</Typography>
+                  </CardContent>
+                </Card>
+              ) : (
+                ""
+              )}
+              {jobsCountDay ? (
+                <Card style={{ marginTop: 10, margin: 4 }}>
+                  <CardContent>
+                    Jobs last day:{" "}
+                    {<Typography variant="h8">{jobsCountDay.count}</Typography>}
+                  </CardContent>
+                  <CardContent>
+                    Jobs last week:{" "}
+                    {<Typography variant="h8">{jobsCountWeek.count}</Typography>}
+                  </CardContent>
+                  <CardContent>
+                    Jobs last month:{" "}
+                    {<Typography variant="h8">{jobsCountMonth.count}</Typography>}
+                  </CardContent>
+                </Card>
               ) : (
                 <div></div>
               )}
-            </CardContent>
-          </Card>
-          <div>
-            {avgRenderTime ? (
-              <Card style={{ marginTop: 10, margin: 4 }}>
-                <CardContent>
-                  <Typography variant="h10">
-                    Average render time of Jobs :{" "}
-                  </Typography>
-                  <Typography variant="h5">
-                    {Math.round(avgRenderTime / 1000)} seconds
-                  </Typography>
-                </CardContent>
-              </Card>
-            ) : (
-              ""
-            )}
-            {sum ? (
-              <Card style={{ margin: 4 }}>
-                <CardContent>
-                  <Typography variant="h10">Sum of Jobs : {""}</Typography>
-                  <Typography variant="h5">{sum} jobs</Typography>
-                </CardContent>
-              </Card>
-            ) : (
-              ""
-            )}
-            {jobsCountDay ? (
-              <Card style={{ marginTop: 10, margin: 4 }}>
-                <CardContent>
-                  Jobs last day:{" "}
-                  {<Typography variant="h8">{jobsCountDay.count}</Typography>}
-                </CardContent>
-                <CardContent>
-                  Jobs last week:{" "}
-                  {<Typography variant="h8">{jobsCountWeek.count}</Typography>}
-                </CardContent>
-                <CardContent>
-                  Jobs last month:{" "}
-                  {<Typography variant="h8">{jobsCountMonth.count}</Typography>}
-                </CardContent>
-              </Card>
-            ) : (
-              <div></div>
-            )}
+            </div>
+            <Card style={{ marginTop: 10, margin: 4 }}>
+              <h3 style={{ marginLeft: 20 }}>Jobs per hour</h3>
+              <CardContent>
+                {timeChartData?.length ? (
+                  <Graphs chartData={timeChartData} time={true}></Graphs>
+                ) : (
+                  <div></div>
+                )}
+              </CardContent>
+            </Card>
           </div>
-          <Card style={{ marginTop: 10, margin: 4 }}>
-            <h3 style={{ marginLeft: 20 }}>Jobs per hour</h3>
-            <CardContent>
-              {timeChartData?.length ? (
-                <Graphs chartData={timeChartData} time={true}></Graphs>
-              ) : (
-                <div></div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      </MuiPickersUtilsProvider>
-      {/* </Typography>  */}
+        </MuiPickersUtilsProvider>
+      ) : (<div style={{ padding: 20   }}>Loading..</div>)}
     </div>
   );
 };
