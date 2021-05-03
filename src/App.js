@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
-
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
 import { MuiThemeProvider } from "@material-ui/core/styles";
 
 import { darkTheme, lightTheme } from "helpers/themes";
@@ -27,7 +28,8 @@ import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import { AuthProvider } from "services/auth";
 import { messaging } from "services/firebase";
 import Page from "common/Page";
-
+import { PricingProvider } from "services/pricingContext";
+const stripePromise = loadStripe('pk_test_51Ijgs0SIUtONOjVtNl3YLdtevghojdCG1P0MLSqIY9Ab4cgD1ULvGwnrdRQtqE4sylBi4FbBEtRYMchyrHgK0qVx00lsBY6hsf');
 const AppChild = () => {
   const [theme, t, componentMounted] = useDarkMode();
   if (!componentMounted) {
@@ -48,7 +50,7 @@ const AppChild = () => {
                 render={props => (
                   <Page props={props} component={Landing} title="Buzzle" />
                 )} />
-                <Route exact path="/developer"
+              <Route exact path="/developer"
                 render={props => (
                   <Page props={props} component={LandingDeveloper} title="Buzzle" />
                 )} />
@@ -104,7 +106,11 @@ const AppChild = () => {
 export default () => {
   return (
     <DarkModeProvider>
-      <AppChild />
+      <Elements stripe={stripePromise}>
+        <PricingProvider>
+          <AppChild />
+        </PricingProvider>
+      </Elements>
     </DarkModeProvider>
   );
 };

@@ -93,3 +93,105 @@ function AuthProvider(props) {
 }
 
 export { AuthProvider, useAuth };
+
+
+/*
+import React, {
+  useState,
+  useMemo,
+  createContext,
+  useContext,
+  useEffect,
+} from "react";
+import { User } from "./api";
+import { initNotificationService } from "./notifications";
+const jwtDecode = require("jwt-decode");
+const AuthContext = createContext();
+
+const { REACT_APP_API_URL } = process.env;
+
+function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    console.log("useAuth must be used within a AuthProvider");
+  }
+  return context;
+}
+
+function AuthProvider(props) {
+  const [user, setUser] = useState(null);
+  const [initializing, setInitializing] = useState(false)
+  const getUser = async () => {
+    const jwt = localStorage.getItem("jwtoken");
+    if (!jwt) return null;
+    setInitializing(true)
+    try {
+      const { exp, id, role = '' } = jwtDecode(
+        jwt
+      );
+      if (!(exp * 1000 > Date.now())) return null;
+      return ({ role, ...await User.get(id) });
+    } catch (err) {
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    getUser().then(setUser).finally(() => setInitializing(false))
+  }, [])
+
+  useEffect(() => {
+    if (user) {
+      //TODO update push notification token
+      const token = initNotificationService();
+      // User.update(user.id, { pToken: token }).then(() => console.log("push token updated successfully!")).catch(e => console.log("Error updating push token, ", e?.message))
+    }
+  }, [user]);
+
+  const login = async (email, password, role = "Creator") => {
+    const response = await fetch(
+      `${process.env.REACT_APP_API_URL}/auth/login`,
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password, role }),
+      }
+    );
+    if (!response.ok) {
+      throw new Error((await response.json()).message);
+    }
+    const { token } = await response.json();
+    try {
+      const { id, role } = jwtDecode(token);
+      setUser({ role, ...await User.get(id) });
+    } catch (err) {
+      setUser(null);
+    }
+    return token;
+  };
+
+  const logout = async () => {
+    localStorage.removeItem("jwtoken");
+    setUser(null);
+
+    return true;
+  };
+
+  const sendOtp = async () => { };
+  const value = useMemo(() => {
+    return {
+      login,
+      logout,
+      sendOtp,
+      user, initializing,
+    };
+  }, [login, logout, user, initializing]);
+  return <AuthContext.Provider value={value} {...props} />;
+}
+
+export { AuthProvider, useAuth };
+
+*/

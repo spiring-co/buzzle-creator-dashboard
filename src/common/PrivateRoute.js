@@ -1,8 +1,20 @@
-import React from "react";
+import { CircularProgress, Container, Typography } from "@material-ui/core";
+import React, { useEffect } from "react";
 import { Route, Redirect } from "react-router-dom";
 import { useAuth } from "services/auth";
 export default (props) => {
-  const { user } = useAuth();
+  const { user, initializing = false } = useAuth();
+
+  // if (initializing) {
+  //   return <Container style={styles.center}>
+  //     <Typography style={{ padding: 15 }}>Please wait, while we sign in you</Typography>
+  //     <CircularProgress />
+  //   </Container>
+  // }
   if (!user) return <Redirect to="/login" />;
   return <Route {...props} />;
 };
+
+const styles = {
+  center: { display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', height: '100%' }
+}

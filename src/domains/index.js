@@ -5,7 +5,7 @@ import {
     MonetizationOn,
     VideoLibrary,
     Stars,
-    Work,
+    Work, Poll,
     SupervisedUserCircle,
 } from "@material-ui/icons";
 
@@ -22,6 +22,7 @@ import Servers from "domains/Servers";
 import Creators from "domains/Creator";
 import VideoTemplates from "domains/VideoTemplate";
 import Jobs from "domains/Job";
+import Billing from "domains/Billing";
 import Page from "common/Page";
 
 const useStyles = makeStyles((theme) =>
@@ -46,6 +47,12 @@ export default () => {
 
     const classes = useStyles();
     const links = [
+        {
+            text: "Usage and Billing",
+            icon: <Poll />,
+            to: `${url}/usage-billing`,
+            allowedRoles: ["Developer"]
+        },
         {
             text: "Video Templates",
             icon: <VideoLibrary />,
@@ -115,6 +122,11 @@ export default () => {
                         allowedRoles={"*"}
                         render={props => (
                             <Page props={props} component={Jobs} title="Buzzle | Jobs" />
+                        )} />
+                    <RoleBasedRoute path={`${path}/usage-billing`}
+                        allowedRoles={['Developer']}
+                        render={props => (
+                            <Page props={props} component={Billing} title="Buzzle | Usage & Billing" />
                         )} />
                     <RoleBasedRoute path={`${path}/users`}
                         allowedRoles={["Admin"]}

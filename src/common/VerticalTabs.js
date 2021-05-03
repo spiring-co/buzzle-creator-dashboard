@@ -88,7 +88,7 @@ export default function VerticalTabs({ tabs }) {
       {tabs
         .filter(({ allowedRoles }) => allowedRoles.includes(role))
         ?.map(({ component, allowedRoles = [] }, index) => (
-          <TabPanel value={value} index={index}>
+          <TabPanel value={value} index={index} style={{ width: "100%", minHeight: 300 }}>
             {component}
           </TabPanel>
         ))}

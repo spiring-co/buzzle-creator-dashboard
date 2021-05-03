@@ -14,6 +14,11 @@ window.onstorage = () => {
 };
 
 const uri = `http://52.54.195.156:3000/api/v1/jobs`;
+const stripeApiURL = 'http://localhost:5000'
+export const getPricing = async () => {
+  return await (await fetch(`${stripeApiURL}/products`)).json()
+}
+
 
 export const ServerJobs = {
   getAll: async () => {
@@ -69,4 +74,3 @@ export const {
   Creator,
 } = API;
 
-console.log(User, Webhook)
