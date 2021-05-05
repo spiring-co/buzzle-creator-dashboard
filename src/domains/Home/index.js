@@ -15,7 +15,7 @@ export default () => {
   const [avgRenderTime, setAvgRenderTime] = useState(0);
   const [avgRenderHour, setAvgRenderHour] = useState([]);
   const [startDate, setStartDate] = useState(new Date("2021-02-28T21:11:54"));
-  const [endDate, setEndDate] = useState(new Date("2021-03-05T21:11:54"));
+  const [endDate, setEndDate] = useState(new Date(Date.now()));
   const [chartData, setChartData] = useState([]);
   const [jobsCountDay, setJobsCountDay] = useState(0);
   const [jobsCountWeek, setJobsCountWeek] = useState(0);
@@ -29,136 +29,152 @@ export default () => {
     setEndDate(date);
   };
 
-  useEffect(() => {
-    getInstanceInfo()
-    jobsCountFetch();
-  }, []);
+  // useEffect(() => {
+  //   getInstanceInfo()
+  //   getDataFromQuery();
+  //   jobsCountFetch();
+  // }, []);
 
-  useEffect(() => {
-    getDataFromQuery();
-  }, [startDate, endDate]);
+  // useEffect(() => {
+  //   getDataFromQuery();
+  // }, [startDate, endDate]);
 
-  useEffect(() => {
-    const map = data.reduce(
-      //to count frequency of array elements
-      (acc, e) => acc.set(e, (acc.get(e) || 0) + 1),
-      new Map()
-    );
-    const result = [...map.entries()];
-    const resultTwo = result.map((i) => {
-      return { name: i[0], jobs: i[1] };
-    });
-    setChartData([...resultTwo]);
-    console.log("changed chart data" + chartData);
-  }, [data]);
+  // useEffect(() => {
+  //   const map = data.reduce(
+  //     //to count frequency of array elements
+  //     (acc, e) => acc.set(e, (acc.get(e) || 0) + 1),
+  //     new Map()
+  //   );
+  //   const result = [...map.entries()];
+  //   const resultTwo = result.map((i) => {
+  //     return { name: i[0], jobs: i[1] };
+  //   });
+  //   setChartData([...resultTwo]);
+  //   console.log("changed chart data" + chartData);
+  // }, [data]);
 
-  useEffect(() => {
-    jobsCountFetch();
-  }, []);
+  // useEffect(() => {
+  //   console.log(jobsCountWeek);
+  // }, [jobsCountWeek]);
 
-  useEffect(() => {
-    console.log(jobsCountWeek);
-  }, [jobsCountWeek]);
+  // const jobsCountFetch = async () => {
+  //   var d = new Date();
+  //   var w = new Date();
+  //   var m = new Date();
+  //   var f = new Date();
+  //   var day = new Date(d.setDate(d.getDate() - 1));
+  //   var week = new Date(w.setDate(w.getDate() - 7));
+  //   var month = new Date(m.setMonth(m.getMonth() - 1));
+  //   console.log(day, week, month, f);
+  //   getCountDay(f, day)
+  //   getCountWeek(f, week)
+  //   getCountMonth(f, month)
+  //   // await getCount(f, day).then(setJobsCountDay)
+  //   // await getCount(f, week).then(setJobsCountWeek)
+  //   // await getCount(f, month).then(setJobsCountMonth)
+  // };
 
-  const jobsCountFetch = async () => {
-    var d = new Date();
-    var w = new Date();
-    var m = new Date();
-    var f = new Date();
-    var day = new Date(d.setDate(d.getDate() - 1));
-    var week = new Date(w.setDate(w.getDate() - 7));
-    var month = new Date(m.setMonth(m.getMonth() - 1));
-    console.log(day, week, month);
-    setJobsCountDay(await Job.getCount(f, day));
-    setJobsCountWeek(await Job.getCount(f, week));
-    setJobsCountMonth(await Job.getCount(f, month));
-  };
+  // const getCountDay = async (update, start) => {
+  //   await fetch(`http://localhost:5000/stats/count?dateUpdated=${update}&dateStarted=${start}`)
+  //     .then(response => response.json()).then(({ count }) => {
+  //       console.log(count)
+  //       return setJobsCountDay(count)
+  //     })
+  // }
+  // const getCountWeek = async (update, start) => {
+  //   await fetch(`http://localhost:5000/stats/count?dateUpdated=${update}&dateStarted=${start}`)
+  //     .then(response => response.json()).then(({ count }) => {
+  //       console.log(count)
+  //       return setJobsCountWeek(count)
+  //     })
+  // }
+  // const getCountMonth = async (update, start) => {
+  //   await fetch(`http://localhost:5000/stats/count?dateUpdated=${update}&dateStarted=${start}`)
+  //     .then(response => response.json()).then(({ count }) => {
+  //       console.log(count)
+  //       return setJobsCountMonth(count)
+  //     })
+  // }
 
-  useEffect(() => {
-    const map = avgRenderHour.reduce(
-      //to count frequency of array elements
-      (acc, e) => acc.set(e, (acc.get(e) || 0) + 1),
-      new Map()
-    );
-    const result = [...map.entries()];
-    const resultTwo = result
-      .map((i) => {
-        if (i[0] === 0) {
-          return { name: 12 + " am", jobs: i[1] };
-        }
-        if (i[0] < 12) {
-          return { name: i[0] + " am", jobs: i[1] };
-        }
-        if (i[0] === 12) {
-          return { name: i[0] + " pm", jobs: i[1] };
-        }
-        if (i[0] > 12) {
-          return { name: i[0] - 12 + " pm", jobs: i[1] };
-        }
-      })
-      .sort((a, b) => {
-        let i = a.name.split(" ");
-        let j = b.name.split(" ");
-        return i[0] - j[0];
-      });
-    setTimeChartData([...resultTwo]);
-    console.log("changed chart data" + timeChartData);
-  }, [avgRenderHour]);
+  // useEffect(() => {
+  //   const map = avgRenderHour.reduce(
+  //     //to count frequency of array elements
+  //     (acc, e) => acc.set(e, (acc.get(e) || 0) + 1),
+  //     new Map()
+  //   );
+  //   const result = [...map.entries()];
+  //   const resultTwo = result
+  //     .map((i) => {
+  //       if (i[0] === 0) {
+  //         return { name: 12 + " am", jobs: i[1] };
+  //       }
+  //       if (i[0] < 12) {
+  //         return { name: i[0] + " am", jobs: i[1] };
+  //       }
+  //       if (i[0] === 12) {
+  //         return { name: i[0] + " pm", jobs: i[1] };
+  //       }
+  //       if (i[0] > 12) {
+  //         return { name: i[0] - 12 + " pm", jobs: i[1] };
+  //       }
+  //     })
+  //     .sort((a, b) => {
+  //       let i = a.name.split(" ");
+  //       let j = b.name.split(" ");
+  //       return i[0] - j[0];
+  //     })
+  //   setTimeChartData([...resultTwo]);
+  //   console.log("changed chart data" + timeChartData);
+  // }, [avgRenderHour]);
 
-  useEffect(() => {
-    const c = chartData.map((m) => {
-      return m.jobs;
-    });
-    var sum = c.reduce(function (a, b) {
-      return a + b;
-    }, 0);
-    setSum(sum);
-  }, [chartData]);
+  // useEffect(() => {
+  //   const c = chartData.map((m) => {
+  //     return m.jobs;
+  //   });
+  //   var sum = c.reduce(function (a, b) {
+  //     return a + b;
+  //   }, 0);
+  //   setSum(sum);
+  // }, [chartData]);
 
-  const getDataFromQuery = (query) => {
-    console.log("working");
-    return Job.getAll(
-      1,
-      100,
-      `dateUpdated=>=${startDate}&dateUpdated=<=${endDate || startDate}`,
-      "dateUpdated",
-      "desc"
-    )
-      .then(({ data }) => {
-        console.log(data);
-        setData(
-          data.map((j) => {
-            if (j.videoTemplate !== null) {
-              return j.videoTemplate.title;
-            }
-          })
-        );
-        const timeTaken = data.map((j) => {
-          return j.renderTime;
-        });
-        setAvgRenderTime(
-          timeTaken.reduce((a, b) => a + b, 0) / timeTaken.length
-        );
-        const avgHour = data.map((j) => {
-          return new Date(j.dateCreated);
-        });
-        setAvgRenderHour(
-          avgHour
-            .map((m) => {
-              return m.getHours();
-            })
-            .sort()
-        );
-      })
-      .catch((err) => {
-        console.log(err);
-        return {
-          data: [],
-          page: query?.page,
-          totalCount: 0,
-        };
-      }); // use fields query for quicker query and use it like ?fields=id,idVideoTemplate etc
-  };
+  // const getDataFromQuery = async (query) => {
+  //   console.log("yes")
+  //   await fetch(`http://localhost:5000/stats/countTitles?page=${1}&size=${100}&sortBy=${`dateUpdated=>=${startDate}&dateUpdated=<=${endDate || startDate}`}&orderBy=${"dateUpdated"}`)
+  //     .then(response => response.json()).then(({ data }) => {
+  //       console.log("here, data", data);
+  //       setData(
+  //         data.map((j) => {
+  //           if (j.videoTemplate !== null) {
+  //             return j.videoTemplate.title;
+  //           }
+  //         })
+  //       );
+  //       const timeTaken = data.map((j) => {
+  //         return j.renderTime;
+  //       });
+  //       setAvgRenderTime(
+  //         timeTaken.reduce((a, b) => a + b, 0) / timeTaken.length
+  //       );
+  //       const avgHour = data.map((j) => {
+  //         return new Date(j.dateCreated);
+  //       });
+  //       setAvgRenderHour(
+  //         avgHour
+  //           .map((m) => {
+  //             return m.getHours();
+  //           })
+  //           .sort()
+  //       );
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //       return {
+  //         data: [],
+  //         page: query?.page,
+  //         totalCount: 0,
+  //       };
+  //     }); // use fields query for quicker query and use it like ?fields=id,idVideoTemplate etc
+  // };
 
   return (
     <div>
@@ -231,22 +247,19 @@ export default () => {
                 <Card style={{ marginTop: 10, margin: 4 }}>
                   <CardContent>
                     Jobs last day:{" "}
-                    {<Typography variant="h8">{jobsCountDay.count}</Typography>}
+                    {<Typography variant="h8">{jobsCountDay}</Typography>}
                   </CardContent>
                   <CardContent>
                     Jobs last week:{" "}
-                    {<Typography variant="h8">{jobsCountWeek.count}</Typography>}
+                    {<Typography variant="h8">{jobsCountWeek}</Typography>}
                   </CardContent>
                   <CardContent>
                     Jobs last month:{" "}
-                    {<Typography variant="h8">{jobsCountMonth.count}</Typography>}
+                    {<Typography variant="h8">{jobsCountMonth}</Typography>}
                   </CardContent>
-                </Card>
-              ) : (
-                <div></div>
-              )}
+                </Card>) : (<div></div>)}
             </div>
-            <Card style={{ marginTop: 10, margin: 4 }}>
+            {/* <Card style={{ marginTop: 10, margin: 4 }}>
               <h3 style={{ marginLeft: 20 }}>Jobs per hour</h3>
               <CardContent>
                 {timeChartData?.length ? (
@@ -255,10 +268,10 @@ export default () => {
                   <div></div>
                 )}
               </CardContent>
-            </Card>
+            </Card> */}
           </div>
         </MuiPickersUtilsProvider>
-      ) : (<div style={{ padding: 20   }}>Loading..</div>)}
+      ) : (<div style={{ padding: 20 }}>Loading..</div>)}
     </div>
   );
 };
