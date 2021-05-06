@@ -48,6 +48,9 @@ export default ({ onRowClick }) => {
     if (!socket) {
       return console.log("no socket");
     }
+    if(socket){
+      console.log(socket)
+    }
     socket.on("job-progress", ({ id, state, progress, rendererInstance }) => {
       setActiveJobs((activeJobs) => {
         const index = activeJobs.map(({ id }) => id).indexOf(id);
@@ -73,13 +76,13 @@ export default ({ onRowClick }) => {
     socket.on("job-status", (data) => {
       let rendering = 0;
       const { error = 0, created = 0 } = data;
+      console.log(data);
       let download = data["render:download"] || 0;
       let dorender = data["render:dorender"] || 0;
       let render = data["rendering"] || 0;
       let postrender = data["render:postrender"] || 0;
       let prerender = data["render:prerender"] || 0;
       let script = data["render:script"] || 0;
-      // console.log(data);
       rendering = download + postrender + script + dorender + prerender + render;
       setJobStats({ error, rendering, created });
     });

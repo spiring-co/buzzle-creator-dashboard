@@ -1,4 +1,9 @@
 const extractStructureFromFile = async (aeExtractURL = process.env.REACT_APP_AE_SERVICE_URL, fileUrl) => {
+  let cachedData=localStorage.getItem(fileUrl)
+  if(cachedData){
+    console.log("Extracted data from cached file")
+    return JSON.parse(cachedData)
+  }
   const response = await fetch(`${aeExtractURL ? aeExtractURL : process.env.REACT_APP_AE_SERVICE_URL}/`, {//TODO fetch
     method: "POST",
     headers: {
@@ -9,7 +14,10 @@ const extractStructureFromFile = async (aeExtractURL = process.env.REACT_APP_AE_
   });
 
   if (response.ok) {
-    return response.json();
+    const { compositions, staticAssets }=await response.json()
+    localStorage.setItem(fileUrl,JSON.stringify({ compositions, staticAssets }))
+    console.log("Cached data for this file")
+    return { compositions, staticAssets }
   } else {
     throw new Error("Could not extract data from file.");
   }

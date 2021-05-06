@@ -45,21 +45,11 @@ export default function FontUpload({
 
     const fontNames = Array.from(new Set(allTextLayers.map((l) => l.font)));
     // this is without checking font Status
-    Promise.all(
-      fontNames.map(async (f) => {
-        try {
-          return await Font.get(f);
-        } catch (e) {
-          return {
-            name: f,
-            src: "",
-          };
-        }
-      })
-    ).then((data) => {
-      setFontList(data);
-      setLoading(false);
-    });
+    setFontList(fontNames.map((f) => ({
+      name: f,
+      src: "",
+    })))
+
   }, [compositions]);
 
   useEffect(() => {
@@ -71,15 +61,14 @@ export default function FontUpload({
     <Box>
       <Typography variant="h5">Upload Font Files</Typography>
       <Typography color="textSecondary">
-        We will try to resolve your fonts automatically, if not resolved, Upload
-        your Font File
+        Upload your Font File
       </Typography>
-      {loading ? (
+      {/* {loading ? (
         <Box mt={4}>
           <CircularProgress size={20} />
           <Typography>Resolving Fonts...</Typography>
         </Box>
-      ) : (
+      ) : ( */}
         <Box mt={2}>
           <List className={classes.root}>
             {fontList && fontList.length ? (
@@ -99,7 +88,6 @@ export default function FontUpload({
                             <Typography
                               variant="span"
                               style={{ color: "green" }}>
-                              {" "}
                               Resolved
                             </Typography>
                           </>
@@ -118,6 +106,7 @@ export default function FontUpload({
                       </Button>
                     </ListItemSecondaryAction>
                   </ListItem>
+                  <div style={{margin:15,marginTop:0,marginBottom:0}}>
                   <FileUploader
                     value={font.src}
                     name={font.name}
@@ -131,6 +120,7 @@ export default function FontUpload({
                     accept={".ttf,.otf"}
                     onError={null}
                   />
+                  </div>
                   {index !== fontList.length - 1 && <Divider />}
                 </Box>
               ))
@@ -145,7 +135,7 @@ export default function FontUpload({
             )}
           </List>
         </Box>
-      )}
+      {/* )} */}
       <Box display="flex" justifyContent="space-between" mt={4}>
         <Button
           startIcon={<ArrowBack />}

@@ -26,7 +26,6 @@ import UserRegister from "domains/Auth/UserAuth/Signup";
 import { SnackbarProvider, useSnackbar } from "notistack";
 import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import { AuthProvider } from "services/auth";
-import { messaging } from "services/firebase";
 import Page from "common/Page";
 import { PricingProvider } from "services/pricingContext";
 const stripePromise = loadStripe('pk_test_51Ijgs0SIUtONOjVtNl3YLdtevghojdCG1P0MLSqIY9Ab4cgD1ULvGwnrdRQtqE4sylBi4FbBEtRYMchyrHgK0qVx00lsBY6hsf');
