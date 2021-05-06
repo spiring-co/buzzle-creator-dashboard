@@ -51,16 +51,16 @@ export default ({ submitForm, isEdit, isDrafted = false, video }) => {
       projectFile: { fileUrl = "", staticAssets = [], compositions = [] },
     } = data;
     setCompositions(compositions);
-    console.log(
-      staticAssets,
-      staticAssets.map((a, index) =>
-        video?.staticAssets.map(({ name }) => name).includes(a.name)
-          ? video?.staticAssets[
-              video?.staticAssets.map(({ name }) => name).indexOf(a.name)
-            ]
-          : a
-      )
-    );
+    // console.log(
+    //   staticAssets,
+    //   staticAssets.map((a, index) =>
+    //     video?.staticAssets.map(({ name }) => name).includes(a.name)
+    //       ? video?.staticAssets[
+    //           video?.staticAssets.map(({ name }) => name).indexOf(a.name)
+    //         ]
+    //       : a
+    //   )
+    // );
     editVideoKeys({
       keywords,
       title,
