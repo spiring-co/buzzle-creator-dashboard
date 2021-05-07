@@ -31,7 +31,8 @@ function AuthProvider(props) {
       );
       console.log(exp);
       if (!(exp * 1000 > Date.now())) return null;
-      return { id, name, email, role, imageUrl };
+     //TODO
+      return { id, name, email, role:"Creator", imageUrl };
     } catch (err) {
       return null;
     }
