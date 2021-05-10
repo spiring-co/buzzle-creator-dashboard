@@ -3,22 +3,23 @@ import AWS from "aws-sdk";
 const bucketName = "spiring-creator";
 const bucketRegion = "us-east-1";
 const tagsByUseCase = {
-  'archive': 'true',
-  deleteAfter7Days: '1 week',
-  deleteAfter90Days: '90 Days'
-}
-AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-  IdentityPoolId: "us-east-1:06431ed0-60d3-457c-9c6c-7866955fc5e5",
-});
+  archive: "true",
+  deleteAfter7Days: "1 week",
+  deleteAfter90Days: "90 Days",
+};
+
 AWS.config.update({
   region: bucketRegion,
 });
+
+// Create EC2 service object
+var ec2 = new AWS.EC2({ apiVersion: "2016-11-15" });
 
 /**
  * @param  {String} Key Path of the file
  * @param  {} Body File body
  */
-export const upload = (Key, Body, tag = 'archive') => {
+export const upload = (Key, Body, tag = "archive") => {
   var upload = new AWS.S3.ManagedUpload({
     partSize: 15 * 1024 * 1024,
     queueSize: 5,
@@ -29,7 +30,7 @@ export const upload = (Key, Body, tag = 'archive') => {
       Body,
       ACL: "public-read",
     },
-    tags: [{ Key: tag, Value: tagsByUseCase[tag] }]
+    tags: [{ Key: tag, Value: tagsByUseCase[tag] }],
   });
 
   return upload;
@@ -46,9 +47,8 @@ export const upload = (Key, Body, tag = 'archive') => {
   */
 };
 
-
 export const getInstanceInfo = async () => {
-  const response = await (new AWS.EC2().describeInstances()).promise();
+  const response = await ec2.describeInstances().promise();
   console.log(response);
-  return response
-}
+  return response;
+};
