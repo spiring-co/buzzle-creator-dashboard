@@ -12,7 +12,7 @@ function jobHeuristicMapper(jobs) {
       "Created By": job.createdBy?.name ?? "Unknown",
       "Video Template": job.videoTemplate?.title ?? "Untitled",
       State: job.state ?? "Unknown",
-      "Created At": job.dateCreated.toString().substring(0, 10),
+      "Updated At": job.dateUpdated.toString().substring(0, 10),
     };
   });
 }
