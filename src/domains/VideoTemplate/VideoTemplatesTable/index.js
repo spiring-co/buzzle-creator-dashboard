@@ -50,7 +50,7 @@ export default (props) => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const { user } = useAuth();
-  const { role } = user;
+  const { role="" } = user?user:{};
 
   const tableRef = useRef(null);
 
@@ -337,7 +337,7 @@ export default (props) => {
               //   isFreeAction: true,
               //   style: { backgroundColor: "blue" },
               //   onClick: () => {
-              //     history.push(`${url}/drafts`);
+              //     (`${url}/drafts`);
               //   },
               // },
               {

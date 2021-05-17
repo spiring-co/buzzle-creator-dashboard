@@ -27,7 +27,7 @@ import { SnackbarProvider, useSnackbar } from "notistack";
 import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import { AuthProvider } from "services/auth";
 import Page from "common/Page";
-import { PricingProvider } from "services/pricingContext";
+import {  BillingProvider } from "services/billingContext";
 const stripePromise = loadStripe('pk_test_51Ijgs0SIUtONOjVtNl3YLdtevghojdCG1P0MLSqIY9Ab4cgD1ULvGwnrdRQtqE4sylBi4FbBEtRYMchyrHgK0qVx00lsBY6hsf');
 const AppChild = () => {
   const [theme, t, componentMounted] = useDarkMode();
@@ -76,9 +76,9 @@ const AppChild = () => {
                   <Page props={props} component={Register} title="Buzzle | Register" />
                 )}
               />
-              <Route path="/registerUser" exact
+              <Route path="/register/developer" exact
                 render={props => (
-                  <Page props={props} component={UserRegister} title="Buzzle | Register" />
+                  <Page props={props} component={UserRegister} title="Buzzle | Register as Developer" />
                 )} />
               <Route path="/forgotPassword"
                 render={props => (
@@ -106,9 +106,9 @@ export default () => {
   return (
     <DarkModeProvider>
       <Elements stripe={stripePromise}>
-        <PricingProvider>
+        <BillingProvider>
           <AppChild />
-        </PricingProvider>
+        </BillingProvider>
       </Elements>
     </DarkModeProvider>
   );

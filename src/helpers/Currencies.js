@@ -500,6 +500,1203 @@ export const currencies = [
     'QAR',
     'MZN',
 ]
+export const exchangeRates = {
+    'INR': 1
+  }
+
+
+  export const currencyInfo = {
+    "AED": {
+      "symbol": "د.إ",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "AFN": {
+      "symbol": "؋",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "ALL": {
+      "symbol": "L",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "AMD": {
+      "symbol": "դր.",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "ANG": {
+      "symbol": "ƒ",
+      "subunit_to_unit": 100,
+      "decimal_mark": ",",
+      "thousands_separator": ".",
+      "symbol_first": true
+    },
+    "AOA": {
+      "symbol": "Kz",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "ARS": {
+      "symbol": "$",
+      "subunit_to_unit": 100,
+      "decimal_mark": ",",
+      "thousands_separator": ".",
+      "symbol_first": true
+    },
+    "AUD": {
+      "symbol": "$",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "AWG": {
+      "symbol": "ƒ",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "AZN": {
+      "symbol": "₼",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "BAM": {
+      "symbol": "КМ",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "BBD": {
+      "symbol": "$",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "BDT": {
+      "symbol": "৳",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "BGN": {
+      "symbol": "лв.",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "BHD": {
+      "symbol": "د.ب",
+      "subunit_to_unit": 1000,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "BIF": {
+      "symbol": "Fr",
+      "subunit_to_unit": 1,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "BMD": {
+      "symbol": "$",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "BND": {
+      "symbol": "$",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "BOB": {
+      "symbol": "Bs.",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "BRL": {
+      "symbol": "R$",
+      "subunit_to_unit": 100,
+      "decimal_mark": ",",
+      "thousands_separator": ".",
+      "symbol_first": true
+    },
+    "BSD": {
+      "symbol": "$",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "BTN": {
+      "symbol": "Nu.",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "BWP": {
+      "symbol": "P",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "BYN": {
+      "symbol": "Br",
+      "subunit_to_unit": 100,
+      "decimal_mark": ",",
+      "thousands_separator": " ",
+      "symbol_first": false
+    },
+    "BYR": {
+      "symbol": "Br",
+      "subunit_to_unit": 1,
+      "decimal_mark": ",",
+      "thousands_separator": " ",
+      "symbol_first": false
+    },
+    "BZD": {
+      "symbol": "$",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "CAD": {
+      "symbol": "$",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "CDF": {
+      "symbol": "Fr",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "CHF": {
+      "symbol": "CHF",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "CLF": {
+      "symbol": "UF",
+      "subunit_to_unit": 10000,
+      "decimal_mark": ",",
+      "thousands_separator": ".",
+      "symbol_first": true
+    },
+    "CLP": {
+      "symbol": "$",
+      "subunit_to_unit": 1,
+      "decimal_mark": ",",
+      "thousands_separator": ".",
+      "symbol_first": true
+    },
+    "CNY": {
+      "symbol": "¥",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "COP": {
+      "symbol": "$",
+      "subunit_to_unit": 100,
+      "decimal_mark": ",",
+      "thousands_separator": ".",
+      "symbol_first": true
+    },
+    "CRC": {
+      "symbol": "₡",
+      "subunit_to_unit": 100,
+      "decimal_mark": ",",
+      "thousands_separator": ".",
+      "symbol_first": true
+    },
+    "CUC": {
+      "symbol": "$",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "CUP": {
+      "symbol": "$",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "CVE": {
+      "symbol": "$",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "CZK": {
+      "symbol": "Kč",
+      "subunit_to_unit": 100,
+      "decimal_mark": ",",
+      "thousands_separator": " ",
+      "symbol_first": false
+    },
+    "DJF": {
+      "symbol": "Fdj",
+      "subunit_to_unit": 1,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "DKK": {
+      "symbol": "kr.",
+      "subunit_to_unit": 100,
+      "decimal_mark": ",",
+      "thousands_separator": ".",
+      "symbol_first": false
+    },
+    "DOP": {
+      "symbol": "$",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "DZD": {
+      "symbol": "د.ج",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "EGP": {
+      "symbol": "ج.م",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "ERN": {
+      "symbol": "Nfk",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "ETB": {
+      "symbol": "Br",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "EUR": {
+      "symbol": "€",
+      "subunit_to_unit": 100,
+      "decimal_mark": ",",
+      "thousands_separator": ".",
+      "symbol_first": true
+    },
+    "FJD": {
+      "symbol": "$",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "FKP": {
+      "symbol": "£",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "GBP": {
+      "symbol": "£",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "GEL": {
+      "symbol": "ლ",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "GHS": {
+      "symbol": "₵",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "GIP": {
+      "symbol": "£",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "GMD": {
+      "symbol": "D",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "GNF": {
+      "symbol": "Fr",
+      "subunit_to_unit": 1,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "GTQ": {
+      "symbol": "Q",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "GYD": {
+      "symbol": "$",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "HKD": {
+      "symbol": "$",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "HNL": {
+      "symbol": "L",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "HRK": {
+      "symbol": "kn",
+      "subunit_to_unit": 100,
+      "decimal_mark": ",",
+      "thousands_separator": ".",
+      "symbol_first": false
+    },
+    "HTG": {
+      "symbol": "G",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "HUF": {
+      "symbol": "Ft",
+      "subunit_to_unit": 1,
+      "decimal_mark": ",",
+      "thousands_separator": " ",
+      "symbol_first": false
+    },
+    "IDR": {
+      "symbol": "Rp",
+      "subunit_to_unit": 100,
+      "decimal_mark": ",",
+      "thousands_separator": ".",
+      "symbol_first": true
+    },
+    "ILS": {
+      "symbol": "₪",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "INR": {
+      "symbol": "₹",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "IQD": {
+      "symbol": "ع.د",
+      "subunit_to_unit": 1000,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "IRR": {
+      "symbol": "﷼",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "ISK": {
+      "symbol": "kr.",
+      "subunit_to_unit": 1,
+      "decimal_mark": ",",
+      "thousands_separator": ".",
+      "symbol_first": false
+    },
+    "JMD": {
+      "symbol": "$",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "JOD": {
+      "symbol": "د.ا",
+      "subunit_to_unit": 1000,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "JPY": {
+      "symbol": "¥",
+      "subunit_to_unit": 1,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "KES": {
+      "symbol": "KSh",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "KGS": {
+      "symbol": "som",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "KHR": {
+      "symbol": "៛",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "KMF": {
+      "symbol": "Fr",
+      "subunit_to_unit": 1,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "KPW": {
+      "symbol": "₩",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "KRW": {
+      "symbol": "₩",
+      "subunit_to_unit": 1,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "KWD": {
+      "symbol": "د.ك",
+      "subunit_to_unit": 1000,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "KYD": {
+      "symbol": "$",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "KZT": {
+      "symbol": "₸",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "LAK": {
+      "symbol": "₭",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "LBP": {
+      "symbol": "ل.ل",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "LKR": {
+      "symbol": "₨",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "LRD": {
+      "symbol": "$",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "LSL": {
+      "symbol": "L",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "LYD": {
+      "symbol": "ل.د",
+      "subunit_to_unit": 1000,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "MAD": {
+      "symbol": "د.م.",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "MDL": {
+      "symbol": "L",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "MGA": {
+      "symbol": "Ar",
+      "subunit_to_unit": 5,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "MKD": {
+      "symbol": "ден",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "MMK": {
+      "symbol": "K",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "MNT": {
+      "symbol": "₮",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "MOP": {
+      "symbol": "P",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "MRU": {
+      "symbol": "UM",
+      "subunit_to_unit": 5,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "MUR": {
+      "symbol": "₨",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "MVR": {
+      "symbol": "MVR",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "MWK": {
+      "symbol": "MK",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "MXN": {
+      "symbol": "$",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "MYR": {
+      "symbol": "RM",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "MZN": {
+      "symbol": "MTn",
+      "subunit_to_unit": 100,
+      "decimal_mark": ",",
+      "thousands_separator": ".",
+      "symbol_first": true
+    },
+    "NAD": {
+      "symbol": "$",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "NGN": {
+      "symbol": "₦",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "NIO": {
+      "symbol": "C$",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "NOK": {
+      "symbol": "kr",
+      "subunit_to_unit": 100,
+      "decimal_mark": ",",
+      "thousands_separator": ".",
+      "symbol_first": false
+    },
+    "NPR": {
+      "symbol": "Rs.",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "NZD": {
+      "symbol": "$",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "OMR": {
+      "symbol": "ر.ع.",
+      "subunit_to_unit": 1000,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "PAB": {
+      "symbol": "B/.",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "PEN": {
+      "symbol": "S/",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "PGK": {
+      "symbol": "K",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "PHP": {
+      "symbol": "₱",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "PKR": {
+      "symbol": "₨",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "PLN": {
+      "symbol": "zł",
+      "subunit_to_unit": 100,
+      "decimal_mark": ",",
+      "thousands_separator": " ",
+      "symbol_first": false
+    },
+    "PYG": {
+      "symbol": "₲",
+      "subunit_to_unit": 1,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "QAR": {
+      "symbol": "ر.ق",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "RON": {
+      "symbol": "Lei",
+      "subunit_to_unit": 100,
+      "decimal_mark": ",",
+      "thousands_separator": ".",
+      "symbol_first": false
+    },
+    "RSD": {
+      "symbol": "РСД",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "RUB": {
+      "symbol": "₽",
+      "subunit_to_unit": 100,
+      "decimal_mark": ",",
+      "thousands_separator": ".",
+      "symbol_first": false
+    },
+    "RWF": {
+      "symbol": "FRw",
+      "subunit_to_unit": 1,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "SAR": {
+      "symbol": "ر.س",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "SBD": {
+      "symbol": "$",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "SCR": {
+      "symbol": "₨",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "SDG": {
+      "symbol": "£",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "SEK": {
+      "symbol": "kr",
+      "subunit_to_unit": 100,
+      "decimal_mark": ",",
+      "thousands_separator": " ",
+      "symbol_first": false
+    },
+    "SGD": {
+      "symbol": "$",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "SHP": {
+      "symbol": "£",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "SKK": {
+      "symbol": "Sk",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "SLL": {
+      "symbol": "Le",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "SOS": {
+      "symbol": "Sh",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "SRD": {
+      "symbol": "$",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "SSP": {
+      "symbol": "£",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "STD": {
+      "symbol": "Db",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "SVC": {
+      "symbol": "₡",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "SYP": {
+      "symbol": "£S",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "SZL": {
+      "symbol": "E",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "THB": {
+      "symbol": "฿",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "TJS": {
+      "symbol": "ЅМ",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "TMT": {
+      "symbol": "T",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "TND": {
+      "symbol": "د.ت",
+      "subunit_to_unit": 1000,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "TOP": {
+      "symbol": "T$",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "TRY": {
+      "symbol": "₺",
+      "subunit_to_unit": 100,
+      "decimal_mark": ",",
+      "thousands_separator": ".",
+      "symbol_first": true
+    },
+    "TTD": {
+      "symbol": "$",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "TWD": {
+      "symbol": "$",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "TZS": {
+      "symbol": "Sh",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "UAH": {
+      "symbol": "₴",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "UGX": {
+      "symbol": "USh",
+      "subunit_to_unit": 1,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "USD": {
+      "symbol": "$",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "UYU": {
+      "symbol": "$U",
+      "subunit_to_unit": 100,
+      "decimal_mark": ",",
+      "thousands_separator": ".",
+      "symbol_first": true
+    },
+    "UZS": {
+      "symbol": "so'm",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "VES": {
+      "symbol": "Bs",
+      "subunit_to_unit": 100,
+      "decimal_mark": ",",
+      "thousands_separator": ".",
+      "symbol_first": true
+    },
+    "VND": {
+      "symbol": "₫",
+      "subunit_to_unit": 1,
+      "decimal_mark": ",",
+      "thousands_separator": ".",
+      "symbol_first": false
+    },
+    "VUV": {
+      "symbol": "Vt",
+      "subunit_to_unit": 1,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "WST": {
+      "symbol": "T",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "XAF": {
+      "symbol": "CFA",
+      "subunit_to_unit": 1,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "XAG": {
+      "symbol": "oz t",
+      "subunit_to_unit": 1,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "XAU": {
+      "symbol": "oz t",
+      "subunit_to_unit": 1,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "XBA": {
+      "symbol": "",
+      "subunit_to_unit": 1,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "XBB": {
+      "symbol": "",
+      "subunit_to_unit": 1,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "XBC": {
+      "symbol": "",
+      "subunit_to_unit": 1,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "XBD": {
+      "symbol": "",
+      "subunit_to_unit": 1,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "XCD": {
+      "symbol": "$",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "XDR": {
+      "symbol": "SDR",
+      "subunit_to_unit": 1,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "XOF": {
+      "symbol": "Fr",
+      "subunit_to_unit": 1,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "XPD": {
+      "symbol": "oz t",
+      "subunit_to_unit": 1,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "XPF": {
+      "symbol": "Fr",
+      "subunit_to_unit": 1,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "XPT": {
+      "symbol": "oz t",
+      "subunit_to_unit": 1,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "XTS": {
+      "symbol": "",
+      "subunit_to_unit": 1,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "YER": {
+      "symbol": "﷼",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "ZAR": {
+      "symbol": "R",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    },
+    "ZMK": {
+      "symbol": "ZK",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": false
+    },
+    "ZMW": {
+      "symbol": "K",
+      "subunit_to_unit": 100,
+      "decimal_mark": ".",
+      "thousands_separator": ",",
+      "symbol_first": true
+    }
+  }
 export const countryCodes = {
     BD: '+880',
     BE: '+32',

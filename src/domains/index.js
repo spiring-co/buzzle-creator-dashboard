@@ -48,9 +48,9 @@ export default () => {
     const classes = useStyles();
     const links = [
         {
-            text: "Usage and Billing",
+            text: "Billing",
             icon: <Poll />,
-            to: `${url}/usage-billing`,
+            to: `${url}/billing`,
             allowedRoles: ["Developer"]
         },
         {
@@ -123,8 +123,8 @@ export default () => {
                         render={props => (
                             <Page props={props} component={Jobs} title="Buzzle | Jobs" />
                         )} />
-                    <RoleBasedRoute path={`${path}/usage-billing`}
-                        allowedRoles={['Developer']}
+                    <RoleBasedRoute path={`${path}/billing`}
+                        allowedRoles={['Developer','Admin','Creator']}
                         render={props => (
                             <Page props={props} component={Billing} title="Buzzle | Usage & Billing" />
                         )} />

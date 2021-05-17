@@ -1,60 +1,63 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { countryCodes, currencyCodes } from '../helpers/Currencies';
-import fx from 'money'
 
-// fetch conutry based on IP
-export const getCountry = async () => {
-    const result = await fetch('http://ip-api.com/json')
-    return (await result.json())?.countryCode
-}
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { countryCodes, currencyCodes, currencyInfo, exchangeRates } from '../helpers/Currencies';
+import fx from 'money';
+import { getCountry } from 'services/api';
 const CurrencyContext = createContext();
 function useCurrency() {
-    const context = useContext(CurrencyContext);
-    if (!context) {
-        console.log('useCurrency must be used within a CurrencyProvider');
-    }
-    return context;
+  const context = useContext(CurrencyContext);
+  if (!context) {
+    console.log('useCurrency must be used within a CurrencyProvider');
+  }
+  return context;
 }
-
 function CurrencyProvider(props) {
-    const [country, setCountry] = useState('IN')
+  const [country, setCountry] = useState('IN');
+  useEffect(() => {
+    init();
+  }, []);
 
-    useEffect(() => {
-        init()
-    }, [])
-    const init = async () => {
-        const code = localStorage.getItem('country')
-        if (code !== null) {
-            setCountry(code)
-        }
-        else {
-            setCountry(await getCountry())
-            localStorage.setItem('country', code)
-        }
+  const currencyData = currencyInfo[currencyCodes[country] || 'INR']
+  const init = async () => {
+    const code = localStorage.getItem('country');
+    if (code !== null) {
+      setCountry(code);
+    } else {
+      const code = await getCountry();
+      console.log(code)
+      setCountry(code);
+      localStorage.setItem('country', code);
     }
-
-    useEffect(() => {
-        fetch('https://api.exchangeratesapi.io/latest?base=INR')
-            .then(resp => resp.json())
-            .then(data => (fx.rates = data.rates));
-    }, []);
-
-    const getConvertedCurrency = (price, baseCurrency = 'INR', to = currencyCodes[country]) => {
-        if (to === baseCurrency) {
-            return `${price} ${to}`
-        }
-        const p = fx(price)
-            .from(baseCurrency)
-            .to(to)
-            .toFixed(2) + ' ' +
-            to
-        return p.startsWith(0) ? 'FREE' : p
+  };
+  useEffect(() => { 
+    fx.rates = exchangeRates
+  }, [])
+  const getConvertedCurrency = (price = 0,) => {
+    const value = fx(price)
+      .from('INR')
+      .to(currencyCodes[country])
+      .toFixed(2)
+    const p =
+      currencyData['symbol_first'] ? `${currencyData['symbol']} ${value}`
+        : `${value} ${currencyData['symbol']}`
+    return (p).replace(".", currencyData['decimal_mark'])
+  };
+  const getConvertedCurrencyValue = price => {
+    const p =
+      fx(price)
+        .from('INR')
+        .to(currencyCodes[country])
+        .toFixed(2)
+    return parseFloat(p)
+  };
+  const value = useMemo(() => {
+    return {
+      getConvertedCurrency, currency: currencyCodes[country], countryCode: countryCodes[country], getConvertedCurrencyValue,
+      baseUnitValueOfCurrency: currencyData['subunit_to_unit']
     };
-    const value = useMemo(() => {
-        return { getConvertedCurrency, currency: currencyCodes[country], countryCode: countryCodes[country], country, };
-    }, []);
-
-    return <CurrencyContext.Provider value={value} {...props} />;
+  }, [country]);
+  return <CurrencyContext.Provider value={value} {...props} />;
 }
-
 export { CurrencyProvider, useCurrency };
+
+

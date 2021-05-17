@@ -8,17 +8,67 @@ const getBuzzleApi = () => {
 };
 let API = getBuzzleApi();
 
-window.onstorage = () => {
-  API = getBuzzleApi();
-  console.log(localStorage.getItem("jwtoken"));
-};
-
 const uri = `http://52.54.195.156:3000/api/v1/jobs`;
-const stripeApiURL = 'http://localhost:5000'
-export const getPricing = async () => {
-  return await (await fetch(`${stripeApiURL}/products`)).json()
-}
 
+export const Billing = {
+  getPricing: async () => {
+    return await (await fetch(`${process.env.REACT_APP_API_URL}/billing/pricing`)).json()
+  },
+  createSubscription: async (data) => {
+    return await (await fetch(`${process.env.REACT_APP_API_URL}/billing/subscription`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `bearer ${localStorage.getItem("jwtoken")}`,
+      },
+      body: JSON.stringify(data)
+    })).json()
+  },
+  getInvoice: async () => {
+    return await (await fetch(`${process.env.REACT_APP_API_URL}/billing/invoice/upcoming`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `bearer ${localStorage.getItem("jwtoken")}`,
+      },
+    })).json()
+  },
+  getAllInvoices: async ({ limit = 5, startAfter = '', subscriptionId = '' }) => {
+    return await (await fetch(`${process.env.REACT_APP_API_URL}/billing/invoice`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `bearer ${localStorage.getItem("jwtoken")}`,
+      },
+      body: JSON.stringify({ limit , startAfter, subscriptionId })
+    })).json()
+  },
+  updatePaymentMethod: async (data) => {
+    return await (await fetch(`${process.env.REACT_APP_API_URL}/billing/paymentMethod`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `bearer ${localStorage.getItem("jwtoken")}`,
+      },
+      body: JSON.stringify(data)
+    })).json()
+  },
+  createSubscriptionSetupIntent: async (data) => {
+    return await (await fetch(`${process.env.REACT_APP_API_URL}/billing/subscription/setupIntent`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `bearer ${localStorage.getItem("jwtoken")}`,
+      },
+      body: JSON.stringify(data)
+    })).json()
+  }
+}
 
 export const ServerJobs = {
   getAll: async () => {
@@ -62,6 +112,11 @@ export const ServerJobs = {
     return true;
   },
 };
+
+export const getCountry = async () => {
+  const result = await fetch('http://ip-api.com/json')
+  return (await result.json())?.countryCode
+}
 
 export const {
   Job,

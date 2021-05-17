@@ -32,6 +32,7 @@
     "jszip": "^3.5.0",
     "jwt-decode": "^2.2.0",
     "material-table": "^1.57.2",
+    "moment": "^2.29.1",
     "money": "^0.2.0",
     "notistack": "^1.0.3",
     "prop-types": "^15.7.2",

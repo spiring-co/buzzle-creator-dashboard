@@ -248,7 +248,7 @@ export default function NavBar({ items }) {
                     textDecoration: "none",
                     fontFamily: "Poppins",
                   }}>
-                  {user.email}
+                  {user?.email}
                 </Typography>
                 <Typography
                   noWrap
@@ -260,7 +260,7 @@ export default function NavBar({ items }) {
                     textDecoration: "none",
                     fontFamily: "Poppins",
                   }}>
-                  {user.role}
+                  {user?.role}
                 </Typography>
                 <Divider />
               </div>

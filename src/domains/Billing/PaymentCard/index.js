@@ -4,13 +4,17 @@ import {
 } from "@stripe/react-stripe-js";
 import { Container, Typography, Button } from "@material-ui/core";
 import { useSnackbar } from "notistack";
+import { useAuth } from "services/auth";
+import { Billing, User } from "services/api";
+import { useBilling } from "services/billingContext";
 
 
 
-export default () => {
+export default ({ mode = "update", onComplete = () => console.log("Cancelled/completed"), pendingInvoice = false }) => {
     const stripe = useStripe();
+    const { invoice, loading: isInvoiceLoading, products = [], refreshInvoice } = useBilling()
+    const { user, refreshUser } = useAuth()
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-
     const elements = useElements();
     const [loading, setLoading] = useState(false)
     const handleSubmit = async (event) => {
@@ -41,106 +45,176 @@ export default () => {
                 variant: "error",
             });
         } else {
-            enqueueSnackbar(`Card saved successfully!`, {
-                variant: "success",
-            });
-            setLoading(false)
+            if (mode === 'setup') {
+                await handleCardInSetupMode(paymentMethod)
+            } else {
+                await handleCardInUpdateMode(paymentMethod, pendingInvoice)
+            }
         }
-
     };
 
-    function handleCardSetupRequired({
-        subscription,
-        invoice,
-        priceId,
-        paymentMethodId
-    }) {
-        let setupIntent = subscription.pending_setup_intent;
+    const handleCardInSetupMode = async (paymentMethod) => {
 
-        if (setupIntent && setupIntent.status === 'requires_action') {
-            return stripe
-                .confirmCardSetup(setupIntent.client_secret, {
+        //step 1 create subscription
+        const subscription = await createSubscription(paymentMethod.id, products.map(({ id }) => ({ price: id })))
+        if (subscription) {
+            //step 2 verify card provided
+            const isVerified = await handleCardSetupRequired({ subscription, paymentMethodId: paymentMethod.id, invoice: null, })
+            if (isVerified !== null) {
+                try {
+                    //step 3 attach it to customet
+                    await updatePayment(paymentMethod.id, subscription?.id)
+                    //step 4 mark services as active
+                    await onSubscriptionSetupEnd(subscription, '', true)
+
+                    setLoading(false)
+                    enqueueSnackbar(`Card saved successfully!`, {
+                        variant: "success",
+                    });
+                    await refreshUser()
+                    await refreshInvoice()
+                } catch (err) {
+
+                    setLoading(false)
+                    enqueueSnackbar(`Something went wrong, ${err?.message ?? err}`, {
+                        variant: "error",
+                    });
+                    await onSubscriptionSetupEnd(subscription, err?.message, false)
+
+                }
+            }
+        }
+    }
+
+    const handleCardInUpdateMode = async (paymentMethod, pendingInvoice = false) => {
+        //step 1 create setupIntent (required for card verification)
+        const subscription = await createSetupIntent(paymentMethod)
+        if (subscription) {
+            //step 2 card verification
+            const isVerified = await handleCardSetupRequired({ subscription, paymentMethodId: paymentMethod.id, invoice: pendingInvoice, })
+            if (isVerified !== null) {
+                try {
+                    //step 3 attach it to customer
+                    await updatePayment(paymentMethod.id, invoice?.subscription?.id)
+                    await refreshInvoice()
+                    setLoading(false)
+                    enqueueSnackbar(`Card saved successfully!`, {
+                        variant: "success",
+                    });
+                    await refreshUser()
+                    onComplete()
+                } catch (err) {
+                    setLoading(false)
+                    enqueueSnackbar(`Something went wrong, ${err?.message ?? err}`, {
+                        variant: "error",
+                    });
+                }
+            }
+        }
+    }
+
+    async function handleCardSetupRequired({
+        subscription,
+        paymentMethodId,
+        invoice = null,
+    }) {
+        let paymentIntent = invoice
+            ? invoice.payment_intent
+            : subscription.latest_invoice.payment_intent;
+        paymentIntent = paymentIntent || subscription.pending_setup_intent
+        if (!paymentIntent)
+            return { subscription, invoice, paymentMethodId };
+        if (
+            paymentIntent.status === 'requires_action' || paymentIntent.status === "requires_confirmation" ||
+            paymentIntent.status === 'requires_payment_method'
+        ) {
+            alert("inside auth" + paymentMethodId)
+            const { error, setupIntent } = await stripe
+                .confirmCardSetup(paymentIntent.client_secret, {
                     payment_method: paymentMethodId,
-                })
-                .then((result) => {
-                    if (result.error) {
-                        // start code flow to handle updating the payment details
-                        // Display error message in your UI.
-                        // The card was declined (i.e. insufficient funds, card has expired, etc)
-                        throw result;
-                    } else {
-                        if (result.setupIntent.status === 'succeeded') {
-                            // There's a risk of the customer closing the window before callback
-                            // execution. To handle this case, set up a webhook endpoint and
-                            // listen to setup_intent.succeeded.
-                            return {
-                                priceId: priceId,
-                                subscription: subscription,
-                                invoice: invoice,
-                                paymentMethodId: paymentMethodId,
-                            };
-                        }
-                    }
-                });
+                }).catch(v => alert(JSON.stringify(v)))
+            if (error) {
+                alert(error?.message)
+                if (mode === 'setup') {
+                    await onSubscriptionSetupEnd(subscription, error?.message || "Card Authentication Failed, Try again!", false)
+                } else {
+                    enqueueSnackbar(`${(error?.message ?? error) || 'Card authentication failed!'}`, {
+                        variant: "error",
+                    });
+                    onComplete()
+                }
+                setLoading(false)
+                await refreshUser()
+
+                return null
+            } else {
+                alert('success')
+                console.log("debug Suc", setupIntent)
+                if (setupIntent?.status === 'succeeded') {
+                    alert("succ")
+                    // There's a risk of the customer closing the window before callback
+                    // execution. To handle this case, set up a webhook endpoint and
+                    // listen to setup_intent.succeeded.
+                    return {
+                        subscription: subscription,
+                        invoice: invoice,
+                        paymentMethodId: paymentMethodId,
+                    };
+                }
+            }
         }
         else {
             // No customer action needed
-            return { subscription, priceId, paymentMethodId };
+            return { subscription, invoice, paymentMethodId };
+        }
+    }
+    const onSubscriptionSetupEnd = async (subscription, reason = '', markAsActive = false) => {
+        await User.update(user?.id, {
+            "subscription.isActive": markAsActive,
+            "subscription.expireReason": reason
+        })
+    }
+    const createSetupIntent = async () => {
+        try {
+            const subscription = await Billing.createSubscriptionSetupIntent({ subscriptionId: invoice?.subscription?.id })
+            return subscription
+        } catch (err) {
+            setLoading(false)
+            enqueueSnackbar(`${err?.message || err}`, {
+                variant: "error",
+            });
+            return null
+        }
+    }
+    async function createSubscription(paymentMethodId = '', items = []) {
+        try {
+            const subscription = await Billing.createSubscription({ paymentMethodId, items })
+            return subscription
+        } catch (err) {
+            setLoading(false)
+            enqueueSnackbar(`${err?.message || err}`, {
+                variant: "error",
+            });
+            return null
+        }
+    }
+    async function updatePayment(paymentMethodId = '', subscriptionId = '') {
+        try {
+            const subscription = await Billing.updatePaymentMethod({ paymentMethodId, subscriptionId })
+            return subscription
+        } catch (err) {
+            setLoading(false)
+            enqueueSnackbar(`${err?.message || err}`, {
+                variant: "error",
+            });
+            return null
         }
     }
 
 
-    // function createSubscription(customerId, paymentMethodId, priceId) {
-    //     return (
-    //       fetch('/create-subscription', {
-    //         method: 'post',
-    //         headers: {
-    //           'Content-type': 'application/json',
-    //         },
-    //         body: JSON.stringify({
-    //           customerId: customerId,
-    //           paymentMethodId: paymentMethodId,
-    //           priceId: priceId,
-    //         }),
-    //       })
-    //         .then((response) => {
-    //           return response.json();
-    //         })
-    //         // If the card is declined, display an error to the user.
-    //         .then((result) => {
-    //           if (result.error) {
-    //             // The card had an error when trying to attach it to a customer.
-    //             throw result;
-    //           }
-    //           return result;
-    //         })
-    //         // Normalize the result to contain the object returned by Stripe.
-    //         // Add the additional details we need.
-    //         .then((result) => {
-    //           return {
-    //             paymentMethodId: paymentMethodId,
-    //             priceId: priceId,
-    //             subscription: result,
-    //           };
-    //         })
-    //         // Some payment methods require a customer to be on session
-    //         // to complete the payment process. Check the status of the
-    //         // payment intent to handle these actions.
-    //         .then(handlePaymentThatRequiresCustomerAction)
-    //         // No more actions required. Provision your service for the user.
-    //         .then(onSubscriptionComplete)
-    //         .catch((error) => {
-    //             enqueueSnackbar(`Failed to save card, ${error?.message}`, {
-    //                 variant: "error",
-    //             });
-    //         })
-    //     );
-    //   }
-
-
     return (
         <form onSubmit={handleSubmit}>
-            <Typography variant="h6">Setup billing details, to get started</Typography>
+            <Typography variant="h6">{mode === 'setup' ? "Setup billing details, to get started" : "Add Card"}</Typography>
             <div style={{
                 width: 350, padding: 10, marginTop: 10, marginBottom: 10,
                 border: '0.5px solid grey', borderRadius: 5,
@@ -163,14 +237,23 @@ export default () => {
                     }}
                 />
             </div>
-            <Button
-                type="submit"
-                disabled={!stripe || loading}
-                size="small"
-                children={loading ? "saving..." : 'save'}
-                color="primary"
-                variant="contained"
-            />
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+                <Button
+                    type="submit"
+                    disabled={!stripe || loading}
+                    size="small"
+                    children={loading ? "saving..." : 'save'}
+                    color="primary"
+                    variant="contained"
+                />
+                {mode === 'update' && <Button
+                    style={{ marginLeft: 20 }}
+                    disabled={!stripe || loading}
+                    size="small"
+                    children={'cancel'}
+                    onClick={() => onComplete(true)}
+                />}
+            </div>
         </form>
     )
 };

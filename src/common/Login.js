@@ -71,8 +71,8 @@ export default ({ heading, subHeading, role }) => {
     touched,
   } = useFormik({
     initialValues: {
-      email: "harshb.work@gmail.com",
-      password: "Butter123",
+      email: "basita049@gmail.com",
+      password: "Abdul@123",
       role,
     },
     validationSchema: Yup.object({

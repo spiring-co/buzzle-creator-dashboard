@@ -9,9 +9,11 @@ import DateFnsUtils from "@date-io/date-fns";
 import { Job } from "services/api";
 import Graphs from "../../common/Graphs";
 import { getInstanceInfo } from 'services/awsService'
+import { useAuth } from "services/auth";
 
 export default () => {
   const [data, setData] = useState([]);
+  const {user}=useAuth()
   const [avgRenderTime, setAvgRenderTime] = useState(0);
   const [avgRenderHour, setAvgRenderHour] = useState([]);
   const [startDate, setStartDate] = useState(new Date("2021-02-28T21:11:54"));
@@ -28,7 +30,9 @@ export default () => {
   const handleEndDateChange = (date) => {
     setEndDate(date);
   };
-
+useEffect(()=>{
+ console.log("User",user)
+},[])
   // useEffect(() => {
   //   getInstanceInfo()
   //   getDataFromQuery();
