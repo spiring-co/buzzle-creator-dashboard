@@ -80,7 +80,6 @@ export default () => {
       // gender: "",
       // country: "",
       // phoneNumber: "",
-      birthDate: new Date().toISOString().substr(0, 10),
     },
     validationSchema,
     onSubmit: async (s, { setSubmitting }) => {
@@ -247,21 +246,6 @@ export default () => {
               error={touched.phoneNumber && !!errors.phoneNumber}
               helperText={errors?.phoneNumber ?? ""}
             /> */}
-          <TextField
-            required
-            fullWidth
-            margin={"dense"}
-            variant={"outlined"}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            value={values.birthDate}
-            name={"birthDate"}
-            type="date"
-            placeholder="Enter Birth Date"
-            label="Birth Date"
-            error={touched.birthDate && !!errors.birthDate}
-            helperText={errors?.birthDate ?? ""}
-          />
           {/* <TextField
               required
               fullWidth
@@ -360,7 +344,6 @@ const validationSchema = Yup.object({
   //   .matches(/^\d{10}$/, "Phone number isn't valid")
   //   .required("Phone number is required"),
 
-  birthDate: Yup.date().required("Birth date is required"),
   // country: Yup.string().required("Country name is required"),
   // gender: Yup.string().required("Gender field is required"),
 });

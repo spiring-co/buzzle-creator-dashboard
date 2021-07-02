@@ -67,7 +67,8 @@ function TabPanel(props) {
       hidden={value !== index}
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
-      {...other}>
+      {...other}
+    >
       {value === index && (
         <Box p={3}>
           <Typography>{children}</Typography>
@@ -133,7 +134,7 @@ export default () => {
   }, []);
 
   // rerender on output select
-  useEffect(() => { }, [selectedOutputIndex]);
+  useEffect(() => {}, [selectedOutputIndex]);
 
   // init socket on mount
   useEffect(() => {
@@ -167,7 +168,8 @@ export default () => {
     try {
       setError(false);
       setIsLoading(true);
-      setJob(await Job.get(id, true));
+      console.log("fetchJob", await Job.get(id, "fields=idVideoTemplate videoTemplate"));
+      setJob(await Job.get(id, "fields=idVideoTemplate videoTemplate"));
       setIsLoading(false);
     } catch (err) {
       console.log(err);
@@ -175,6 +177,10 @@ export default () => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    console.log("jobis", JSON.stringify(job));
+  }, [job]);
 
   const handleUpdateJob = async () => {
     try {
@@ -212,7 +218,8 @@ export default () => {
               ? failureReason
               : "Reason not given"
             : "finished/inProgress"
-        }>
+        }
+      >
         <Chip
           size="small"
           label={`${state}${percent ? " " + percent + "%" : ""}`}
@@ -245,6 +252,7 @@ export default () => {
   const sortedOutput = output?.sort(
     (a, b) => new Date(b?.dateCreated) - new Date(a?.dateCreated)
   );
+  console.log("sortedoutput", sortedOutput);
 
   useEffect(() => {
     if (
@@ -411,7 +419,8 @@ export default () => {
               onChange={(e) => {
                 console.log(e.target.value);
                 setSelectedOutputIndex(e.target.value);
-              }}>
+              }}
+            >
               {sortedOutput?.map((o, i) => (
                 <MenuItem key={i} value={i}>
                   {o.label}
@@ -419,7 +428,8 @@ export default () => {
                     style={{ marginLeft: 10 }}
                     component="span"
                     variant="body2"
-                    color="textSecondary">
+                    color="textSecondary"
+                  >
                     {new Date(o.dateCreated).toLocaleString()}
                   </Typography>
                 </MenuItem>
@@ -428,19 +438,25 @@ export default () => {
             <IconButton
               onClick={handleDeleteJob}
               aria-label="delete"
-              className={classes.margin}>
+              className={classes.margin}
+            >
               <DeleteIcon fontSize="inherit" />
             </IconButton>
             <IconButton
               onClick={renderJobInHd}
               aria-label="delete"
-              className={classes.margin}>
+              className={classes.margin}
+            >
               <HdIcon fontSize="inherit" />
             </IconButton>
             <IconButton
               aria-label="download"
               className={classes.margin}
-              onClick={() => window.open(sortedOutput?.length && sortedOutput[selectedOutputIndex]?.src)}
+              onClick={() =>
+                window.open(
+                  sortedOutput?.length && sortedOutput[selectedOutputIndex]?.src
+                )
+              }
             >
               <DownloadIcon fontSize="inherit" />
             </IconButton>
@@ -451,7 +467,7 @@ export default () => {
         <Paper>
           {state === "finished" ? (
             <video
-              poster={job.videoTemplate?.thumbnail}
+              poster={job?.videoTemplate?.thumbnail}
               style={{ height: 320, width: "100%" }}
               controls
               src={sortedOutput.length && sortedOutput[selectedOutputIndex].src}
@@ -474,7 +490,8 @@ export default () => {
               textColor="primary"
               centered
               onChange={(_, i) => setActiveTabIndex(i)}
-              aria-label="simple tabs example">
+              aria-label="simple tabs example"
+            >
               <Tab label="Output" {...a11yProps(0)} />
               <Tab label="Data" {...a11yProps(1)} />
               <Tab label="Actions" {...a11yProps(2)} />
@@ -492,7 +509,8 @@ export default () => {
                   color="primary"
                   onClick={() => setOpen(true)}
                   startIcon={<AddBoxIcon />}
-                  style={{ marginBottom: 10 }}>
+                  style={{ marginBottom: 10 }}
+                >
                   Add Output
                 </Button>
                 <Dialog onClose={() => setOpen(false)} open={open}>
@@ -542,7 +560,8 @@ export default () => {
                   <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls="panel1a-content"
-                    id="panel1a-header">
+                    id="panel1a-header"
+                  >
                     <Typography>Render Timeline</Typography>
                   </AccordionSummary>
                   <AccordionDetails>
@@ -550,10 +569,13 @@ export default () => {
                       {timeline.length ? (
                         timeline.map(({ state, startsAt, endsAt }, index) => (
                           <TimelineItem>
-                            {(index !== 0 && timeline?.length - 1 !== index) && <TimelineOppositeContent>
-                              <Typography color="textSecondary">
-                                {((endsAt - startsAt) / 1000).toFixed(2)} secs</Typography>
-                            </TimelineOppositeContent>}
+                            {index !== 0 && timeline?.length - 1 !== index && (
+                              <TimelineOppositeContent>
+                                <Typography color="textSecondary">
+                                  {((endsAt - startsAt) / 1000).toFixed(2)} secs
+                                </Typography>
+                              </TimelineOppositeContent>
+                            )}
                             <TimelineSeparator>
                               <TimelineDot
                                 style={{
@@ -561,8 +583,8 @@ export default () => {
                                     index === 0
                                       ? "#ffa117"
                                       : index !== timeline?.length - 1
-                                        ? "#35a0f4"
-                                        : "#65ba68",
+                                      ? "#35a0f4"
+                                      : "#65ba68",
                                 }}
                               />
                               {timeline?.length - 1 !== index && (
@@ -609,11 +631,12 @@ export default () => {
                 {
                   title: "Label",
                   render: ({ key }) => {
-                    const version = job.videoTemplate.versions.find(
-                      (v) => v.id === job.idVersion
+                    console.log("jobis", job);
+                    const version = job?.videoTemplate?.versions.find(
+                      (v) => v?.id === job?.idVersion
                     );
-                    const field = version.fields.find((f) => f.key === key);
-                    return <span>{field.label}</span>;
+                    const field = version?.fields?.find((f) => f?.key === key);
+                    return <span>{field?.label}</span>;
                   },
                   editable: "never",
                 },
@@ -623,7 +646,7 @@ export default () => {
                     return (
                       <span>
                         {value.startsWith("http://") ||
-                          value.startsWith("https://")
+                        value.startsWith("https://")
                           ? "image"
                           : "string"}
                       </span>
@@ -637,12 +660,12 @@ export default () => {
                     const version = job.videoTemplate.versions.find(
                       (v) => v.id === job.idVersion
                     );
-                    const v = value.startsWith('http') ? (version.fields.find((f) => f.key === key)?.rendererData?.extension ?? 'png') : version.fields.find((f) => f.key === key)?.constraints?.maxLength
-                    return (
-                      <span>
-                        {v}
-                      </span>
-                    );
+                    const v = value.startsWith("http")
+                      ? version.fields.find((f) => f.key === key)?.rendererData
+                          ?.extension ?? "png"
+                      : version.fields.find((f) => f.key === key)?.constraints
+                          ?.maxLength;
+                    return <span>{v}</span>;
                   },
                   editable: "never",
                 },
@@ -653,10 +676,15 @@ export default () => {
                     const version = job.videoTemplate.versions.find(
                       (v) => v.id === job.idVersion
                     );
-                    const isValid = value.startsWith('http') ? value.split(".").pop() === (
-                      version.fields.find((f) => f.key === key)?.rendererData?.extension ?? 'png') : value.length <= version.fields.find((f) => f.key === key)?.constraints?.maxLength
+                    const isValid = value.startsWith("http")
+                      ? value.split(".").pop() ===
+                        (version.fields.find((f) => f.key === key)?.rendererData
+                          ?.extension ?? "png")
+                      : value.length <=
+                        version.fields.find((f) => f.key === key)?.constraints
+                          ?.maxLength;
                     return (
-                      <Typography color={isValid ? 'textPrimary' : 'secondary'}>
+                      <Typography color={isValid ? "textPrimary" : "secondary"}>
                         {value}
                       </Typography>
                     );
@@ -670,7 +698,8 @@ export default () => {
                       (v) => v.id === job.idVersion
                     );
                     const {
-                      constraints: { height = 100, width = 100, maxLength }, rendererData: { extension = 'png' }
+                      constraints: { height = 100, width = 100, maxLength },
+                      rendererData: { extension = "png" },
                     } = version.fields.find((f) => f.key === key);
                     if (
                       value?.startsWith("http://") ||
@@ -691,7 +720,8 @@ export default () => {
                         <TextEditRow
                           maxLength={maxLength}
                           value={value}
-                          onChange={onChange}></TextEditRow>
+                          onChange={onChange}
+                        ></TextEditRow>
                       );
                     }
                   },
@@ -760,7 +790,8 @@ export default () => {
                   inputProps={{
                     name: "settingsTemplate",
                     id: "settingsTemplate",
-                  }}>
+                  }}
+                >
                   <MenuItem aria-label="None" value="" />
                   <MenuItem value={"half"}>Half</MenuItem>
                   <MenuItem value={"full"}>Full</MenuItem>
@@ -779,7 +810,8 @@ export default () => {
                   inputProps={{
                     name: "outputModule",
                     id: "outputModule",
-                  }}>
+                  }}
+                >
                   <MenuItem aria-label="None" value="" />
                   <MenuItem value={"h264"}>H264</MenuItem>
                 </Select>
