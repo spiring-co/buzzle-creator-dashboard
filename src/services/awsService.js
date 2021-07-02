@@ -12,6 +12,9 @@ AWS.config.update({
   region: bucketRegion,
 });
 
+AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+  IdentityPoolId: "us-east-1:06431ed0-60d3-457c-9c6c-7866955fc5e5",
+});
 // Create EC2 service object
 var ec2 = new AWS.EC2({ apiVersion: "2016-11-15" });
 
