@@ -24,6 +24,7 @@ import {
 
 // icons
 import PublishIcon from "@material-ui/icons/Publish";
+import FileCopyIcon from "@material-ui/icons/FileCopy";
 
 // components
 import SnackAlert from "common/SnackAlert";
@@ -77,7 +78,32 @@ export default (props) => {
     setError(false);
     tableRef.current && tableRef.current.onQueryChange();
   };
-
+  const handleDuplicate = async (data) => {
+    let key = null
+    try {
+      key = enqueueSnackbar("Creating...", {
+        persist: true,
+      })
+      delete data['tableData']
+      delete data['id']
+      delete data['idCreator']
+      delete data['dateCreated']
+      delete data['dateUpdated']
+      await VideoTemplate.create(data);
+      closeSnackbar(key)
+      enqueueSnackbar(`Duplicated successfully`, {
+        variant: "success",
+      });
+window.location.reload()//TODO Replace with data refresh
+    } catch (err) {
+      if (key) {
+        closeSnackbar(key)
+      }
+      enqueueSnackbar(`Failed to duplicate, ${err?.message}`, {
+        variant: "error",
+      });
+    }
+  }
   let { status, err } = deleteStatus;
 
   const getDataFromQuery = (query) => {
@@ -88,7 +114,6 @@ export default (props) => {
       orderBy: { field: orderBy = "dateUpdated" } = {},
       orderDirection = "desc",
     } = query;
-    console.log(query);
     history.push(
       `?page=${page + 1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
       }`
@@ -275,6 +300,14 @@ export default (props) => {
                 position: "row",
                 onClick: async (event, rowData) => {
                   setSelectedVideoTemplate(rowData);
+                },
+              },
+              {
+                icon: () => <FileCopyIcon />,
+                tooltip: "Duplicate",
+                position: "row",
+                onClick: async (event, rowData) => {
+                  handleDuplicate(rowData);
                 },
               },
               {
