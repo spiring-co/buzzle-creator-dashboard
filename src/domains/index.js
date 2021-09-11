@@ -49,7 +49,7 @@ export default () => {
         {
             text: "Analytics",
             icon: <EqualizerIcon />,
-            to: `${url}/home`,
+            to: `${url}`,
             allowedRoles: "*",
         },
         {
