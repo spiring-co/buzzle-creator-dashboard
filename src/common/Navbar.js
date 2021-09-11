@@ -170,6 +170,9 @@ export default function NavBar({ items }) {
             <div></div>
           ) : (
             <Typography
+            color="inherit"
+              component={RouterLink}
+              to="/home"
               noWrap
               variant="h5"
               style={{

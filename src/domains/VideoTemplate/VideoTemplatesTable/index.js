@@ -94,7 +94,7 @@ export default (props) => {
       enqueueSnackbar(`Duplicated successfully`, {
         variant: "success",
       });
-window.location.reload()//TODO Replace with data refresh
+      window.location.reload()//TODO Replace with data refresh
     } catch (err) {
       if (key) {
         closeSnackbar(key)

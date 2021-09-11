@@ -1,145 +1,134 @@
-import { Paper, Button } from "@material-ui/core";
+import { Paper, Button, Container } from "@material-ui/core";
 import Filters from "common/Filters";
 import React from "react";
 import "react-pivottable/pivottable.css";
 import PivotTableUI from "react-pivottable/PivotTableUI";
 import { Job } from "services/api";
 import { PivotData } from "react-pivottable/Utilities";
+import Graphs from "common/Graphs";
 
-function jobHeuristicMapper(jobs) {
-  return jobs.map((job) => {
-    return {
-      "Created By": job.createdBy?.name ?? "Unknown",
-      "Video Template": job.videoTemplate?.title ?? "Untitled",
-      State: job.state ?? "Unknown",
-      "Updated At": job.dateUpdated.toString().substring(0, 10),
-    };
-  });
-}
+// function jobHeuristicMapper(jobs) {
+//   return jobs.map((job) => {
+//     return {
+//       "Created By": job.createdBy?.name ?? "Unknown",
+//       "Video Template": job.videoTemplate?.title ?? "Untitled",
+//       State: job.state ?? "Unknown",
+//       "Updated At": job.dateUpdated.toString().substring(0, 10),
+//     };
+//   });
+// }
 
 export default function Home() {
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [jobs, setJobs] = React.useState([]);
-  const [pivotState, setPivotState] = React.useState({});
-  const [filters, setFilters] = React.useState({
-    startDate: "2021-05-09T11:37:00.000Z",
-  });
+  // const [isLoading, setIsLoading] = React.useState(true);
+  // const [jobs, setJobs] = React.useState([]);
+  // const [pivotState, setPivotState] = React.useState({});
+  // const [filters, setFilters] = React.useState({
+  //   startDate: "2021-05-09T11:37:00.000Z",
+  // });
 
-  React.useEffect(() => {
-    setIsLoading(true);
-    Job.getAll(1, 20000, filterObjectToString(filters))
-      .then((j) => setJobs(jobHeuristicMapper(j.data)))
-      .then((_) => setIsLoading(false));
-  }, [filters]);
+  // React.useEffect(() => {
+  //   // setIsLoading(true);
+  //   // Job.getAll(1, 20000, filterObjectToString(filters))
+  //   //   .then((j) => setJobs(jobHeuristicMapper(j.data)))
+  //   //   .then((_) => setIsLoading(false));
+  // }, [filters]);
 
-  console.log(filters);
+  // console.log(filters);
 
-  const exportData = () => {
-    var pivotData = new PivotData(pivotState);
+  // const exportData = () => {
+  //   var pivotData = new PivotData(pivotState);
 
-    var rowKeys = pivotData.getRowKeys();
-    var colKeys = pivotData.getColKeys();
-    if (rowKeys.length === 0) {
-      rowKeys.push([]);
-    }
-    if (colKeys.length === 0) {
-      colKeys.push([]);
-    }
+  //   var rowKeys = pivotData.getRowKeys();
+  //   var colKeys = pivotData.getColKeys();
+  //   if (rowKeys.length === 0) {
+  //     rowKeys.push([]);
+  //   }
+  //   if (colKeys.length === 0) {
+  //     colKeys.push([]);
+  //   }
 
-    var headerRow = pivotData.props.rows.map(function (r) {
-      return r;
-    });
-    if (colKeys.length === 1 && colKeys[0].length === 0) {
-      headerRow.push(pivotState.aggregatorName);
-    } else {
-      colKeys.map(function (c) {
-        return headerRow.push(c.join("-"));
-      });
-    }
+  //   var headerRow = pivotData.props.rows.map(function (r) {
+  //     return r;
+  //   });
+  //   if (colKeys.length === 1 && colKeys[0].length === 0) {
+  //     headerRow.push(pivotState.aggregatorName);
+  //   } else {
+  //     colKeys.map(function (c) {
+  //       return headerRow.push(c.join("-"));
+  //     });
+  //   }
 
-    var result = rowKeys.map(function (r) {
-      var row = r.map(function (x) {
-        return x;
-      });
-      colKeys.map(function (c) {
-        var v = pivotData.getAggregator(r, c).value();
-        row.push(v ? v : "");
-      });
-      return row;
-    });
+  //   var result = rowKeys.map(function (r) {
+  //     var row = r.map(function (x) {
+  //       return x;
+  //     });
+  //     colKeys.map(function (c) {
+  //       var v = pivotData.getAggregator(r, c).value();
+  //       row.push(v ? v : "");
+  //     });
+  //     return row;
+  //   });
 
-    result.unshift(headerRow);
+  //   result.unshift(headerRow);
 
-    const content = result
-      .map(function (r) {
-        return r.join(",");
-      })
-      .join("\n");
+  //   const content = result
+  //     .map(function (r) {
+  //       return r.join(",");
+  //     })
+  //     .join("\n");
 
-    download("data.csv", content);
-  };
+  //   download("data.csv", content);
+  // };
 
   // render data
   return (
-    <div>
-      <Paper style={{ padding: 16, alignItems: "flex-end", display: "flex" }}>
-        <Filters onChange={setFilters} value={filters} />
-      </Paper>
-      <p style={{ margin: 20 }}>{isLoading ? "Loading..." : "Loaded"}</p>
-      <PivotTableUI
-        onChange={(s) => setPivotState(s)}
-        {...pivotState}
-        data={jobs}
-      />
-      <Button
-        onClick={() => console.log(exportData())}
-        variant="contained"
-        color="primary">
-        Export
-      </Button>
-    </div>
+    <Container>
+      <Graphs />
+    </Container>
+
+
   );
 }
 
-const filterObjectToString = (f) => {
-  if (!f) return null;
-  const { startDate = 0, endDate = 0, idVideoTemplates = [], states = [] } = f;
+// const filterObjectToString = (f) => {
+//   if (!f) return null;
+//   const { startDate = 0, endDate = 0, idVideoTemplates = [], states = [] } = f;
 
-  return `${
-    startDate
-      ? `dateUpdated=>=${startDate}&${
-          endDate ? `dateUpdated=<=${endDate || startDate}&` : ""
-        }`
-      : ""
-  }${
-    idVideoTemplates.length !== 0
-      ? getArrayOfIdsAsQueryString(
-          "idVideoTemplate",
-          idVideoTemplates.map(({ id }) => id)
-        ) + "&"
-      : ""
-  }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
-};
+//   return `${
+//     startDate
+//       ? `dateUpdated=>=${startDate}&${
+//           endDate ? `dateUpdated=<=${endDate || startDate}&` : ""
+//         }`
+//       : ""
+//   }${
+//     idVideoTemplates.length !== 0
+//       ? getArrayOfIdsAsQueryString(
+//           "idVideoTemplate",
+//           idVideoTemplates.map(({ id }) => id)
+//         ) + "&"
+//       : ""
+//   }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
+// };
 
-const getArrayOfIdsAsQueryString = (field, ids) => {
-  return ids
-    .map((id, index) => `${index === 0 ? "" : "&"}${field}[]=${id}`)
-    .toString()
-    .replace(/,/g, "");
-};
+// const getArrayOfIdsAsQueryString = (field, ids) => {
+//   return ids
+//     .map((id, index) => `${index === 0 ? "" : "&"}${field}[]=${id}`)
+//     .toString()
+//     .replace(/,/g, "");
+// };
 
-function download(filename, text) {
-  var element = document.createElement("a");
-  element.setAttribute(
-    "href",
-    "data:text/plain;charset=utf-8," + encodeURIComponent(text)
-  );
-  element.setAttribute("download", filename);
+// function download(filename, text) {
+//   var element = document.createElement("a");
+//   element.setAttribute(
+//     "href",
+//     "data:text/plain;charset=utf-8," + encodeURIComponent(text)
+//   );
+//   element.setAttribute("download", filename);
 
-  element.style.display = "none";
-  document.body.appendChild(element);
+//   element.style.display = "none";
+//   document.body.appendChild(element);
 
-  element.click();
+//   element.click();
 
-  document.body.removeChild(element);
-}
+//   document.body.removeChild(element);
+// }

@@ -9,7 +9,7 @@ import {
     SupervisedUserCircle,
 } from "@material-ui/icons";
 
-
+import EqualizerIcon from '@material-ui/icons/Equalizer';
 import StorageIcon from "@material-ui/icons/Storage";
 import { Route, Switch, useRouteMatch, Redirect } from "react-router-dom";
 import Navbar from "common/Navbar";
@@ -46,6 +46,12 @@ export default () => {
 
     const classes = useStyles();
     const links = [
+        {
+            text: "Analytics",
+            icon: <EqualizerIcon />,
+            to: `${url}/home`,
+            allowedRoles: "*",
+        },
         {
             text: "Video Templates",
             icon: <VideoLibrary />,
