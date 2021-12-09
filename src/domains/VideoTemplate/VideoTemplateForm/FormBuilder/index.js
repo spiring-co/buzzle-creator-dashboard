@@ -14,7 +14,7 @@ import VideoTemplateMetaForm from "./VideoTemplateMetaForm";
 
 import { useAuth } from "services/auth";
 
-export default ({ submitForm, isEdit, isDrafted = false, video }) => {
+export default ({ submitForm, isEdit, isDrafted = false, video, type }) => {
   const { user } = useAuth();
   const [videoObj] = useContext(VideoTemplateContext);
   const { resetVideo, editVideoKeys, loadVideo } = useActions();
@@ -22,13 +22,7 @@ export default ({ submitForm, isEdit, isDrafted = false, video }) => {
   const [activeDisplayIndex, setActiveDisplayIndex] = useState(0);
   const [compositions, setCompositions] = useState([]);
   const [error, setError] = useState(null);
-  useEffect(() => {
-    if (isEdit || isDrafted) {
-      loadVideo(video);
-    } else {
-      resetVideo(user?.id);
-    }
-  }, [isDrafted, isEdit]);
+
 
   const handleSubmitForm = async () => {
     try {
@@ -62,6 +56,7 @@ export default ({ submitForm, isEdit, isDrafted = false, video }) => {
     //   )
     // );
     editVideoKeys({
+      ...((isEdit || isDrafted) ? {} : { type }),
       keywords,
       title,
       description,
@@ -69,12 +64,12 @@ export default ({ submitForm, isEdit, isDrafted = false, video }) => {
       thumbnail,
       staticAssets: isEdit
         ? staticAssets.map((a, index) =>
-            video?.staticAssets.map(({ name }) => name).includes(a.name)
-              ? video?.staticAssets[
-                  video?.staticAssets.map(({ name }) => name).indexOf(a.name)
-                ]
-              : a
-          )
+          video?.staticAssets.map(({ name }) => name).includes(a.name)
+            ? video?.staticAssets[
+            video?.staticAssets.map(({ name }) => name).indexOf(a.name)
+            ]
+            : a
+        )
         : staticAssets,
     });
     setActiveDisplayIndex(1);
@@ -83,6 +78,7 @@ export default ({ submitForm, isEdit, isDrafted = false, video }) => {
   const Steps = {
     VideoTemplateMetaForm: (
       <VideoTemplateMetaForm
+        type={(isEdit || isDrafted) ? video?.type : type}
         isEdit={isEdit || isDrafted}
         assets={videoObj.staticAssets}
         compositions={compositions}
@@ -96,31 +92,43 @@ export default ({ submitForm, isEdit, isDrafted = false, video }) => {
     ),
     VersionDisplay: (
       <VersionDisplay
+        type={(isEdit || isDrafted) ? video?.type : type}
         isEdit={isEdit || isDrafted}
         compositions={compositions}
         activeDisplayIndex={activeDisplayIndex}
         setActiveDisplayIndex={setActiveDisplayIndex}
-      />
-    ),
-    FontUpload: (
-      <FontUpload
-        compositions={compositions}
-        setActiveDisplayIndex={setActiveDisplayIndex}
-        activeDisplayIndex={activeDisplayIndex}
-      />
-    ),
-    AssetUpload: (
-      <AssetUpload
         isSubmitting={loading}
-        submitError={error}
-        setActiveDisplayIndex={setActiveDisplayIndex}
-        activeDisplayIndex={activeDisplayIndex}
         handleSubmitForm={handleSubmitForm}
-        staticAssets={videoObj?.staticAssets}
+        submitError={error}
       />
     ),
+    ...(((isEdit || isDrafted) ? video?.type : type) === 'ae' ? {
+      FontUpload: (
+        <FontUpload
+          compositions={compositions}
+          setActiveDisplayIndex={setActiveDisplayIndex}
+          activeDisplayIndex={activeDisplayIndex}
+        />
+      ),
+      AssetUpload: (
+        <AssetUpload
+          isSubmitting={loading}
+          handleSubmitForm={handleSubmitForm}
+          submitError={error}
+          setActiveDisplayIndex={setActiveDisplayIndex}
+          activeDisplayIndex={activeDisplayIndex}
+          staticAssets={videoObj?.staticAssets}
+        />
+      ),
+    } : {})
   };
-
+  useEffect(() => {
+    if (isEdit || isDrafted) {
+      loadVideo(video);
+    } else {
+      resetVideo(user?.id, type);
+    }
+  }, [isDrafted, isEdit]);
   return (
     <Container>
       <SnackAlert
@@ -133,7 +141,7 @@ export default ({ submitForm, isEdit, isDrafted = false, video }) => {
         }}
         type={"error"}
       />
-      <FormStepper activeDisplayIndex={activeDisplayIndex} />
+      <FormStepper type={(isEdit || isDrafted) ? video?.type : type} activeDisplayIndex={activeDisplayIndex} />
       <Paper elevation={2} style={{ padding: 32 }}>
         {Steps[Object.keys(Steps)[activeDisplayIndex]]}
       </Paper>

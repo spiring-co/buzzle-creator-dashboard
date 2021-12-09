@@ -17,7 +17,7 @@ export default () => {
         render={props => (
           <Page props={props} component={VideoTemplatesTable} title="Buzzle | Video Templates" />
         )} />
-      <Route path={`${path}/add`}
+      <Route path={`${path}/:type/add`}
         render={props => (
           <Page props={props} component={VideoTemplateForm} title="Buzzle | Create Video Template" />
         )} />

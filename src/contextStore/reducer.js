@@ -119,7 +119,8 @@ export default (state, action) => {
     case RESET_STATE:
       return {
         title: "",
-        idCreator: action.payload,
+        idCreator: action.payload?.id,
+        type: action.payload?.type,
         src: "",
         versions: [],
         description: "",

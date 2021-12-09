@@ -18,6 +18,7 @@ import {
   Container,
   Fade,
   Link,
+  Paper,
   Tooltip,
   Typography,
 } from "@material-ui/core";
@@ -183,19 +184,30 @@ export default (props) => {
         }
         onClose={() => setDeleteStatus({ status: false, err: false })}
       />
-      <Button
-        color="primary"
-        style={{ justifyItems: "flex-end" }}
-        onClick={() => history.push(`${url}/add`)}>
-        Add Template
-      </Button>
-      <Button
-        style={{ justifyItems: "flex-end" }}
-        onClick={() => {
-          history.push(`${url}/drafts`);
-        }}>
-        Drafted Templates
-      </Button>
+      <Paper style={{ marginBottom: 25, padding: 15 }}>
+        <Button
+          color="primary"
+          variant="outlined"
+          style={{ margin: 10 }}
+          onClick={() => history.push(`${url}/ae/add`)}>
+          Add After Effects Template
+        </Button>
+        <Button
+          color="primary"
+          variant="outlined"
+          style={{ margin: 10 }}
+          onClick={() => history.push(`${url}/remotion/add`)}>
+          Add Remotion Template
+        </Button>
+        <Button
+          variant="outlined"
+          style={{ margin: 10 }}
+          onClick={() => {
+            history.push(`${url}/drafts`);
+          }}>
+          Drafted Templates
+        </Button>
+      </Paper>
 
       <MaterialTable
         tableRef={tableRef}

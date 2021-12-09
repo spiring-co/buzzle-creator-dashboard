@@ -42,10 +42,10 @@ export default React.memo(({ compositions, editVersion, activeVersionIndex }) =>
 
   useEffect(() => {
     let layers = getLayersFromComposition(
-      compositions[videoObj.versions[activeVersionIndex].composition]
+      compositions[videoObj.versions[activeVersionIndex].composition], '', videoObj?.type ?? 'ae'
     );
     layers = Object.keys(layers)
-      .map((layerType) => layers[layerType].map(({ name }) => name))
+      .map((layerType) => layers[layerType].map((layer) => layer?.name ?? layer))
       .flat();
     setCurrentCompositionFields(layers);
     if (
@@ -138,7 +138,7 @@ export default React.memo(({ compositions, editVersion, activeVersionIndex }) =>
                     {item?.constraints?.maxLength && (
                       <Typography>
                         <strong>Max Length:</strong> {item?.constraints?.maxLength},
-                    &nbsp;{" "}
+                        &nbsp;{" "}
                       </Typography>
                     )}
                     <Typography>
@@ -148,13 +148,13 @@ export default React.memo(({ compositions, editVersion, activeVersionIndex }) =>
                     <Typography>
                       {" "}
                       <strong>Layer name:</strong> {item?.rendererData?.layerName}
-                  ,&nbsp;
-                </Typography>
+                      ,&nbsp;
+                    </Typography>
                     <Typography>
                       {" "}
                       <strong>Property:</strong> {item?.rendererData?.property}
-                  ,&nbsp;
-                </Typography>
+                      ,&nbsp;
+                    </Typography>
                     <Typography>
                       {" "}
                       <strong>Required:</strong>{" "}
@@ -185,13 +185,13 @@ export default React.memo(({ compositions, editVersion, activeVersionIndex }) =>
                     <Typography>
                       {" "}
                       <strong>Layer name:</strong> {item?.rendererData?.layerName},
-                  &nbsp;{" "}
+                      &nbsp;{" "}
                     </Typography>
                     {item?.rendererData?.property && (
                       <Typography>
                         {" "}
                         <strong>Property:</strong> {item?.rendererData?.property}
-                    ,&nbsp;
+                        ,&nbsp;
                       </Typography>
                     )}
                     <Typography>
@@ -234,13 +234,14 @@ export default React.memo(({ compositions, editVersion, activeVersionIndex }) =>
 
       {isDialogVisible && (
         <AddFields
+          templateType={videoObj?.type ?? 'ae'}
           textLayers={getLayersFromComposition(
             compositions[videoObj?.versions[activeVersionIndex]?.composition],
-            "textLayers"
+            "textLayers", videoObj?.type ?? 'ae'
           )}
           imageLayers={getLayersFromComposition(
             compositions[videoObj?.versions[activeVersionIndex]?.composition],
-            "imageLayers"
+            "imageLayers", videoObj?.type ?? 'ae'
           )}
           initialValue={{
             key:

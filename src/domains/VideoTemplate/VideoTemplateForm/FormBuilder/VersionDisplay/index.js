@@ -8,6 +8,7 @@ import {
   Typography,
   Box,
   Paper,
+  CircularProgress,
 } from "@material-ui/core";
 import useActions from "contextStore/actions";
 import Alert from "@material-ui/lab/Alert";
@@ -25,6 +26,9 @@ import { getLayersFromComposition } from "services/helper";
 
 export default ({
   isEdit,
+  isSubmitting,
+  handleSubmitForm,
+  submitError,
   compositions,
   activeDisplayIndex,
   setActiveDisplayIndex,
@@ -38,9 +42,9 @@ export default ({
   const [composition, setComposition] = useState("");
   const [isVersionValid, setIsVersionValid] = useState(
     videoObj?.versions?.map(({ fields, composition }) => {
-      const extracted = getLayersFromComposition(compositions[composition]);
+      const extracted = getLayersFromComposition(compositions[composition], '', videoObj?.type ?? 'ae');
       const compLayer = Object.keys(extracted)?.flatMap((k) =>
-        extracted[k]?.map(({ name }) => name)
+        extracted[k]?.map((layer) => layer?.name ?? layer)
       );
       return fields
         ?.map(({ rendererData: { layerName } }) => layerName)
@@ -60,9 +64,9 @@ export default ({
   useEffect(() => {
     setIsVersionValid(
       videoObj?.versions?.map(({ fields, composition }) => {
-        const extracted = getLayersFromComposition(compositions[composition]);
+        const extracted = getLayersFromComposition(compositions[composition], '', videoObj?.type ?? 'ae');
         const compLayer = Object.keys(extracted)?.flatMap((k) =>
-          extracted[k]?.map(({ name }) => name)
+          extracted[k]?.map((layer) => layer?.name ?? layer)
         );
         return fields
           ?.map(({ rendererData: { layerName } }) => layerName)
@@ -274,7 +278,7 @@ export default ({
           Back
         </Button>
 
-        <Button
+        {(videoObj?.type ?? 'ae') === 'ae' ? <Button
           disabled={
             videoObj.versions.length === 0 ||
             activeStep !== 0 ||
@@ -286,7 +290,17 @@ export default ({
           variant="contained"
           onClick={() => setActiveDisplayIndex(activeDisplayIndex + 1)}>
           Next
-        </Button>
+        </Button> : <Button
+          endIcon={isSubmitting && <CircularProgress color="white" size={15} />}
+          disabled={isSubmitting}
+          style={{ margin: 10 }}
+          color={submitError ? "secondary" : "primary"}
+          variant={submitError ? "outlined" : "contained"}
+          children={
+            submitError ? "Retry" : isSubmitting ? "Submitting" : "Submit"
+          }
+          onClick={() => handleSubmitForm(videoObj)}
+        />}
       </Box>
     </div>
   );

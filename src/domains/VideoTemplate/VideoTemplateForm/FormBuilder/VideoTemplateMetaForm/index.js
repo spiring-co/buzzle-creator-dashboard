@@ -19,6 +19,7 @@ const validationSchema = Yup.object({
 export default ({
   initialValues = {},
   isEdit,
+  type = 'ae',
   assets,
   compositions,
   onSubmit,
@@ -47,6 +48,7 @@ export default ({
     <form onSubmit={handleSubmit} noValidate>
       <div style={{ marginBottom: 20 }}>
         <ProjectFilePicker
+          templateType={type}
           isEdit={isEdit}
           assets={assets}
           compositions={compositions}
@@ -56,7 +58,7 @@ export default ({
           onTouched={setFieldTouched}
           value={values.projectFile}
           name={"projectFile"}
-          placeholder="Pick or drop project file"
+          placeholder={`Pick or drop project ${type === 'remotion' ? 'folder zip' : 'file'}`}
         />
         {touched?.projectFile && errors.projectFile && (
           <FormHelperText error={true}>{errors.projectFile}</FormHelperText>

@@ -1,5 +1,5 @@
-import React, { useState, useContext } from "react";
-import { Prompt, useHistory } from "react-router-dom";
+import React, { useState, useContext, useEffect } from "react";
+import { Prompt, useHistory, useParams } from "react-router-dom";
 
 import { Alert } from "@material-ui/lab";
 import { VideoTemplate } from "services/api";
@@ -10,6 +10,7 @@ import { StateProvider, VideoTemplateContext } from "contextStore/store";
 const AddTemplate = ({ location }) => {
   const [isBlocking, setIsBlocking] = useState(true);
   const [error, setError] = useState(null);
+  const { type='ae'} = useParams();
   const [videoObj] = useContext(VideoTemplateContext);
   const { video, isEdit, draftIndex = null } = location?.state ?? {};
   const history = useHistory();
@@ -74,6 +75,7 @@ const AddTemplate = ({ location }) => {
         }}
       />
       <FormBuilder
+        type={type}
         isEdit={isEdit}
         isDrafted={draftIndex !== null}
         video={video}

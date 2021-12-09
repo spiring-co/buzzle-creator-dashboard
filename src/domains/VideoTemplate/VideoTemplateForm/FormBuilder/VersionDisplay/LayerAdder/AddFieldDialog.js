@@ -52,7 +52,7 @@ const validationSchema = Yup.object().shape({
 });
 
 export default (props) => {
-  const { textLayers = [], imageLayers = [] } = props;
+  const { textLayers = [], imageLayers = [], templateType = 'ae' } = props;
 
   const onSubmit = (data) => {
     const { key, property, placeholder, extension = 'png', propertyType, type, label, required, maxLength, layerName, width, height } = data;
@@ -67,7 +67,7 @@ export default (props) => {
             required,
             maxLength,
           } : { required },
-          rendererData: { layerName, property, type }
+          rendererData: { layerName, property: templateType === 'ae' ? property : '', type }
         })
         break;
 
@@ -85,7 +85,7 @@ export default (props) => {
             : { required },
           rendererData: propertyType === "image"
             ? { layerName, type, extension }
-            : { layerName, property, type }
+            : { layerName, property: templateType === 'ae' ? property : '', type }
 
         })
         break;
@@ -121,13 +121,13 @@ export default (props) => {
     setFieldValue('layerName', value)
     // set default text value to placeholder
     if (values?.type === "data") {
-      const layerNames = textLayers.map(({ name }) => name)
+      const layerNames = textLayers.map((layer) => layer?.name ?? layer)
       setFieldValue('property', 'Source Text.text')
       setFieldValue('placeholder', textLayers[layerNames.indexOf(value)].text)
     }
     //set height and width coming from layer
     else {
-      const layerNames = imageLayers.map(({ name }) => name)
+      const layerNames = imageLayers.map((layer) => layer?.name ?? layer)
       setFieldValue('height', imageLayers[layerNames.indexOf(value)]["height"])
       setFieldValue('width', imageLayers[layerNames.indexOf(value)]["width"])
       setFieldValue('extension', 'png'//imageLayers[layerNames.indexOf(value)]?.extension ?? "png"
@@ -141,7 +141,7 @@ export default (props) => {
     touched,
     error,
   }) {
-    if (!values?.type || !values?.propertyType || values?.propertyType === "image") return <div />;
+    if (!values?.type || !values?.propertyType || values?.propertyType === "image" || templateType === 'remotion') return <div />;
     const layerProperties = ["scale", "color"];
     const propertiesByType = {
       data: [
@@ -347,14 +347,14 @@ export default (props) => {
     switch (values?.type) {
       case "data":
         if (textLayers.length) {
-          return textLayers.map(({ name }, index) => name);
+          return textLayers.map((layer, index) => layer?.name ?? layer);
         } else {
           return [];
         }
 
       case "image":
         if (imageLayers.length) {
-          return imageLayers.map(({ name }, index) => name);
+          return imageLayers.map((layer, index) => layer?.name ?? layer);
         } else {
           return [];
         }

@@ -19,6 +19,7 @@ import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import { upload } from "services/awsService";
 import { extractStructureFromFile } from "services/ae";
 import { getLayersFromComposition } from "services/helper";
+import JSZip from "jszip";
 const useStyles = makeStyles((theme) =>
   createStyles({
     content: {
@@ -53,7 +54,7 @@ export default ({
   assets,
   isEdit,
   onData,
-  name,
+  name, templateType,
   onTouched,
   onError,
 }) => {
@@ -67,7 +68,7 @@ export default ({
     isEdit ? compositions.length !== 0 : !!v
   );
   const [message, setMessage] = useState(
-    compositions.length === 0 ? null : getCompositionDetails(compositions)
+    compositions.length === 0 ? null : getCompositionDetails(compositions, templateType)
   );
   const [error, setError] = useState(null);
   useEffect(() => {
@@ -104,17 +105,39 @@ export default ({
     setError(null);
     setHasPickedFile(true);
     setHasExtractedData(false);
+    var config = null
     try {
       if (!edit && !value) {
         var file =
           (e?.target?.files ?? [null])[0] ||
           (e?.dataTransfer?.files ?? [null])[0];
         if (!file) return;
+        if (templateType === 'remotion' && file.name.split(".").pop() !== 'zip') {
+          setHasPickedFile(false);
+          setHasExtractedData(false);
+          onTouched(true);
+          setError(new Error("Invalid file, Remotion project zip file required!"));
+          onError("Invalid file, Remotion project zip file required!");
+          return
+        }
+
+        //check for buzzleconfig.json in zip, if found proceedd further else set error config.json file required!
+        config = await JSZip.loadAsync(file)
+        try {
+          config = await (config.file('buzzle.config.json').async('text'))
+          config = (JSON.parse(config))
+        } catch (err) {
+          config = null
+          setHasPickedFile(false);
+          setHasExtractedData(false);
+          onTouched(true);
+          setError(new Error("buzzle.config.json file not found, Please upload zip file with the same"));
+          onError("buzzle.config.json file not found, Please upload zip file with the same");
+          return
+        }
         setMessage("Processing...");
         const task = upload(
-          `templates/${Date.now()}${file.name.substr(
-            file.name.lastIndexOf(".")
-          )}`,
+          `templates/${Date.now()}.${file.name.split(".").pop()}`,
           file
         );
         task.on("httpUploadProgress", ({ loaded, total }) =>
@@ -125,17 +148,19 @@ export default ({
       } else {
         var uri = value;
       }
-      setMessage("Extracting Layer and compositions ...");
-      const { compositions, staticAssets } = await extractStructureFromFile(aeURL,
-        uri
-      );
-      console.log(staticAssets);
       setHasExtractedData(true);
+      setMessage("Extracting Layer and compositions ...");
+      const { compositions, staticAssets } = config !== null
+        ? { compositions: config?.compositions ?? null, staticAssets: [] }
+        : await extractStructureFromFile(aeURL,
+          uri,
+          templateType
+        );
       if (!compositions) {
         setError({ message: "Could not extract project structure." });
         onError("Could not extract project structure.");
       } else {
-        setMessage(getCompositionDetails(compositions));
+        setMessage(getCompositionDetails(compositions, templateType));
         console.log(compositions);
         setHasExtractedData(true);
         onData({
@@ -149,6 +174,7 @@ export default ({
         });
         onTouched(true);
       }
+
     } catch (error) {
       setHasPickedFile(false);
       setHasExtractedData(false);
@@ -157,19 +183,25 @@ export default ({
       onError(error.message);
     }
   };
-  function getCompositionDetails(c) {
-    try {
-      const allLayers = Object.values(c)
-        .map((c) => {
-          const { textLayers, imageLayers } = getLayersFromComposition(c);
-          return [...textLayers, ...imageLayers];
-        })
-        .flat();
-      return `${Object.keys(c).length} compositions & ${allLayers.length
-        } layers found`;
-    } catch (err) {
-      onError(err);
+  function getCompositionDetails(c, fileType = 'ae') {
+    if (fileType === 'ae') {
+      try {
+        const allLayers = Object.values(c)
+          .map((c) => {
+            const { textLayers, imageLayers } = getLayersFromComposition(c, '', fileType);
+            return [...textLayers, ...imageLayers];
+          })
+          .flat();
+        return `${Object.keys(c).length} compositions & ${allLayers.length
+          } layers found`;
+      } catch (err) {
+        onError(err);
+      }
+    } else {
+      var layerCount = [...(new Set(Object.keys(c)?.map(key => c[key]?.fields ?? [])?.flat()))]?.length;
+      return `${Object.keys(c)?.length} Compositions & ${layerCount} Inputs Found`;
     }
+
   }
 
   const render = {
@@ -234,7 +266,7 @@ export default ({
                 id={name}
                 name={name}
                 type="file"
-                accept={[".aepx", ".aep"]}
+                accept={templateType === 'remotion' ? "zip,application/octet-stream,application/zip,application/x-zip,application/x-zip-compressed" : [".aepx", ".aep"]}
               />
             </label>
           )}
@@ -288,7 +320,7 @@ export default ({
           row>
           <FormControlLabel value="file" control={<Radio />} label="File" />
           <FormControlLabel value="url" control={<Radio />} label="URL" />
-          <TextField
+          {templateType === 'ae' && <TextField
             label="AE extract URL"
             placeholder="Paste URL here"
             margin="dense"
@@ -296,7 +328,7 @@ export default ({
             variant="outlined"
             value={aeURL}
             onChange={({ target: { value } }) => setAEURL(value)}
-          />
+          />}
         </RadioGroup>
       </FormControl>
       {render[type]}

@@ -5,6 +5,7 @@ import { VideoTemplateContext } from "contextStore/store";
 
 export default ({
   isEdit,
+  type='ae',
   activeVersionIndex,
   editVersion,
   compositions,
