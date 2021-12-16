@@ -27,22 +27,20 @@ const extractStructureFromFile = async (aeExtractURL = process.env.REACT_APP_AE_
   } else if (fileType === 'remotion') {
     //get zip content read it , read buzzle.config.json 
     //check for buzzleconfig.json in zip, if found proceedd further else set error config.json file required!
-    var response = await fetch(fileUrl)
+    var response = await fetch(process.env.REMOTION_BUNDLER_URL || "https://buzzle-remotion-bundler.herokuapp.com/", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ fileUrl }),
+    })
     if (!response.ok) {
-      throw new Error("Could not extract data from file.");
+      throw new Error((await response.json())?.message);
     }
-    response = await response.blob()
-    var config = await JSZip.loadAsync(response)
-    try {
-      config = await (config.file('buzzle.config.json').async('text'))
-      config = (JSON.parse(config))
-      localStorage.setItem(fileUrl, JSON.stringify({ compositions: config?.compositions, staticAssets: [] }))
-      return { compositions: config?.compositions, staticAssets: [] }
-    } catch (err) {
-      config = null
-      throw new Error("Could not extract data from file.");
-    }
-
+    response = await response.json()
+    localStorage.setItem(fileUrl, JSON.stringify({ compositions: response?.compositions, staticAssets: [] }))
+    return { compositions: response?.compositions, staticAssets: [], url: response?.url }
   }
 };
 

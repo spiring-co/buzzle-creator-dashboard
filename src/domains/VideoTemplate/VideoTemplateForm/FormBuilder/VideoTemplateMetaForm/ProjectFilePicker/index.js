@@ -120,9 +120,18 @@ export default ({
           onError("Invalid file, Remotion project zip file required!");
           return
         }
-
-        //check for buzzleconfig.json in zip, if found proceedd further else set error config.json file required!
+        //check for buzzle.config.json in zip, if found proceedd further else set error config.json file required!
         config = await JSZip.loadAsync(file)
+        const fileNames = Object.keys(config.files)
+
+        if (fileNames.toString().includes("node_modules")) {
+          setHasPickedFile(false);
+          setHasExtractedData(false);
+          onTouched(true);
+          setError(new Error("Remove node_modules folder from the zip and try again!"));
+          onError("Remove node_modules folder from the zip and try again!");
+          return
+        }
         try {
           config = await (config.file('buzzle.config.json').async('text'))
           config = (JSON.parse(config))
@@ -150,12 +159,10 @@ export default ({
       }
       setHasExtractedData(true);
       setMessage("Extracting Layer and compositions ...");
-      const { compositions, staticAssets } = config !== null
-        ? { compositions: config?.compositions ?? null, staticAssets: [] }
-        : await extractStructureFromFile(aeURL,
-          uri,
-          templateType
-        );
+      const { compositions, staticAssets } = await extractStructureFromFile(aeURL,
+        uri,
+        templateType
+      );
       if (!compositions) {
         setError({ message: "Could not extract project structure." });
         onError("Could not extract project structure.");
@@ -294,7 +301,7 @@ export default ({
           <Typography color={error ? "error" : "initial"}>
             {error?.message ?? message}
           </Typography>
-          {error && (
+          {/* {error && (
             <Button
               onClick={handlePickFile}
               size="small"
@@ -302,7 +309,7 @@ export default ({
               color="secondary"
               variant="contained"
             />
-          )}
+          )} */}
         </Box>
       </Container>
     ),
