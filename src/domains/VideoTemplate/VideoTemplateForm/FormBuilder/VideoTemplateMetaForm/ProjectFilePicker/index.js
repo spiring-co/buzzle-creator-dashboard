@@ -120,29 +120,32 @@ export default ({
           onError("Invalid file, Remotion project zip file required!");
           return
         }
-        //check for buzzle.config.json in zip, if found proceedd further else set error config.json file required!
-        config = await JSZip.loadAsync(file)
-        const fileNames = Object.keys(config.files)
+        if (templateType === 'remotion') {
+          //check for buzzle.config.json in zip, if found proceedd further else set error config.json file required!
+          config = await JSZip.loadAsync(file)
+          const fileNames = Object.keys(config.files)
 
-        if (fileNames.toString().includes("node_modules")) {
-          setHasPickedFile(false);
-          setHasExtractedData(false);
-          onTouched(true);
-          setError(new Error("Remove node_modules folder from the zip and try again!"));
-          onError("Remove node_modules folder from the zip and try again!");
-          return
-        }
-        try {
-          config = await (config.file('buzzle.config.json').async('text'))
-          config = (JSON.parse(config))
-        } catch (err) {
-          config = null
-          setHasPickedFile(false);
-          setHasExtractedData(false);
-          onTouched(true);
-          setError(new Error("buzzle.config.json file not found, Please upload zip file with the same"));
-          onError("buzzle.config.json file not found, Please upload zip file with the same");
-          return
+          if (fileNames.toString().includes("node_modules")) {
+            setHasPickedFile(false);
+            setHasExtractedData(false);
+            onTouched(true);
+            setError(new Error("Remove node_modules folder from the zip and try again!"));
+            onError("Remove node_modules folder from the zip and try again!");
+            return
+          }
+          try {
+            config = await (config.file('buzzle.config.json').async('text'))
+            config = (JSON.parse(config))
+          } catch (err) {
+            config = null
+            console.log(err)
+            setHasPickedFile(false);
+            setHasExtractedData(false);
+            onTouched(true);
+            setError(new Error("buzzle.config.json file not found, Please upload zip file with the same"));
+            onError("buzzle.config.json file not found, Please upload zip file with the same");
+            return
+          }
         }
         setMessage("Processing...");
         const task = upload(
