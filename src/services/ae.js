@@ -1,7 +1,7 @@
 import JSZip from "jszip";
 
-const extractStructureFromFile = async (aeExtractURL = process.env.REACT_APP_AE_SERVICE_URL, fileUrl, fileType = 'ae') => {
-  let cachedData = localStorage.getItem(fileUrl)
+const extractStructureFromFile = async (aeExtractURL = process.env.REACT_APP_AE_SERVICE_URL, fileUrl="", fileType = 'ae') => {
+  let cachedData = localStorage.getItem(fileUrl+"")
   if (cachedData) {
     console.log("Extracted data from cached file")
     return JSON.parse(cachedData)
@@ -18,7 +18,7 @@ const extractStructureFromFile = async (aeExtractURL = process.env.REACT_APP_AE_
 
     if (response.ok) {
       const { compositions, staticAssets } = await response.json()
-      localStorage.setItem(fileUrl, JSON.stringify({ compositions, staticAssets }))
+      localStorage.setItem(fileUrl+"", JSON.stringify({ compositions, staticAssets }))
       console.log("Cached data for this file")
       return { compositions, staticAssets }
     } else {
@@ -39,7 +39,7 @@ const extractStructureFromFile = async (aeExtractURL = process.env.REACT_APP_AE_
       throw new Error((await response.json())?.message);
     }
     response = await response.json()
-    localStorage.setItem(fileUrl, JSON.stringify({ compositions: response?.compositions, staticAssets: [] }))
+    localStorage.setItem(fileUrl+"", JSON.stringify({ compositions: response?.compositions, staticAssets: [] }))
     return { compositions: response?.compositions, staticAssets: [], url: response?.url }
   }
 };

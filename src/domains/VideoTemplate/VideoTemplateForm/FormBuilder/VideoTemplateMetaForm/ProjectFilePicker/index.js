@@ -160,10 +160,11 @@ export default ({
       } else {
         var uri = value;
       }
+      console.log("line 163 going to extract",uri)
       setHasExtractedData(true);
       setMessage("Extracting Layer and compositions ...");
       const { compositions, staticAssets } = await extractStructureFromFile(aeURL,
-        uri,
+        uri ? uri : value,
         templateType
       );
       if (!compositions) {
