@@ -128,7 +128,7 @@ export default React.memo(
           value={filters?.states ?? []}
           options={["error", "created", "started", "finished","render:postrender","render:postdownload",
           "render:download","render:script",
-          "dorender","render:prerender"]}
+          "render:dorender","render:prerender"]}
           onChange={(e, v) => setFilters({ ...filters, states: v })}
           disableCloseOnSelect
           getOptionLabel={(a) => a}
