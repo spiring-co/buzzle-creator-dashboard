@@ -82,6 +82,7 @@ export default () => {
     const [data, setData] = useState(null)
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [isDatePickerOpen, setIsDatePickerOpen] = useState(false)
+    const [mode, setMode] = useState('template')
     const durations = [
         'day',
         'week',
@@ -89,38 +90,40 @@ export default () => {
         'custom'
     ]
     //'year',
-    
+
     const fetchJobs = async () => {
         try {
             const categ = getCategories(selectedDuration)
-            console.log(categ)
             setCategories(categ)
             setLoading(true)
-            const result = await Job.getAll(
-                1,
-                0,
-                `dateUpdated=>=${date.startDate.toISOString()}&${date.endDate ? `dateUpdated=<=${date.endDate.toISOString() || date.startDate.toISOString()}&` : ""
-                }`,
-                'dateUpdated',
-                'desc'
-            )
+            // const result = await Job.getAll(
+            //     1,
+            //     0,
+            //     : "" `dateUpdated=>=${date.startDate.toISOString()}&${date.endDate ? `dateUpdated=<=${date.endDate.toISOString() || date.startDate.toISOString()}&`
+            //     }`,
+            //     'dateUpdated',
+            //     'desc'
+            // )
+            let result = await fetch(`${process.env.REACT_APP_API_URL}/analytics?mode=${mode}&dateUpdated=>=${date.startDate.toISOString()}&${date.endDate ? `dateUpdated=<=${date.endDate.toISOString() || date.startDate.toISOString()}` : ""}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("jwtoken")}`,
+                },
+            })
+
+            if (result.ok) {
+                result = await result.json()
+            } else {
+                throw new Error((await result.json())?.message)
+            }
             setCount(result?.count || [])
-            let tempData = result?.data?.map((v) => ({
-                date: (v?.dateUpdated || v?.dateCreated || v?.dateFinished),
-                title: v?.videoTemplate?.title,
-                id: v?.videoTemplate?.id
-            }))
-            let videoTemplateSeries = [...new Set(tempData.map(item => item.id))]
+            let videoTemplateSeries = [...new Set(result?.data?.map(item => item.id))]
             setData(videoTemplateSeries.map((idVideoTemplate) => ({
-                name: tempData.find(({ id }) => id === idVideoTemplate)?.title || "",
-                data: categ.map(categoryDate => tempData.filter(({ id, date }) => {
-                    switch (selectedDuration) {
-                        // case 'custom':
-                        //  return false//id === idVideoTemplate && moment(date).isBetween(moment(categoryDate?.from), moment(categoryDate?.to), 's', '[]')
-                        default:
-                            return id === idVideoTemplate && moment(date).isBetween(moment(categoryDate?.from), moment(categoryDate?.to), 's', '[]')
-                    }
-                })?.length
+                name: result?.data?.find(({ id }) => id === idVideoTemplate)?.title || "",
+                data: categ.map(categoryDate => result?.data?.filter(({ id, date }) => id === idVideoTemplate
+                    && moment(date).isBetween(moment(categoryDate?.from), moment(categoryDate?.to), 's', '[]')
+                )?.length
                 )
             })))
             setLoading(false)
