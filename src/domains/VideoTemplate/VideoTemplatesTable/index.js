@@ -240,6 +240,10 @@ export default (props) => {
             render: ({ versions }) => <span>{versions.length}</span>,
           },
           {
+            title: "Orientation",
+            render: ({ orientation }) => <span>{orientation}</span>,
+          },
+          {
             title: "Publish State",
             field: "publishState",
             render: function ({

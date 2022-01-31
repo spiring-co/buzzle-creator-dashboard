@@ -4,7 +4,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 
 import { ArrowForward } from "@material-ui/icons";
-import { Button, TextField, FormHelperText } from "@material-ui/core";
+import { Button, TextField, FormHelperText, Radio, FormControlLabel, RadioGroup, FormControl, Typography } from "@material-ui/core";
 
 import ProjectFilePicker from "./ProjectFilePicker";
 import ArrayInput from "common/ArrayInput";
@@ -13,6 +13,7 @@ import FileUploader from "common/FileUploader";
 const validationSchema = Yup.object({
   title: Yup.string().required("Title is Required"),
   projectFile: Yup.object().required("Project File is required").nullable(),
+  orientation: Yup.string().oneOf(["landscape", "portrait"]).required("Video orientation is required"),
   thumbnail: Yup.string().required("Thumbnail is required!"),
 });
 
@@ -77,6 +78,22 @@ export default ({
         helperText={"Thumbnails "}
         name={"thumbnail"}
       />
+      <Typography>Video orientation *</Typography>
+      <FormControl component="fieldset">
+        <RadioGroup
+          aria-label="orientation"
+          name="orientation"
+          value={values.orientation}
+          onChange={({ target: { value } }) => setFieldValue("orientation", value)}
+          row>
+          <FormControlLabel value="portrait" control={<Radio />} label="Portrait" />
+          <FormControlLabel value="landscape" control={<Radio />} label="Landscape" />
+        </RadioGroup>
+        <FormHelperText error={!!errors.orientation}>
+          {!!errors.orientation ? errors.orientation : ""}
+        </FormHelperText>
+        <br/>
+      </FormControl>
       <TextField
         required
         fullWidth

@@ -40,6 +40,7 @@ export default ({ submitForm, isEdit, isDrafted = false, video, type }) => {
     const {
       keywords,
       title,
+      orientation,
       description,
       thumbnail,
       projectFile: { fileUrl = "", staticAssets = [], compositions = [] },
@@ -59,6 +60,7 @@ export default ({ submitForm, isEdit, isDrafted = false, video, type }) => {
       ...((isEdit || isDrafted) ? {} : { type }),
       keywords,
       title,
+      orientation,
       description,
       src: fileUrl,
       thumbnail,
