@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     FormControl,
     InputLabel,
@@ -7,10 +7,10 @@ import {
     TextField,
 } from "@material-ui/core";
 import FileUploader from "common/FileUploader";
+import { Orientation } from "get-orientation";
 
 export default ({ initialValue, onSubmit, handleEdit }) => {
     const actionName = Object.keys(initialValue)[0];
-    console.log(initialValue)
     const actionValue = initialValue[actionName];
     const [compress, setCompress] = useState(
         actionName === "compress"
@@ -19,6 +19,13 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
                 module: "buzzle-action-handbrake",
                 preset: null,
                 output: "encoded.mp4",
+            }
+    );
+    const [rotateAction, setRotateAction] = useState(
+        actionName === "rotateAction"
+            ? actionValue
+            : {
+                module: "buzzle-action-video-orientation",
             }
     );
     const [watermark, setWaterMark] = useState(
@@ -74,7 +81,13 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
 
     const [fileError, setFileError] = useState(null);
     const [action, setAction] = useState(actionName);
-
+    useEffect(() => {
+        if (action) {
+            handleEdit({
+                [action]: eval(action)
+            });
+        }
+    }, [action])
     const renderCompress = () => {
         return (
             <>
@@ -238,6 +251,63 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
             </>
         );
     };
+    const renderRotateAction = () => {
+
+        const transposeOptions = [{ title: "90 Counter-CLockwise and Vertical Flip", value: 0 },
+        { title: "90 Clockwise", value: 1 },
+        { title: "90 Counter Clockwise", value: 2 },
+        { title: "90 Clockwise and Vertical Flip", value: 3 }]
+        return (<>
+            <FormControl fullWidth margin="dense" variant="outlined">
+                <InputLabel id="property-select">Output Orientation</InputLabel>
+                <Select
+                    labelId="orientation-select"
+                    id="orientation-select"
+                    onChange={(e) => {
+                        setRotateAction({ ...rotateAction, orientation: (e?.target?.value) });
+                        handleEdit({ rotateAction: { ...rotateAction, orientation: (e?.target?.value) } });
+                    }}
+                    name="orientation"
+                    value={rotateAction?.orientation ?? 'portrait'}
+                    placeholder="Select Output Orientation"
+                    label="Select Output Orientation">
+                    {["landscape", 'portrait'].map((item, index) => (
+                        <MenuItem
+                            key={index}
+                            id={index}
+                            value={item}
+                            children={item.toUpperCase()}
+                            selected={rotateAction.orientation === item}
+                        />
+                    ))}
+                </Select>
+            </FormControl>
+            <FormControl fullWidth margin="dense" variant="outlined">
+                <InputLabel id="transpose-select">Transpose option</InputLabel>
+                <Select
+                    labelId="transpose-select"
+                    id="transpose-select"
+                    onChange={(e) => {
+                        setRotateAction({ ...rotateAction, transpose: parseInt(e?.target?.value) });
+                        handleEdit({ rotateAction: { ...rotateAction, transpose: parseInt(e?.target?.value) } });
+                    }}
+                    name="orientation"
+                    value={rotateAction?.transpose ?? 1}
+                    placeholder="Select transpose"
+                    label="Select transpose">
+                    {transposeOptions.map((item, index) => (
+                        <MenuItem
+                            key={item.value}
+                            id={index}
+                            value={item.value}
+                            children={item.title}
+                            selected={rotateAction.transpose === item.value}
+                        />
+                    ))}
+                </Select>
+            </FormControl>
+        </>)
+    }
     const renderAddAudio = () => {
         return (
             <>
@@ -269,7 +339,8 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
         addWaterMark: renderWatermark(),
         mergeVideos: renderMergeVideos(),
         addAudio: renderAddAudio(),
-        addThumbnail: renderAddThumbnail()
+        addThumbnail: renderAddThumbnail(),
+        rotateAction: renderRotateAction()
     };
 
     return (

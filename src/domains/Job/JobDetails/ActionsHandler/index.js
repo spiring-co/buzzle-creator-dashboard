@@ -242,10 +242,10 @@ export default ({ prerender = [], postrender = [], onSubmit }) => {
                               )}>
                               <ListItemText
                                 primary={name}
-                                secondary={Object.keys(item[name])?.map(
+                                secondary={Object.keys(item[name]||{})?.map(
                                   (key, index) => (
                                     <Typography>{`${[key]}: ${JSON.stringify(
-                                      item[name][key]
+                                      item[name][key]||{}
                                     )}`}</Typography>
                                   )
                                 )}

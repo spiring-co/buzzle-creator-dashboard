@@ -134,7 +134,7 @@ export default () => {
   }, []);
 
   // rerender on output select
-  useEffect(() => {}, [selectedOutputIndex]);
+  useEffect(() => { }, [selectedOutputIndex]);
 
   // init socket on mount
   useEffect(() => {
@@ -583,8 +583,8 @@ export default () => {
                                     index === 0
                                       ? "#ffa117"
                                       : index !== timeline?.length - 1
-                                      ? "#35a0f4"
-                                      : "#65ba68",
+                                        ? "#35a0f4"
+                                        : "#65ba68",
                                 }}
                               />
                               {timeline?.length - 1 !== index && (
@@ -646,7 +646,7 @@ export default () => {
                     return (
                       <span>
                         {value.startsWith("http://") ||
-                        value.startsWith("https://")
+                          value.startsWith("https://")
                           ? "image"
                           : "string"}
                       </span>
@@ -662,9 +662,9 @@ export default () => {
                     );
                     const v = value.startsWith("http")
                       ? version.fields.find((f) => f.key === key)?.rendererData
-                          ?.extension ?? "png"
+                        ?.extension ?? "png"
                       : version.fields.find((f) => f.key === key)?.constraints
-                          ?.maxLength;
+                        ?.maxLength;
                     return <span>{v}</span>;
                   },
                   editable: "never",
@@ -678,11 +678,11 @@ export default () => {
                     );
                     const isValid = value.startsWith("http")
                       ? value.split(".").pop() ===
-                        (version.fields.find((f) => f.key === key)?.rendererData
-                          ?.extension ?? "png")
+                      (version.fields.find((f) => f.key === key)?.rendererData
+                        ?.extension ?? "png")
                       : value.length <=
-                        version.fields.find((f) => f.key === key)?.constraints
-                          ?.maxLength;
+                      version.fields.find((f) => f.key === key)?.constraints
+                        ?.maxLength;
                     return (
                       <Typography color={isValid ? "textPrimary" : "secondary"}>
                         {value}
@@ -761,6 +761,8 @@ export default () => {
                       return { addAudio: action };
                     case "buzzle-action-merge-videos":
                       return { mergeVideos: action };
+                    case "buzzle-action-video-orientation":
+                      return { rotateAction: action };
                     default:
                       return {};
                   }
