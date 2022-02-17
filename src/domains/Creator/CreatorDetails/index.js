@@ -1,19 +1,17 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import { User, } from "services/api";
+import { useAPI, } from "services/APIContext";
 
 import { Container, Typography, Card, CardContent } from "@material-ui/core";
 
 export default () => {
   const { id } = useParams();
   const [creator, setCreator] = React.useState(null);
-
+  const { User } = useAPI()
   React.useEffect(() => {
     User.get(id).then(setCreator);
   }, []);
-  React.useEffect(() => {
-    console.log(creator);
-  }, [creator]);
+
 
   if (!creator) return <div />;
 

@@ -33,7 +33,7 @@ import SnackAlert from "common/SnackAlert";
 import { SnackbarProvider, useSnackbar } from "notistack";
 // services
 import { useAuth } from "services/auth";
-import { Search, VideoTemplate } from "services/api";
+import { useAPI } from "services/APIContext";
 import JSONEditorDialoge from "common/JSONEditorDialoge";
 
 function useQuery() {
@@ -42,6 +42,7 @@ function useQuery() {
 
 export default (props) => {
   const history = useHistory();
+  const { VideoTemplate, Job } = useAPI()
   let queryParam = useQuery();
   let { url, path } = useRouteMatch();
 
@@ -122,11 +123,7 @@ export default (props) => {
 
     // if has search query
     if (searchQuery) {
-      return Search.getVideoTemplates(
-        searchQuery,
-        page + 1,
-        pageSize
-      ).then(({ data, count: totalCount }) => ({ data, page, totalCount }));
+      return ({ data: [], page: 1, totalCount: 0 }); //TODO
     }
 
     return VideoTemplate.getAll(

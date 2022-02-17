@@ -5,7 +5,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 
 import ManualTestJob from "./manualTestJob";
-import { Job } from "services/api";
+import { useAPI } from "services/APIContext";
 
 import {
   Box,
@@ -37,6 +37,8 @@ const validationSchema = Yup.object().shape({
 export default (props) => {
   const { videoTemplate = {}, versions = [] } = props?.location?.state;
   const history = useHistory();
+  const { Job } = useAPI()
+
   const [manualJob, setManualJob] = useState([]);
   const {
     handleChange,

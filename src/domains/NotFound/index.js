@@ -13,6 +13,8 @@ import Branding from "common/Branding";
 import { useTranslation } from "react-i18next";
 import notFoundIllustration from "assets/404.svg";
 import { ArrowBack } from "@material-ui/icons";
+import { useAuth } from "services/auth";
+import { Redirect } from "react-router-dom";
 const useStyles = makeStyles({
     hoverHighlight: {
         backgroundImage:
@@ -46,9 +48,18 @@ const useStyles = makeStyles({
 
 export default () => {
     const { t } = useTranslation();
+    const { user, isUserLoadingFromFirebase } = useAuth()
     const classes = useStyles();
     const history = useHistory();
-    return (
+    if (user && !isUserLoadingFromFirebase) {
+        return <Redirect to="/home" />
+    }
+    return (<Redirect to="/login" />);
+}
+
+
+/*
+
         <Box>
             <Branding />
             <Box
@@ -126,5 +137,4 @@ export default () => {
                 </Grid>
             </Box>
         </Box>
-    );
-}
+     */

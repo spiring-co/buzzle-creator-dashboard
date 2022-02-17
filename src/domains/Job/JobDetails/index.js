@@ -46,7 +46,7 @@ import Dialog from "@material-ui/core/Dialog";
 import formatTime from "helpers/formatTime";
 
 import ActionsHandler from "./ActionsHandler";
-import ErrorHandler from "common/ErrorHandler";
+import AlertHandler from "common/AlertHandler";
 import ImageEditRow from "./ImageEditRow";
 import TextEditRow from "./TextEditRow";
 
@@ -55,7 +55,7 @@ import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
-import { Job } from "services/api";
+import { useAPI } from "services/APIContext";
 import LogsTab from "./LogsTab";
 import FileUploader from "common/FileUploader";
 
@@ -114,6 +114,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default () => {
+  const { Job } = useAPI()
+
   const [job, setJob] = useState({});
   const [error, setError] = useState(false);
   const [open, setOpen] = useState(false);
@@ -338,7 +340,7 @@ export default () => {
   return (
     <>
       {error && (
-        <ErrorHandler
+        <AlertHandler
           message={error?.message ?? "Somethings went wrong!"}
           showRetry={true}
           onRetry={() =>

@@ -1,6 +1,6 @@
 import { Button, Chip, Container, Tooltip } from "@material-ui/core";
 import { ServerJobs } from "services/api";
-import ErrorHandler from "common/ErrorHandler";
+import AlertHandler from "common/AlertHandler";
 import { useDarkMode } from "helpers/useDarkMode";
 import MaterialTable from "material-table";
 import React, { useEffect, useRef, useState } from "react";
@@ -39,7 +39,7 @@ export default () => {
   return (
     <Container>
       {error && (
-        <ErrorHandler
+        <AlertHandler
           message={error.message}
           showRetry={error}
           onRetry={handleRetry}

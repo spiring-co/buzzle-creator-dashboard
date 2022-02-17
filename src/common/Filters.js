@@ -8,7 +8,7 @@ import {
   MuiPickersUtilsProvider,
 } from "@material-ui/pickers";
 import React, { useEffect, useState } from "react";
-import { VideoTemplate } from "services/api";
+import { useAPI } from "services/APIContext";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -16,6 +16,7 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 export default React.memo(
   ({ value = {}, onChange }) => {
     const [loading, setLoading] = useState(true);
+    const {VideoTemplate}=useAPI()
     const [videoTemplates, setVideoTemplates] = useState([]);
     const [filters, setFilters] = useState(value);
     useEffect(() => {

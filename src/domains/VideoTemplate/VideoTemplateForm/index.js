@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from "react";
 import { Prompt, useHistory, useParams } from "react-router-dom";
 
 import { Alert } from "@material-ui/lab";
-import { VideoTemplate } from "services/api";
+import { useAPI } from "services/APIContext";
 
 import FormBuilder from "./FormBuilder";
 import { StateProvider, VideoTemplateContext } from "contextStore/store";
@@ -10,6 +10,7 @@ import { StateProvider, VideoTemplateContext } from "contextStore/store";
 const AddTemplate = ({ location }) => {
   const [isBlocking, setIsBlocking] = useState(true);
   const [error, setError] = useState(null);
+  const {VideoTemplate}=useAPI()
   const { type='ae'} = useParams();
   const [videoObj] = useContext(VideoTemplateContext);
   const { video, isEdit, draftIndex = null } = location?.state ?? {};

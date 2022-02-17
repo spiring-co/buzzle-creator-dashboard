@@ -13,11 +13,12 @@ import { DateRange } from 'react-date-range';
 import 'react-date-range/dist/styles.css'; // main css file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import ApexCharts from "react-apexcharts";
-import { Job } from "services/api";
+import { useAPI } from "services/APIContext";
 import { useSnackbar } from "notistack";
 
 export default () => {
     const { enqueueSnackbar } = useSnackbar();
+    const { Job } = useAPI()
     const [date, setDate] = useState(
         {
             startDate: moment().startOf('d').toDate(),

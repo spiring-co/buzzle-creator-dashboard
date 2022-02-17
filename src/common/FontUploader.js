@@ -1,6 +1,5 @@
 import { Button, FormHelperText, Tooltip } from "@material-ui/core";
 import { Close } from "@material-ui/icons";
-import { Font } from "services/api";
 import React, { useState } from "react";
 import { upload } from "services/awsService";
 
@@ -35,8 +34,6 @@ export default ({ font, handleDelete, setFont }) => {
       setLoading(false);
       setFont({ name: temp, src: uri });
       setSrc(true);
-
-      await Font.addFont({ name: temp, src: uri });
     } catch (err) {
       setLoading(false);
       setError(err);

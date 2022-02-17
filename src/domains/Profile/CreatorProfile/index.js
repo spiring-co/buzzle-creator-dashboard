@@ -18,7 +18,7 @@ import {
 } from "@material-ui/core";
 import { Edit, Delete } from "@material-ui/icons";
 import { Alert } from "@material-ui/lab";
-import { User, Webhook } from "services/api";
+import { useAPI } from "services/APIContext";
 import { upload } from "services/awsService";
 import { useFormik } from "formik";
 import React, { useEffect, useState } from "react";
@@ -33,17 +33,13 @@ import Creator from "domains/Creator/index.js";
 function ProfileEdit({ creator }) {
   console.log("creator is:" + JSON.stringify(creator));
   const [isBlocking, setIsBlocking] = useState(true);
-
+  const { User, } = useAPI()
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const handleUpdate = (data) => {
     setIsBlocking(false);
     User.update(creator?.id, data);
   };
-
-  useEffect(() => {
-    console.log(User, Webhook);
-  }, []);
 
   const { handleChange, values, handleSubmit, setFieldValue } = useFormik({
     initialValues: {
@@ -190,6 +186,7 @@ function Setting() {
 
 function Webhooks() {
   const { user } = useAuth();
+  const {User}=useAPI()
   const [open, setOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [editing, setEditing] = useState(null);
@@ -210,9 +207,9 @@ function Webhooks() {
 
   useEffect(() => {
     console.log("208", User);
-    Webhook.getAll()
-      .then(setWebhookData)
-      .catch((err) => setError(err));
+    // Webhook.getAll()
+    //   .then(setWebhookData)
+    //   .catch((err) => setError(err));
   }, []);
 
   useEffect(() => {
@@ -286,7 +283,7 @@ function Webhooks() {
             <div>
               <Typography style={{ margin: 10 }} variant="h7">
                 {console.log(webhookData)}
-                  Name: {webhookData?.find(({ id }) => id === cu.id).name}
+                Name: {webhookData?.find(({ id }) => id === cu.id).name}
               </Typography>
               <Typography variant="h7">URL: {cu.url}</Typography>
               <IconButton>
@@ -330,6 +327,7 @@ function Webhooks() {
 export default () => {
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+  const {User}=useAPI()
   const [creator, setCreator] = useState({});
   const [error, setError] = useState(null);
   useEffect(() => {

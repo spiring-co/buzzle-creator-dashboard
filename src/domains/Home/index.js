@@ -3,9 +3,11 @@ import Filters from "common/Filters";
 import React from "react";
 import "react-pivottable/pivottable.css";
 import PivotTableUI from "react-pivottable/PivotTableUI";
-import { Job } from "services/api";
 import { PivotData } from "react-pivottable/Utilities";
 import Graphs from "common/Graphs";
+import AlertHandler from "common/AlertHandler";
+import { useAuth } from "services/auth";
+import EmailVerifyAlert from "common/EmailVerifyAlert";
 
 // function jobHeuristicMapper(jobs) {
 //   return jobs.map((job) => {
@@ -19,6 +21,7 @@ import Graphs from "common/Graphs";
 // }
 
 export default function Home() {
+  const { user } = useAuth()
   // const [isLoading, setIsLoading] = React.useState(true);
   // const [jobs, setJobs] = React.useState([]);
   // const [pivotState, setPivotState] = React.useState({});
@@ -82,8 +85,9 @@ export default function Home() {
 
   // render data
   return (
-    <Container>
-      <Graphs />
+    <Container >
+      <EmailVerifyAlert />
+      {/* <Graphs /> */}
     </Container>
 
 

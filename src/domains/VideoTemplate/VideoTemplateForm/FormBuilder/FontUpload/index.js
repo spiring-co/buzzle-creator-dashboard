@@ -13,7 +13,6 @@ import { makeStyles } from "@material-ui/core/styles";
 // TODO split into individuals
 import { ArrowBack, ArrowForward } from "@material-ui/icons";
 import DoneIcon from "@material-ui/icons/Done";
-import { Font } from "services/api";
 import FileUploader from "common/FileUploader";
 import useActions from "contextStore/actions";
 import React, { useEffect, useState } from "react";

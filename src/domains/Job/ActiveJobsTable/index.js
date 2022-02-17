@@ -17,7 +17,7 @@ import { ExpandMore } from "@material-ui/icons";
 import LogsDialog from "common/LogsDialog";
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { Job } from "services/api";
+import {useAPI} from "services/APIContext";
 import { useAuth } from "services/auth";
 import io from "socket.io-client";
 import * as timeago from "timeago.js";
@@ -28,6 +28,8 @@ function useQuery() {
 
 export default ({ onRowClick }) => {
   // init socket on mount
+  const {Job}=useAPI()
+
   const [activeJobs, setActiveJobs] = useState([]);
   const [jobStats, setJobStats] = useState({});
   const [activeJobLogs, setActiveJobLogs] = useState([]);

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Auth } from "services/api";
-
+import { useAPI } from "services/APIContext";
 export default () => {
   const [error, setError] = useState(null);
+  const { User } = useAPI()
   const [otpEmailSent, setOtpEmailSent] = useState(false);
   const [passwordResetSuccess, setPasswordResetSuccess] = useState(false);
 

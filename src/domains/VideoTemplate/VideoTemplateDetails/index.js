@@ -20,7 +20,7 @@ import {
 import { Alert } from "@material-ui/lab";
 import DeleteIcon from "@material-ui/icons/Delete";
 
-import { VideoTemplate } from "services/api";
+import { useAPI } from "services/APIContext";
 import { useCurrency } from "services/currencyContext";
 
 import { zipMaker } from "helpers/downloadTemplateHelper";
@@ -42,7 +42,7 @@ export default () => {
   const { id } = useParams();
   const { url } = useRouteMatch();
   const history = useHistory();
-
+  const { VideoTemplate } = useAPI()
   const { getConvertedCurrency } = useCurrency();
 
   const [isDeleting, setIsDeleting] = useState(false);
@@ -234,15 +234,14 @@ export default () => {
                           )}
                         </StyledTableCell>
                         <StyledTableCell>
-                          {`${loyaltyValue} ${loyaltyCurrency} ${
-                            loyaltyCurrency !== "INR"
+                          {`${loyaltyValue} ${loyaltyCurrency} ${loyaltyCurrency !== "INR"
                               ? `(${getConvertedCurrency(
-                                  loyaltyValue,
-                                  loyaltyCurrency,
-                                  "INR"
-                                )})`
+                                loyaltyValue,
+                                loyaltyCurrency,
+                                "INR"
+                              )})`
                               : ""
-                          }`}
+                            }`}
                         </StyledTableCell>
                       </StyledTableRow>
                     )
@@ -302,15 +301,15 @@ export default () => {
             <RoleBasedView allowedRoles={["Admin"]}>
               {(data?.publishState === "pending" ||
                 data?.publishState === "rejected") && (
-                <Button
-                  disabled={isLoading}
-                  style={{ margin: 10, marginLeft: 0 }}
-                  variant="contained"
-                  color="primary"
-                  onClick={() => handleUpdateTemplate("published")}
-                  children="Approve"
-                />
-              )}
+                  <Button
+                    disabled={isLoading}
+                    style={{ margin: 10, marginLeft: 0 }}
+                    variant="contained"
+                    color="primary"
+                    onClick={() => handleUpdateTemplate("published")}
+                    children="Approve"
+                  />
+                )}
               {data?.publishState !== "unpublished" && (
                 <Button
                   disabled={data?.publishState === "rejected" || isLoading}

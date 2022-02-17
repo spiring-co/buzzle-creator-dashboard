@@ -11,9 +11,9 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { AccountCircle } from "@material-ui/icons";
-import { Job, VideoTemplate, User, Search } from "services/api";
+import { useAPI } from "services/APIContext";
 import PublishIcon from '@material-ui/icons/Publish';
-import ErrorHandler from "common/ErrorHandler";
+import AlertHandler from "common/AlertHandler";
 import SnackAlert from "common/SnackAlert";
 import MaterialTable from "material-table";
 import React, { useEffect, useRef, useState } from "react";
@@ -29,6 +29,7 @@ import * as timeago from "timeago.js";
 export default (props) => {
     let { url, path } = useRouteMatch();
     const history = useHistory();
+    const { VideoTemplate, User, } = useAPI()
     const [isDeleting, setIsDeleting] = useState(false);
     const [error, setError] = useState(null);
     const [testJobTemplate, setTestJobTemplate] = useState(null);
@@ -92,7 +93,7 @@ export default (props) => {
     return (
         <Container>
             {error && (
-                <ErrorHandler
+                <AlertHandler
                     message={error.message}
                     showRetry={true}
                     onRetry={handleRetry}
@@ -163,35 +164,35 @@ export default (props) => {
                 ]}
 
                 data={(query) =>
-                    query?.search ?
-                        Search.getCreators(query?.search, query.page + 1, query.pageSize).then(({ data, count: totalCount }) => ({
-                            data,
-                            page: query.page,
-                            totalCount
-                        })).catch((err) => {
+                    // query?.search ?
+                    //     Search.getCreators(query?.search, query.page + 1, query.pageSize).then(({ data, count: totalCount }) => ({
+                    //         data,
+                    //         page: query.page,
+                    //         totalCount
+                    //     })).catch((err) => {
+                    //         setError(err);
+                    //         return {
+                    //             data: [],
+                    //             page: query.page,
+                    //             totalCount: 0,
+                    //         };
+                    //     }) :
+                    User.getAll(query.page + 1, query.pageSize)
+                        .then(({ data, count: totalCount }) => {
+                            return {
+                                data,
+                                page: query.page,
+                                totalCount,
+                            };
+                        })
+                        .catch((err) => {
                             setError(err);
                             return {
                                 data: [],
                                 page: query.page,
                                 totalCount: 0,
                             };
-                        }) :
-                        User.getAll(query.page + 1, query.pageSize)
-                            .then(({ data, count: totalCount }) => {
-                                return {
-                                    data,
-                                    page: query.page,
-                                    totalCount,
-                                };
-                            })
-                            .catch((err) => {
-                                setError(err);
-                                return {
-                                    data: [],
-                                    page: query.page,
-                                    totalCount: 0,
-                                };
-                            })
+                        })
                 }
                 options={{
                     pageSize: 10,

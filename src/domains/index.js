@@ -99,37 +99,37 @@ export default () => {
                 <Switch>
                     <Route path={`${path}/`} exact
                         render={props => (
-                            <Page props={props} component={Home} title="Buzzle" />
+                            <Page props={props} component={Home} title="" />
                         )}
                     />
                     <RoleBasedRoute path={`${path}/profile`}
                         allowedRoles={"*"}
                         render={props => (
-                            <Page props={props} component={Profile} title="Buzzle | Profile" />
+                            <Page props={props} component={Profile} title="Profile" />
                         )} />
                     <RoleBasedRoute path={`${path}/videoTemplates`}
                         allowedRoles={"*"}
                         render={props => (
-                            <Page props={props} component={VideoTemplates} title="Buzzle | Video Templates" />
+                            <Page props={props} component={VideoTemplates} title="Video Templates" />
                         )}
                     />
                     {/* <Route path={`${path}/revenue`}
                         render={props => (
-                            <Page props={props} component={Revenue} title="Buzzle | Revenue" />
+                            <Page props={props} component={Revenue} title="Revenue" />
                         )} /> */}
                     <RoleBasedRoute path={`${path}/jobs`}
                         allowedRoles={"*"}
                         render={props => (
-                            <Page props={props} component={Jobs} title="Buzzle | Jobs" />
+                            <Page props={props} component={Jobs} title="Jobs" />
                         )} />
                     <RoleBasedRoute path={`${path}/users`}
                         allowedRoles={["Admin"]}
                         render={props => (
-                            <Page props={props} component={Users} title="Buzzle | Users" />
+                            <Page props={props} component={Users} title="Users" />
                         )} />
                     {/* <Route path={`${path}/servers`}
                         render={props => (
-                            <Page props={props} component={Servers} title="Buzzle | Servers" />
+                            <Page props={props} component={Servers} title="Servers" />
                         )}
                     /> */}
                     <Redirect to={"/NotFound"} />

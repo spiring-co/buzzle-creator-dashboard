@@ -30,8 +30,7 @@ import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import PublishSteps from "./PublishSteps";
 
 // services
-import useApi from "services/apiHook";
-import { Job, VideoTemplate } from "services/api";
+import { useAPI } from "services/APIContext";
 import { useCurrency } from "services/currencyContext";
 
 // helpers
@@ -51,23 +50,33 @@ const CustomProgress = withStyles({
 export default ({ location }) => {
   const { url } = useRouteMatch();
   const { id } = useParams();
-  const { data = {}, loading, err } = useApi(
-    `${process.env.REACT_APP_API_URL}/videoTemplates/${id}`
-  );
+  const { Job, VideoTemplate } = useAPI()
   const history = useHistory();
   const { currency } = useCurrency();
   const [anchorEl, setAnchorEl] = useState(null);
-  const [videoTemplate, setVideoTemplate] = useState(data);
+  const [videoTemplate, setVideoTemplate] = useState({});
   const [isPublishing, setIsPublishing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [activeStep, setActiveStep] = useState(0);
   const open = Boolean(anchorEl);
   const idPopover = open ? "simple-popover" : undefined;
+
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    setVideoTemplate(data);
-    console.log(data);
-  }, [data]);
+    init();
+  }, []);
+
+  const init = async () => {
+    try {
+      setVideoTemplate(await VideoTemplate.get(id));
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+      setError(err);
+    }
+  };
 
   const handleRenderTestJob = async (versionId) => {
     // render test job for version
@@ -145,7 +154,6 @@ export default ({ location }) => {
       },
     },
   }))(TableRow);
-  if (err) setError(err);
   const renderStep = (activeStep) => {
     switch (activeStep) {
       case 0:
@@ -182,26 +190,26 @@ export default ({ location }) => {
               {!videoTemplate?.versions?.every(
                 ({ averageRenderTime = 0 }) => averageRenderTime != 0
               ) && (
-                <Button
-                  onClick={() => handleRenderTestJob(id)}
-                  disabled={loading}
-                  size="small"
-                  style={{
-                    width: "fit-content",
-                    marginTop: 10,
-                    marginRight: 10,
-                  }}
-                  children="Render Jobs"
-                  variant="contained"
-                  color="primary"
-                />
-              )}
+                  <Button
+                    onClick={() => handleRenderTestJob(id)}
+                    disabled={loading}
+                    size="small"
+                    style={{
+                      width: "fit-content",
+                      marginTop: 10,
+                      marginRight: 10,
+                    }}
+                    children="Render Jobs"
+                    variant="contained"
+                    color="primary"
+                  />
+                )}
               <Button
-                disabled={
-                  !videoTemplate?.versions?.every(
-                    ({ averageRenderTime = 0 }) => averageRenderTime != 0
-                  )
-                }
+                // disabled={
+                //   !videoTemplate?.versions?.every(
+                //     ({ averageRenderTime = 0 }) => averageRenderTime != 0
+                //   )
+                // }
                 size="small"
                 style={{ width: "fit-content", marginTop: 10 }}
                 color="primary"
@@ -251,7 +259,7 @@ export default ({ location }) => {
                   <InfoOutlinedIcon />
                 </IconButton>
                 we recommend you to set loyalty as per the platform most
-                accepted loyalty value, click ⓘ button to see platofrm rates
+                accepted loyalty value, click ⓘ button to see platform rates
               </caption>
               <TableHead>
                 <Popover

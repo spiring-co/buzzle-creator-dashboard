@@ -24,8 +24,8 @@ import AudiotrackIcon from "@material-ui/icons/Audiotrack";
 import BrandingWatermarkIcon from "@material-ui/icons/BrandingWatermark";
 
 import Filters from "common/Filters";
-import ErrorHandler from "common/ErrorHandler";
-import { Job, Search } from "services/api";
+import AlertHandler from "common/AlertHandler";
+import { useAPI } from "services/APIContext";
 import Timeline from "@material-ui/lab/Timeline";
 import TimelineItem from "@material-ui/lab/TimelineItem";
 import TimelineSeparator from "@material-ui/lab/TimelineSeparator";
@@ -47,6 +47,7 @@ function useQuery() {
 export default () => {
   const { path } = useRouteMatch();
   const history = useHistory();
+  const { Job, Search } = useAPI()
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const queryParam = useQuery();
   const tableRef = useRef(null);
@@ -73,18 +74,13 @@ export default () => {
       orderDirection = "asc",
     } = query;
     history.push(
-      `?page=${page + 1}&size=${pageSize}${
-        searchQuery ? "searchQuery=" + searchQuery : ""
+      `?page=${page + 1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
       }`
     );
 
     // if has search query
     if (searchQuery) {
-      return Search.getJobs(
-        searchQuery,
-        page + 1,
-        pageSize
-      ).then(({ data, count: totalCount }) => ({ data, page, totalCount }));
+      return ({ data: [], page: 1, totalCount: 0 });
     }
     return Job.getAll(
       page + 1,
@@ -99,8 +95,7 @@ export default () => {
         // setJobIds(data.map((j) => j.id));
         if (data?.length === 0 && totalCount) {
           history.push(
-            `?page=${1}&size=${pageSize}${
-              searchQuery ? "searchQuery=" + searchQuery : ""
+            `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
             }`
           );
           return Job.getAll(
@@ -117,8 +112,7 @@ export default () => {
             .catch((err) => {
               setError(err);
               history.push(
-                `?page=${1}&size=${pageSize}${
-                  searchQuery ? "searchQuery=" + searchQuery : ""
+                `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
                 }`
               );
               return {
@@ -133,8 +127,7 @@ export default () => {
       .catch((err) => {
         setError(err);
         history.push(
-          `?page=${1}&size=${pageSize}${
-            searchQuery ? "searchQuery=" + searchQuery : ""
+          `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
           }`
         );
         return {
@@ -234,8 +227,8 @@ export default () => {
                           index === 0
                             ? "#ffa117"
                             : index !== timeline?.length - 1
-                            ? "#35a0f4"
-                            : "#65ba68",
+                              ? "#35a0f4"
+                              : "#65ba68",
                       }}
                     />
                     {timeline?.length - 1 !== index && <TimelineConnector />}
@@ -279,7 +272,7 @@ export default () => {
   return (
     <div>
       {error && (
-        <ErrorHandler
+        <AlertHandler
           message={error.message}
           showRetry={true}
           onRetry={handleRetry}
@@ -591,18 +584,15 @@ const filterObjectToString = (f) => {
   if (!f) return null;
   const { startDate = 0, endDate = 0, idVideoTemplates = [], states = [] } = f;
 
-  return `${
-    startDate
-      ? `dateUpdated=>=${startDate}&${
-          endDate ? `dateUpdated=<=${endDate || startDate}&` : ""
-        }`
+  return `${startDate
+      ? `dateUpdated=>=${startDate}&${endDate ? `dateUpdated=<=${endDate || startDate}&` : ""
+      }`
       : ""
-  }${
-    idVideoTemplates.length !== 0
+    }${idVideoTemplates.length !== 0
       ? getArrayOfIdsAsQueryString(
-          "idVideoTemplate",
-          idVideoTemplates.map(({ id }) => id)
-        ) + "&"
+        "idVideoTemplate",
+        idVideoTemplates.map(({ id }) => id)
+      ) + "&"
       : ""
-  }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
+    }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;
 };

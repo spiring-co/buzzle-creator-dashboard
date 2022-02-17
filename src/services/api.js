@@ -1,17 +1,15 @@
-import BuzzleSdk from "buzzle-sdk";
+// import { apiClient } from "./buzzle-sdk";
 
-const getBuzzleApi = () => {
-  return BuzzleSdk.apiClient({
-    baseUrl: process.env.REACT_APP_API_URL,
-    authToken: localStorage.getItem("jwtoken"),
-  });
-};
-let API = getBuzzleApi();
+// const getBuzzleApi = () => {
+//   return apiClient({
+//     baseUrl: process.env.REACT_APP_API_URL,
+//   });
+// };
+// let API = getBuzzleApi();
 
-window.onstorage = () => {
-  API = getBuzzleApi();
-  console.log(localStorage.getItem("jwtoken"));
-};
+// window.onstorage = () => {
+//   API = getBuzzleApi();
+// };
 
 const uri = `http://52.54.195.156:3000/api/v1/jobs`;
 
@@ -58,15 +56,14 @@ export const ServerJobs = {
   },
 };
 
-export const {
-  Job,
-  User,
-  VideoTemplate,
-  Font,
-  Search,
-  Auth,
-  Webhook,
-  Creator,
-} = API;
+// // export const {
+// //   Job,
+// //   User,
+// //   VideoTemplate,
+// //   Font,
+// //   Search,
+// //   Auth,
+// //   Webhook,
+// //   Creator,
+// // } = API;
 
-console.log(User, Webhook)

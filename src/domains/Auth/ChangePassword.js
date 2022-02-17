@@ -20,7 +20,7 @@ import { createStyles, makeStyles } from "@material-ui/core/styles";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import { Alert } from "@material-ui/lab";
-import { Job, VideoTemplate, Auth } from "services/api";
+import { useAPI } from "services/APIContext";
 import Branding from "common/Branding";
 import { countryList } from "common/CountryList";
 import { useFormik } from "formik";
@@ -47,6 +47,7 @@ export default () => {
   const classes = useStyles();
   const history = useHistory();
   const { user } = useAuth();
+  const { Auth } = useAPI()
   const [error, setError] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showPassword2, setShowPassword2] = useState(false);
