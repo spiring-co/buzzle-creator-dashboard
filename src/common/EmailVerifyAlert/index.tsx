@@ -7,7 +7,7 @@ export default () => {
     const [type, setType] = useState<"warning" | "info">("warning")
     const handleVerify = async () => {
         await verifyEmail()
-        setMessage(`Email verification link has been sent to ${user.email}, Follow the instructions to verify your email`)
+        setMessage(`Email verification link has been sent to ${user?.email}, Follow the instructions to verify your email`)
         setType("info")
     }
     if (user?.emailVerified) {

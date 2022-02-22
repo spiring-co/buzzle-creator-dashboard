@@ -49,13 +49,17 @@ export default function User(
         body: JSON.stringify(data),
       });
     },
-    update: async (id: string, data: Partial<UserType>, extraParams?: Record<string, any>) => {
-      return apiRequest(`${baseUrl}/users/${id}?${objectToQueryString(
-        extraParams
+    update: async (data?: Partial<UserType>, extraParams?: {
+      noMessage?: boolean,
+      keyOperation?: "generate" | "update" | "revoke"
+    }): Promise<{ message: string, data: UserType }> => {
+     
+      return apiRequest(`${baseUrl}/users?${objectToQueryString(
+        extraParams || {}
       )}`, {
         method: "PUT",
         headers,
-        body: JSON.stringify(data),
+        body: JSON.stringify(data || {}),
       });
     },
   };

@@ -1,4 +1,4 @@
-import { Menu, MenuItem } from "@material-ui/core";
+import { Chip, Menu, MenuItem } from "@material-ui/core";
 import AppBar from "@material-ui/core/AppBar";
 import Avatar from "@material-ui/core/Avatar";
 import Box from "@material-ui/core/Box";
@@ -21,8 +21,10 @@ import MenuIcon from "@material-ui/icons/Menu";
 import Notifications from "@material-ui/icons/Notifications";
 import clsx from "clsx";
 import { useDarkMode } from "helpers/useDarkMode";
+import { useSnackbar } from "notistack";
 import React, { forwardRef, MouseEventHandler, useMemo, useState } from "react";
 import { Link as RouterLink, useHistory } from "react-router-dom";
+import { useReAuthFlow } from "services/Re-AuthContext";
 import { useAuth } from "../services/auth";
 import RoleBasedView from "./RoleBasedView";
 
@@ -133,13 +135,15 @@ type IProps = {
 export default function NavBar({ items }: IProps) {
   const classes = useStyles();
   const { user } = useAuth();
+  const { enqueueSnackbar } = useSnackbar()
+  const { reAuthInit } = useReAuthFlow()
   const theme = useTheme();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const { signOut } = useAuth();
   const history = useHistory();
   const [t, toggleTheme, componentMounted] = useDarkMode();
- 
+
   const handleDrawerOpen = () => {
     setDrawerOpen(true);
   };
@@ -193,28 +197,14 @@ export default function NavBar({ items }: IProps) {
             </Typography>
           )}
           <div className={classes.menu}>
-            <IconButton
-              aria-label="toggle dark mode"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={() => {
-                toggleTheme();
-              }}
-              color="inherit">
-              {t === "light" ? <BrightnessHigh /> : <BrightnessLow />}
-            </IconButton>
-            <IconButton
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
+            <Chip
+              avatar={<Avatar alt="avatar"
+                src={user?.photoURL || "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png"}
+              />}
+              label={user?.name}
               onClick={handleMenu}
-              color="inherit">
-              <Avatar
-                style={{ height: 30, width: 30 }}
-                alt="thumbnail"
-                src={user?.imageUrl}
-              />
-            </IconButton>
+              variant="default"
+            />
             <Menu
               id="menu-appbar"
               anchorEl={anchorEl}
@@ -249,7 +239,7 @@ export default function NavBar({ items }: IProps) {
                     textDecoration: "none",
                     fontFamily: "Poppins",
                   }}>
-                  {user.name}
+                  {user?.name}
                 </Typography>
                 <Typography
                   noWrap
@@ -260,13 +250,13 @@ export default function NavBar({ items }: IProps) {
                     textDecoration: "none",
                     fontFamily: "Poppins",
                   }}>
-                  {user.email}
+                  {user?.email}
                 </Typography>
                 <Divider />
               </div>
               <MenuItem onClick={() => {
                 handleClose()
-                history.push("/home/profile")
+                history.push("/home/settings?tab=hooks")
               }}>Profile</MenuItem>
               <MenuItem
                 onClick={() => {

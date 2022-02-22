@@ -1,5 +1,6 @@
 import Job from "./job";
 import User from "./user";
+import Analytics from "./analytics";
 import VideoTemplate from "./videoTemplate";
 import { APIParam } from "../types";
 import { firebaseAuth } from "services/firebase";
@@ -14,6 +15,7 @@ export default (params: APIParam) => {
 
   return {
     Job: Job(baseUrl, headers),
+    Analytics: Analytics(baseUrl, headers),
     User: User(baseUrl, headers),
     VideoTemplate: VideoTemplate(baseUrl, headers),
   };

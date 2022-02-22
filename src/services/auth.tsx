@@ -15,6 +15,8 @@ import React, {
 import { Auth } from 'common/types';
 import { useAPI } from './APIContext';
 import { useHistory } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
+import { User } from './buzzle-sdk/types';
 const provider = new firebase.auth.GoogleAuthProvider()
 interface IProps {
   children?: ReactNode;
@@ -23,7 +25,7 @@ const defaultAuthValue: Auth = {
   signInWithPassword: async () => console.log('Email/Password Sign In!'),
   forgotPassword: () => console.log('Forgot Password Sign In!'),
   signUpWithEmailPassword: async () => console.log('Signup function!'),
-  changePassword: () => console.log('Change Password Sign In!'),
+  refreshUser: async () => console.log('Change Password Sign In!'),
   signOut: () => console.log('Sign out!'),
   checkUserExist: async () => true,
   verifyEmail: () => console.log("send email verification"),
@@ -47,11 +49,13 @@ function useAuth(): Auth {
 function AuthProvider(props: IProps) {
   const [token, setToken] = useState<string>("")
   const history = useHistory()
+  const { enqueueSnackbar } = useSnackbar()
   const { User, isAPIReady, token: apiToken, setToken: handleSetToken } = useAPI()
   const [user, setUser] = useState<any | null>(null);
   const [isUserLoadingFromFirebase, setIsUserLoadingFromFirebase] = useState<boolean>(true)
   const [isUserLoading, setIsUserLoading] = useState<boolean>(true);
   const [initializing, setInitializing] = useState(false);
+  const [error, setError] = useState<Error | null>(null)
   const [isUserRegistered, setIsUserRegistered] = useState<boolean>(true)
   const [name, setName] = useState<string>("")
   const onAuthStateChanged = (u: firebase.User | any): any => {
@@ -80,18 +84,28 @@ function AuthProvider(props: IProps) {
 
   useEffect(() => {
     if (isAPIReady && user && isUserLoading) {
-      console.log("Now Trying to create or get user")
       if (isUserRegistered) {
+
         User.get(user?.uid).then((data) => {
           setIsUserLoading(false)
           setUser(firebaseAuth.currentUser ? { ...user, ...data } : null);
+        }).catch((err) => {
+          setIsUserLoading(false)
+          setError(err as Error)
+          enqueueSnackbar("Failed to load user", { variant: 'error' })
 
-        }).catch(() => setIsUserLoading(false));
+        });
       } else {
+
         User.create({ name: firebaseAuth.currentUser?.displayName || name }).then(({ data }) => {
           setIsUserLoading(false)
+          setIsUserRegistered(true)
           setUser(firebaseAuth.currentUser ? { ...user, ...data } : null);
-        }).catch(() => setIsUserLoading(false));
+        }).catch((err) => {
+          setIsUserLoading(false)
+          enqueueSnackbar("Failed to create user", { variant: 'error' })
+          setError(err as Error)
+        });
       }
     }
   }, [isUserRegistered, isUserLoading, user, User, isAPIReady, name])
@@ -129,13 +143,31 @@ function AuthProvider(props: IProps) {
 
       }
     };
-    const changePassword = () => { }
+    const refreshUser = async (updatedUser?: User) => {
+      try {
+        if (user?.uid && !updatedUser) {
+          setIsUserLoading(true)
+          const data = await User.get(user?.uid)
+          setIsUserLoading(false)
+          setUser(firebaseAuth.currentUser ? { ...(firebaseAuth.currentUser || {}), ...data } : null);
+
+        } else {
+          setUser(firebaseAuth.currentUser ? { ...(firebaseAuth.currentUser || {}), ...updatedUser } : null)
+        }
+      } catch (err) {
+        enqueueSnackbar("Failed to refresh", {
+          variant: 'error'
+        })
+        setIsUserLoading(false)
+      }
+    }
     const checkUserExist = async (email: string): Promise<boolean> => {
       try {
         await User.get(email || "")
         setIsUserRegistered(true)
         return true
       } catch (err) {
+
         setIsUserRegistered(false)
         return false
       }
@@ -155,7 +187,7 @@ function AuthProvider(props: IProps) {
       signInWithPassword,
       signOut,
       isUserLoading,
-      changePassword,
+      refreshUser,
       forgotPassword,
       signUpWithEmailPassword,
       user,

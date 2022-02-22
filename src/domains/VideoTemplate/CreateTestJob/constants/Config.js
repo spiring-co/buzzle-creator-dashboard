@@ -24,7 +24,7 @@ export const defaultConfig = {
   serviceBased: "918305698776",
   jsonBinAPIKey: "$2b$10$Pu76OMzgX69CXR//XYnWCub5gBujgJhfrIvBR91UXu/DnZ6f2joSa",
   placeholderPicture:
-    "https://www.pngkey.com/png/full/950-9501315_katie-notopoulos-katienotopoulos-i-write-about-tech-user.png",
+    "https://www.pngkey.com/png/full/950-9501315_katie-notopoulos-katienotopoulos-i-write-about-tech-user?.png",
   amplitudeApiKey: "f271aaec32d9525c8ef6d8bea07493ea",
   sentryUri: "https://a23086caf9944e9f8e40079cefd5becf@sentry.io/1424769",
   privacyPolicyUrl: "https://bulaava.in/privacyPolicy.html",

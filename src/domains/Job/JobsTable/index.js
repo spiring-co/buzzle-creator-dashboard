@@ -47,7 +47,7 @@ function useQuery() {
 export default () => {
   const { path } = useRouteMatch();
   const history = useHistory();
-  const { Job, Search } = useAPI()
+  const { Job } = useAPI()
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const queryParam = useQuery();
   const tableRef = useRef(null);
@@ -360,6 +360,26 @@ export default () => {
           },
           {
             searchable: false,
+            title: "source",
+            render: ({ sourceCreatedBy = "" }) => {
+              return <Tooltip
+                TransitionComponent={Fade}
+                title={(sourceCreatedBy||"api") === "api" ? "Created using API" : "Created from buzzle"}>
+                <Chip
+                  size="small"
+                  label={sourceCreatedBy || "api"}
+                  style={{
+                    fontWeight: 700,
+                    background: getColorFromSource(sourceCreatedBy || "api"),
+                    color: "white",
+                    textTransform: "uppercase",
+                  }}
+                />
+              </Tooltip>
+            }
+          },
+          {
+            searchable: false,
             title: "State",
             field: "state",
             render: ({ state, failureReason }) => {
@@ -558,7 +578,14 @@ export default () => {
     </div>
   );
 };
-
+const getColorFromSource = (source) => {
+  switch (source) {
+    case "api":
+      return "#ffa502"
+    default:
+      return "#3742fa"
+  }
+}
 const getColorFromState = (state = "", percent) => {
   switch (state.toLowerCase()) {
     case "finished":
@@ -585,9 +612,9 @@ const filterObjectToString = (f) => {
   const { startDate = 0, endDate = 0, idVideoTemplates = [], states = [] } = f;
 
   return `${startDate
-      ? `dateUpdated=>=${startDate}&${endDate ? `dateUpdated=<=${endDate || startDate}&` : ""
-      }`
-      : ""
+    ? `dateUpdated=>=${startDate}&${endDate ? `dateUpdated=<=${endDate || startDate}&` : ""
+    }`
+    : ""
     }${idVideoTemplates.length !== 0
       ? getArrayOfIdsAsQueryString(
         "idVideoTemplate",

@@ -2,21 +2,19 @@ import React from "react";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
 import {
     AssignmentInd,
-    MonetizationOn,
     VideoLibrary,
     Stars,
     Work,
-    SupervisedUserCircle,
+    Settings,
 } from "@material-ui/icons";
 
 import EqualizerIcon from '@material-ui/icons/Equalizer';
-import StorageIcon from "@material-ui/icons/Storage";
 import { Route, Switch, useRouteMatch, Redirect } from "react-router-dom";
 import Navbar from "common/Navbar";
 import RoleBasedRoute from "common/RoleBasedRoute";
 import Revenue from "domains/Revenue";
 import Home from "domains/Home";
-import Profile from "domains/Profile";
+import Setting from "domains/Setting";
 import Users from "domains/User";
 import Servers from "domains/Servers";
 import Creators from "domains/Creator";
@@ -29,7 +27,6 @@ const useStyles = makeStyles((theme) =>
         root: {
             display: "flex",
         },
-
         toolbar: {
             display: "flex",
             ...theme.mixins.toolbar,
@@ -66,9 +63,9 @@ export default () => {
         },
 
         {
-            text: "Profile and Settings",
-            icon: <AssignmentInd />,
-            to: `${url}/profile`,
+            text: "Settings",
+            icon: <Settings />,
+            to: `${url}/settings`,
             allowedRoles: "*",
         },
         // {
@@ -102,10 +99,10 @@ export default () => {
                             <Page props={props} component={Home} title="" />
                         )}
                     />
-                    <RoleBasedRoute path={`${path}/profile`}
+                    <RoleBasedRoute path={`${path}/settings`}
                         allowedRoles={"*"}
                         render={props => (
-                            <Page props={props} component={Profile} title="Profile" />
+                            <Page props={props} component={Setting} title="Settings" />
                         )} />
                     <RoleBasedRoute path={`${path}/videoTemplates`}
                         allowedRoles={"*"}

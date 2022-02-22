@@ -15,11 +15,18 @@ import 'react-date-range/dist/theme/default.css'; // theme css file
 import ApexCharts from "react-apexcharts";
 import { useAPI } from "services/APIContext";
 import { useSnackbar } from "notistack";
+import { useAuth } from "services/auth";
+import { duration } from "./types";
 
 export default () => {
     const { enqueueSnackbar } = useSnackbar();
-    const { Job } = useAPI()
-    const [date, setDate] = useState(
+    const { Analytics } = useAPI()
+    const { token } = useAuth()
+    const [date, setDate] = useState<{
+        startDate: Date,
+        endDate: Date,
+        key?: string
+    }>(
         {
             startDate: moment().startOf('d').toDate(),
             endDate: moment().endOf('d').toDate(),
@@ -27,8 +34,9 @@ export default () => {
         }
     );
     const [loading, setLoading] = useState(false)
-    const [selectedDuration, setSelectedDuration] = useState('day')
-    const getCategories = (duration = selectedDuration) => {
+    const [selectedDuration, setSelectedDuration] = useState<duration>('day')
+    const getCategories = (duration: duration): Array<{ from: Date, to: Date }> => {
+        duration = duration || selectedDuration
         const categories = []
         switch (duration) {
             case "day":
@@ -78,9 +86,11 @@ export default () => {
                 return []
         }
     }
-    const [categories, setCategories] = useState(getCategories(selectedDuration))
-    const [count, setCount] = useState(null)
-    const [data, setData] = useState(null)
+    const [categories, setCategories] = useState<Array<{ from: Date, to: Date }>>(getCategories(selectedDuration))
+    const [count, setCount] = useState<number | null>(null)
+    const [data, setData] = useState<Array<{
+        name: string, data: Array<number>
+    }> | null>(null)
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [isDatePickerOpen, setIsDatePickerOpen] = useState(false)
     const [mode, setMode] = useState('template')
@@ -97,32 +107,19 @@ export default () => {
             const categ = getCategories(selectedDuration)
             setCategories(categ)
             setLoading(true)
-            // const result = await Job.getAll(
-            //     1,
-            //     0,
-            //     : "" `dateUpdated=>=${date.startDate.toISOString()}&${date.endDate ? `dateUpdated=<=${date.endDate.toISOString() || date.startDate.toISOString()}&`
-            //     }`,
-            //     'dateUpdated',
-            //     'desc'
-            // )
-            let result = await fetch(`${process.env.REACT_APP_API_URL}/analytics?mode=${mode}&dateUpdated=>=${date.startDate.toISOString()}&${date.endDate ? `dateUpdated=<=${date.endDate.toISOString() || date.startDate.toISOString()}` : ""}`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${localStorage.getItem("jwtoken")}`,
-                },
-            })
-
-            if (result.ok) {
-                result = await result.json()
-            } else {
-                throw new Error((await result.json())?.message)
+            let result = await Analytics.jobsPerTemplate(date.startDate, date.endDate, 'template')
+            setCount(result?.count || null)
+            const templateIds = ((result?.data ?? [])?.map((item) => item.id) || [])
+            let videoTemplateSeries: Array<string> = []
+            for (let index = 0; index < templateIds.length; index++) {
+                const templateId = templateIds[index];
+                if (!videoTemplateSeries.find(id => id === templateId)) {
+                    videoTemplateSeries.push(templateId)
+                }
             }
-            setCount(result?.count || [])
-            let videoTemplateSeries = [...new Set(result?.data?.map(item => item.id))]
             setData(videoTemplateSeries.map((idVideoTemplate) => ({
                 name: result?.data?.find(({ id }) => id === idVideoTemplate)?.title || "",
-                data: categ.map(categoryDate => result?.data?.filter(({ id, date }) => id === idVideoTemplate
+                data: categ.map((categoryDate) => result?.data?.filter(({ id, date }) => id === idVideoTemplate
                     && moment(date).isBetween(moment(categoryDate?.from), moment(categoryDate?.to), 's', '[]')
                 )?.length
                 )
@@ -130,8 +127,11 @@ export default () => {
             setLoading(false)
         } catch (err) {
             setLoading(false)
+            setData(null)
+            setCategories(getCategories(selectedDuration))
+            setCount(null)
             enqueueSnackbar(
-                `${err?.message ?? "Something went wrong"}`,
+                `${(err as Error)?.message ?? "Something went wrong"}`,
                 {
                     variant: "error",
                     action: () => <Button size="small" color="inherit" children="retry" onClick={fetchJobs} />
@@ -150,7 +150,7 @@ export default () => {
         }
     }, [anchorEl, isDatePickerOpen])
 
-    const handleOpenMenu = (event) => {
+    const handleOpenMenu = (event: any) => {
         setAnchorEl(event.currentTarget);
     };
 
@@ -270,8 +270,8 @@ export default () => {
         }
 
     }
-    const handleDurationSet = (duration) => {
-        setSelectedDuration(duration)
+    const handleDurationSet = (duration: duration | string) => {
+        setSelectedDuration(duration as duration)
         switch (duration) {
             case 'custom':
                 setIsDatePickerOpen(true)
@@ -325,7 +325,7 @@ export default () => {
                 break;
         }
     }
-    const getXAxisLabel = (value) => {
+    const getXAxisLabel = (value: { from: Date, to: Date }) => {
         switch (selectedDuration) {
             case "day":
                 return moment(value?.to).add(1, 's').format('LT')
@@ -352,7 +352,7 @@ export default () => {
                 return ""
         }
     }
-    const getXAxisTitle = (value) => {
+    const getXAxisTitle = (value: { from: Date, to: Date }) => {
         switch (selectedDuration) {
             case "day":
                 return `${moment(value?.from).format('LT')} - ${moment(value?.to).add(1, 's').format('LT')}`
@@ -382,7 +382,7 @@ export default () => {
 
     }
     return (
-        <Container>
+        <Box>
             <Paper style={{ padding: 15, }}>
                 <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <Button onClick={handleSetToday} children="today" variant="outlined" />
@@ -415,11 +415,11 @@ export default () => {
                                 vertical: 'top',
                                 horizontal: 'left',
                             }}
-                        >{isDatePickerOpen ? <div style={{ flexDirection: 'column', display: 'flex' }}> <DateRange
+                        >{isDatePickerOpen ? <Box style={{ flexDirection: 'column', display: 'flex' }}> <DateRange
                             editableDateInputs={true}
                             onChange={item => setDate({
                                 ...item.selection,
-                                startDate: item.selection.startDate,
+                                startDate: moment(item.selection.startDate).startOf("d").toDate(),
                                 endDate: moment(item.selection.endDate).endOf('d').toDate()
                             })}
                             moveRangeOnFirstSelection={false}
@@ -427,17 +427,17 @@ export default () => {
                         /><Button size="small" onClick={handleClose}
                             variant="contained"
                             children="Apply"
-                            color="primary" /></div> : <MenuList style={{ minWidth: 220 }}>
+                            color="primary" /></Box> : <MenuList style={{ minWidth: 220 }}>
                             {durations.map((key) => <MenuItem
                                 onClick={() => handleDurationSet(key)}
                                 children={key.toLocaleUpperCase()}
                             />)}
                         </MenuList>}
-                        </Popover> : <div />}
+                        </Popover> : <Box />}
                     </Box>
                 </Box>
             </Paper>
-            <div style={{
+            <Box style={{
                 minHeight: 400, display: 'flex', paddingTop: 15, paddingBottom: 15,
                 justifyContent: 'space-between'
             }}>
@@ -459,7 +459,7 @@ export default () => {
                     alignItems: 'center', justifyContent: 'center'
                 }}>
                     {loading ? <CircularProgress /> :
-                        <ApexCharts
+                        count !== null && categories?.every(({ from = "", to = "" }) => from && to) ? <ApexCharts
                             width={780}
                             options={{
                                 chart: {
@@ -488,7 +488,7 @@ export default () => {
                                     categories,
                                     labels: {
                                         formatter: function (val) {
-                                            return getXAxisLabel(val)
+                                            return getXAxisLabel(val as unknown as { from: Date, to: Date })
                                         }
                                     }
                                 },
@@ -496,7 +496,7 @@ export default () => {
 
                                     labels: {
                                         formatter: function (val) {
-                                            return val
+                                            return val + ""
                                         }
 
                                     }
@@ -508,7 +508,7 @@ export default () => {
                                         }
                                     }, x: {
                                         formatter: function (val) {
-                                            return getXAxisTitle(val)
+                                            return getXAxisTitle(val as unknown as { from: Date, to: Date })
                                         }
                                     }
                                 },
@@ -522,14 +522,14 @@ export default () => {
                                 }
                             }
                             }
-                            series={data}
-                            type="bar" height={450} />
+                            series={data || []}
+                            type="bar" height={450} /> : <div />
 
                     }
 
                 </Paper>
-            </div>
-        </Container >
+            </Box>
+        </Box >
 
     );
 };

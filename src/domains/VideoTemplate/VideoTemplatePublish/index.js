@@ -35,7 +35,7 @@ import { useCurrency } from "services/currencyContext";
 
 // helpers
 import formatTime from "helpers/formatTime";
-import { currencies } from "helpers/Currencies";
+import { currencyCodes } from "helpers/Currencies";
 import createTestJobs from "helpers/createTestJobs";
 
 const CustomProgress = withStyles({
@@ -239,10 +239,10 @@ export default ({ location }) => {
                 value={videoTemplate?.versions[0]?.loyaltyCurrency ?? currency}
                 placeholder="Select your currency"
                 label="Select your currency">
-                {currencies.length === 0 && (
+                {currencyCodes.length === 0 && (
                   <MenuItem disabled={true}>No Currencies</MenuItem>
                 )}
-                {currencies.map((item, index) => {
+                {currencyCodes.map((item, index) => {
                   return (
                     <MenuItem key={item} id={index} value={item}>
                       {item}

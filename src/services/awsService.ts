@@ -22,18 +22,17 @@ var ec2 = new AWS.EC2({ apiVersion: "2016-11-15" });
  * @param  {String} Key Path of the file
  * @param  {} Body File body
  */
-export const upload = (Key, Body, tag = "archive") => {
+export const upload = (Key: string, Body: any, tag?: "archive" | "deleteAfter7Days" | "deleteAfter90Days") => {
   var upload = new AWS.S3.ManagedUpload({
     partSize: 15 * 1024 * 1024,
     queueSize: 5,
-    httpOptions: { timeout: 3600000 },
     params: {
       Bucket: bucketName,
       Key: Key,
       Body,
       ACL: "public-read",
     },
-    tags: [{ Key: tag, Value: tagsByUseCase[tag] }],
+    tags: [{ Key: (tag || "archive"), Value: tagsByUseCase[tag || "archive"] }],
   });
 
   return upload;

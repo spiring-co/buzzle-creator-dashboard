@@ -16,10 +16,8 @@ export default function Job(baseUrl: String, headers: HeadersInit) {
         `${baseUrl}/jobs?page=${page}&size=${size}&sortBy=${sortBy || "dateCreated"}&orderBy=${orderBy || "desc"}&${query}&${objectToQueryString(
           extraParams || {}
         )}`,
-        {
-          method: "GET",
+        { method: "GET", headers }
 
-        }
       );
     },
 

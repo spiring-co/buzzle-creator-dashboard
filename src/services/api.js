@@ -55,6 +55,11 @@ export const ServerJobs = {
     return true;
   },
 };
+export const getCountry = async () => {
+  const result = await fetch('http://ip-api.com/json');
+  const code = (await result.json())?.countryCode;
+  return code;
+};
 
 // // export const {
 // //   Job,

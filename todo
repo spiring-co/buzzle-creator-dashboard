@@ -1,4 +1,8 @@
-signout not handling redirect
-profile update 
-change password
-re-auth operations
+
+Analytics (front end and backend) when no data check
+owner can see total jobs per video template (all, own ,guest video)+ total royalty revenue from his template unpaid + to pay for rendering + total amount settled for this current period
+without logged in user cannot view anything
+
+admin (front end)
+users page, list users
+user details page some detail of user, recent template and jobs for this current user, view all will redirect to specific page of video and jobs
