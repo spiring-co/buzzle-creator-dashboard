@@ -38,57 +38,57 @@ export default ({ onRowClick }) => {
   const [selectedJobId, setSelectedJobId] = useState(null);
   const [socket, setSocket] = useState(null);
 
-  useEffect(() => {
-    setSocket(
-      io.connect(process.env.REACT_APP_SOCKET_SERVER_URL, {
-        withCredentials: false,
-      })
-    );
-  }, []);
+  // useEffect(() => {
+  //   setSocket(
+  //     io.connect(process.env.REACT_APP_SOCKET_SERVER_URL, {
+  //       withCredentials: false,
+  //     })
+  //   );
+  // }, []);
 
-  useEffect(() => {
-    if (!socket) {
-      return console.log("no socket");
-    }
-    if(socket){
-      console.log(socket)
-    }
-    socket.on("job-progress", ({ id, state, progress, rendererInstance }) => {
-      setActiveJobs((activeJobs) => {
-        const index = activeJobs.map(({ id }) => id).indexOf(id);
-        if (index === -1) {
-          return [...activeJobs, { id, state, progress, rendererInstance }];
-        } else
-          return activeJobs?.map((data) =>
-            data.id === id ? { id, state, progress, rendererInstance } : data
-          );
-      });
-    });
-    socket.on("job-logs", ({ id, logs }) => {
-      setActiveJobLogs((activeJobLogs) => {
-        const index = activeJobLogs.map(({ id }) => id).indexOf(id);
-        if (index === -1) {
-          return [...activeJobLogs, { id, logs }];
-        } else
-          return activeJobLogs?.map((log) =>
-            log.id === id ? { id, logs } : log
-          );
-      });
-    });
-    socket.on("job-status", (data) => {
-      let rendering = 0;
-      const { error = 0, created = 0 } = data;
-      console.log(data);
-      let download = data["render:download"] || 0;
-      let dorender = data["render:dorender"] || 0;
-      let render = data["rendering"] || 0;
-      let postrender = data["render:postrender"] || 0;
-      let prerender = data["render:prerender"] || 0;
-      let script = data["render:script"] || 0;
-      rendering = download + postrender + script + dorender + prerender + render;
-      setJobStats({ error, rendering, created });
-    });
-  }, [socket]);
+  // useEffect(() => {
+  //   if (!socket) {
+  //     return console.log("no socket");
+  //   }
+  //   if(socket){
+  //     console.log(socket)
+  //   }
+  //   socket.on("job-progress", ({ id, state, progress, rendererInstance }) => {
+  //     setActiveJobs((activeJobs) => {
+  //       const index = activeJobs.map(({ id }) => id).indexOf(id);
+  //       if (index === -1) {
+  //         return [...activeJobs, { id, state, progress, rendererInstance }];
+  //       } else
+  //         return activeJobs?.map((data) =>
+  //           data.id === id ? { id, state, progress, rendererInstance } : data
+  //         );
+  //     });
+  //   });
+    // socket.on("job-logs", ({ id, logs }) => {
+    //   setActiveJobLogs((activeJobLogs) => {
+    //     const index = activeJobLogs.map(({ id }) => id).indexOf(id);
+    //     if (index === -1) {
+    //       return [...activeJobLogs, { id, logs }];
+    //     } else
+    //       return activeJobLogs?.map((log) =>
+    //         log.id === id ? { id, logs } : log
+    //       );
+    //   });
+    // });
+  //   socket.on("job-status", (data) => {
+  //     let rendering = 0;
+  //     const { error = 0, created = 0 } = data;
+  //     console.log(data);
+  //     let download = data["render:download"] || 0;
+  //     let dorender = data["render:dorender"] || 0;
+  //     let render = data["rendering"] || 0;
+  //     let postrender = data["render:postrender"] || 0;
+  //     let prerender = data["render:prerender"] || 0;
+  //     let script = data["render:script"] || 0;
+  //     rendering = download + postrender + script + dorender + prerender + render;
+  //     setJobStats({ error, rendering, created });
+  //   });
+  // }, [socket]);
   useEffect(() => {
     if (activeJobs?.length && jobsData?.length !== activeJobs?.length) {
       //fetch and setJobs

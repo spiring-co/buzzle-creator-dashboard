@@ -22,7 +22,7 @@ export default firebase.initializeApp(firebaseConfig);
 export const firebaseAuth = firebase.auth()
 export const messaging = firebase.messaging();
 messaging.usePublicVapidKey(
-  "BJ1Fay0r9279S3lAKbP7vq0jEqGb8Wgb-nsTPc4TMjlFtMsCFe96jBvZGepcuy0gFXuUIfVKessQLtRuSskDJ3Q"
+  "BOfud4xtKcWRgYwHTN56ToeaFigYT2DGKXJryxhkwyLRqE2uGtRsDZotUMI5JiwLnMqFlC9TNt1p3jdcirF725U"
 );
 
 messaging.onMessage(function (payload) {

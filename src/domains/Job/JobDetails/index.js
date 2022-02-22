@@ -139,32 +139,32 @@ export default () => {
   useEffect(() => { }, [selectedOutputIndex]);
 
   // init socket on mount
-  useEffect(() => {
-    setSocket(io.connect(process.env.REACT_APP_SOCKET_SERVER_URL), {
-      withCredentials: true,
-    });
-  }, []);
+  // useEffect(() => {
+  //   setSocket(io.connect(process.env.REACT_APP_SOCKET_SERVER_URL), {
+  //     withCredentials: true,
+  //   });
+  // }, []);
 
-  function subscribeToProgress(jobId) {
-    if (!socket) return;
-    socket.on(
-      "job-progress",
-      ({ id, state, progress, server }) =>
-        jobId === id && setProgress({ id, state, progress, server })
-    );
-  }
+  // function subscribeToProgress(jobId) {
+  //   if (!socket) return;
+  //   socket.on(
+  //     "job-progress",
+  //     ({ id, state, progress, server }) =>
+  //       jobId === id && setProgress({ id, state, progress, server })
+  //   );
+  // }
 
-  function unsubscribeFromProgress() {
-    if (!socket) return;
-    socket.off(id);
-  }
+  // function unsubscribeFromProgress() {
+  //   if (!socket) return;
+  //   socket.off(id);
+  // }
 
-  useEffect(() => {
-    subscribeToProgress(id);
-    return () => {
-      unsubscribeFromProgress();
-    };
-  }, [id, socket]);
+  // useEffect(() => {
+  //   subscribeToProgress(id);
+  //   return () => {
+  //     unsubscribeFromProgress();
+  //   };
+  // }, [id, socket]);
 
   const fetchJob = async () => {
     try {
