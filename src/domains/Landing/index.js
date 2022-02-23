@@ -103,25 +103,9 @@ function Landing() {
                 <Button
                   component={Link}
                   to="/login"
-                  style={{ background: "white" }}
+                  color="primary"
                   variant="contained">
-                  Login
-                </Button>
-                <Button
-                  component={Link}
-                  to="/admin"
-                  style={{ background: "white" }}
-                  variant="contained">
-                  Admin Login
-                </Button>
-              </Box>
-              <Box display="inline-block" m={1}>
-                <Button
-                  component={Link}
-                  to="/register"
-                  variant="contained"
-                  color="primary">
-                  Register
+                  Get Started
                 </Button>
               </Box>
             </Box>
@@ -146,10 +130,10 @@ function Landing() {
               <Box display="inline-block" m={1}>
                 <Button
                   component={Link}
-                  to="/register"
+                  to="/login"
                   className={classes.whiteBg}
                   variant="contained">
-                  Register
+                  Get Started
                 </Button>
               </Box>
             </Box>

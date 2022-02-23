@@ -227,19 +227,9 @@ export default function NavBar({ items }: IProps) {
                     paddingLeft: 10,
                     paddingRight: 10,
                     textDecoration: "none",
-                  }}>
-                  Signed in as
-                </Typography>
-                <Typography
-                  noWrap
-                  color="textPrimary"
-                  style={{
-                    paddingLeft: 10,
-                    paddingRight: 10,
-                    textDecoration: "none",
                     fontFamily: "Poppins",
                   }}>
-                  {user?.name}
+                  Logged in as
                 </Typography>
                 <Typography
                   noWrap
@@ -247,6 +237,8 @@ export default function NavBar({ items }: IProps) {
                   style={{
                     paddingLeft: 10,
                     paddingRight: 10,
+                    marginBottom:10,
+                    fontWeight:700,
                     textDecoration: "none",
                     fontFamily: "Poppins",
                   }}>
@@ -256,7 +248,7 @@ export default function NavBar({ items }: IProps) {
               </div>
               <MenuItem onClick={() => {
                 handleClose()
-                history.push("/home/settings?tab=hooks")
+                history.push("/home/settings?tab=profile")
               }}>Profile</MenuItem>
               <MenuItem
                 onClick={() => {
