@@ -13,7 +13,7 @@ export default function VideoTemplate(
       query: string,
       sortBy: string,
       orderBy: string,
-      idCreator: string,
+      idCreatedBy?: string,
       extraParams?: Record<string, any>
     ): Promise<{ data: Array<VideoTemplateType | []>; count: number }> => {
       return apiRequest(

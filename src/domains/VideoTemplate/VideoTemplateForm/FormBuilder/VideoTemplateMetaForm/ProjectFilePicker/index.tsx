@@ -13,20 +13,25 @@ import {
   FormControl,
   FormControlLabel,
   FormLabel,
+  CircularProgress,
 } from "@material-ui/core";
+import path from "path"
 import { createStyles, makeStyles } from "@material-ui/core/styles";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import { upload } from "services/awsService";
-import { extractStructureFromFile } from "services/ae";
-import { getLayersFromComposition } from "services/helper";
+import { getLayersFromComposition, extractStructureFromFile } from "helpers";
 import JSZip from "jszip";
+import { getExtractionServerIP } from "services/api";
+import { SmallText, Text } from "common/Typography";
 const useStyles = makeStyles((theme) =>
   createStyles({
     content: {
       border: " dashed #ccc",
+      flexDirection: 'column',
       display: "flex",
-      height: "10rem",
+      minHeight: "10rem",
       borderRadius: "0.2rem",
+      alignItems: 'center',
       padding: theme.spacing(2),
       textAlign: "center",
       justifyContent: "center",
@@ -48,8 +53,18 @@ const useStyles = makeStyles((theme) =>
     },
   })
 );
+type IProps = {
+  value: string,
+  compositions: any,
+  assets: Array<{ name: string, type: 'static', src: string }>,
+  isEdit: boolean,
+  onData: Function,
+  name: string, templateType: "ae" | "remotion",
+  onTouched: Function,
+  onError: Function,
+}
 export default ({
-  value: v,
+  value: defaultValue,
   compositions,
   assets,
   isEdit,
@@ -57,20 +72,35 @@ export default ({
   name, templateType,
   onTouched,
   onError,
-}) => {
+}: IProps) => {
   const classes = useStyles();
-  const [value, setValue] = useState(v);
-  const [aeURL, setAEURL] = useState(process.env.REACT_APP_AE_SERVICE_URL)
+  const [value, setValue] = useState<string>(defaultValue);
+  const [extractionServer, setExtractionServer] = useState<string>("")
+  const [extractionUrlError, setExtractionUrlError] = useState<Error | null>(null)
+  const [extractionUrlLoading, setExtractionUrlLoading] = useState<boolean>(true)
   const [edit, setEdit] = useState(isEdit);
-  const [type, setType] = useState("file");
-  const [hasPickedFile, setHasPickedFile] = useState(!!v);
+  const [type, setType] = useState<"url" | "file">("file");
+  const [hasPickedFile, setHasPickedFile] = useState(!!defaultValue);
   const [hasExtractedData, setHasExtractedData] = useState(
-    isEdit ? compositions.length !== 0 : !!v
+    isEdit ? compositions.length !== 0 : !!defaultValue
   );
   const [message, setMessage] = useState(
     compositions.length === 0 ? null : getCompositionDetails(compositions, templateType)
   );
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<Error | null>(null);
+  const handleFetchExtractionUrl = async () => {
+    try {
+      setExtractionUrlLoading(true)
+      setExtractionServer(await getExtractionServerIP(templateType) as string)
+      setExtractionUrlLoading(false)
+    } catch (err) {
+      setExtractionUrlError(new Error("Failed to fetch extraction server state, try afer some time"))
+      setExtractionUrlLoading(false)
+    }
+  }
+  useEffect(() => {
+    handleFetchExtractionUrl()
+  }, [])
   useEffect(() => {
     // if template is in edit mode
     if (edit && value) {
@@ -99,7 +129,10 @@ export default ({
     }
   }, [edit]);
 
-  const handlePickFile = async (e) => {
+  const handlePickFile = async (e?: any) => {
+    if (hasPickedFile) {
+      return
+    }
     e && e.preventDefault();
     setMessage(null);
     setError(null);
@@ -134,7 +167,8 @@ export default ({
             return
           }
           try {
-            config = await (config.file('buzzle.config.json').async('text'))
+            config = await (config?.file('buzzle.config.json')?.async('text'))
+            //@ts-ignore
             config = (JSON.parse(config))
           } catch (err) {
             config = null
@@ -153,22 +187,21 @@ export default ({
           file
         );
         task.on("httpUploadProgress", ({ loaded, total }) =>
-          setMessage(`${parseInt((loaded / total) * 100)}% uploaded`)
+          setMessage(`${Math.floor((loaded / total) * 100)}% uploaded`)
         );
         var { Location: uri } = await task.promise();
         setValue(uri);
       } else {
         var uri = value;
       }
-      console.log("line 163 going to extract",uri)
       setHasExtractedData(true);
       setMessage("Extracting Layer and compositions ...");
-      const { compositions, staticAssets } = await extractStructureFromFile(aeURL,
+      const { compositions, staticAssets } = await extractStructureFromFile(extractionServer,
         uri ? uri : value,
         templateType
       );
       if (!compositions) {
-        setError({ message: "Could not extract project structure." });
+        setError(new Error("Could not extract project structure."));
         onError("Could not extract project structure.");
       } else {
         setMessage(getCompositionDetails(compositions, templateType));
@@ -176,8 +209,8 @@ export default ({
         setHasExtractedData(true);
         onData({
           compositions,
-          staticAssets: staticAssets.map((asset) => ({
-            name: asset.substring(asset.lastIndexOf("\\") + 1),
+          staticAssets: staticAssets.map((asset: string) => ({
+            name: path.basename(asset),
             type: "static",
             src: "",
           })),
@@ -190,35 +223,52 @@ export default ({
       setHasPickedFile(false);
       setHasExtractedData(false);
       onTouched(true);
-      setError(error);
-      onError(error.message);
+      setError(error as Error);
+      onError((error as Error).message);
     }
   };
-  function getCompositionDetails(c, fileType = 'ae') {
+
+  const handleReset = () => {
+    // change will work in edit mode
+    setMessage("");
+    setValue("");
+    isEdit && setEdit(false);
+    setHasPickedFile(false);
+    setHasExtractedData(false);
+  }
+  function getCompositionDetails(comp: any, fileType?: "ae" | "remotion") {
     if (fileType === 'ae') {
       try {
-        const allLayers = Object.values(c)
+        const allLayers = Object.values(comp)
           .map((c) => {
-            const { textLayers, imageLayers } = getLayersFromComposition(c, '', fileType);
+            const { textLayers, imageLayers } = getLayersFromComposition(c, undefined, fileType || "ae");
             return [...textLayers, ...imageLayers];
           })
           .flat();
-        return `${Object.keys(c).length} compositions & ${allLayers.length
+        return `${Object.keys(comp).length} compositions & ${allLayers.length
           } layers found`;
       } catch (err) {
         onError(err);
       }
     } else {
-      var layerCount = [...(new Set(Object.keys(c)?.map(key => c[key]?.fields ?? [])?.flat()))]?.length;
-      return `${Object.keys(c)?.length} Compositions & ${layerCount} Inputs Found`;
+      const allFields: Array<string> = Object.keys(comp)?.map(key => comp[key]?.fields ?? [])?.flat()
+      const uniqueFields: Array<string> = []
+      for (let index = 0; index < allFields.length; index++) {
+        const field = allFields[index];
+        if (!uniqueFields.includes(field)) {
+          uniqueFields.push(field)
+        }
+
+      }
+      return `${Object.keys(comp)?.length} Compositions & ${uniqueFields?.length} Input Fields Found`;
     }
 
   }
 
   const render = {
     url: (
-      <>
-        <div style={{ display: "flex", alignItems: "center" }}>
+      <Box>
+        <Box style={{ display: "flex", alignItems: "center" }}>
           <TextField
             label="File URL"
             placeholder="Paste URL here"
@@ -229,18 +279,11 @@ export default ({
             onChange={({ target: { value } }) => setValue(value)}
           />
           <Button
-            disabled={
-              hasExtractedData && hasPickedFile
-                ? false
-                : hasPickedFile
-                  ? true
-                  : false
-            }
-            size="small"
-            variant="outlined"
+            disabled={hasPickedFile && !hasExtractedData || extractionUrlLoading || extractionUrlError !== null}
+            variant="contained"
             color="primary"
             children={
-              hasExtractedData && hasPickedFile
+              error !== null ? "Retry" : hasExtractedData && hasPickedFile
                 ? "Change"
                 : hasPickedFile
                   ? "Extracting ..."
@@ -250,72 +293,70 @@ export default ({
               setEdit(true);
             }}
           />
-        </div>
-        <FormHelperText style={{ color: "green" }}>
-          {hasExtractedData && hasPickedFile ? message : ""}
+        </Box>
+        <FormHelperText error={error !== null}
+          style={hasExtractedData && hasPickedFile ? { color: "green" } : {}}>
+          {(error?.message ?? message)}
         </FormHelperText>
-      </>
+      </Box>
     ),
     file: (
-      <Container
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={hasPickedFile ? null : handlePickFile}
-        onChange={hasPickedFile ? null : handlePickFile}
-        htmlFor={name}
-        className={classes.content}>
-        <Box>
-          {!hasPickedFile && (
-            <label className={classes.label}>
-              <Typography>
-                Drag Your File Here
-                <br /> OR
-              </Typography>
-              <CloudUploadIcon fontSize={"large"} />
-              Pick File
-              <input
-                className={classes.invisible}
-                id={name}
-                name={name}
-                type="file"
-                accept={templateType === 'remotion' ? "zip,application/octet-stream,application/zip,application/x-zip,application/x-zip-compressed" : [".aepx", ".aep"]}
+      <Box>
+        <input
+          disabled={hasPickedFile || extractionUrlLoading || extractionUrlError !== null}
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={handlePickFile}
+          onChange={handlePickFile}
+          style={{ display: 'none' }}
+          id="contained-button-file"
+          type="file"
+          name={name}
+          accept={templateType === 'remotion' ? "zip,application/octet-stream,application/zip,application/x-zip,application/x-zip-compressed" : ".aepx,.aep"}
+        />
+        <label htmlFor="contained-button-file">
+          <Box className={classes.content}>
+            {extractionUrlError !== null ?
+              <SmallText color="error">{extractionUrlError?.message}</SmallText>
+              : extractionUrlLoading ? <>
+                <CircularProgress color="primary" size={20} />
+                <SmallText style={{ marginTop: 10 }}>Please wait while we load some resources...</SmallText>
+              </>
+                : !hasPickedFile ? (<>
+                  <CloudUploadIcon fontSize={"large"} />
+                  <Text>Drag & Drop Your {templateType === 'remotion' ? "Remotion project zip file here" : "After effects file here"}</Text>
+                  <Text>OR</Text>
+                  <Text color="primary">Browse file</Text>
+                </>
+                ) :
+                  (
+                    <>
+                      {hasExtractedData ? (
+                        <Button
+                          color="primary"
+                          variant="contained"
+                          children="Change"
+                          disabled={!hasExtractedData}
+                          onClick={handleReset}
+                        />
+                      ) : <div />}
+
+                    </>
+                  )}
+            <Text color={error !== null ? "error" : "initial"}>
+              {(error?.message ?? message)}
+            </Text>
+            {error !== null ? (
+              <Button
+                onClick={handlePickFile}
+                size="small"
+                children="Retry"
+                color="secondary"
+                variant="contained"
               />
-            </label>
-          )}
-          {hasPickedFile && (
-            <>
-              <br />
-              {hasExtractedData && (
-                <Button
-                  color="primary"
-                  variant="contained"
-                  children="Change"
-                  disabled={!hasExtractedData}
-                  onClick={() => {
-                    // change will work in edit mode
-                    setMessage("");
-                    setValue("");
-                    isEdit && setEdit(false);
-                    setHasPickedFile(false);
-                    setHasExtractedData(false);
-                  }}
-                />
-              )}
-            </>
-          )}
-          <Typography color={error ? "error" : "initial"}>
-            {error?.message ?? message}
-          </Typography>
-          {/* {error && (
-            <Button
-              onClick={handlePickFile}
-              size="small"
-              children="Retry"
-              color="secondary"
-              variant="contained"
-            />
-          )} */}
-        </Box>
-      </Container>
+            ) : <div />}
+          </Box>
+        </label>
+      </Box>
     ),
   };
 
@@ -327,19 +368,19 @@ export default ({
           aria-label="type"
           name="type"
           value={type}
-          onChange={({ target: { value } }) => setType(value)}
+          onChange={({ target: { value } }) => setType(value as ("file" | "url"))}
           row>
           <FormControlLabel value="file" control={<Radio />} label="File" />
           <FormControlLabel value="url" control={<Radio />} label="URL" />
-          {templateType === 'ae' && <TextField
+          {/* {templateType === 'ae' && <TextField
             label="AE extract URL"
             placeholder="Paste URL here"
             margin="dense"
             style={{ marginLeft: 20 }}
             variant="outlined"
-            value={aeURL}
-            onChange={({ target: { value } }) => setAEURL(value)}
-          />}
+            value={extractionServer}
+            onChange={({ target: { value } }) => setExtractionServer(value)}
+          />} */}
         </RadioGroup>
       </FormControl>
       {render[type]}

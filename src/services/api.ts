@@ -12,7 +12,7 @@
 // };
 const apiURL = process.env.REACT_APP_API_URL
 const uri = `http://52.54.195.156:3000/api/v1/jobs`;
-
+const remotionExtraction = process.env.REMOTION_BUNDLER_URL || "https://buzzle-remotion-bundler.herokuapp.com/"
 export const ServerJobs = {
   getAll: async () => {
     const response = await fetch(uri, {
@@ -61,15 +61,25 @@ export const getCountry = async () => {
   const code = (await result.json())?.countryCode;
   return code;
 };
-export const getExtractionServerIP = async () => {
-  if (apiURL) {
-    const result = await fetch(`${apiURL}/status/instances`)
+export const getExtractionServerIP = async (type: "ae" | "remotion") => {
+  if (type === 'ae') {
+    if (apiURL) {
+      const result = await fetch(`${apiURL}/status/instances`)
+      if (result.ok) {
+        let response = await result.json()
+        response = response?.map(({ PublicIpAddress = "" }) => PublicIpAddress)
+        return (await getIPWhichRunningExtractionServer(response as Array<string>))[Math.floor(random(0, 2))]
+      } else {
+        throw new Error("Error")
+      }
+    }
+  } else {
+    const result = await fetch(`${remotionExtraction}`)
     if (result.ok) {
-      let response = await result.json()
-      response = response?.map(({ PublicIpAddress = "" }) => PublicIpAddress)
-      return (await getIPWhichRunningExtractionServer(response as Array<string>))[Math.floor(random(0, 2))]
-    } else {
-      throw new Error("Failed to fetch extraction server state!")
+      return remotionExtraction
+    }
+    else {
+      throw new Error("Error!")
     }
   }
 }

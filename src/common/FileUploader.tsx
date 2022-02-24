@@ -6,7 +6,23 @@ import { upload } from "services/awsService";
 import { readFile, ORIENTATION_TO_ANGLE, getRotatedImage } from "helpers/CreateImage"
 import { getOrientation } from 'get-orientation/browser'
 import ImageCropperDialog from "common/ImageCropperDialog"
-
+import { ManagedUpload } from "aws-sdk/clients/s3";
+type IProps = {
+  required: boolean,
+  name: string,
+  value: string,
+  onChange: Function,
+  label: string, extension?: string,
+  accept?: string,
+  uploadDirectory: string,
+  onError?: Function,
+  cropEnabled?: boolean,
+  error: any,
+  helperText: string,
+  height?: number, width?: number,
+  onTouched: Function,
+  storageType: "archive" | "deleteAfter7Days" | "deleteAfter90Days"
+}
 export default forwardRef(({
   required,
   name,
@@ -22,15 +38,15 @@ export default forwardRef(({
   height = 400, width = 600,
   onTouched,
   storageType = 'archive'
-}, ref) => {
+}: IProps, ref: any) => {
   ref = ref ? ref : { current: "" }
   const [isError, setIsError] = useState(error)
   const [type, setType] = useState('file')
   const [progress, setProgress] = useState(0);
-  const [taskController, setTaskController] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [taskController, setTaskController] = useState<ManagedUpload | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
   const [cropImage, setCropImage] = useState("")
-  const [filename, setFilename] = useState(
+  const [filename, setFilename] = useState<string>(
     value ? value.substring(value.lastIndexOf("/") + 1) : ""
   );
   const [isCropperOpen, setIsCropperOpen] = useState(false)
@@ -43,7 +59,7 @@ export default forwardRef(({
     setIsError(error)
   }, [error])
 
-  const handleFile = async (e) => {
+  const handleFile = async (e: any) => {
     const file =
       (e?.target?.files ?? [null])[0] ||
       (e?.dataTransfer?.files ?? [null])[0];
@@ -54,7 +70,7 @@ export default forwardRef(({
     setFilename(file.name);
     await handleUpload(file, file.name.split(".").pop())
   }
-  const handleUpload = async (file, extension) => {
+  const handleUpload = async (file: any, extension: string) => {
     try {
       setLoading(true);
       const task = upload(
@@ -63,7 +79,7 @@ export default forwardRef(({
       );
       setTaskController(task);
       task.on("httpUploadProgress", ({ loaded, total }) =>
-        setProgress(parseInt((loaded * 100) / total))
+        setProgress(Math.floor((loaded / total) * 100))
       );
       const { Location: uri } = await task.promise();
       setLoading(false);
@@ -73,26 +89,31 @@ export default forwardRef(({
       setTaskController(null)
       setFilename(value ? value.substring(value.lastIndexOf("/") + 1) : "");
       setLoading(false);
-      onError ? onError(err.message) : setIsError(err.message)
+      onError ? onError((err as Error).message) : setIsError((err as Error).message)
     }
 
   }
   const handleUploadCancel = async () => {
+    if (taskController === null) {
+      onError ? onError(new Error("Failed to cancel upload")) : setIsError(new Error("Failed to cancel upload"))
+      return
+    }
     try {
-      await taskController?.abort().bind(taskController);
+      await taskController?.abort()//?.bind(taskController);
     } catch (err) {
       setFilename(value ? value.substring(value.lastIndexOf("/") + 1) : "");
       setLoading(false);
-      onError ? onError(err.message) : setIsError(err.message)
+      onError ? onError((err as Error).message) : setIsError((err as Error).message)
       setTaskController(null)
     }
   };
-  const handleCropImage = async e => {
+  const handleCropImage = async (e: any) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0]
       setFilename(file.name);
       let imageDataUrl = await readFile(file)
       const orientation = await getOrientation(file)
+      //@ts-ignore
       const rotation = ORIENTATION_TO_ANGLE[orientation]
       if (rotation) {
         imageDataUrl = await getRotatedImage(imageDataUrl, rotation)
@@ -120,9 +141,9 @@ export default forwardRef(({
         {type === 'file' ?
           <>
             <input
-              onClick={(event) => {
-                event.target.value = null
-              }}
+              // onClick={(event) => {
+              //   event.target.value = null
+              // }}
               accept={accept}
               id={name}
               type="file"
@@ -173,8 +194,9 @@ export default forwardRef(({
         image={cropImage}
         cropSize={{ height, width }}
         setIsCropperOpen={setIsCropperOpen}
-        onUpload={base64 => {
+        onUpload={(base64: string) => {
           setIsCropperOpen(false)
+          //@ts-ignore
           const base64Data = new Buffer.from(base64.replace(/^data:image\/\w+;base64,/, ""), 'base64');
           handleUpload(base64Data, extension)
         }
