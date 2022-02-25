@@ -4,7 +4,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 
 import { ArrowForward } from "@material-ui/icons";
-import { Button, TextField, FormHelperText, Radio, FormControlLabel, RadioGroup, FormControl, Typography } from "@material-ui/core";
+import { Button, TextField, FormHelperText, Radio, FormControlLabel, RadioGroup, FormControl, Typography, Box, CircularProgress } from "@material-ui/core";
 
 import ProjectFilePicker from "./ProjectFilePicker";
 import ArrayInput from "common/ArrayInput";
@@ -16,7 +16,14 @@ const validationSchema = Yup.object({
   orientation: Yup.string().oneOf(["landscape", "portrait"]).required("Video orientation is required"),
   thumbnail: Yup.string().required("Thumbnail is required!"),
 });
-
+type IProps = {
+  initialValues?: any,
+  isEdit: boolean,
+  type?: "ae" | "remotion",
+  assets: Array<{ name: string, type: 'static', src: string }>,
+  compositions: any,
+  onSubmit: Function,
+}
 export default ({
   initialValues = {},
   isEdit,
@@ -24,7 +31,7 @@ export default ({
   assets,
   compositions,
   onSubmit,
-}) => {
+}: IProps) => {
   const [keywords, setKeywords] = useState(initialValues?.keywords ?? []);
   const {
     handleChange,
@@ -47,44 +54,54 @@ export default ({
 
   return (
     <form onSubmit={handleSubmit} noValidate>
-      <div style={{ marginBottom: 20 }}>
+      <Box style={{ marginBottom: 20 }}>
         <ProjectFilePicker
           templateType={type}
           isEdit={isEdit}
           assets={assets}
           compositions={compositions}
-          as={ProjectFilePicker}
-          onData={(f) => setFieldValue("projectFile", f)}
-          onError={(e) => setFieldError(e.message)}
-          onTouched={setFieldTouched}
+          onData={(value: any) => setFieldValue("projectFile", value)}
+          onError={(message) => {
+            setFieldTouched("projectFile", !!message, false)
+            setFieldError("projectFile", message)
+          }}
+          onTouched={(value) => setFieldTouched("projectFile", value, false)}
           value={values.projectFile}
           name={"projectFile"}
-          placeholder={`Pick or drop project ${type === 'remotion' ? 'folder zip' : 'file'}`}
+          placeholder={`Drag & Drop Your ${type === 'remotion' ? "Remotion project zip file here" : "After effects file here"}`}
         />
         {touched?.projectFile && errors.projectFile && (
           <FormHelperText error={true}>{errors.projectFile}</FormHelperText>
         )}
-      </div>
+      </Box>
       <FileUploader
+        storageType="archive"
         required={true}
         accept={"image/*"}
         value={values.thumbnail}
-        onError={(e) => setFieldError(e)}
-        onChange={(value) => setFieldValue("thumbnail", value)}
+        onError={(message) => {
+          setFieldTouched("thumbnail", !!message, false)
+          setFieldError("thumbnail", message)
+        }}
+        onChange={(value: string) => setFieldValue("thumbnail", value)}
         uploadDirectory={"thumbnails"}
         label="Template Thumbnail"
-        onTouched={setFieldTouched}
-        error={errors.thumbnail}
-        helperText={"Thumbnails "}
+        onTouched={(value: boolean) => setFieldTouched("thumbnail", value, false)}
+        error={touched.thumbnail && !!errors.thumbnail
+          ? new Error(errors?.thumbnail as string)
+          : undefined}
+        helperText={"Thumbnail for video template"}
         name={"thumbnail"}
       />
       <Typography>Video orientation *</Typography>
-      <FormControl component="fieldset">
+      <FormControl style={{ marginBottom: 15 }} component="fieldset">
         <RadioGroup
           aria-label="orientation"
           name="orientation"
           value={values.orientation}
-          onChange={({ target: { value } }) => setFieldValue("orientation", value)}
+          onChange={({ target: { value } }) => {
+            setFieldValue("orientation", value, false)
+          }}
           row>
           <FormControlLabel value="portrait" control={<Radio />} label="Portrait" />
           <FormControlLabel value="landscape" control={<Radio />} label="Landscape" />
@@ -92,7 +109,6 @@ export default ({
         <FormHelperText error={!!errors.orientation}>
           {!!errors.orientation ? errors.orientation : ""}
         </FormHelperText>
-        <br/>
       </FormControl>
       <TextField
         required
@@ -134,22 +150,21 @@ export default ({
         }
       />
       <ArrayInput
-        fullWidth
+        disabled={false}
         maxKeywords={5}
         onChange={setKeywords}
         placeholder="Enter Keywords"
         label="Keywords"
         keywords={keywords}
       />
-
       <Button
-        endIcon={<ArrowForward />}
+        endIcon={<ArrowForward color="inherit" fontSize="small" />}
         color="primary"
         variant="contained"
         type="submit"
-        children={isSubmitting ? "Loading..." : "Next"}
+        children={isSubmitting ? <CircularProgress color="inherit" size={20} /> : "Next"}
         disabled={isSubmitting}
       />
-    </form>
+    </form >
   );
 };

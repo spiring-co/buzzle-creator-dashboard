@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Button,
   Container,
@@ -23,6 +23,7 @@ import { getLayersFromComposition, extractStructureFromFile } from "helpers";
 import JSZip from "jszip";
 import { getExtractionServerIP } from "services/api";
 import { SmallText, Text } from "common/Typography";
+import { useAuth } from "services/auth";
 const useStyles = makeStyles((theme) =>
   createStyles({
     content: {
@@ -59,25 +60,30 @@ type IProps = {
   assets: Array<{ name: string, type: 'static', src: string }>,
   isEdit: boolean,
   onData: Function,
+  placeholder: string,
   name: string, templateType: "ae" | "remotion",
-  onTouched: Function,
-  onError: Function,
+  onTouched: (value: boolean) => void,
+  onError: (message: string) => void,
 }
 export default ({
   value: defaultValue,
   compositions,
   assets,
   isEdit,
+  placeholder,
   onData,
   name, templateType,
   onTouched,
   onError,
 }: IProps) => {
   const classes = useStyles();
+  const { user } = useAuth()
   const [value, setValue] = useState<string>(defaultValue);
   const [extractionServer, setExtractionServer] = useState<string>("")
+  const [isUploadFailed, setIsUploadFailed] = useState<boolean>(false)
   const [extractionUrlError, setExtractionUrlError] = useState<Error | null>(null)
   const [extractionUrlLoading, setExtractionUrlLoading] = useState<boolean>(true)
+  const [isUploading, setIsUploading] = useState<boolean>(false)
   const [edit, setEdit] = useState(isEdit);
   const [type, setType] = useState<"url" | "file">("file");
   const [hasPickedFile, setHasPickedFile] = useState(!!defaultValue);
@@ -87,11 +93,18 @@ export default ({
   const [message, setMessage] = useState(
     compositions.length === 0 ? null : getCompositionDetails(compositions, templateType)
   );
+  const filePickerRef = useRef<any>(null)
+
   const [error, setError] = useState<Error | null>(null);
   const handleFetchExtractionUrl = async () => {
     try {
       setExtractionUrlLoading(true)
-      setExtractionServer(await getExtractionServerIP(templateType) as string)
+      const url = (await getExtractionServerIP(templateType) as string)
+      if (url) {
+        setExtractionServer(url)
+      } else {
+        throw new Error("Failed")
+      }
       setExtractionUrlLoading(false)
     } catch (err) {
       setExtractionUrlError(new Error("Failed to fetch extraction server state, try afer some time"))
@@ -128,19 +141,37 @@ export default ({
       }
     }
   }, [edit]);
-
-  const handlePickFile = async (e?: any) => {
-    if (hasPickedFile) {
-      return
+  const uploadFile = async (file: File) => {
+    try {
+      setIsUploading(true)
+      setIsUploadFailed(false)
+      const task = upload(
+        `${user?.uid ?? "users"}/templates/${Date.now()}.${file.name.split(".").pop()}`,
+        file
+      );
+      task.on("httpUploadProgress", ({ loaded, total }) =>
+        setMessage(`${Math.floor((loaded / total) * 100)}% uploaded`)
+      );
+      const { Location } = await task.promise();
+      setIsUploading(false)
+      return Location
+    } catch (err) {
+      setIsUploading(false)
+      setIsUploadFailed(true)
+      return ''
     }
-    e && e.preventDefault();
+  }
+  const handlePickFile = async (e?: any, forceExtract?: boolean) => {
+    e && e.preventDefault()
+    e && e.stopPropagation()
     setMessage(null);
     setError(null);
     setHasPickedFile(true);
     setHasExtractedData(false);
     var config = null
+    var uri = ""
     try {
-      if (!edit && !value) {
+      if (!value) {
         var file =
           (e?.target?.files ?? [null])[0] ||
           (e?.dataTransfer?.files ?? [null])[0];
@@ -148,8 +179,6 @@ export default ({
         if (templateType === 'remotion' && file.name.split(".").pop() !== 'zip') {
           setHasPickedFile(false);
           setHasExtractedData(false);
-          onTouched(true);
-          setError(new Error("Invalid file, Remotion project zip file required!"));
           onError("Invalid file, Remotion project zip file required!");
           return
         }
@@ -161,8 +190,6 @@ export default ({
           if (fileNames.toString().includes("node_modules")) {
             setHasPickedFile(false);
             setHasExtractedData(false);
-            onTouched(true);
-            setError(new Error("Remove node_modules folder from the zip and try again!"));
             onError("Remove node_modules folder from the zip and try again!");
             return
           }
@@ -175,26 +202,23 @@ export default ({
             console.log(err)
             setHasPickedFile(false);
             setHasExtractedData(false);
-            onTouched(true);
-            setError(new Error("buzzle.config.json file not found, Please upload zip file with the same"));
             onError("buzzle.config.json file not found, Please upload zip file with the same");
             return
           }
         }
         setMessage("Processing...");
-        const task = upload(
-          `templates/${Date.now()}.${file.name.split(".").pop()}`,
-          file
-        );
-        task.on("httpUploadProgress", ({ loaded, total }) =>
-          setMessage(`${Math.floor((loaded / total) * 100)}% uploaded`)
-        );
-        var { Location: uri } = await task.promise();
+        uri = await uploadFile(file)
+
+        if (!uri) {
+          setHasPickedFile(false);
+          setHasExtractedData(false);
+          onError("Failed to upload file, Try again");
+          return
+        }
         setValue(uri);
       } else {
-        var uri = value;
+        uri = value;
       }
-      setHasExtractedData(true);
       setMessage("Extracting Layer and compositions ...");
       const { compositions, staticAssets } = await extractStructureFromFile(extractionServer,
         uri ? uri : value,
@@ -202,10 +226,9 @@ export default ({
       );
       if (!compositions) {
         setError(new Error("Could not extract project structure."));
-        onError("Could not extract project structure.");
       } else {
+        setHasExtractedData(true);
         setMessage(getCompositionDetails(compositions, templateType));
-        console.log(compositions);
         setHasExtractedData(true);
         onData({
           compositions,
@@ -216,25 +239,23 @@ export default ({
           })),
           fileUrl: uri,
         });
-        onTouched(true);
       }
 
     } catch (error) {
       setHasPickedFile(false);
       setHasExtractedData(false);
-      onTouched(true);
-      setError(error as Error);
-      onError((error as Error).message);
+      setError((error as Error));
     }
   };
 
-  const handleReset = () => {
-    // change will work in edit mode
-    setMessage("");
-    setValue("");
-    isEdit && setEdit(false);
+  const handleReset = (e?: any) => {
+    // filePickerRef.current.click()////TODO
+    e && e.preventDefault();
     setHasPickedFile(false);
     setHasExtractedData(false);
+    setMessage("");
+    setValue("");
+
   }
   function getCompositionDetails(comp: any, fileType?: "ae" | "remotion") {
     if (fileType === 'ae') {
@@ -248,7 +269,7 @@ export default ({
         return `${Object.keys(comp).length} compositions & ${allLayers.length
           } layers found`;
       } catch (err) {
-        onError(err);
+        onError((err as Error)?.message);
       }
     } else {
       const allFields: Array<string> = Object.keys(comp)?.map(key => comp[key]?.fields ?? [])?.flat()
@@ -270,50 +291,54 @@ export default ({
       <Box>
         <Box style={{ display: "flex", alignItems: "center" }}>
           <TextField
+            disabled={extractionUrlLoading || isUploading || extractionUrlError !== null}
             label="File URL"
             placeholder="Paste URL here"
             margin="dense"
             style={{ marginRight: 20 }}
             variant="outlined"
             value={value}
-            onChange={({ target: { value } }) => setValue(value)}
+            onChange={({ target: { value } }) => {
+              if (!(hasPickedFile && !hasExtractedData || extractionUrlLoading || extractionUrlError !== null)) {
+                setValue(value)
+              }
+              if (hasExtractedData) {
+                setMessage("");
+                setHasExtractedData(false);
+                setHasPickedFile(false)
+              }
+            }
+            }
           />
           <Button
-            disabled={hasPickedFile && !hasExtractedData || extractionUrlLoading || extractionUrlError !== null}
+            disabled={hasPickedFile && !hasExtractedData || extractionUrlLoading || extractionUrlError !== null || hasExtractedData}
             variant="contained"
             color="primary"
             children={
-              error !== null ? "Retry" : hasExtractedData && hasPickedFile
-                ? "Change"
+              isUploading ? "Uploading File" : error !== null ? "Retry" : hasExtractedData && hasPickedFile
+                ? "Extract"
                 : hasPickedFile
-                  ? "Extracting ..."
+                  ? "Extracting Data"
                   : "Extract"
             }
-            onClick={() => {
-              setEdit(true);
+            onClick={(e) => {
+              handlePickFile();
             }}
           />
         </Box>
-        <FormHelperText error={error !== null}
+        {!isUploadFailed ? <FormHelperText error={error !== null}
           style={hasExtractedData && hasPickedFile ? { color: "green" } : {}}>
           {(error?.message ?? message)}
-        </FormHelperText>
+        </FormHelperText> : <div />}
       </Box>
     ),
     file: (
       <Box>
-        <input
-          disabled={hasPickedFile || extractionUrlLoading || extractionUrlError !== null}
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={handlePickFile}
-          onChange={handlePickFile}
-          style={{ display: 'none' }}
-          id="contained-button-file"
-          type="file"
-          name={name}
-          accept={templateType === 'remotion' ? "zip,application/octet-stream,application/zip,application/x-zip,application/x-zip-compressed" : ".aepx,.aep"}
-        />
-        <label htmlFor="contained-button-file">
+        <label onDragOver={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+        }}
+          onDrop={e => hasPickedFile || extractionUrlLoading || extractionUrlError !== null ? console.log("Disabled drop") : handlePickFile(e)} htmlFor="contained-button-file">
           <Box className={classes.content}>
             {extractionUrlError !== null ?
               <SmallText color="error">{extractionUrlError?.message}</SmallText>
@@ -323,29 +348,30 @@ export default ({
               </>
                 : !hasPickedFile ? (<>
                   <CloudUploadIcon fontSize={"large"} />
-                  <Text>Drag & Drop Your {templateType === 'remotion' ? "Remotion project zip file here" : "After effects file here"}</Text>
+                  <Text>{placeholder}</Text>
                   <Text>OR</Text>
                   <Text color="primary">Browse file</Text>
                 </>
                 ) :
-                  (
-                    <>
-                      {hasExtractedData ? (
-                        <Button
-                          color="primary"
-                          variant="contained"
-                          children="Change"
-                          disabled={!hasExtractedData}
-                          onClick={handleReset}
-                        />
-                      ) : <div />}
-
-                    </>
-                  )}
-            <Text color={error !== null ? "error" : "initial"}>
-              {(error?.message ?? message)}
-            </Text>
-            {error !== null ? (
+                  (<>
+                    {hasExtractedData ? (
+                      <Button
+                        style={{ marginBottom: 5 }}
+                        color="primary"
+                        variant="contained"
+                        children="Change"
+                        disabled={!hasExtractedData}
+                        onClick={handleReset}
+                      />
+                    ) : <div />}
+                  </>)}
+            {!isUploadFailed
+              ? <Text color={error !== null ? "error" : "initial"}
+                style={hasExtractedData && hasPickedFile ? { color: "green" } : {}}>
+                {(error?.message ?? message)}
+              </Text>
+              : <div />}
+            {error !== null && !isUploadFailed ? (
               <Button
                 onClick={handlePickFile}
                 size="small"
@@ -383,6 +409,16 @@ export default ({
           />} */}
         </RadioGroup>
       </FormControl>
+      <input
+        ref={filePickerRef}
+        disabled={hasPickedFile || extractionUrlLoading || extractionUrlError !== null}
+        onChange={handlePickFile}
+        style={{ display: 'none' }}
+        id="contained-button-file"
+        type="file"
+        name={name}
+        accept={templateType === 'remotion' ? "zip,application/octet-stream,application/zip,application/x-zip,application/x-zip-compressed" : ".aepx,.aep"}
+      />
       {render[type]}
     </>
   );

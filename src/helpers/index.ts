@@ -49,7 +49,7 @@ export const extractStructureFromFile = async (extractionURL: string, fileUrl: s
         return JSON.parse(cachedData)
     }
     if (fileType === 'ae') {
-        const response = await fetch(`${extractionURL ? extractionURL : process.env.REACT_APP_AE_SERVICE_URL}/`, {//TODO fetch
+        const response = await fetch(`${extractionURL ? `http://${extractionURL}` : process.env.REACT_APP_AE_SERVICE_URL}/`, {
             method: "POST",
             headers: {
                 Accept: "application/json",

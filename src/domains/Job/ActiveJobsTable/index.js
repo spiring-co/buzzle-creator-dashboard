@@ -166,7 +166,6 @@ export default ({ onRowClick }) => {
             }}
           />
         </TableCell>
-        <TableCell>{rendererInstance?.instanceId}</TableCell>
         <TableCell>{rendererInstance?.ipv4}</TableCell>
         <TableCell align="left">
           <Button
@@ -271,7 +270,6 @@ export default ({ onRowClick }) => {
                     <TableCell align="left">Last updated</TableCell>
                     <TableCell align="left">Created at</TableCell>
                     <TableCell align="left">Status</TableCell>
-                    <TableCell align="left">Instance Id</TableCell>
                     <TableCell align="left">Instance IP</TableCell>
                     <TableCell align="left">Actions</TableCell>
                   </TableRow>

@@ -68,7 +68,8 @@ export const getExtractionServerIP = async (type: "ae" | "remotion") => {
       if (result.ok) {
         let response = await result.json()
         response = response?.map(({ PublicIpAddress = "" }) => PublicIpAddress)
-        return (await getIPWhichRunningExtractionServer(response as Array<string>))[Math.floor(random(0, 2))]
+        const workingIps = await getIPWhichRunningExtractionServer(response as Array<string>)
+        return workingIps[Math.floor(random(0, workingIps.length))]
       } else {
         throw new Error("Error")
       }
@@ -86,10 +87,18 @@ export const getExtractionServerIP = async (type: "ae" | "remotion") => {
 function random(mn: number, mx: number) {
   return Math.random() * (mx - mn) + mn;
 }
+const isIpHaveExtractionServerRunning = async (ip: string) => {
+  try {
+    return (await fetch(`http://${ip}`)).ok
+  } catch (err) {
+    return false
+  }
+
+}
 const getIPWhichRunningExtractionServer = async (ipList: Array<string>) => {
   const runningIp: Array<string> = []
   await Promise.all(ipList?.map(async (ip) => {
-    if ((await fetch(ip)).ok) {
+    if (await isIpHaveExtractionServerRunning(ip)) {
       runningIp.push(ip)
       return true
     } else {

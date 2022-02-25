@@ -40,7 +40,7 @@ export default () => {
     if (file) {
       try {
         setIsAvatarUploading(true)
-        const task = upload(`${user?.email ?? "users"}/avatar-${user?.uid}.${file.name.split(".").pop()}`, file);
+        const task = upload(`${user?.uid ?? "users"}/avatar-${user?.email}.${file.name.split(".").pop()}`, file);
         task.on('httpUploadProgress', ({ loaded, total }) =>
           setUploadedPercent(loaded / total),
         );
