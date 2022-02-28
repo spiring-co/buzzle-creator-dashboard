@@ -10,8 +10,8 @@ import { StateProvider, VideoTemplateContext } from "contextStore/store";
 const AddTemplate = ({ location }) => {
   const [isBlocking, setIsBlocking] = useState(true);
   const [error, setError] = useState(null);
-  const {VideoTemplate}=useAPI()
-  const { type='ae'} = useParams();
+  const { VideoTemplate } = useAPI()
+  const { type = 'ae' } = useParams();
   const [videoObj] = useContext(VideoTemplateContext);
   const { video, isEdit, draftIndex = null } = location?.state ?? {};
   const history = useHistory();
@@ -44,7 +44,7 @@ const AddTemplate = ({ location }) => {
   return (
     <>
       {error && <Alert severity="error" children={error.message} />}
-      <Prompt
+      {/* <Prompt //TODO NEW
         when={isBlocking}
         message={(location, action) => {
           console.log(action);
@@ -74,7 +74,7 @@ const AddTemplate = ({ location }) => {
             }
           } else return `You will lose all your data.`;
         }}
-      />
+      /> */}
       <FormBuilder
         type={type}
         isEdit={isEdit}

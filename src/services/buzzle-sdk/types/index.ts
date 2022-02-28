@@ -27,15 +27,15 @@ export interface VersionInterface {
     composition: string;
     loyaltyValue?: string;
     averageRenderTime?: number;
-    fields: Array<{
+    fields: Array<FieldInterface>;
+}
+export interface FieldInterface{
         key: string;
-        _id?: string;
         type: string;
         label: string;
         placeholder?: string;
-        constraints?: Record<string, any>;
-        rendererData?: Record<string, any>;
-    }>;
+        constraints?: any;
+        rendererData?: any;
 }
 
 export interface Job {
@@ -67,7 +67,7 @@ export interface Job {
     videoTemplate: VideoTemplate;
 }
 export interface VideoTemplate {
-    type?: string;
+    type: "ae"|"remotion";
     keywords?: Array<string>;
     publishState?: publishState;
     rejectionReason?: string;
@@ -79,7 +79,7 @@ export interface VideoTemplate {
     fonts?: Array<Font>;
     _id?: string;
     title: string;
-    idCreator: string;
+    idCreatedBy: string;
     src: string;
     versions: Array<VersionInterface>;
     description?: string;

@@ -26,12 +26,13 @@ export default function useActions() {
       });
     },
     restoreFieldsFromPreviousVersion: function (
+      restoreVersionIndex,
       activeVersionIndex,
       currentCompositionFields
     ) {
       dispatch({
         type: RESTORE_FIELDS,
-        payload: { activeVersionIndex, currentCompositionFields },
+        payload: { restoreVersionIndex,activeVersionIndex, currentCompositionFields },
       });
     },
     editVideoKeys: function (value) {
@@ -64,12 +65,11 @@ export default function useActions() {
       });
     },
 
-    resetVideo: function (id,type='ae') {
-      dispatch({ type: RESET_STATE, payload: {id,type} });
+    resetVideo: function (id, type = 'ae') {
+      dispatch({ type: RESET_STATE, payload: { id, type } });
     },
 
     addField: function (activeVersionIndex, field) {
-      //value  is fieldObject= {name:"",label:"",maxLength:""...}
       dispatch({
         type: ADD_FIELD,
         payload: {

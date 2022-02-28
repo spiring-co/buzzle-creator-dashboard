@@ -1,3 +1,6 @@
+import { useAuth } from "services/auth";
+import { firebaseAuth } from "services/firebase";
+
 //action Types
 export const EDIT_VIDEO_KEYS = "EDIT_VIDEO_KEYS";
 // export const ADD_VERSION = "ADD_VERSION";
@@ -15,19 +18,22 @@ export const UPDATE_FIELD_CHANGES = 'UPDATE_FIELD_CHANGES';
 
 
 
-function shiftValueByIndex(arr, dropIndex, dragIndex) {
-  if (dropIndex >= arr.length) {
-    var k = dropIndex - arr.length + 1;
-    while (k--) {
-      arr.push(undefined);
-    }
-  }
-  arr.splice(dropIndex, 0, arr.splice(dragIndex, 1)[0]);
-  return arr; // for testing
+function shiftValueByIndex(list, startIndex, endIndex) {
+  const result = Array.from(list);
+  const [removed] = result.splice(startIndex, 1);
+  result.splice(endIndex, 0, removed);
+  return result;
+  //list, startIndex, endIndex
+  // if (dropIndex >= arr.length) {
+  //   var k = dropIndex - arr.length + 1;
+  //   while (k--) {
+  //     arr.push(undefined);
+  //   }
+  // }
+  // arr.splice(dropIndex, 0, arr.splice(dragIndex, 1)[0]);
+  // return arr; // for testing
 };
 export default (state, action) => {
-  // const { user } = useAuth();
-
   switch (action.type) {
     //payload : activeVersionIndex, updatedFields 
     case UPDATE_FIELD_CHANGES:
@@ -42,8 +48,8 @@ export default (state, action) => {
       return Object.assign({}, state);
     //payload : activeVersionIndex,currentCompositionFields
     case RESTORE_FIELDS:
-      const fields = state.versions[0].fields.filter(({ rendererData }) =>
-        action.payload.currentCompositionFields.includes(rendererData.layerName)
+      const fields = state.versions[action?.payload?.restoreVersionIndex || 0].fields.filter(({ rendererData }) =>
+        (action.payload.currentCompositionFields||[]).includes(rendererData.layerName)
       );
 
       state.versions[action.payload.activeVersionIndex].fields = fields;
@@ -52,7 +58,7 @@ export default (state, action) => {
 
     //payload:action.payload.activeVersionIndex,action.payload.swapIndex,action.payload.targetSwapIndex
     case SWAP_FIELDS:
-      state.versions[action.payload.activeVersionIndex].fields = shiftValueByIndex(state.versions[action.payload.activeVersionIndex].fields, action.payload.targetSwapIndex, action.payload.swapIndex)
+      state.versions[action.payload.activeVersionIndex].fields = shiftValueByIndex(state.versions[action.payload.activeVersionIndex].fields, action.payload.swapIndex, action.payload.targetSwapIndex)
       return Object.assign({}, state);
     //payload: action.payload.value={key:action.payload.value}
     case EDIT_VIDEO_KEYS:
@@ -98,18 +104,15 @@ export default (state, action) => {
     //payload: {field,activeVersionIndex}
     case ADD_FIELD:
       state.versions[action.payload.activeVersionIndex].fields.push(
-        action.payload.field
+        { ...action.payload.field }
       );
-
-      console.log("field added :)", state);
       return Object.assign({}, state);
 
     //payload: {field,activeVersionIndex,fieldIndex}
     case UPDATE_FIELD:
       state.versions[action.payload.activeVersionIndex].fields[
         action.payload.fieldIndex
-      ] = action.payload.field;
-      console.log(action.payload.field);
+      ] = { ...action.payload.field };
       return Object.assign({}, state);
 
     // load segments to edit , payload = video object
@@ -119,7 +122,7 @@ export default (state, action) => {
     case RESET_STATE:
       return {
         title: "",
-        idCreator: action.payload?.id,
+        idCreatedBy: firebaseAuth.currentUser.uid,
         type: action.payload?.type,
         src: "",
         versions: [],

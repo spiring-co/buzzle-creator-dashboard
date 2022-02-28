@@ -6,13 +6,11 @@ import FileUploader from "common/FileUploader";
 
 export default ({
   isEdit,
-  onClick,
   activeVersionIndex,
   editVersion,
   setActiveVersionIndex,
   openVersionDisplay,
   onBack,
-  onCancel,
 }) => {
   const [error, setError] = useState(null);
   const [videoObj] = useContext(VideoTemplateContext);
@@ -59,8 +57,6 @@ export default ({
             if (!editVersion) {
               setActiveVersionIndex(activeVersionIndex + 1);
             }
-            onClick();
-
             openVersionDisplay();
           }}
           children={

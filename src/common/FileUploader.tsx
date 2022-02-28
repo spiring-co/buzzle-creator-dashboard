@@ -9,7 +9,7 @@ import ImageCropperDialog from "common/ImageCropperDialog"
 import { ManagedUpload } from "aws-sdk/clients/s3";
 import { useAuth } from "services/auth";
 type IProps = {
-  required: boolean,
+  required?: boolean,
   name: string,
   value: string,
   onChange: Function,
@@ -18,10 +18,12 @@ type IProps = {
   uploadDirectory: string,
   onError?: (message: string) => void,
   cropEnabled?: boolean,
+  uploadFileNameColor?: string,
   error?: Error,
   helperText: string,
   height?: number, width?: number,
-  onTouched: Function,
+  onTouched?: Function,
+  forceUploadDirectory?: boolean,
   storageType: "archive" | "deleteAfter7Days" | "deleteAfter90Days"
 }
 export default forwardRef(({
@@ -29,12 +31,14 @@ export default forwardRef(({
   name,
   value,
   onChange,
+  forceUploadDirectory = false,
   label, extension = 'png',
   accept,
   uploadDirectory,
   onError,
   cropEnabled = false,
   error,
+  uploadFileNameColor = "",
   helperText,
   height = 400, width = 600,
   onTouched,
@@ -59,11 +63,15 @@ export default forwardRef(({
   }, []);
 
   useEffect(() => {
-    setIsError(error || null)
-  }, [error])
+    if (value && !value.startsWith("http")) {
+      setIsError(error || new Error("Invalid url, Please re-check the url"))
+    } else {
+      setIsError(error || null)
+    }
+  }, [error, value])
 
   const handleFile = async (e: any) => {
-   
+
     const file =
       (e?.target?.files ?? [null])[0] ||
       (e?.dataTransfer?.files ?? [null])[0];
@@ -78,7 +86,7 @@ export default forwardRef(({
     try {
       setLoading(true);
       const task = upload(
-        `${user?.uid ?? 'user'}/${uploadDirectory}/${Date.now()}.${extension}`,
+        `${forceUploadDirectory ? "" : `${user?.uid ?? 'user'}/`}${uploadDirectory}/${Date.now()}.${extension}`,
         file, storageType
       );
       setTaskController(task);
@@ -89,7 +97,7 @@ export default forwardRef(({
       setLoading(false);
       setFilename(uri.substring(uri.lastIndexOf("/") + 1))
       onChange(uri);
-      onTouched(true)
+      onTouched && onTouched(true)
     } catch (err) {
       setTaskController(null)
       setFilename(value ? value.substring(value.lastIndexOf("/") + 1) : "");
@@ -100,7 +108,7 @@ export default forwardRef(({
   }
   const handleUploadCancel = async () => {
     if (taskController === null) {
-      onTouched(true)
+      onTouched && onTouched(true)
       onError ? onError("Failed to cancel upload") : setIsError(new Error("Failed to cancel upload"))
       return
     }
@@ -167,7 +175,7 @@ export default forwardRef(({
                 {value ? `Change` : `Upload`}
               </Button>
             </label>
-            <Typography style={{ marginLeft: 10 }} variant="body2" component={"span"} color="textSecondary">
+            <Typography style={{ marginLeft: 10, ...(uploadFileNameColor ? { color: uploadFileNameColor } : {}) }} variant="body2" component={"span"} color="textSecondary">
               {loading ? ` Uploading: ${progress}% ` : ` ${filename} `}
             </Typography>
             {loading && (
@@ -188,6 +196,7 @@ export default forwardRef(({
             value={value}
             onChange={({ target: { value } }) => {
               setFilename(value.substring(value.lastIndexOf("/") + 1))
+              setIsError(null)
               onChange(value)
             }}
           />}

@@ -15,5 +15,18 @@ export interface Auth {
   isAdmin: boolean,
   isUserLoadingFromFirebase: boolean,
 }
+export type textComp = {
+  "index": number,
+  "name": string,
+  "text": string,
+  "font": string
+}
+export type imageComp = {
+  "index": number,
+  "name": string,
+  "height": number,
+  "width": number,
+  "extension": string
+}
 
 export type duration = "custom" | "week" | "month" | "year" | "day"

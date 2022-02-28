@@ -1,5 +1,6 @@
 import React, { createContext, useReducer } from "react";
 import { useAuth } from "services/auth";
+import { firebaseAuth } from "services/firebase";
 import segmentReducer from "./reducer";
 
 const VideoTemplateContext = createContext();
@@ -7,11 +8,12 @@ const VideoTemplateContext = createContext();
 const StateProvider = ({ children }) => {
   const [state, dispatch] = useReducer(segmentReducer, {
     title: "",
-    idCreator: "1kDWnfYrk", //fetch from localStorage
+    idCreatedBy: firebaseAuth.currentUser.uid, //fetch from localStorage
     src: "",
+    type: "ae",
     versions: [],
     description: "",
-    tags: [],
+    keywords: [],
     staticAssets: [],
     fonts: [],
     thumbnail: "",

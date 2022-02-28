@@ -31,7 +31,7 @@
         <img src={tile.thumbnail} alt={tile.title} />
         <GridListTileBar
           title={tile.title}
-          subtitle={<span>by: {tile.idCreator}</span>}
+          subtitle={<span>by: {tile.idCreatedBy}</span>}
           actionIcon={
             <Tooltip title="View details">
               <IconButton

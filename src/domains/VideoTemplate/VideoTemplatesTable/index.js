@@ -88,7 +88,7 @@ export default (props) => {
       })
       delete data['tableData']
       delete data['id']
-      delete data['idCreator']
+      delete data['idCreatedBy']
       delete data['dateCreated']
       delete data['dateUpdated']
       await VideoTemplate.create(data);

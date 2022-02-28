@@ -19,7 +19,7 @@ import path from "path"
 import { createStyles, makeStyles } from "@material-ui/core/styles";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import { upload } from "services/awsService";
-import { getLayersFromComposition, extractStructureFromFile } from "helpers";
+import { getLayersFromComposition, extractStructureFromFile, extractedDataSample } from "helpers";
 import JSZip from "jszip";
 import { getExtractionServerIP } from "services/api";
 import { SmallText, Text } from "common/Typography";
@@ -82,7 +82,6 @@ export default ({
   const [extractionServer, setExtractionServer] = useState<string>("")
   const [isUploadFailed, setIsUploadFailed] = useState<boolean>(false)
   const [extractionUrlError, setExtractionUrlError] = useState<Error | null>(null)
-  const [extractionUrlLoading, setExtractionUrlLoading] = useState<boolean>(true)
   const [isUploading, setIsUploading] = useState<boolean>(false)
   const [edit, setEdit] = useState(isEdit);
   const [type, setType] = useState<"url" | "file">("file");
@@ -90,6 +89,7 @@ export default ({
   const [hasExtractedData, setHasExtractedData] = useState(
     isEdit ? compositions.length !== 0 : !!defaultValue
   );
+  const [extractionUrlLoading, setExtractionUrlLoading] = useState<boolean>(!hasExtractedData)
   const [message, setMessage] = useState(
     compositions.length === 0 ? null : getCompositionDetails(compositions, templateType)
   );
@@ -112,11 +112,13 @@ export default ({
     }
   }
   useEffect(() => {
-    handleFetchExtractionUrl()
+    if (!hasExtractedData) {
+      handleFetchExtractionUrl()
+    }
   }, [])
   useEffect(() => {
-    // if template is in edit mode
-    if (edit && value) {
+    // if template is in edit mode and no error in server and not loading
+    if (edit && value && !extractionUrlLoading && !!!extractionUrlError) {
       // in edit mode and no composition is extracted till yet
       if (compositions.length === 0) {
         setType("file");
@@ -132,7 +134,7 @@ export default ({
       }
     } else {
       // if in create mode and value is there that means user pressed the back button
-      if (value) {
+      if (value && !edit) {
         onData({
           compositions,
           staticAssets: assets,
@@ -140,7 +142,7 @@ export default ({
         });
       }
     }
-  }, [edit]);
+  }, [edit, extractionUrlLoading, extractionUrlError]);
   const uploadFile = async (file: File) => {
     try {
       setIsUploading(true)
@@ -220,7 +222,7 @@ export default ({
         uri = value;
       }
       setMessage("Extracting Layer and compositions ...");
-      const { compositions, staticAssets } = await extractStructureFromFile(extractionServer,
+      const { compositions, staticAssets } =  await extractStructureFromFile(extractionServer,
         uri ? uri : value,
         templateType
       );
@@ -251,6 +253,7 @@ export default ({
   const handleReset = (e?: any) => {
     // filePickerRef.current.click()////TODO
     e && e.preventDefault();
+    setError(null)
     setHasPickedFile(false);
     setHasExtractedData(false);
     setMessage("");
@@ -311,7 +314,8 @@ export default ({
             }
           />
           <Button
-            disabled={hasPickedFile && !hasExtractedData || extractionUrlLoading || extractionUrlError !== null || hasExtractedData}
+            disabled={hasPickedFile && !hasExtractedData || extractionUrlLoading || extractionUrlError !== null
+              || hasExtractedData || !value}
             variant="contained"
             color="primary"
             children={
@@ -338,7 +342,7 @@ export default ({
           e.preventDefault()
           e.stopPropagation()
         }}
-          onDrop={e => hasPickedFile || extractionUrlLoading || extractionUrlError !== null ? console.log("Disabled drop") : handlePickFile(e)} htmlFor="contained-button-file">
+          onDrop={e => (hasPickedFile || extractionUrlLoading || extractionUrlError !== null || error !== null) ? console.log("Disabled drop") : handlePickFile(e)} htmlFor="contained-button-file">
           <Box className={classes.content}>
             {extractionUrlError !== null ?
               <SmallText color="error">{extractionUrlError?.message}</SmallText>
@@ -346,7 +350,7 @@ export default ({
                 <CircularProgress color="primary" size={20} />
                 <SmallText style={{ marginTop: 10 }}>Please wait while we load some resources...</SmallText>
               </>
-                : !hasPickedFile ? (<>
+                : !hasPickedFile && !!!error ? (<>
                   <CloudUploadIcon fontSize={"large"} />
                   <Text>{placeholder}</Text>
                   <Text>OR</Text>
@@ -371,7 +375,14 @@ export default ({
                 {(error?.message ?? message)}
               </Text>
               : <div />}
-            {error !== null && !isUploadFailed ? (
+            {error !== null && !isUploadFailed ? (<Box style={{ display: 'flex', alignItems: 'center', marginTop: 10 }}>
+              <Button
+                style={{ marginRight: 10 }}
+                color="primary"
+                size="small"
+                children="Change File"
+                onClick={handleReset}
+              />
               <Button
                 onClick={handlePickFile}
                 size="small"
@@ -379,6 +390,7 @@ export default ({
                 color="secondary"
                 variant="contained"
               />
+            </Box>
             ) : <div />}
           </Box>
         </label>
@@ -411,7 +423,7 @@ export default ({
       </FormControl>
       <input
         ref={filePickerRef}
-        disabled={hasPickedFile || extractionUrlLoading || extractionUrlError !== null}
+        disabled={hasPickedFile || extractionUrlLoading || extractionUrlError !== null || error !== null}
         onChange={handlePickFile}
         style={{ display: 'none' }}
         id="contained-button-file"

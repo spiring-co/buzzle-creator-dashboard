@@ -173,10 +173,10 @@ function AuthProvider(props: IProps) {
       }
     }
     const forgotPassword = async (email: string) => {
-      await firebaseAuth.sendPasswordResetEmail(email, { url: `http://localhost:3000/login?email=${email}` })
+      await firebaseAuth.sendPasswordResetEmail(email, { url: `${window.location.origin}/login?email=${email}` })
     }
     const verifyEmail = async (email: string) => {
-      await firebaseAuth.currentUser?.sendEmailVerification({ url: `http://localhost:3000/login` })
+      await firebaseAuth.currentUser?.sendEmailVerification({ url: `${window.location.origin}/login` })
     }
     const signUpWithEmailPassword = async (email: string, password: string, name: string) => {
       const { user } = await firebaseAuth.createUserWithEmailAndPassword(email, password);

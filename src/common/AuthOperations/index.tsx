@@ -191,7 +191,9 @@ export default ({ message = "", email = "", onSubmit, handleClose, initialMode =
         {error ? <Alert style={{ marginBottom: 10 }} severity="error" children={error?.message ?? error} /> : message ? <Alert style={{ marginBottom: 10 }} severity="info" children={message} /> : <div />}
         {mode !== 'change-pass' ? <TextField
             name={"email"}
-            disabled={mode === "re-auth"}
+            InputProps={{
+                readOnly: mode === "re-auth",
+            }}
             margin="dense"
             value={values.email}
             label="Email address"

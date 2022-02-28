@@ -17,7 +17,8 @@ import {
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { getUniqueId } from "services/helper"
+import { getUniqueId } from "helpers"
+import { imageComp, textComp } from "common/types";
 
 const validationSchema = Yup.object().shape({
   type: Yup.string().required("Layer type is required!"),
@@ -50,17 +51,33 @@ const validationSchema = Yup.object().shape({
     otherwise: Yup.number(),
   }),
 });
+type IProps = {
+  editField: boolean,
+  templateType: "ae" | "remotion",
+  textLayers: Array<textComp>,
+  imageLayers: Array<imageComp>,
+  onClose: Function,
+  onDataSubmit: Function,
+  initialValue: any
 
-export default (props) => {
-  const { textLayers = [], imageLayers = [], templateType = 'ae' } = props;
+}
+export default ({ textLayers = [], onDataSubmit, initialValue, imageLayers = [], templateType = 'ae', editField, onClose }: IProps) => {
 
-  const onSubmit = (data) => {
-    const { key, property, placeholder, extension = 'png', propertyType, type, label, required, maxLength, layerName, width, height } = data;
-
+  const onSubmit = ({ key = "", property, label, layerName, maxLength, placeholder, propertyType, required, type, extension, height, width }: {
+    key?: string,
+    property: string,
+    placeholder: string,
+    extension?: string,
+    propertyType: string,
+    type: "data" | "image",
+    label: string,
+    required: boolean, maxLength: number,
+    layerName: string, width?: number, height?: number
+  }) => {
     switch (type) {
       case "data":
-        props.handleChange({
-          key: props.editField ? key : getUniqueId(),
+        onDataSubmit({
+          key: editField ? key : getUniqueId(),
           type: propertyType,
           label, placeholder,
           constraints: property === "Source Text.text" ? {
@@ -72,8 +89,8 @@ export default (props) => {
         break;
 
       case "image":
-        props.handleChange({
-          key: props.editField ? key : getUniqueId(),
+        onDataSubmit({
+          key: editField ? key : getUniqueId(),
           type: propertyType,
           label,
           constraints: propertyType === "image"
@@ -84,7 +101,7 @@ export default (props) => {
             }
             : { required },
           rendererData: propertyType === "image"
-            ? { layerName, type, extension }
+            ? { layerName, type, extension: extension === "null" ? "png" : (extension || "png") }
             : { layerName, property: templateType === 'ae' ? property : '', type }
 
         })
@@ -100,10 +117,11 @@ export default (props) => {
     touched,
     handleBlur,
     handleSubmit,
+    resetForm,
     handleChange,
     setFieldValue,
   } = useFormik({
-    initialValues: props.initialValue,
+    initialValues: initialValue,
     validationSchema,
     onSubmit,
   });
@@ -113,35 +131,27 @@ export default (props) => {
     { label: "Image", value: "image" },
   ];
 
-  const toggleDialog = (state) => {
-    props.toggleDialog(state);
+  const toggleDialog = (state: boolean) => {
+    onClose(state);
   };
 
-  const handleLayerChange = (value) => {
+  const handleLayerChange = (value: string) => {
     setFieldValue('layerName', value)
     // set default text value to placeholder
     if (values?.type === "data") {
       const layerNames = textLayers.map((layer) => layer?.name ?? layer)
       setFieldValue('property', 'Source Text.text')
-      setFieldValue('placeholder', textLayers[layerNames.indexOf(value)].text)
+      setFieldValue('placeholder', textLayers[layerNames.indexOf(value)]?.text || "")
     }
     //set height and width coming from layer
     else {
       const layerNames = imageLayers.map((layer) => layer?.name ?? layer)
-      setFieldValue('height', imageLayers[layerNames.indexOf(value)]["height"])
-      setFieldValue('width', imageLayers[layerNames.indexOf(value)]["width"])
-      setFieldValue('extension', 'png'//imageLayers[layerNames.indexOf(value)]?.extension ?? "png"
-      )
+      setFieldValue('height', imageLayers[layerNames.indexOf(value)]["height"] || 0)
+      setFieldValue('width', imageLayers[layerNames.indexOf(value)]["width"] || 0)
+      setFieldValue('extension', imageLayers[layerNames.indexOf(value)]?.extension === "null" ? "png" : (imageLayers[layerNames.indexOf(value)]?.extension || "png"))
     }
   }
-  function PropertyPicker({
-    handleBlur,
-    handleChange,
-    value,
-    touched,
-    error,
-  }) {
-    if (!values?.type || !values?.propertyType || values?.propertyType === "image" || templateType === 'remotion') return <div />;
+  const renderPropertyPicker = () => {
     const layerProperties = ["scale", "color"];
     const propertiesByType = {
       data: [
@@ -154,51 +164,57 @@ export default (props) => {
     };
 
     const p = layerProperties.concat(propertiesByType[values?.type]);
+    if (!values?.type || !values?.propertyType || values?.propertyType === "image" || values?.propertyType === "string" || templateType === 'remotion') return <div />;
     return (
       <FormControl
         required={values?.propertyType === 'image' ? false : true}
         fullWidth
         margin="dense"
         variant="outlined"
-        error={touched && error}>
+        error={touched?.property && !!errors?.property}>
         <InputLabel id="property-select">Select Property</InputLabel>
-
         <Select
           labelId="property-select"
           id="property-select"
           onBlur={handleBlur}
           onChange={handleChange}
           name="property"
-          value={value}
+          value={values.property}
           placeholder="Click to Pick Property"
           label="Select Property">
           {p.map((item, index) => (
             <MenuItem
-              key={index}
-              id={index}
+              key={item}
+              id={item}
               value={item}
               children={item}
-              selected={value === item}
+              selected={values.property === item}
             />
           ))}
         </Select>
-        <FormHelperText>{touched && error}</FormHelperText>
+        <FormHelperText
+          error={touched?.property && !!errors?.property}
+        >{touched?.property && !!errors?.property ? errors?.property : ""}</FormHelperText>
       </FormControl>
     );
   }
   const renderPropertyTypeSelector = () => {
-
     return (<FormControl
       required
+      style={{ marginTop: 8, marginBottom: 8 }}
       component="fieldset">
-      <FormLabel component="legend">Select Property Type</FormLabel>
+      <FormLabel component="legend">Select Field Type</FormLabel>
       <RadioGroup aria-label="propertyType" name="propertyType" row
         defaultValue={'string'}
         value={values?.propertyType} onChange={handleChange}>
-        <FormControlLabel value="string" control={<Radio />} label="Data" />
+        <FormControlLabel value="string" disabled={values?.type === "image"} control={<Radio />} label="Text" />
         <FormControlLabel value="image" disabled={values?.type === "data"}
           control={<Radio />} label="Image" />
       </RadioGroup>
+      <FormHelperText
+        error={touched?.propertyType && !!errors?.propertyType}
+      >{touched?.propertyType && !!errors?.propertyType ? errors?.propertyType
+        : "Field type describes, what you want to input from a user, Text for date and text, while image is for picture"}</FormHelperText>
     </FormControl>)
 
   }
@@ -213,11 +229,11 @@ export default (props) => {
         name="label"
         onBlur={handleBlur}
         onChange={handleChange}
-        error={touched.label && errors.label}
-        helperText={touched.label && errors.label}
+        error={touched?.label && !!errors?.label}
+        helperText={touched?.label && !!errors?.label ? errors?.label : ""}
         type="text"
-        label="Layer Label"
-        placeholder="Layer Label"
+        label="Field Title"
+        placeholder="Field Title"
       />
       <TextField
         required={values?.type === 'data' ? true : false}
@@ -228,11 +244,11 @@ export default (props) => {
         name="placeholder"
         onBlur={handleBlur}
         onChange={handleChange}
-        error={touched.placeholder && errors.placeholder}
-        helperText={touched.placeholder && errors.placeholder}
+        error={touched?.placeholder && !!errors?.placeholder}
+        helperText={touched?.placeholder && !!errors?.placeholder ? errors?.placeholder : ""}
         type="text"
-        label="Layer Placeholder"
-        placeholder="Enter Placeholder Text"
+        label="Field Placeholder"
+        placeholder="Enter Field Placeholder Text"
       />
       {values?.property === "Source Text.text" && <>   <TextField
         fullWidth
@@ -242,8 +258,8 @@ export default (props) => {
         onBlur={handleBlur}
         onChange={handleChange}
         value={values?.maxLength}
-        error={touched.maxLength && errors.maxLength}
-        helperText={touched.maxLength && errors.maxLength}
+        error={touched?.maxLength && !!errors?.maxLength}
+        helperText={touched?.maxLength && !!errors?.maxLength ? errors?.maxLength : ""}
         type="number"
         name="maxLength"
         label="Max length"
@@ -277,11 +293,11 @@ export default (props) => {
         name="label"
         onBlur={handleBlur}
         onChange={handleChange}
-        error={touched.label && errors.label}
-        helperText={touched.label && errors.label}
+        error={touched?.label && !!errors?.label}
+        helperText={touched?.label && !!errors?.label ? errors?.label : ""}
         type="text"
-        label="Layer Label"
-        placeholder="Layer Label"
+        label="Field Title"
+        placeholder="Field Title"
       />
 
       {values?.propertyType === "image" && <>
@@ -290,12 +306,12 @@ export default (props) => {
           fullWidth
           variant="outlined"
           margin="dense"
-          value={values?.width}
+          value={values?.width ?? 0}
           name="width"
           onBlur={handleBlur}
           onChange={handleChange}
-          error={touched.width && errors.width}
-          helperText={touched.width && errors.width}
+          error={touched?.width && !!errors?.width}
+          helperText={touched?.width && !!errors?.width ? errors?.width : ""}
           type="number"
           label="Image Width"
           placeholder="Enter Width"
@@ -305,12 +321,12 @@ export default (props) => {
           fullWidth
           variant="outlined"
           margin="dense"
-          value={values?.height}
+          value={values?.height ?? 0}
           name="height"
           onBlur={handleBlur}
           onChange={handleChange}
-          error={touched.height && errors.height}
-          helperText={touched.height && errors.height}
+          error={touched?.height && !!errors?.height}
+          helperText={touched?.height && !!errors?.height ? errors?.height : ""}
           type="number"
           label="Image Height"
           placeholder="Enter Height"
@@ -367,88 +383,89 @@ export default (props) => {
     <Dialog
       fullWidth
       open
+      scroll="paper"
       onClose={() => toggleDialog(false)}
       aria-labelledby="form-dialog-title"
     >
-      <form onSubmit={handleSubmit}>
-        <DialogTitle id="form-dialog-title">Add Field</DialogTitle>
-        <DialogContent>
-          <FormControl
-            fullWidth
-            margin="dense"
-            variant="outlined"
-            error={touched.type && errors.type}
-          >
-            <InputLabel id="demo-simple-select-outlined-label">
-              Layer Type
-            </InputLabel>
-            <Select
-              labelId="demo-simple-select-outlined-label"
-              id="demo-simple-select-outlined"
-              onBlur={handleBlur}
-              onChange={handleChange}
-              name="type"
-              value={values?.type}
-              placeholder="Select Layer Type"
-              label="Layer Type"
-            >
-              {inputTypes.map((item, index) => {
-                return (
-                  <MenuItem
-                    key={index}
-                    id={index}
-                    disabled={values?.type === item.value}
-                    value={item.value}
-                    children={item.label}
-                    selected={values?.type === item.value}
-                  />
-                );
-              })}
-            </Select>
-            <FormHelperText>{touched.type && errors.type}</FormHelperText>
-          </FormControl>
-          <Autocomplete
-            value={values?.layerName}
-            onChange={(event, newValue) => {
-              handleLayerChange(newValue)
+      <DialogTitle id="form-dialog-title">{editField ? "Edit Field" : "Add Field"}</DialogTitle>
+      <DialogContent dividers={true}>
+        <FormControl
+          fullWidth
+          margin="dense"
+          disabled={editField}
+          variant="outlined"
+          error={touched?.type && !!errors?.type}
+        >
+          <InputLabel id="demo-simple-select-outlined-label">
+            Layer Type
+          </InputLabel>
+          <Select
+            labelId="demo-simple-select-outlined-label"
+            id="demo-simple-select-outlined"
+            onBlur={handleBlur}
+            onChange={ev => {
+              if (ev.target.value) {
+                setFieldValue('propertyType', ev.target.value === 'data' ? 'string' : ev.target.value === 'image' ? 'image' : "")
+              }
+              handleChange(ev)
+
             }}
-            autoHighlight={true}
-            id="controllable-states-demo"
-            options={renderOptions()}
-            renderInput={(params) => <TextField
-              fullWidth
-              margin="dense"
-              {...params}
-              label="Select Layer" variant="outlined"
-              error={touched.layerName && errors.layerName}
-              helperText={touched.layerName && errors.layerName}
+            name="type"
 
-            />}
-          />
+            value={values?.type}
+            placeholder="Select Layer Type"
+            label="Layer Type"
+          >
+            {inputTypes.map((item, index) => {
+              return (
+                <MenuItem
+                  key={index}
+                  disabled={values?.type === item.value}
+                  value={item.value}
+                  children={item.label}
+                  selected={values?.type === item.value}
+                />
+              );
+            })}
+          </Select>
+          <FormHelperText>{touched?.type && errors?.type}</FormHelperText>
+        </FormControl>
+        <Autocomplete
+          value={values?.layerName}
+          onChange={(event, newValue) => {
+            if (newValue) {
+              handleLayerChange(newValue as string)
+            }
+          }}
+          autoHighlight={true}
+          id="controllable-states-demo"
+          options={renderOptions()}
+          renderInput={(params) => <TextField
+            // fullWidth={true}
+            margin="dense"
+            {...params}
+            label="Select Layer" variant="outlined"
+            error={!!(touched?.layerName && !!errors?.layerName)}
+            helperText={touched?.layerName && !!errors?.layerName ? errors?.layerName : ""}
 
-          {renderPropertyTypeSelector()}
-          <PropertyPicker
-            type={values?.type}
-            handleBlur={handleBlur}
-            handleChange={handleChange}
-            touched={touched.property}
-            error={touched.property && errors.property}
-            value={values?.property}
-          />
-          {renderInputForm(values?.type)}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => toggleDialog(false)} color="primary">
-            Cancel
-          </Button>
-          <Button
-            variant="contained"
-            type="submit"
-            color="primary"
-            children={props.editField ? "Edit" : "Add Field"}
-          />
-        </DialogActions>
-      </form>
+          />}
+        />
+        {renderPropertyTypeSelector()}
+        {renderPropertyPicker()}
+        {renderInputForm()}
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={() => toggleDialog(false)} color="primary">
+          Cancel
+        </Button>
+        <Button
+          variant="contained"
+          type="submit"
+          onClick={e => handleSubmit()}
+          color="primary"
+          children={editField ? "Save" : "Add"}
+        />
+      </DialogActions>
     </Dialog>
   );
 };

@@ -33,6 +33,7 @@ export default ({
   onSubmit,
 }: IProps) => {
   const [keywords, setKeywords] = useState(initialValues?.keywords ?? []);
+  const [isExtractionDone, setIsExtractionDone] = useState<boolean>(false)
   const {
     handleChange,
     handleBlur,
@@ -60,7 +61,10 @@ export default ({
           isEdit={isEdit}
           assets={assets}
           compositions={compositions}
-          onData={(value: any) => setFieldValue("projectFile", value)}
+          onData={(value: any) => {
+            setIsExtractionDone(true)
+            setFieldValue("projectFile", value)
+          }}
           onError={(message) => {
             setFieldTouched("projectFile", !!message, false)
             setFieldError("projectFile", message)
@@ -157,14 +161,18 @@ export default ({
         label="Keywords"
         keywords={keywords}
       />
-      <Button
-        endIcon={<ArrowForward color="inherit" fontSize="small" />}
-        color="primary"
-        variant="contained"
-        type="submit"
-        children={isSubmitting ? <CircularProgress color="inherit" size={20} /> : "Next"}
-        disabled={isSubmitting}
-      />
+      <Box display="flex" justifyContent="space-between" mt={4}>
+        <div />
+        <Button
+          endIcon={<ArrowForward color="inherit" fontSize="small" />}
+          color="primary"
+          style={{ marginTop: 5, alignSelf: 'flex-end' }}
+          variant="contained"
+          type="submit"
+          children={isSubmitting ? <CircularProgress color="inherit" size={20} /> : "Next"}
+          disabled={isSubmitting || !isExtractionDone}
+        />
+      </Box>
     </form >
   );
 };

@@ -4,6 +4,7 @@ import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import "./i18next";
 import { CurrencyProvider } from "services/currencyContext";
+import { CircularProgress,Box } from "@material-ui/core";
 // if ("serviceWorker" in navigator) {
 //   navigator.serviceWorker
 //     .register("/firebase-messaging-sw.js")
@@ -15,7 +16,7 @@ import { CurrencyProvider } from "services/currencyContext";
 //     });
 // }
 ReactDOM.render(
-  <Suspense fallback={<div>Loading...</div>}>
+  <Suspense fallback={<Box style={{ display: 'flex', height: '100%', width: '100%', alignItems: 'center', justifyContent: 'center' }}><CircularProgress color="primary" size={25} /></Box>}>
     <React.StrictMode>
       <CurrencyProvider>
         <App />

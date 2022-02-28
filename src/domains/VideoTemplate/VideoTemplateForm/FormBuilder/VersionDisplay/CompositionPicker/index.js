@@ -52,7 +52,7 @@ export default ({
         variant="outlined"
         onClick={() => openVersionMeta()}
         disabled={composition === ""}
-        children="Add"
+        children={composition ? "Next" : "Add"}
       />
     </form>
   );

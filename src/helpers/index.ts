@@ -85,3 +85,409 @@ export const extractStructureFromFile = async (extractionURL: string, fileUrl: s
     }
 };
 
+export const extractedDataSample = {
+    "compositions": {
+        "branding": {
+            "textLayers": [],
+            "imageLayers": [
+                {
+                    "index": 3,
+                    "name": "bulavva logo_1.png",
+                    "height": 626,
+                    "width": 490,
+                    "extension": "png"
+                }
+            ],
+            "comps": {}
+        },
+        "Car animation": {
+            "textLayers": [],
+            "imageLayers": [
+                {
+                    "index": 3,
+                    "name": "BG_1",
+                    "height": 1920,
+                    "width": 1080,
+                    "extension": "null"
+                }
+            ],
+            "comps": {
+                "91": {
+                    "textLayers": [],
+                    "imageLayers": [
+                        {
+                            "index": 5,
+                            "name": "BG_2",
+                            "height": 1920,
+                            "width": 1080,
+                            "extension": "null"
+                        }
+                    ],
+                    "comps": {
+                        "1": {
+                            "textLayers": [],
+                            "imageLayers": [
+                                {
+                                    "index": 3,
+                                    "name": "bulavva logo_1.png",
+                                    "height": 626,
+                                    "width": 490,
+                                    "extension": "png"
+                                }
+                            ],
+                            "comps": {}
+                        },
+                        "188": {
+                            "textLayers": [
+                                {
+                                    "index": 1,
+                                    "name": "SAVE THE DATE",
+                                    "text": "SAVE THE DATE",
+                                    "font": "Hey-October"
+                                },
+                                {
+                                    "index": 2,
+                                    "name": "20/07/2020",
+                                    "text": "20/07/2020",
+                                    "font": "Hey-October"
+                                }
+                            ],
+                            "imageLayers": [],
+                            "comps": {}
+                        },
+                        "658": {
+                            "textLayers": [],
+                            "imageLayers": [],
+                            "comps": {}
+                        },
+                        "1187": {
+                            "textLayers": [],
+                            "imageLayers": [
+                                {
+                                    "index": 3,
+                                    "name": "bulavva logo_1.png",
+                                    "height": 626,
+                                    "width": 490,
+                                    "extension": "png"
+                                }
+                            ],
+                            "comps": {}
+                        }
+                    }
+                },
+                "466": {
+                    "textLayers": [],
+                    "imageLayers": [
+                        {
+                            "index": 1,
+                            "name": "still road.png",
+                            "height": 1920,
+                            "width": 1080,
+                            "extension": "png"
+                        }
+                    ],
+                    "comps": {}
+                }
+            }
+        },
+        "Car_Ride": {
+            "textLayers": [],
+            "imageLayers": [
+                {
+                    "index": 5,
+                    "name": "BG_2",
+                    "height": 1920,
+                    "width": 1080,
+                    "extension": "null"
+                }
+            ],
+            "comps": {
+                "1": {
+                    "textLayers": [],
+                    "imageLayers": [
+                        {
+                            "index": 3,
+                            "name": "bulavva logo_1.png",
+                            "height": 626,
+                            "width": 490,
+                            "extension": "png"
+                        }
+                    ],
+                    "comps": {}
+                },
+                "188": {
+                    "textLayers": [
+                        {
+                            "index": 1,
+                            "name": "SAVE THE DATE",
+                            "text": "SAVE THE DATE",
+                            "font": "Hey-October"
+                        },
+                        {
+                            "index": 2,
+                            "name": "20/07/2020",
+                            "text": "20/07/2020",
+                            "font": "Hey-October"
+                        }
+                    ],
+                    "imageLayers": [],
+                    "comps": {}
+                },
+                "658": {
+                    "textLayers": [],
+                    "imageLayers": [],
+                    "comps": {}
+                },
+                "1187": {
+                    "textLayers": [],
+                    "imageLayers": [
+                        {
+                            "index": 3,
+                            "name": "bulavva logo_1.png",
+                            "height": 626,
+                            "width": 490,
+                            "extension": "png"
+                        }
+                    ],
+                    "comps": {}
+                }
+            }
+        },
+        "Final_ride": {
+            "textLayers": [],
+            "imageLayers": [
+                {
+                    "index": 1,
+                    "name": "Black Solid 3",
+                    "height": 1920,
+                    "width": 1080,
+                    "extension": "null"
+                },
+                {
+                    "index": 2,
+                    "name": "Black Solid 2",
+                    "height": 1920,
+                    "width": 1080,
+                    "extension": "null"
+                }
+            ],
+            "comps": {
+                "2": {
+                    "textLayers": [],
+                    "imageLayers": [
+                        {
+                            "index": 3,
+                            "name": "BG_1",
+                            "height": 1920,
+                            "width": 1080,
+                            "extension": "null"
+                        }
+                    ],
+                    "comps": {
+                        "91": {
+                            "textLayers": [],
+                            "imageLayers": [
+                                {
+                                    "index": 5,
+                                    "name": "BG_2",
+                                    "height": 1920,
+                                    "width": 1080,
+                                    "extension": "null"
+                                }
+                            ],
+                            "comps": {
+                                "1": {
+                                    "textLayers": [],
+                                    "imageLayers": [
+                                        {
+                                            "index": 3,
+                                            "name": "bulavva logo_1.png",
+                                            "height": 626,
+                                            "width": 490,
+                                            "extension": "png"
+                                        }
+                                    ],
+                                    "comps": {}
+                                },
+                                "188": {
+                                    "textLayers": [
+                                        {
+                                            "index": 1,
+                                            "name": "SAVE THE DATE",
+                                            "text": "SAVE THE DATE",
+                                            "font": "Hey-October"
+                                        },
+                                        {
+                                            "index": 2,
+                                            "name": "20/07/2020",
+                                            "text": "20/07/2020",
+                                            "font": "Hey-October"
+                                        }
+                                    ],
+                                    "imageLayers": [],
+                                    "comps": {}
+                                },
+                                "658": {
+                                    "textLayers": [],
+                                    "imageLayers": [],
+                                    "comps": {}
+                                },
+                                "1187": {
+                                    "textLayers": [],
+                                    "imageLayers": [
+                                        {
+                                            "index": 3,
+                                            "name": "bulavva logo_1.png",
+                                            "height": 626,
+                                            "width": 490,
+                                            "extension": "png"
+                                        }
+                                    ],
+                                    "comps": {}
+                                }
+                            }
+                        },
+                        "466": {
+                            "textLayers": [],
+                            "imageLayers": [
+                                {
+                                    "index": 1,
+                                    "name": "still road.png",
+                                    "height": 1920,
+                                    "width": 1080,
+                                    "extension": "png"
+                                }
+                            ],
+                            "comps": {}
+                        }
+                    }
+                },
+                "726": {
+                    "textLayers": [],
+                    "imageLayers": [],
+                    "comps": {}
+                },
+                "760": {
+                    "textLayers": [],
+                    "imageLayers": [],
+                    "comps": {}
+                },
+                "791": {
+                    "textLayers": [
+                        {
+                            "index": 1,
+                            "name": "Naveen",
+                            "text": "Naveen",
+                            "font": "Hey-October"
+                        },
+                        {
+                            "index": 2,
+                            "name": "Weds",
+                            "text": "Weds",
+                            "font": "Hey-October"
+                        },
+                        {
+                            "index": 3,
+                            "name": "Priyanka",
+                            "text": "Priyanka",
+                            "font": "Hey-October"
+                        }
+                    ],
+                    "imageLayers": [],
+                    "comps": {}
+                }
+            }
+        },
+        "save the date": {
+            "textLayers": [
+                {
+                    "index": 1,
+                    "name": "SAVE THE DATE",
+                    "text": "SAVE THE DATE",
+                    "font": "Hey-October"
+                },
+                {
+                    "index": 2,
+                    "name": "20/07/2020",
+                    "text": "20/07/2020",
+                    "font": "Hey-October"
+                }
+            ],
+            "imageLayers": [],
+            "comps": {}
+        },
+        "Still bg": {
+            "textLayers": [],
+            "imageLayers": [
+                {
+                    "index": 1,
+                    "name": "still road.png",
+                    "height": 1920,
+                    "width": 1080,
+                    "extension": "png"
+                }
+            ],
+            "comps": {}
+        },
+        "pattern": {
+            "textLayers": [],
+            "imageLayers": [],
+            "comps": {}
+        },
+        "Streaks": {
+            "textLayers": [],
+            "imageLayers": [],
+            "comps": {}
+        },
+        "Car Interior": {
+            "textLayers": [],
+            "imageLayers": [],
+            "comps": {}
+        },
+        "Name text": {
+            "textLayers": [
+                {
+                    "index": 1,
+                    "name": "Naveen",
+                    "text": "Naveen",
+                    "font": "Hey-October"
+                },
+                {
+                    "index": 2,
+                    "name": "Weds",
+                    "text": "Weds",
+                    "font": "Hey-October"
+                },
+                {
+                    "index": 3,
+                    "name": "Priyanka",
+                    "text": "Priyanka",
+                    "font": "Hey-October"
+                }
+            ],
+            "imageLayers": [],
+            "comps": {}
+        },
+        "branding 2": {
+            "textLayers": [],
+            "imageLayers": [
+                {
+                    "index": 3,
+                    "name": "bulavva logo_1.png",
+                    "height": 626,
+                    "width": 490,
+                    "extension": "png"
+                }
+            ],
+            "comps": {}
+        }
+    },
+    "staticAssets": [
+        "Tiles.m4v",
+        "Culture Code - Make Me Move (feat. Karra) [NCS Release].mp3",
+        "Car-1.m4v",
+        "Car Racing.mp3",
+        "still road.png",
+        "bulavva logo_1.png"
+    ]
+}
