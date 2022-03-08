@@ -17,11 +17,12 @@ import Page from "common/Page";
 import { APIProvider } from "services/APIContext";
 import { Box, CircularProgress, ThemeProvider } from "@material-ui/core";
 import { ReAuthFlowProvider } from "services/Re-AuthContext";
+import { RemoteConfigProvider } from "services/RemoteConfigContext";
 
 const AppChild = () => {
   const [theme, componentMounted] = useDarkMode();
   const { isUserLoadingFromFirebase, user } = useAuth()
-const appTheme=useMemo(() => theme == "light" ? lightTheme : darkTheme, [theme])
+  const appTheme = useMemo(() => theme == "light" ? lightTheme : darkTheme, [theme])
   if (!componentMounted || isUserLoadingFromFirebase) {
     return <Box style={{ height: '100%', margin: 0, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <CircularProgress color="primary" />
@@ -66,19 +67,21 @@ const appTheme=useMemo(() => theme == "light" ? lightTheme : darkTheme, [theme])
 export default () => {
   return (
     <DarkModeProvider>
-      <SnackbarProvider maxSnack={3} anchorOrigin={{
-        vertical: "bottom",
-        horizontal: "right",
-      }
-      }>
-        <APIProvider>
-          <AuthProvider>
-            <ReAuthFlowProvider>
-              <AppChild />
-            </ReAuthFlowProvider>
-          </AuthProvider>
-        </APIProvider>
-      </SnackbarProvider>
+      <RemoteConfigProvider>
+        <SnackbarProvider maxSnack={3} anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }
+        }>
+          <APIProvider>
+            <AuthProvider>
+              <ReAuthFlowProvider>
+                <AppChild />
+              </ReAuthFlowProvider>
+            </AuthProvider>
+          </APIProvider>
+        </SnackbarProvider>
+      </RemoteConfigProvider>
     </DarkModeProvider>
   );
 };

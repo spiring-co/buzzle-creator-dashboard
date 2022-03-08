@@ -1,19 +1,20 @@
 import React from "react";
 import { Button } from "@material-ui/core";
-import { Alert } from "@material-ui/lab";
+import { Alert, AlertProps, AlertTitle } from "@material-ui/lab";
 type IProps = {
   message: string,
   showRetry?: boolean,
   onRetry?: Function,
   buttonText?: string,
-  severity?: "info" | "warning" | "error" | "success"
-}
-export default ({ message, showRetry, onRetry, severity = "error", buttonText }: IProps) => {
+  severity?: "info" | "warning" | "error" | "success",
+  title?: string
+} & AlertProps
+export default ({ message, showRetry, onRetry, severity = "error", title = "", buttonText, style = {} }: IProps) => {
   return (
     <Alert
-      style={{ marginBottom: 20 }}
+      style={{ marginBottom: 20, ...style }}
       severity={severity}
-      children={message}
+
       action={
         onRetry && (
           <Button
@@ -23,6 +24,9 @@ export default ({ message, showRetry, onRetry, severity = "error", buttonText }:
             {buttonText || "Retry"}
           </Button>)
       }
-    />
+    >
+      {title ? <AlertTitle>{title}</AlertTitle> : ""}
+      {message}
+    </Alert>
   );
 };

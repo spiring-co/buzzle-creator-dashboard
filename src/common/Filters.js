@@ -12,7 +12,8 @@ import { useAPI } from "services/APIContext";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
-
+/*
+*/
 export default React.memo(
   ({ value = {}, onChange }) => {
     const [loading, setLoading] = useState(true);

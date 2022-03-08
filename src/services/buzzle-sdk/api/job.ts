@@ -39,7 +39,7 @@ export default function Job(baseUrl: String, headers: HeadersInit) {
       extra,
       extraParams,
     }: JobParam) => {
-      return apiRequest(`${baseUrl}/jobs?${objectToQueryString(extraParams || {})}`, {
+      return apiRequest(`${baseUrl}/jobs${extraParams ? `?${objectToQueryString(extraParams || {})}` : ""}`, {
         method: "POST",
         headers,
         body: JSON.stringify({
@@ -48,7 +48,7 @@ export default function Job(baseUrl: String, headers: HeadersInit) {
           idVideoTemplate,
           idVersion,
           renderPrefs,
-          extra,
+          ...(extra ? { extra } : {}),
         }),
       });
     },

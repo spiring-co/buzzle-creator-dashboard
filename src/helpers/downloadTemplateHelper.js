@@ -2,18 +2,22 @@ const JSZip = require("jszip");
 const zip = new JSZip();
 
 
-export async function zipMaker(staticAssets, aepFile) {
+export async function zipMaker(staticAssets, fonts, aepFile) {
     try {
         const name = aepFile.substr(aepFile.lastIndexOf("/") + 1)
         const file = await (await fetch(aepFile)).blob()
         zip.file(name, file)
         await Promise.all(
-            staticAssets.map(async ({ name, src }) =>
-                zip.file(`assets/${name}`, await (await fetch(src)).blob()))
+            [
+                ...staticAssets.map(async ({ name, src }) =>
+                zip.file(`assets/${name}`, await (await fetch(src)).blob())),
+            ...fonts.map(async ({ name, src }) =>
+                zip.file(`fonts/${name}.${src?.split(".").pop()}`, await (await fetch(src)).blob()))]
         )
         downloadBlob(await zip.generateAsync({ type: "blob" }), `${name.substr(0, name.lastIndexOf("."))}.zip`);
         zip.remove("assets")
         zip.remove("name")
+        zip.remove("fonts")
 
         return true
     } catch (err) {

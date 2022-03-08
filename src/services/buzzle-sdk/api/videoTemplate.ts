@@ -1,4 +1,4 @@
-import {apiRequest} from "../helpers/apiRequest";
+import { apiRequest } from "../helpers/apiRequest";
 import { VideoTemplate as VideoTemplateType } from "../types";
 import objectToQueryString from "../helpers/objectToQueryString";
 
@@ -13,9 +13,8 @@ export default function VideoTemplate(
       query: string,
       sortBy: string,
       orderBy: string,
-      idCreatedBy?: string,
-      extraParams?: Record<string, any>
-    ): Promise<{ data: Array<VideoTemplateType | []>; count: number }> => {
+      extraParams?: { type: "owned" | "public", idCreatedBy?: string, }
+    ): Promise<{ data: Array<VideoTemplateType>; count: number }> => {
       return apiRequest(
         `${baseUrl}/videoTemplates?page=${page}&size=${size}&sortBy=${sortBy}&orderBy=${orderBy}&${query}&${objectToQueryString(
           extraParams
@@ -26,7 +25,7 @@ export default function VideoTemplate(
         }
       );
     },
-    get: async (id: string, query: string, extraParams?: Record<string, any>) => {
+    get: async (id: string, query?: string, extraParams?: Record<string, any>) => {
       return apiRequest(`${baseUrl}/videoTemplates/${id}?${query}&${objectToQueryString(
         extraParams
       )}`, {
@@ -45,7 +44,10 @@ export default function VideoTemplate(
       });
     },
 
-    update: async (id: string, data: Partial<VideoTemplateType>, extraParams?: Record<string, any>) => {
+    update: async (id: string, data: Partial<VideoTemplateType>, extraParams?: { noMessage?: boolean, publishAction?: 'publish' }): Promise<{
+      message: string,
+      data: VideoTemplateType
+    }> => {
       return apiRequest(`${baseUrl}/videoTemplates/${id}?${objectToQueryString(
         extraParams
       )}`, {

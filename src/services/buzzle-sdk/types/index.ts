@@ -8,34 +8,39 @@ export enum jobState {
     "finished",
     "error",
 }
-export enum publishState {
-    "pending",
-    "published",
-    "unpublished",
-    "rejected",
-}
+
 export enum role {
     "user",
     "admin"
 }
+export type Action = 'buzzle-action-watermark'
+    | 'buzzle-action-merge-videos' | 'buzzle-action-add-audio' | "buzzle-action-install-fonts" |
+    'buzzle-action-add-thumbnail' | 'buzzle-action-video-orientation'
+    | 'buzzle-action-upload' | 'buzzle-action-handbrake' | "render" | 'total'
+export type Pricing = {
+    idVersion: string,
+    loyaltyAmount: number,
+    loyaltyCurrency: string,
+    idVideoTemplate: string,
+} & Record<"half" | "full", Record<Action, { averageTime: number, price: number | string }>>
 export interface VersionInterface {
     loyaltyCurrency?: string;
-    id?: string;
+    id: string;
     title: string;
     description?: string;
     sample?: string;
     composition: string;
-    loyaltyValue?: string;
+    loyaltyValue?: number;
     averageRenderTime?: number;
     fields: Array<FieldInterface>;
 }
-export interface FieldInterface{
-        key: string;
-        type: string;
-        label: string;
-        placeholder?: string;
-        constraints?: any;
-        rendererData?: any;
+export interface FieldInterface {
+    key: string;
+    type: string;
+    label: string;
+    placeholder?: string;
+    constraints?: any;
+    rendererData?: any;
 }
 
 export interface Job {
@@ -66,10 +71,12 @@ export interface Job {
     queueTime: number;
     videoTemplate: VideoTemplate;
 }
+export type publishState = 'unpublished' | "published" | "pending" | "rejected"
 export interface VideoTemplate {
-    type: "ae"|"remotion";
+    type: "ae" | "remotion";
     keywords?: Array<string>;
     publishState?: publishState;
+    orientation: 'landscape' | "portrait";
     rejectionReason?: string;
     staticAssets?: Array<{
         name: string;
@@ -85,6 +92,7 @@ export interface VideoTemplate {
     description?: string;
     thumbnail?: string;
     id?: string;
+    slug: string;
     dateCreated?: string;
     dateUpdated?: string;
     __v?: number;
@@ -113,9 +121,15 @@ export interface User {
 export interface JobUpdateParam {
     actions?: Record<string, any>;
     data: Record<string, any>;
-    renderPrefs: Record<string, any>;
-    extra: Record<string, any>;
-    extraParams: Record<string, any>;
+    renderPrefs?: { settingsTemplate?: "full" | "half" | string };
+    extra?: Record<string, any>;
+    extraParams?: Record<string, any>;
+}
+export type ec2Instance = {
+    PublicIpAddress: string,
+    SpotPrice: string,
+    InstanceType: string,
+    State: string
 }
 export interface JobParam extends JobUpdateParam {
     idVideoTemplate: string;

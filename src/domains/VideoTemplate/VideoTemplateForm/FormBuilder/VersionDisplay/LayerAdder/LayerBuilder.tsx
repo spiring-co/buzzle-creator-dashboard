@@ -148,9 +148,23 @@ export default React.memo(({ compositions, editVersion, activeVersionIndex }: IP
                         }} label={"Duplicate Field!"} size="small" /> : <div />
                       }
                     </>}
-                    otherProps={{ variant: 'filled' }} name={item.key} {...item} mode="preview" />) : (
+                    otherProps={{ variant: 'outlined' }} name={item.key} {...item} mode="preview" />) : (
                   <FormImageInput
-                    tags={<></>}
+                  tags={<>{!currentCompositionFields.includes(item?.rendererData?.layerName ?? "") ? <Chip color="primary" style={{
+                    fontSize: 12, height: 20,
+                    alignSelf: 'flex-start',
+                    background: "#d32f2f", color: "#fff",
+                    marginRight: 10, marginBottom: 15
+                  }} label={"Field not found in this compostion!"} size="small" /> : <div />}
+                    {layerWithProperty.filter(v => v === item?.rendererData?.layerName + item?.rendererData?.property).length !== 1
+                      ? <Chip color="primary" style={{
+                        fontSize: 12, height: 20,
+                        alignSelf: 'flex-start',
+                        backgroundColor: "#ffc372", color: "#663c00",
+                        marginRight: 10, marginBottom: 15
+                      }} label={"Duplicate Field!"} size="small" /> : <div />
+                    }
+                  </>}
                     mode="preview" name={item.key} {...item} />
                 )}
               </Box>

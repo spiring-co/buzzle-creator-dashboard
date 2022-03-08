@@ -222,7 +222,7 @@ export default ({
         uri = value;
       }
       setMessage("Extracting Layer and compositions ...");
-      const { compositions, staticAssets } =  await extractStructureFromFile(extractionServer,
+      const { compositions, staticAssets } = await extractStructureFromFile(extractionServer,
         uri ? uri : value,
         templateType
       );
@@ -330,9 +330,9 @@ export default ({
             }}
           />
         </Box>
-        {!isUploadFailed ? <FormHelperText error={error !== null}
+        {!isUploadFailed ? <FormHelperText error={error !== null || extractionUrlError !== null}
           style={hasExtractedData && hasPickedFile ? { color: "green" } : {}}>
-          {(error?.message ?? message)}
+          {(extractionUrlError?.message) || (error?.message ?? message)}
         </FormHelperText> : <div />}
       </Box>
     ),

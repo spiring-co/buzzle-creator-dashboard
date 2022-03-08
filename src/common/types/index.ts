@@ -1,4 +1,4 @@
-import { User } from "services/buzzle-sdk/types";
+import { User, VersionInterface, ec2Instance } from "services/buzzle-sdk/types";
 
 export interface Auth {
   signInWithPassword: (email: string, password: string) => Promise<any>,
@@ -15,6 +15,23 @@ export interface Auth {
   isAdmin: boolean,
   isUserLoadingFromFirebase: boolean,
 }
+export type fillType = 'label' | "placeholder" | "maxLength" | string
+
+export type TestJobVersionsParams = Array<VersionInterface & {
+  settingsTemplate?: "half" | "full" | string,
+  incrementFrame?: number,
+  dataFillType: fillType,
+}>
+export type AppConfig = {
+  "initialFreeAmount": {
+    "value": number,
+    "currency": string
+  },
+  "createrLoyaltyPercentageShareValue": number,
+  "renderLoyaltyPercentageShareValye": number,
+  instances: Array<ec2Instance>
+}
+
 export type textComp = {
   "index": number,
   "name": string,

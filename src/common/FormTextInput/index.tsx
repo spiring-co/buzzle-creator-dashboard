@@ -30,25 +30,26 @@ export default ({ mode, label, tags, type, constraints = {}, onBlur, value = "",
     }, [input])
     return <Box key={key} style={{ display: 'flex', flexDirection: 'column' }}>
         {mode === "preview" ? <Box style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
-            <Chip color="primary" style={{
+            <Chip style={{
                 fontSize: 12, height: 20,
                 alignSelf: 'flex-start',
                 marginRight: 10, marginBottom: 15
-            }} label={`Field Preview for ${layerName}`} size="small" />
+            }} label={`Layer name → ${layerName}`} size="small" />
             {tags ? tags : <div />}
         </Box> : <div />}
         <TextField label={label}
             style={{ alignSelf: 'flex-start' }}
             required={required}
-            value={input}
+            value={mode === "preview" ? placeholder : input}
             onBlur={handleBlur}
             helperText={mode === "form" ? helperText : required ? "* Field required" : ""}
             onChange={handleChange}
-            defaultValue={placeholder} placeholder={placeholder}
+            placeholder={placeholder}
             inputProps={{
                 ...(maxLength ? { maxLength } : {})
             }}
             InputProps={{
+                ...(mode === "preview" ? { readOnly: true } : {}),
                 endAdornment: <SmallText color="textSecondary">{`${input.length}/${maxLength}`}</SmallText>
             }}
             {...otherProps}

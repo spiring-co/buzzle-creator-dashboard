@@ -1,3 +1,5 @@
+import { Action } from "services/buzzle-sdk/types";
+
 export const copyToClipboard = async (text: string) => {
     //@ts-ignore
     const result = await navigator.permissions.query({ name: "clipboard-write" })
@@ -84,7 +86,28 @@ export const extractStructureFromFile = async (extractionURL: string, fileUrl: s
         return { compositions: (response as any)?.compositions, staticAssets: [], url: response?.url }
     }
 };
-
+export const getNameFromActionText = (action: Action) => {
+    if (action === "buzzle-action-add-audio") {
+        return 'Action Audio'
+    } else if (action === "buzzle-action-add-thumbnail") {
+        return "Action Thumbnail"
+    }
+    else if (action === "buzzle-action-handbrake") {
+        return "Action Thumbnail"
+    } else if (action === "buzzle-action-merge-videos") {
+        return "Action Video"
+    } else if (action === "buzzle-action-watermark") {
+        return "Action Watermark"
+    } else if (action === "buzzle-action-video-orientation") {
+        return "Action Rotate"
+    } 
+    else if (action === "render") {
+        return "Action Render"
+    }
+    else {
+        return action
+    }
+}
 export const extractedDataSample = {
     "compositions": {
         "branding": {

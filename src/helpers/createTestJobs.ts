@@ -1,33 +1,25 @@
-export default async (id, options) => {
-  const {
-    versions,
-    settingsTemplate,
-    renderSettings,
-    incrementFrame,
-    dataFillType,
-  } = options;
-
-  return versions.map((v) => {
+import { TestJobVersionsParams ,fillType} from "common/types";
+import { FieldInterface, VersionInterface } from "services/buzzle-sdk/types";
+export default (id: string, versions: TestJobVersionsParams) => {
+  return versions.map((version) => {
     return {
       idVideoTemplate: id,
-      idVersion: v.id,
+      idVersion: version.id,
       renderPrefs: {
-        settingsTemplate,
-        incrementFrame,
-        renderSettings,
+        ...(version?.settingsTemplate ? { settingsTemplate: version?.settingsTemplate } : {}),
+        ...(version?.incrementFrame !== undefined ? { incrementFrame: version?.incrementFrame } : {}),
       },
-      data: fieldsToData(v.fields, dataFillType),
+      data: fieldsToData(version.fields, version.dataFillType),
     };
   });
 };
 
-function fieldsToData(fields, dataFillType) {
-  const data = {};
+function fieldsToData(fields: Array<FieldInterface>, dataFillType: fillType): Record<string, string> {
+  const data: any = {};
   fields.map((f) => {
     switch (f.type) {
       case "image":
-        data[f.key] = `https://dummyimage.com/${f.constraints.width}x${f.constraints.height
-          }/3742fa/fff.${f.rendererData.extension}&text=${encodeURI(f.label)}`;
+        data[f.key] = `https://via.placeholder.com/${f.constraints.width}x${f.constraints.height}/dceef7/000.${f.rendererData?.extension}`
         break;
       default:
         switch (dataFillType) {
@@ -49,7 +41,7 @@ function fieldsToData(fields, dataFillType) {
   return data;
 }
 
-const getNumberPalindrome = (len, label) => {
+const getNumberPalindrome = (len: number, label: string) => {
   if (label?.length > len) {
     return label.substr(0, len)
   }

@@ -4,8 +4,8 @@ import Step from "@material-ui/core/Step";
 import StepLabel from "@material-ui/core/StepLabel";
 import StepContent from "@material-ui/core/StepContent";
 
-export default ({ activeStep, renderStep }) => {
-  const steps = [`Render Time`, `Loyalty Amount & Currency`];
+export default ({ activeStep, renderStep }: any) => {
+  const steps = [`Average Render Time`, `Set Loyalty Amount`];
   return (
     <Stepper activeStep={activeStep} orientation="vertical">
       {steps.map((label) => (

@@ -20,7 +20,7 @@ function TabPanel(props: any) {
       aria-labelledby={`vertical-tab-${index}`}
       {...other}>
       {value === index ? (
-        <Box p={3} style={{ height: "100%", width: '100%' }} >
+        <Box style={{ height: "100%", width: '100%' }} >
           {children}
         </Box>
       ) : <div />}
@@ -74,25 +74,25 @@ export default function VerticalTabs({ tabs, initialTabIndex = 0, onTabIndexChan
 
   return (
     <Paper>
-      <AppBar position="static" color="default">
-        <Tabs
-          value={value}
-          onChange={handleChange}
-          indicatorColor="primary"
-          textColor="primary"
-          variant="scrollable"
-          scrollButtons="auto"
-        >
-          {tabs
-            .filter(({ allowedRoles }) => allowedRoles.includes(user?.role))
-            ?.map(({ label }, index) => (
-              <Tab
-                label={label}
-                {...a11yProps(index)}
-              />
-            ))}
-        </Tabs>
-      </AppBar>
+      {/* <AppBar position="static" color="default"> */}
+      <Tabs
+        value={value}
+        onChange={handleChange}
+        indicatorColor="primary"
+        textColor="primary"
+        variant="scrollable"
+        scrollButtons="auto"
+      >
+        {tabs
+          .filter(({ allowedRoles }) => allowedRoles.includes(user?.role))
+          ?.map(({ label }, index) => (
+            <Tab
+              label={label}
+              {...a11yProps(index)}
+            />
+          ))}
+      </Tabs>
+      {/* </AppBar> */}
       {tabs
         .filter(({ allowedRoles }) => allowedRoles.includes(user?.role))
         ?.map(({ component, allowedRoles = [] }, index) => (

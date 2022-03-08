@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useHistory, useRouteMatch, useLocation } from "react-router-dom";
 
 import * as timeago from "timeago.js";
@@ -12,7 +12,7 @@ import {
   Tooltip,
   Fade,
 } from "@material-ui/core";
-import MaterialTable from "material-table";
+import MaterialTable, { Query } from "material-table";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
 import Popover from "@material-ui/core/Popover";
 import formatTime from "helpers/formatTime";
@@ -39,6 +39,7 @@ import { useAuth } from "services/auth";
 import { useSnackbar } from "notistack";
 import JSONEditorDialoge from "common/JSONEditorDialoge";
 import ActiveJobsTable from "../ActiveJobsTable";
+import { Job, JobUpdateParam } from "services/buzzle-sdk/types";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -47,25 +48,26 @@ function useQuery() {
 export default () => {
   const { path } = useRouteMatch();
   const history = useHistory();
+  const { state } = useLocation<{ message: string }>()
   const { Job } = useAPI()
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const queryParam = useQuery();
-  const tableRef = useRef(null);
-  const [error, setError] = useState(null);
+  const tableRef = useRef<any>(null);
+  const [error, setError] = useState<Error | null>(null);
   const { user } = useAuth();
-  const [filters, setFilters] = useState({});
-  const [selectedJob, setSelectedJob] = useState(null);
+  const [filters, setFilters] = useState<any>({});
+  const [selectedJob, setSelectedJob] = useState<any>(null);
   const filterString = filterObjectToString(filters);
   const handleRetry = () => {
     tableRef.current && tableRef.current.onQueryChange();
-    setError(false);
+    setError(null);
   };
 
   useEffect(() => {
     handleRetry();
   }, [filterString]);
 
-  const getDataFromQuery = (query) => {
+  const getDataFromQuery = (query: Query<Job>): any => {
     const {
       page = 0,
       pageSize = 20,
@@ -76,7 +78,7 @@ export default () => {
     history.push(
       `?page=${page + 1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
       }`
-    );
+      , { ...state });
 
     // if has search query
     if (searchQuery) {
@@ -85,23 +87,23 @@ export default () => {
     return Job.getAll(
       page + 1,
       pageSize,
-      filterString,
+      filterString || "",
       orderBy,
       orderDirection
       // idCreator
     )
       .then(({ data = [], count: totalCount }) => {
-        // unsubscribeFromProgress()
-        // setJobIds(data.map((j) => j.id));
         if (data?.length === 0 && totalCount) {
           history.push(
             `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
             }`
-          );
+            , {
+              ...state
+            });
           return Job.getAll(
             1,
             pageSize,
-            filterString,
+            filterString || "",
             orderBy,
             orderDirection
             // idCreator
@@ -110,11 +112,11 @@ export default () => {
               return { data, page: 0, totalCount };
             })
             .catch((err) => {
-              setError(err);
+              setError(err as Error);
               history.push(
                 `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
                 }`
-              );
+                , { ...state });
               return {
                 data: [],
                 page: 0,
@@ -125,22 +127,22 @@ export default () => {
         return { data, page, totalCount };
       })
       .catch((err) => {
-        setError(err);
+        setError(err as Error);
         history.push(
           `?page=${1}&size=${pageSize}${searchQuery ? "searchQuery=" + searchQuery : ""
           }`
-        );
+          , { ...state });
         return {
           data: [],
           page: 0,
           totalCount: 0,
         };
       });
-  };
-  const deleteMultipleJobs = async (array = []) => {
+  }
+  const deleteMultipleJobs = async (array: any) => {
     try {
       await Job.deleteMultiple({
-        ids: array.map((a) => a.id),
+        ids: array.map((a: any) => a?.id as string),
       });
       enqueueSnackbar(`jobs deleted successfully `, {
         variant: "success",
@@ -153,7 +155,7 @@ export default () => {
     tableRef.current && tableRef.current.onQueryChange();
   };
 
-  const handleJobUpdate = async ({ id, data, actions, renderPrefs }) => {
+  const handleJobUpdate = async ({ id, data, actions, renderPrefs }: JobUpdateParam & { id: string }) => {
     try {
       await Job.update(id, { data, actions, renderPrefs }, { noMessage: true });
       enqueueSnackbar(`Job Updated successfully!`, {
@@ -163,7 +165,7 @@ export default () => {
       tableRef.current && tableRef.current.onQueryChange();
     } catch (err) {
       enqueueSnackbar(
-        `Failed to update, ${err?.message ?? "Something went wrong"}`,
+        `Failed to update, ${(err as Error)?.message ?? "Something went wrong"}`,
         {
           variant: "error",
           anchorOrigin: {
@@ -175,9 +177,9 @@ export default () => {
     }
   };
 
-  const TimeRenderer = ({ renderTime, id, timeline = [] }) => {
+  const TimeRenderer = ({ renderTime, id, timeline = [] }: any) => {
     const [anchorEl, setAnchorEl] = useState(null);
-    const handlePopoverOpen = (event) => {
+    const handlePopoverOpen = (event: any) => {
       setAnchorEl(event.currentTarget);
     };
 
@@ -211,7 +213,7 @@ export default () => {
           disableRestoreFocus>
           <Timeline align="alternate">
             {timeline.length ? (
-              timeline.map(({ state, startsAt, endsAt }, index) => (
+              timeline.map(({ state, startsAt, endsAt }: any, index: number) => (
                 <TimelineItem>
                   {index !== 0 && timeline?.length - 1 !== index && (
                     <TimelineOppositeContent>
@@ -247,9 +249,9 @@ export default () => {
     );
   };
 
-  const restartMultiple = async (array) => {
+  const restartMultiple = async (array: any) => {
     try {
-      const arrIds = array.map((a) => {
+      const arrIds = array.map((a: any) => {
         return a.id;
       });
       await Job.updateMultiple({
@@ -278,28 +280,32 @@ export default () => {
           onRetry={handleRetry}
         />
       )}
+      {state?.message ? <AlertHandler severity="info" message={state?.message ?? ""} /> : <div />}
       <Box>
-        <ActiveJobsTable onRowClick={(id) => history.push(`${path}${id}`)} />
+        <ActiveJobsTable onRowClick={(id: string) => history.push(`${path}${id}`)} />
       </Box>
       <Paper style={{ padding: 15, marginBottom: 5 }}>
         <Typography variant="h6">Filters</Typography>
         <Container
           style={{ padding: 5, alignItems: "flex-end", display: "flex" }}>
-          <Filters onChange={setFilters} value={filters} />
+          <Filters
+            //@ts-ignore
+            onChange={(v: any) => setFilters(v)}
+            value={filters} />
         </Container>
       </Paper>
       <MaterialTable
         tableRef={tableRef}
         title="Your Jobs"
         options={{
-          pageSize: parseInt(queryParam?.get("size")) || 20,
+          pageSize: parseInt(queryParam?.get("size") + "") || 20,
           headerStyle: { fontWeight: 700 },
           actionsColumnIndex: -1,
           selection: true,
           // padding: 'dense',
           sorting: true,
         }}
-        onRowClick={(e, { id }) => {
+        onRowClick={(e: any, { id }: any) => {
           // prevents redirection on link click
           if (["td", "TD"].includes(e.target.tagName))
             window.open(`${path}${id}`);
@@ -318,9 +324,9 @@ export default () => {
             title: "Version",
             sorting: false,
             searchable: false,
-            render: ({ videoTemplate, idVersion }) => (
+            render: ({ videoTemplate, idVersion }: any) => (
               <span>
-                {videoTemplate?.versions?.find((v) => v?.id === idVersion)
+                {videoTemplate?.versions?.find((v: any) => v?.id === idVersion)
                   ?.title ?? ""}
               </span>
             ),
@@ -330,7 +336,7 @@ export default () => {
             field: "renderTime",
             sorting: false,
             searchable: false,
-            render: ({ renderTime, id, timeline }) => (
+            render: ({ renderTime, id, timeline }: any) => (
               <TimeRenderer
                 renderTime={renderTime}
                 id={id}
@@ -345,7 +351,7 @@ export default () => {
             field: "dateUpdated",
             type: "datetime",
             defaultSort: "desc",
-            render: ({ dateUpdated }) => (
+            render: ({ dateUpdated }: any) => (
               <span>{timeago.format(new Date(dateUpdated))}</span>
             ),
           },
@@ -354,17 +360,17 @@ export default () => {
             title: "Created At",
             field: "dateCreated",
             type: "datetime",
-            render: ({ dateCreated }) => (
+            render: ({ dateCreated }: any) => (
               <span>{timeago.format(new Date(dateCreated))}</span>
             ),
           },
           {
             searchable: false,
             title: "source",
-            render: ({ sourceCreatedBy = "" }) => {
+            render: ({ sourceCreatedBy = "" }: any) => {
               return <Tooltip
                 TransitionComponent={Fade}
-                title={(sourceCreatedBy||"api") === "api" ? "Created using API" : "Created from buzzle"}>
+                title={(sourceCreatedBy || "api") === "api" ? "Created using API" : "Created from buzzle"}>
                 <Chip
                   size="small"
                   label={sourceCreatedBy || "api"}
@@ -382,7 +388,7 @@ export default () => {
             searchable: false,
             title: "State",
             field: "state",
-            render: ({ state, failureReason }) => {
+            render: ({ state, failureReason }: any) => {
               return state === "error" ? (
                 <Tooltip
                   TransitionComponent={Fade}
@@ -392,7 +398,7 @@ export default () => {
                     label={state}
                     style={{
                       fontWeight: 700,
-                      background: getColorFromState(state),
+                      background: getColorFromState(state as any),
                       color: "white",
                       textTransform: "capitalize",
                     }}
@@ -404,7 +410,7 @@ export default () => {
                   label={state}
                   style={{
                     fontWeight: 700,
-                    background: getColorFromState(state),
+                    background: getColorFromState(state as any),
                     color: "white",
                     textTransform: "capitalize",
                   }}
@@ -415,11 +421,11 @@ export default () => {
           {
             searchable: false,
             title: "Render Actions",
-            render: ({ actions }) => {
-              const { postrender, prerender } = actions;
+            render: ({ actions }: any) => {
+              const { postrender = [], prerender = [] } = actions;
               return (
                 <div>
-                  {postrender?.map(({ module }) => {
+                  {postrender?.map(({ module }: any) => {
                     if (module === "buzzle-action-merge-videos") {
                       return (
                         <Tooltip title="Merge Video">
@@ -447,7 +453,7 @@ export default () => {
           {
             searchable: false,
             title: "Outputs",
-            render: ({ output }) => <span>{output.length}</span>,
+            render: ({ output = [] }: any) => <span>{output.length}</span>,
           },
         ]}
         localization={{
@@ -467,8 +473,8 @@ export default () => {
             icon: () => <FileCopyIcon />,
             tooltip: "Duplicate Job",
             onClick: async (
-              e,
-              { actions, data, idVideoTemplate, idVersion, renderPrefs }
+              e: any,
+              { actions, data, idVideoTemplate, idVersion, renderPrefs }: any
             ) => {
               try {
                 await Job.create({
@@ -480,7 +486,7 @@ export default () => {
                 });
                 handleRetry();
               } catch (err) {
-                setError(err);
+                setError(err as Error);
               }
             },
             position: "row",
@@ -489,7 +495,7 @@ export default () => {
             icon: () => <UpdateIcon />,
             tooltip: "Restart Job with priority",
             position: "row",
-            onClick: async (e, { id, data, actions, renderPrefs = {} }) => {
+            onClick: async (e, { id, data, actions, renderPrefs = {} }: any) => {
               try {
                 await Job.update(
                   id,
@@ -502,7 +508,7 @@ export default () => {
                   { priority: 5 }
                 );
               } catch (err) {
-                setError(err);
+                setError(err as Error);
               }
               tableRef.current && tableRef.current.onQueryChange();
             },
@@ -511,7 +517,7 @@ export default () => {
             icon: "repeat",
             tooltip: "Restart Job",
             position: "row",
-            onClick: async (e, { id, data, actions, renderPrefs = {} }) => {
+            onClick: async (e, { id, data, actions, renderPrefs = {} }: any) => {
               try {
                 await Job.update(id, {
                   state: "created",
@@ -520,7 +526,7 @@ export default () => {
                   },
                 });
               } catch (err) {
-                setError(err);
+                setError(err as Error);
               }
               tableRef.current && tableRef.current.onQueryChange();
             },
@@ -537,14 +543,14 @@ export default () => {
             icon: "delete",
             tooltip: "Delete Job",
             position: "row",
-            onClick: async (event, rowData) => {
+            onClick: async (event: any, rowData: any) => {
               const action = window.confirm("Are you sure, you want to delete");
               if (!action) return;
               try {
                 await Job.delete(rowData.id);
                 tableRef.current && tableRef.current.onQueryChange();
               } catch (err) {
-                setError(err);
+                setError(err as Error);
               }
             },
           },
@@ -578,7 +584,7 @@ export default () => {
     </div>
   );
 };
-const getColorFromSource = (source) => {
+const getColorFromSource = (source: string) => {
   switch (source) {
     case "api":
       return "#ffa502"
@@ -586,7 +592,7 @@ const getColorFromSource = (source) => {
       return "#3742fa"
   }
 }
-const getColorFromState = (state = "", percent) => {
+const getColorFromState = (state = "", percent?: number) => {
   switch (state.toLowerCase()) {
     case "finished":
       return "#4caf50";
@@ -601,13 +607,13 @@ const getColorFromState = (state = "", percent) => {
   }
 };
 
-const getArrayOfIdsAsQueryString = (field, ids) => {
+const getArrayOfIdsAsQueryString = (field: string, ids: Array<string>) => {
   return ids
     .map((id, index) => `${index === 0 ? "" : "&"}${field}[]=${id}`)
     .toString()
     .replace(/,/g, "");
 };
-const filterObjectToString = (f) => {
+const filterObjectToString = (f: any) => {
   if (!f) return null;
   const { startDate = 0, endDate = 0, idVideoTemplates = [], states = [] } = f;
 
@@ -618,7 +624,7 @@ const filterObjectToString = (f) => {
     }${idVideoTemplates.length !== 0
       ? getArrayOfIdsAsQueryString(
         "idVideoTemplate",
-        idVideoTemplates.map(({ id }) => id)
+        idVideoTemplates.map(({ id }: { id: string }) => id)
       ) + "&"
       : ""
     }${states.length !== 0 ? getArrayOfIdsAsQueryString("state", states) : ""}`;

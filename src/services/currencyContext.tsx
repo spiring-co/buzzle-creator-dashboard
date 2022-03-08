@@ -10,7 +10,7 @@ import fx from 'money';
 import { getCountry } from './api';
 import { countryCodes, currencyCodes, currencyInfo, exchangeRates } from '../helpers/Currencies';
 const defaultValue = {
-  getConvertedCurrency: (value: number): string => '',
+  getConvertedCurrency: (value: number, round?: boolean): string => '',
   currency: 'INR',
   countryCode: '+91',
   getConvertedCurrencyValue: (value: number): number => 0,
@@ -53,15 +53,17 @@ function CurrencyProvider(props: IProps) {
   useEffect(() => {
     fx.rates = exchangeRates;
   }, [exchangeRates]);
-  const getConvertedCurrency = (price: number): string => {
-    const value = fx(price).from('USD').to(currencyCodes[country || "IN"] || "INR")
+  const getConvertedCurrency = (price: number, round?: boolean): string => {
+    let value = fx(price).from('USD').to(currencyCodes[country || "IN"] || "INR")
+
     const p = currencyData['symbol_first']
-      ? `${currencyData['symbol']} ${value}`
-      : `${value} ${currencyData['symbol']}`;
-    return (value <= 0 ? 'FREE' : p).replace('.', currencyData['decimal_mark']);
+      ? `${currencyData['symbol']} ${round ? parseFloat(value).toFixed(2) : value}`
+      : `${round ? parseFloat(value).toFixed(2) : value} ${currencyData['symbol']}`;
+    return (value == 0 ? 'FREE' : p).replace('.', currencyData['decimal_mark']);
   };
-  const getConvertedCurrencyValue = (price: number) => {
+  const getConvertedCurrencyValue = (price: number, round?: boolean) => {
     const p = fx(price).from('USD').to(currencyCodes[country || "IN"] || "INR")
+    if (round) return parseFloat(p).toFixed(2)
     return parseFloat(p);
   };
   const value = useMemo(() => {

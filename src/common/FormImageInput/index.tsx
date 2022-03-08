@@ -115,11 +115,11 @@ export default ({ mode, label, tags, type, onError, constraints = {}, onBlur, va
     }, [input])
     return <Box key={key}>
         {mode === "preview" ? <Box>
-            <Chip color="primary" style={{
+            <Chip  style={{
                 fontSize: 12, height: 20,
                 alignSelf: 'flex-start',
                 marginRight: 10, marginBottom: 15
-            }} label={`Field Preview for ${layerName}`} size="small" />
+            }} label={`Layer name → ${layerName}`} size="small" />
             {tags ? tags : <div />}
         </Box> : <div />}
         <input type="file" accept={`.${extension}`} id={key || name || label} onChange={handleChange}
@@ -146,13 +146,13 @@ export default ({ mode, label, tags, type, onError, constraints = {}, onBlur, va
         <FormHelperText error={!!error}>
             {!!error ? error?.message : mode === "preview" ? required ? "* Required Field" : "" : helperText}
         </FormHelperText>
-        <label htmlFor={key || name || label}>
+        {mode === 'preview' ? <div /> : <label htmlFor={key || name || label}>
             <Button style={{ marginTop: 15, alignSelf: 'center' }}
                 size="small"
                 component="span"
                 disabled={loading}
                 startIcon={<CameraAlt color="inherit" fontSize={"small"} />}
                 children={input ? "Change" : "Upload"} color="primary" variant="outlined" />
-        </label>
+        </label>}
     </Box>
 }

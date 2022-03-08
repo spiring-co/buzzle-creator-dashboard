@@ -26,13 +26,14 @@ const useStyles = makeStyles((theme) =>
     createStyles({
         root: {
             display: "flex",
+            width: '100%', height: '100%',
         },
         toolbar: {
             display: "flex",
             ...theme.mixins.toolbar,
         },
         content: {
-            flexGrow: 1,
+            width: '100%', height: '100%',
             padding: theme.spacing(3),
         },
     })

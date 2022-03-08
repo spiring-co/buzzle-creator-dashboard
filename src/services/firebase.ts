@@ -1,6 +1,7 @@
 import firebase from "firebase/app";
 import "firebase/messaging";
 import "firebase/auth"
+import "firebase/remote-config"
 const firebaseDevConfig = {
   apiKey: "AIzaSyDgOaSoXj1mz4U-BiIROG4EQL1h2TrjrUE",
   authDomain: "buzzle-dev.firebaseapp.com",
@@ -20,6 +21,12 @@ const firebaseConfig = {
 }
 export default firebase.initializeApp(firebaseConfig);
 export const firebaseAuth = firebase.auth()
+export const remoteConfig = firebase.remoteConfig();
+remoteConfig.settings = {
+  minimumFetchIntervalMillis: 0,
+  fetchTimeoutMillis: 6000,
+};
+
 export const messaging = firebase.messaging();
 messaging.usePublicVapidKey(
   "BOfud4xtKcWRgYwHTN56ToeaFigYT2DGKXJryxhkwyLRqE2uGtRsDZotUMI5JiwLnMqFlC9TNt1p3jdcirF725U"
