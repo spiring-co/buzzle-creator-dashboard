@@ -289,7 +289,7 @@ const VideoTemplateCard = ({ version, thumbnail, price, isOwner }: {
 }) => {
   const classes = useStyles()
   const { instances } = useConfig()
-  const instancePrice = parseFloat(instances[0].SpotPrice) / (60 * 60)
+  const instancePrice = instances.length ? parseFloat(instances[0]?.SpotPrice) / (60 * 60) : "NA"
 
   const { getConvertedCurrency, getConvertedCurrencyValue } = useCurrency()
   const [expanded, setExpanded] = useState<boolean>(false);
@@ -361,10 +361,10 @@ const VideoTemplateCard = ({ version, thumbnail, price, isOwner }: {
                   </TableCell>
                   <TableCell align="center">{half
                     ? getConvertedCurrency(half as number, true)
-                    : `${getConvertedCurrency(instancePrice, true)}/sec`}</TableCell>
+                    : instancePrice !== "NA" ? `${getConvertedCurrency(instancePrice, true)}/sec` : "NA"}</TableCell>
                   <TableCell align="center">{full
                     ? getConvertedCurrency(full as number, true)
-                    : `${getConvertedCurrency(instancePrice, true)}/sec`}</TableCell>
+                    : instancePrice !== "NA" ? `${getConvertedCurrency(instancePrice, true)}/sec` : "NA"}</TableCell>
                 </TableRow>
               )
             })}

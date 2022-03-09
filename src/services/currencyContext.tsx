@@ -53,13 +53,13 @@ function CurrencyProvider(props: IProps) {
   useEffect(() => {
     fx.rates = exchangeRates;
   }, [exchangeRates]);
-  const getConvertedCurrency = (price: number, round?: boolean): string => {
+  const getConvertedCurrency = (price: number, round?: boolean, humanize?: boolean): string => {
     let value = fx(price).from('USD').to(currencyCodes[country || "IN"] || "INR")
 
     const p = currencyData['symbol_first']
       ? `${currencyData['symbol']} ${round ? parseFloat(value).toFixed(2) : value}`
       : `${round ? parseFloat(value).toFixed(2) : value} ${currencyData['symbol']}`;
-    return (value == 0 ? 'FREE' : p).replace('.', currencyData['decimal_mark']);
+    return (value == 0 && humanize ? 'FREE' : p).replace('.', currencyData['decimal_mark']);
   };
   const getConvertedCurrencyValue = (price: number, round?: boolean) => {
     const p = fx(price).from('USD').to(currencyCodes[country || "IN"] || "INR")

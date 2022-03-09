@@ -53,7 +53,7 @@ export default function User(
       noMessage?: boolean,
       keyOperation?: "generate" | "update" | "revoke"
     }): Promise<{ message: string, data: UserType }> => {
-     
+
       return apiRequest(`${baseUrl}/users?${objectToQueryString(
         extraParams || {}
       )}`, {
@@ -62,5 +62,27 @@ export default function User(
         body: JSON.stringify(data || {}),
       });
     },
+    addTemplate: (guestTemplateUsed: Array<string>, extraParams?: {
+      noMessage?: boolean,
+    }): Promise<{ message: string, data: UserType }> => {
+      return apiRequest(`${baseUrl}/users?${objectToQueryString(
+        extraParams || {}
+      )}`, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify({ guestTemplateUsed }),
+      });
+    },
+    removeTemplate: (guestTemplateUsedToBeRemoved: Array<string>, extraParams?: {
+      noMessage?: boolean,
+    }): Promise<{ message: string, data: UserType }> => {
+      return apiRequest(`${baseUrl}/users?${objectToQueryString(
+        extraParams || {}
+      )}`, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify({ guestTemplateUsedToBeRemoved }),
+      });
+    }
   };
 }

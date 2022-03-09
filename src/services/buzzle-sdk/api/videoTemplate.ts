@@ -13,7 +13,7 @@ export default function VideoTemplate(
       query: string,
       sortBy: string,
       orderBy: string,
-      extraParams?: { type: "owned" | "public", idCreatedBy?: string, }
+      extraParams?: { type: "owned" | "public", idCreatedBy?: string, fields?: "createdBy" }
     ): Promise<{ data: Array<VideoTemplateType>; count: number }> => {
       return apiRequest(
         `${baseUrl}/videoTemplates?page=${page}&size=${size}&sortBy=${sortBy}&orderBy=${orderBy}&${query}&${objectToQueryString(

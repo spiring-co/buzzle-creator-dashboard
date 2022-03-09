@@ -1,4 +1,4 @@
-import { Chip, Menu, MenuItem } from "@material-ui/core";
+import { Chip, Hidden, Menu, MenuItem } from "@material-ui/core";
 import AppBar from "@material-ui/core/AppBar";
 import Avatar from "@material-ui/core/Avatar";
 import Box from "@material-ui/core/Box";
@@ -20,6 +20,7 @@ import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import MenuIcon from "@material-ui/icons/Menu";
 import Notifications from "@material-ui/icons/Notifications";
 import clsx from "clsx";
+import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
 import { useDarkMode } from "helpers/useDarkMode";
 import { useSnackbar } from "notistack";
 import React, { forwardRef, MouseEventHandler, useMemo, useState } from "react";
@@ -27,13 +28,14 @@ import { Link as RouterLink, useHistory } from "react-router-dom";
 import { useReAuthFlow } from "services/Re-AuthContext";
 import { useAuth } from "../services/auth";
 import RoleBasedView from "./RoleBasedView";
+import { useCurrency } from "services/currencyContext";
 
 const drawerWidth = 240;
 
 function ListItemLink(props: {
   to: string,
   primary: string,
-  icon: JSX.Element
+  icon: JSX.Element,
 }) {
   const { icon, primary, to } = props;
   const renderLink = useMemo(
@@ -47,103 +49,117 @@ function ListItemLink(props: {
   return (
     <li>
       <ListItem
-        selected={to === window.location.pathname}
+        style={{ height: 48 }}
         button
         component={renderLink}>
-        {icon ? <ListItemIcon>{icon}</ListItemIcon> : null}
+        {icon ? <ListItemIcon style={{ marginLeft: 5 }}>{icon}</ListItemIcon> : null}
         <ListItemText primary={primary} />
       </ListItem>
     </li>
   );
 }
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    root: {
-      display: "flex",
-    },
-    appBar: {
-      zIndex: theme.zIndex.drawer + 1,
-      transition: theme.transitions.create(["width", "margin"], {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
-      }),
-    },
-    appBarShift: {
-      marginLeft: drawerWidth,
+const useStyles = makeStyles((theme) => createStyles({
+  root: {
+    display: "flex",
+    flexgrow: 1
+  },
+  appBar: {
+    zIndex: theme.zIndex.drawer + 1,
+    transition: theme.transitions.create(["width", "margin"], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+  },
+  appBarShift: {
+    [theme.breakpoints.up('sm')]: {
       width: `calc(100% - ${drawerWidth}px)`,
+      marginLeft: drawerWidth,
       transition: theme.transitions.create(["width", "margin"], {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.enteringScreen,
       }),
     },
+  },
 
-    menuButton: {
-      marginRight: 36,
-    },
-    hide: {
-      display: "none",
-    },
-    drawer: {
+  menuButton: {
+    // marginRight: 36,
+    marginRight: theme.spacing(2),
+
+  },
+  hide: {
+    display: "none",
+  },
+  drawer: {
+    [theme.breakpoints.up('sm')]: {
       width: drawerWidth,
       flexShrink: 0,
-      whiteSpace: "nowrap",
     },
-    drawerOpen: {
-      width: drawerWidth,
-      transition: theme.transitions.create("width", {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
+  },
+  drawerOpen: {
+    width: drawerWidth,
+    transition: theme.transitions.create("width", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  },
+  drawerClose: {
+    transition: theme.transitions.create("width", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    overflowX: "hidden",
+    width: theme.spacing(7) + 1,
+    [theme.breakpoints.up("sm")]: {
+      width: theme.spacing(9) + 1,
     },
-    drawerClose: {
-      transition: theme.transitions.create("width", {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
-      }),
-      overflowX: "hidden",
-      width: theme.spacing(7) + 1,
-      [theme.breakpoints.up("sm")]: {
-        width: theme.spacing(9) + 1,
-      },
-    },
-    toolbar: {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      padding: theme.spacing(1, 1),
-      // necessary for content to be below app bar
-      ...theme.mixins.toolbar,
-    },
-    content: {
-      flexGrow: 1,
-      padding: theme.spacing(3),
-    },
-    menu: {
-      position: "absolute",
-      right: 15,
-    },
-  })
+  },
+  drawerPaper: {
+    width: drawerWidth,
+  },
+  toolbar: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: theme.spacing(1, 1),
+    // necessary for content to be below app bar
+    ...theme.mixins.toolbar,
+  },
+  content: {
+    flexGrow: 1,
+    padding: theme.spacing(3),
+  },
+  menu: {
+
+  },
+  grow: {
+    flexGrow: 1
+  }
+})
 );
+
+
 type IProps = {
   items: Array<{
     text: string,
     icon: JSX.Element,
     to: string,
     allowedRoles: Array<'user' | "admin">
-  }>
+  }>,
+  window?: () => Window;
 }
-export default function NavBar({ items }: IProps) {
+export default function NavBar({ items, window }: IProps) {
   const classes = useStyles();
   const { user } = useAuth();
   const { enqueueSnackbar } = useSnackbar()
   const { reAuthInit } = useReAuthFlow()
   const theme = useTheme();
+  const { getConvertedCurrency } = useCurrency()
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const { signOut } = useAuth();
   const history = useHistory();
   const [t, toggleTheme, componentMounted] = useDarkMode();
-
+  const handleDrawerToggle = () => setDrawerOpen(v => !v)
   const handleDrawerOpen = () => {
     setDrawerOpen(true);
   };
@@ -160,6 +176,46 @@ export default function NavBar({ items }: IProps) {
   const handleClose = () => {
     setAnchorEl(null);
   };
+  const drawer = (<><div className={classes.toolbar}>
+    <Box flex={1}>
+      <Typography
+        noWrap
+        component={RouterLink}
+        to="/home"
+        variant="h5"
+        color="textPrimary"
+        style={{
+          paddingLeft: 20,
+          textDecoration: "none",
+          fontWeight: 800,
+          fontFamily: "Poppins",
+        }}>
+        Buzzle!
+      </Typography>
+    </Box>
+    <IconButton onClick={handleDrawerClose}>
+      {theme.direction === "rtl" ? (
+        <ChevronRightIcon />
+      ) : (
+        <ChevronLeftIcon />
+      )}
+    </IconButton>
+  </div>
+    <Divider />
+    <List>
+      {items.map((item, index) => (
+        <RoleBasedView key={item.text} allowedRoles={item?.allowedRoles ?? []}>
+          <ListItemLink
+            key={item.text + item.icon}
+            to={item.to}
+            primary={drawerOpen ? item.text : ""}
+            icon={item.icon}
+          />
+        </RoleBasedView>
+      ))}
+    </List></>)
+
+  const container = window !== undefined ? () => window().document.body : undefined;
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -196,7 +252,14 @@ export default function NavBar({ items }: IProps) {
               Buzzle!
             </Typography>
           )}
+          <div className={classes.grow} />
           <div className={classes.menu}>
+            <Chip
+              style={{ marginRight: 10 }}
+              avatar={<AccountBalanceWalletIcon />}
+              label={`${getConvertedCurrency(parseFloat(`${user?.stripeCustomer?.balance ?? 0}`))}`}
+              variant="default"
+            />
             <Chip
               avatar={<Avatar alt="avatar"
                 src={user?.photoURL || "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png"}
@@ -237,8 +300,8 @@ export default function NavBar({ items }: IProps) {
                   style={{
                     paddingLeft: 10,
                     paddingRight: 10,
-                    marginBottom:10,
-                    fontWeight:700,
+                    marginBottom: 10,
+                    fontWeight: 700,
                     textDecoration: "none",
                     fontFamily: "Poppins",
                   }}>
@@ -261,58 +324,39 @@ export default function NavBar({ items }: IProps) {
           </div>
         </Toolbar>
       </AppBar>
-      <Drawer
-        variant="permanent"
-        className={clsx(classes.drawer, {
-          [classes.drawerOpen]: drawerOpen,
-          [classes.drawerClose]: !drawerOpen,
-        })}
-        classes={{
-          paper: clsx({
+      <Hidden smUp implementation="css">
+        <Drawer
+          container={container}
+          variant="temporary"
+          anchor={theme.direction === 'rtl' ? 'right' : 'left'}
+          open={drawerOpen}
+          onClose={handleDrawerToggle}
+          classes={{
+            paper: classes.drawerPaper,
+          }}
+          ModalProps={{
+            keepMounted: true, // Better open performance on mobile.
+          }}
+        >
+          {drawer}
+        </Drawer>
+      </Hidden>
+      <Hidden xsDown implementation="css">
+        <Drawer
+          variant="permanent"
+          className={clsx(classes.drawer, {
             [classes.drawerOpen]: drawerOpen,
             [classes.drawerClose]: !drawerOpen,
-          }),
-        }}>
-        <div className={classes.toolbar}>
-          <Box flex={1}>
-            <Typography
-              noWrap
-              component={RouterLink}
-              to="/home"
-              variant="h5"
-              color="textPrimary"
-              style={{
-                paddingLeft: 20,
-                textDecoration: "none",
-                fontWeight: 800,
-                fontFamily: "Poppins",
-              }}>
-              Buzzle!
-            </Typography>
-          </Box>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === "rtl" ? (
-              <ChevronRightIcon />
-            ) : (
-              <ChevronLeftIcon />
-            )}
-          </IconButton>
-        </div>
-        <Divider />
-        <List>
-          {items.map((item, index) => (
-            <RoleBasedView key={index} allowedRoles={item?.allowedRoles ?? []}>
-              <ListItemLink
-                key={item.text + item.icon}
-                to={item.to}
-                primary={item.text}
-                icon={item.icon}
-              />
-            </RoleBasedView>
-          ))}
-
-        </List>
-      </Drawer>
+          })}
+          classes={{
+            paper: clsx({
+              [classes.drawerOpen]: drawerOpen,
+              [classes.drawerClose]: !drawerOpen,
+            }),
+          }}>
+          {drawer}
+        </Drawer>
+      </Hidden>
     </div>
   );
 }

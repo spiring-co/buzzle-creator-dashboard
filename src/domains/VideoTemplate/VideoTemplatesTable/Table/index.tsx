@@ -5,40 +5,30 @@ import {
     useLocation,
     useRouteMatch,
 } from "react-router-dom";
-
+import ShopIcon from '@material-ui/icons/Shop';
 // libs
 import * as timeago from "timeago.js";
 import MaterialTable, { Query, Column, Action, MTableCell } from "material-table";
-
 import {
     Avatar,
     Box,
-    Button,
     Chip,
-    Container,
     Fade,
-    Link,
     Paper,
     Tooltip,
-    Typography,
 } from "@material-ui/core";
-
 // icons
 import PublishIcon from "@material-ui/icons/Publish";
-import FileCopyIcon from "@material-ui/icons/FileCopy";
-
-// components
-import SnackAlert from "common/SnackAlert";
-
-import { SnackbarProvider, useSnackbar } from "notistack";
+import { SnackbarKey, useSnackbar } from "notistack";
 // services
 import { useAuth } from "services/auth";
 import { useAPI } from "services/APIContext";
 import JSONEditorDialoge from "common/JSONEditorDialoge";
 import { publishState, VideoTemplate } from "services/buzzle-sdk/types";
 import { ExtraSmallText } from "common/Typography";
-import moment from "moment";
 import VideoTemplatePublishDialog from "domains/VideoTemplate/VideoTemplatePublishDialog";
+import { Add } from "@material-ui/icons";
+import { useReAuthFlow } from "services/Re-AuthContext";
 
 function useQuery() {
     return new URLSearchParams(useLocation().search);
@@ -49,34 +39,50 @@ type IProps = {
 export default ({ ownership }: IProps) => {
     const history = useHistory();
     // const { } = useLocation()
-
-    const { VideoTemplate, Job } = useAPI()
+    const { VideoTemplate, User, } = useAPI()
     let queryParam = useQuery();
     let { url, path } = useRouteMatch();
-
     // state variables
     const [error, setError] = useState<Error | null>(null);
     const [selectedVideoTemplate, setSelectedVideoTemplate] = useState<VideoTemplate | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [mode, setMode] = useState<"publish" | "editor" | "">("")
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-    const { user } = useAuth();
+    const { user, refreshUser, } = useAuth();
+    const { reAuthInit } = useReAuthFlow()
     const { role } = user;
-
     const tableRef = useRef<any>(null);
+    const handleAddTemplate = async (id: string) => {
+        let loading: SnackbarKey | null = null
+        try {
+            loading = enqueueSnackbar("Adding template to your templates", {
+                persist: true,
+            })
+            const user = await User.addTemplate([id])
+            refreshUser(user.data)
+            handleRefresh()
+            loading !== null ? closeSnackbar(loading) : console.log("not loading")
+            enqueueSnackbar("Template added successfully, No you can render it from Your templates", {
+                variant: 'success'
+            })
 
+        } catch (err) {
+            loading !== null ? closeSnackbar(loading) : console.log("not loading")
+            enqueueSnackbar("Failed to add template to your templates", {
+                variant: 'error'
+            })
+        }
+    }
     const handleDelete = async (id: string) => {
-        const action = window.confirm("Are you sure, you want to delete");
-        if (!action) return;
-
         try {
             setIsDeleting(true);
+            await reAuthInit()
             await VideoTemplate.delete(id);
-        } catch (err) {
-            setError(err as Error);
-        } finally {
             tableRef.current && tableRef.current.onQueryChange();
             setIsDeleting(false);
+        } catch (err) {
+            setIsDeleting(false);
+            setError(err as Error);
         }
     };
 
@@ -110,7 +116,7 @@ export default ({ ownership }: IProps) => {
             "",
             orderBy,
             orderDirection ? orderDirection : "desc",
-            { type: ownership }
+            { type: ownership, fields: 'createdBy' }
         )
             .then(({ data, count: totalCount }) => {
                 return { data, page, totalCount };
@@ -167,11 +173,34 @@ export default ({ ownership }: IProps) => {
         {
             title: "Title",
             field: "title",
-            render: ({ title, thumbnail }) => <Chip
-                avatar={<Avatar alt="Natacha" src={thumbnail} />}
-                label={title}
-                variant="outlined"
-            />,
+            render: ({ title, thumbnail }) => <div>
+                <Chip
+                    avatar={<Avatar alt="Natacha" src={thumbnail} />}
+                    label={title}
+                    variant="outlined"
+                />
+            </div>,
+        },
+        {
+            title: "Owned by",
+            render: function ({
+                idCreatedBy, createdBy = {}
+            }) {
+                return (
+                    <Tooltip
+                        TransitionComponent={Fade}
+                        title={idCreatedBy === user?.uid ? "This template is owned by you" : `Owned by ${createdBy?.name ?? "Guest"}`}>
+                        <Chip
+                            size="small"
+                            label={idCreatedBy === user?.uid ? "You" : (createdBy?.name ?? "Guest")}
+                            style={{
+                                background: idCreatedBy === user?.uid ? "#3742fa" : "#000",
+                                color: "white",
+                            }}
+                        />
+                    </Tooltip>
+                );
+            },
         },
         {
             title: "Versions",
@@ -202,10 +231,9 @@ export default ({ ownership }: IProps) => {
         },
         {
             title: "Last Updated",
-            render: ({ dateUpdated }) => <ExtraSmallText>{moment(dateUpdated).calendar()}</ExtraSmallText>
+            render: ({ dateUpdated = "" }) => <ExtraSmallText>{timeago.format(new Date(dateUpdated))}</ExtraSmallText>
         },
     ], [])
-    // const actions: Action<VideoTemplate> = []
     return (
         <Box>
             <MaterialTable
@@ -239,6 +267,13 @@ export default ({ ownership }: IProps) => {
                 //   },
                 // }}
                 actions={[
+                    ({ id = "", idCreatedBy = "" }) => (user?.uid === idCreatedBy ? false : !user?.guestTemplateUsed.includes(id)) && user?.role === "user" ? null : {
+                        icon: () => <Add />,
+                        tooltip: `Create render of this template`,
+                        //@ts-ignore
+                        onClick: (e, { tableData, ...data }) => {
+                        },
+                    },
                     ({ idCreatedBy = "", publishState = "" }) => user?.role == "admin" && publishState.toLowerCase() === "pending" ? {
                         icon: () => <PublishIcon />,
                         tooltip: `Approve template`,
@@ -257,6 +292,14 @@ export default ({ ownership }: IProps) => {
                             setMode('publish')
 
                         },
+                    } : null,
+                    ownership === "public" && user?.role === "user" ? {
+                        icon: () => <ShopIcon />,
+                        tooltip: `Add template to your templates`,
+                        //@ts-ignore
+                        onClick: (e, { tableData, ...data }) => {
+                            handleAddTemplate((data as VideoTemplate)?.id ?? "")
+                        }
                     } : null,
                     ({ idCreatedBy = "" }) => user?.uid === idCreatedBy || user?.role === "admin" ? {
                         icon: "edit",
@@ -321,18 +364,6 @@ export default ({ ownership }: IProps) => {
     );
 };
 
-/**
-  <SnackAlert
-        open={err || status}
-        type={status ? "success" : "error"}
-        message={
-          status
-            ? status?.message ?? "Deleted Successfully"
-            : err?.message ?? "Oops, something went wrong, action failed !"
-        }
-        onClose={() => setDeleteStatus({ status: false, err: false })}
-      />
- */
 const getColorFromState = (state: publishState) => {
     switch (state) {
         case "rejected":
@@ -344,4 +375,4 @@ const getColorFromState = (state: publishState) => {
         default:
             return "grey";
     }
-};
+}

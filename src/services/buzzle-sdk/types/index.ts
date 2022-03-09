@@ -84,7 +84,7 @@ export interface VideoTemplate {
         src: string;
     }>;
     fonts?: Array<Font>;
-    _id?: string;
+
     title: string;
     idCreatedBy: string;
     src: string;
@@ -95,7 +95,12 @@ export interface VideoTemplate {
     slug: string;
     dateCreated?: string;
     dateUpdated?: string;
-    __v?: number;
+    createdBy?: {
+        dateCreated: string
+        email: string
+        id: string
+        name: string
+    }
 }
 
 export interface Font {
