@@ -1,19 +1,4 @@
 [[redirects]]
-  from = "/aeinteract"
-  to = "http://34.229.239.151:4488"
-  status = 200
-  force = true 
-  headers = {X-From = "Netlify"}
-  signed = "API_SIGNATURE_TOKEN"
-  
-[[redirects]]
-from = "http://ip-api.com/json"
-to = "http://ip-api.com/json"
-status = 200
-force = true
-
-
-[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
