@@ -48,7 +48,7 @@ export default ({ handleSubmit, data, pricing }: IProps) => {
         }
 
     }
-    const isAllVersionHasRenderTime = pricing.every(({ half, full }) => half?.render?.averageTime && full?.render?.averageTime)
+    const isAllVersionHasRenderTime = pricing.length ? pricing.every(({ half, full }) => half?.render?.averageTime && full?.render?.averageTime) : false
     return <Container>
         <Card style={{ margin: 15 }} variant="outlined">
             <Table size="small">

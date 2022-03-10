@@ -67,7 +67,7 @@ export default ({ handleClose, data, onDone, ...props }: IProps) => {
     try {
       setError(null)
       setLoading(true)
-      setPricing(await Pricing.video(data.id || ""))
+      setPricing(await Pricing.video(data.id || "","",{duration:'all'}))
       setLoading(false)
     } catch (err) {
       setError(err as Error)

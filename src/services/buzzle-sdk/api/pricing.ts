@@ -7,10 +7,12 @@ export default function VideoTemplate(
     headers: HeadersInit
 ) {
     return {
-        video: async (id: string, query?: string, extraParams?: Record<string, any>)
+        video: async (id: string, query?: string, extraParams?: {
+            duration?: "month" | "all"
+        })
             : Promise<Array<Pricing>> => {
             return apiRequest(`${baseUrl}/renderTime/${id}?${query}&${objectToQueryString(
-                extraParams
+                extraParams || {}
             )}`, {
                 method: "GET",
                 headers,

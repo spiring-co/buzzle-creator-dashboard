@@ -10,7 +10,7 @@ import fx from 'money';
 import { getCountry } from './api';
 import { countryCodes, currencyCodes, currencyInfo, exchangeRates } from '../helpers/Currencies';
 const defaultValue = {
-  getConvertedCurrency: (value: number, round?: boolean): string => '',
+  getConvertedCurrency: (value: number, round?: boolean, humanize?: boolean): string => '',
   currency: 'INR',
   countryCode: '+91',
   getConvertedCurrencyValue: (value: number): number => 0,

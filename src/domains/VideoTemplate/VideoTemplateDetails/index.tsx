@@ -94,7 +94,7 @@ export default () => {
       setError(null)
       setLoading(true)
       setData(state?.videoTemplate || await VideoTemplate.get(id));
-      setPricing(await Pricing.video(id))
+      setPricing(await Pricing.video(id, "", { duration: 'all' }))
       setLoading(false);
     } catch (err) {
       setLoading(false);
@@ -344,10 +344,6 @@ const VideoTemplateCard = ({ version, thumbnail, price, isOwner }: {
           </TableRow>
         </TableHead>
         <TableBody>
-          {/* <TableCell>Loyalty Amount</TableCell>
-          <TableCell>{price?.loyaltyAmount}</TableCell>
-          <TableCell><b>{getConvertedCurrency(price?.half?.render?.price as number)}</b></TableCell> */}
-
           {["render", "buzzle-action-watermark", "buzzle-action-merge-videos", "buzzle-action-add-audio", "buzzle-action-add-thumbnail",
             "buzzle-action-video-orientation"].map((action) => {
               let half = price ? (price)?.half[action as Action]?.price || null : null
@@ -360,11 +356,11 @@ const VideoTemplateCard = ({ version, thumbnail, price, isOwner }: {
                     {getNameFromActionText(action as Action)}
                   </TableCell>
                   <TableCell align="center">{half
-                    ? getConvertedCurrency(half as number, true)
-                    : instancePrice !== "NA" ? `${getConvertedCurrency(instancePrice, true)}/sec` : "NA"}</TableCell>
+                    ? getConvertedCurrency(half as number, true, false)
+                    : instancePrice !== "NA" ? `${getConvertedCurrency(instancePrice, true, false)}/sec` : "NA"}</TableCell>
                   <TableCell align="center">{full
-                    ? getConvertedCurrency(full as number, true)
-                    : instancePrice !== "NA" ? `${getConvertedCurrency(instancePrice, true)}/sec` : "NA"}</TableCell>
+                    ? getConvertedCurrency(full as number, true, false)
+                    : instancePrice !== "NA" ? `${getConvertedCurrency(instancePrice, true, false)}/sec` : "NA"}</TableCell>
                 </TableRow>
               )
             })}
