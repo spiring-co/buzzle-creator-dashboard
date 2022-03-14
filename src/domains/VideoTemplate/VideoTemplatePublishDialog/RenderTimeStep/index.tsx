@@ -21,21 +21,25 @@ export default ({ handleSubmit, data, pricing }: IProps) => {
     const { enqueueSnackbar } = useSnackbar()
     const [loading, setLoading] = useState<boolean>(false)
     const handleRenderJob = async () => {
-        //get
-        const testJobs: TestJobVersionsParams = pricing.map(({ half, full, idVersion }) =>
-            [...!half?.render?.averageTime ? [{
-                ...(data?.versions?.find(({ id }) => id === idVersion) || {} as VersionInterface),
-                id: idVersion, settingsTemplate: "half", dataFillType: "maxLength"
-            }] : [],
-            ...!full?.render?.averageTime ? [{
-                ...(data?.versions?.find(({ id }) => id === idVersion) || {} as VersionInterface),
-                id: idVersion, settingsTemplate: "full",
-                dataFillType: "maxLength"
-            }] : []]).flat()
         try {
+            const testJobs: TestJobVersionsParams = data?.versions?.map((version) => {
+                const { full, half, idVersion = version?.id } = (pricing?.find(({ idVersion }) => idVersion === version?.id) || {}) as Pricing
+                return ([...!half?.render?.averageTime ? [{
+                    ...version,
+                    id: idVersion,
+                    settingsTemplate: "half",
+                    dataFillType: "maxLength"
+                }] : [],
+                ...!full?.render?.averageTime ? [{
+                    ...version,
+                    id: idVersion,
+                    settingsTemplate: "full",
+                    dataFillType: "maxLength"
+                }] : []])
+            }).flat()
             setLoading(true)
-            await Promise.all(createTestJobs(data?.id || "", testJobs)
-                ?.map(async (data) => await Job.create(data)))
+            const jobs = createTestJobs(data?.id || "", testJobs)
+           await Promise.all(jobs?.map(async (data) => await Job.create(data)))
             history.push("/home/jobs", {
                 message: "Video renders created successfully, Once finished you can continue to publish the template section."
             })

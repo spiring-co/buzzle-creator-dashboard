@@ -27,6 +27,8 @@ export type AppConfig = {
     "value": number,
     "currency": string
   },
+  apiURL: string,
+  socketURL: string,
   "createrLoyaltyPercentageShareValue": number,
   "renderLoyaltyPercentageShareValye": number,
   instances: Array<ec2Instance>

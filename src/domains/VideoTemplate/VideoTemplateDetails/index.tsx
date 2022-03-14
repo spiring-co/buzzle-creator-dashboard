@@ -93,8 +93,9 @@ export default () => {
     try {
       setError(null)
       setLoading(true)
-      setData(state?.videoTemplate || await VideoTemplate.get(id));
-      setPricing(await Pricing.video(id, "", { duration: 'all' }))
+      const template = (state?.videoTemplate || await VideoTemplate.get(id)) as VideoTemplate
+      setData(template);
+      setPricing((await Pricing.video(id, "", { duration: 'all' }))?.filter(({ idVersion }) => template?.versions?.find(({ id }) => id === idVersion)))
       setLoading(false);
     } catch (err) {
       setLoading(false);

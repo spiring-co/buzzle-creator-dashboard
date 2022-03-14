@@ -257,7 +257,7 @@ export default function NavBar({ items, window }: IProps) {
             <Chip
               style={{ marginRight: 10 }}
               avatar={<AccountBalanceWalletIcon />}
-              label={`${getConvertedCurrency(parseFloat(`${user?.stripeCustomer?.balance ?? 0}`))}`}
+              label={`${getConvertedCurrency(parseFloat(`${user?.stripeCustomer?.balance ?? 0}`),true)}`}
               variant="default"
             />
             <Chip
