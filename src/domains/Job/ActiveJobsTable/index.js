@@ -19,6 +19,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useAPI } from "services/APIContext";
 import { useAuth } from "services/auth";
+import { useConfig } from "services/RemoteConfigContext";
 import io from "socket.io-client";
 import * as timeago from "timeago.js";
 
@@ -29,7 +30,7 @@ function useQuery() {
 export default ({ onRowClick }) => {
   // init socket on mount
   const { Job } = useAPI()
-
+  const { socketURL } = useConfig()
   const [activeJobs, setActiveJobs] = useState([]);
   const [jobStats, setJobStats] = useState({});
   const [activeJobLogs, setActiveJobLogs] = useState([]);
@@ -40,7 +41,7 @@ export default ({ onRowClick }) => {
 
   useEffect(() => {
     setSocket(
-      io.connect(process.env.REACT_APP_SOCKET_SERVER_URL, {
+      io.connect(socketURL || process.env.REACT_APP_SOCKET_SERVER_URL, {
         withCredentials: false,
       })
     );

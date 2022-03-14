@@ -10,6 +10,7 @@ import { useAuth } from './auth';
 import API from './buzzle-sdk';
 import { firebaseAuth } from './firebase';
 import APIInterface from 'buzzle-sdk/dist/lib/interfaces';
+import { useConfig } from './RemoteConfigContext';
 
 const APIContext = createContext(
     {
@@ -42,10 +43,11 @@ function useAPI(): ReturnType<typeof API> & {
 
 function APIProvider(props: IProps) {
     const [token, setToken] = useState<string>("")
+    const { apiURL } = useConfig()
     const [isAPIReady, setIsAPIReady] = useState<boolean>(!!token)
     const [methods, setMethods] = useState(
         API({
-            baseUrl: process.env.REACT_APP_API_URL || "",
+            baseUrl: apiURL || process.env.REACT_APP_API_URL || "",
             authToken: token
         })
     );
@@ -54,12 +56,12 @@ function APIProvider(props: IProps) {
         if (token) {
             setMethods(
                 API({
-                    baseUrl: process.env.REACT_APP_API_URL || "",
+                    baseUrl: apiURL || process.env.REACT_APP_API_URL || "",
                     authToken: token
                 }))
             setIsAPIReady(!!token)
         }
-    }, [token]);
+    }, [token, apiURL]);
     const value = useMemo(() => {
         return { ...methods, isAPIReady, setToken, token };
     }, [methods, isAPIReady, token]);

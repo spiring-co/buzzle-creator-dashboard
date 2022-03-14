@@ -39,15 +39,7 @@ export default function Job(baseUrl: String, headers: HeadersInit) {
       extra,
       extraParams,
     }: JobParam) => {
-      console.log("creating job",baseUrl,{
-        actions,
-        data,
-        idVideoTemplate,
-        idVersion,
-        renderPrefs,
-        extra,
-        extraParams,
-      })
+    
       return apiRequest(`${baseUrl}/jobs${extraParams ? `?${objectToQueryString(extraParams || {})}` : ""}`, {
         method: "POST",
         headers,

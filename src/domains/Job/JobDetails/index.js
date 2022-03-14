@@ -58,6 +58,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { useAPI } from "services/APIContext";
 import LogsTab from "./LogsTab";
 import FileUploader from "common/FileUploader";
+import { useConfig } from "services/RemoteConfigContext";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -115,7 +116,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default () => {
   const { Job } = useAPI()
-
+  const { socketURL } = useConfig()
   const [job, setJob] = useState({});
   const [error, setError] = useState(false);
   const [open, setOpen] = useState(false);
@@ -140,7 +141,7 @@ export default () => {
 
   // init socket on mount
   useEffect(() => {
-    setSocket(io.connect(process.env.REACT_APP_SOCKET_SERVER_URL), {
+    setSocket(io.connect(socketURL || process.env.REACT_APP_SOCKET_SERVER_URL), {
       withCredentials: true,
     });
   }, []);
