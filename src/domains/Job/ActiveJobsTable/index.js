@@ -54,27 +54,31 @@ export default ({ onRowClick }) => {
     if (socket) {
       console.log(socket)
     }
-    socket.on("job-progress", ({ id, state, progress, rendererInstance }) => {
-      setActiveJobs((activeJobs) => {
-        const index = activeJobs.map(({ id }) => id).indexOf(id);
-        if (index === -1) {
-          return [...activeJobs, { id, state, progress, rendererInstance }];
-        } else
-          return activeJobs?.map((data) =>
-            data.id === id ? { id, state, progress, rendererInstance } : data
-          );
-      });
+    socket.on("job-progress", ({ id, state, idCreatedBy, progress, rendererInstance }) => {
+      if (idCreatedBy === user?.uid) {
+        setActiveJobs((activeJobs) => {
+          const index = activeJobs.map(({ id }) => id).indexOf(id);
+          if (index === -1) {
+            return [...activeJobs, { id, state, progress, rendererInstance }];
+          } else
+            return activeJobs?.map((data) =>
+              data.id === id ? { id, state, progress, rendererInstance } : data
+            );
+        });
+      }
     });
-    socket.on("job-logs", ({ id, logs }) => {
-      setActiveJobLogs((activeJobLogs) => {
-        const index = activeJobLogs.map(({ id }) => id).indexOf(id);
-        if (index === -1) {
-          return [...activeJobLogs, { id, logs }];
-        } else
-          return activeJobLogs?.map((log) =>
-            log.id === id ? { id, logs } : log
-          );
-      });
+    socket.on("job-logs", ({ id, idCreatedBy = user?.uid, logs }) => {
+      if (idCreatedBy === user?.uid) {
+        setActiveJobLogs((activeJobLogs) => {
+          const index = activeJobLogs.map(({ id }) => id).indexOf(id);
+          if (index === -1) {
+            return [...activeJobLogs, { id, logs }];
+          } else
+            return activeJobLogs?.map((log) =>
+              log.id === id ? { id, logs } : log
+            );
+        });
+      }
     });
     socket.on("job-status", (data) => {
       let rendering = 0;
