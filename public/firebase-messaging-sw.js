@@ -9,16 +9,18 @@ firebase.initializeApp({
     messagingSenderId: "645987891897",
     appId: "1:645987891897:web:70215e856e7ef9e3e87968"
 });
-const messaging = firebase.messaging();
+let messaging = null;
+if (firebase.messaging.isSupported()) {
+    messaging = firebase.messaging();
+    messaging.onBackgroundMessage((payload) => {
+        console.log('[firebase-messaging-sw.js] Received background message ', payload);
+        // Customize notification here
+        const notificationTitle = 'Message Alert';
+        const notificationOptions = {
+            body: payload.data.title,
+        };
 
-messaging.onBackgroundMessage((payload) => {
-    console.log('[firebase-messaging-sw.js] Received background message ', payload);
-    // Customize notification here
-    const notificationTitle = 'Message Alert';
-    const notificationOptions = {
-        body: payload.data.title,
-    };
-
-    self.registration.showNotification(notificationTitle,
-        notificationOptions);
-});
+        self.registration.showNotification(notificationTitle,
+            notificationOptions);
+    });
+}

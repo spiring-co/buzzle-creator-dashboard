@@ -26,12 +26,17 @@ remoteConfig.settings = {
   minimumFetchIntervalMillis: 0,
   fetchTimeoutMillis: 6000,
 };
+let messaging: null | firebase.messaging.Messaging = null;
+if (firebase.messaging.isSupported()) {
+  messaging = firebase.messaging();
+  messaging.usePublicVapidKey(
+    "BOfud4xtKcWRgYwHTN56ToeaFigYT2DGKXJryxhkwyLRqE2uGtRsDZotUMI5JiwLnMqFlC9TNt1p3jdcirF725U"
+  );
 
-export const messaging = firebase.messaging();
-messaging.usePublicVapidKey(
-  "BOfud4xtKcWRgYwHTN56ToeaFigYT2DGKXJryxhkwyLRqE2uGtRsDZotUMI5JiwLnMqFlC9TNt1p3jdcirF725U"
-);
-
-messaging.onMessage(function (payload) {
-  console.log("payload", payload)
-})
+  messaging.onMessage(function (payload) {
+    console.log("payload", payload)
+  })
+}
+export {
+  messaging
+}
