@@ -171,19 +171,14 @@ export default () => {
     try {
       setError(false);
       setIsLoading(true);
-      console.log("fetchJob", await Job.get(id, "fields=idVideoTemplate videoTemplate"));
       setJob(await Job.get(id, "fields=idVideoTemplate videoTemplate"));
       setIsLoading(false);
     } catch (err) {
-      console.log(err);
       setError(err);
       setIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    console.log("jobis", JSON.stringify(job));
-  }, [job]);
 
   const handleUpdateJob = async () => {
     try {
@@ -255,8 +250,6 @@ export default () => {
   const sortedOutput = output?.sort(
     (a, b) => new Date(b?.dateCreated) - new Date(a?.dateCreated)
   );
-  console.log("sortedoutput", sortedOutput);
-
   useEffect(() => {
     if (
       progress?.state?.toLowerCase() === "finished" &&
@@ -284,10 +277,8 @@ export default () => {
   };
 
   const handleUpdateAsset = async (index, key, value) => {
-    console.log(key, value);
     const idArray = Object.keys(data);
     job.data[idArray[index]] = value;
-    console.log(job);
     setJob({ ...job, data: job.data });
   };
   const renderJobInHd = async () => {
@@ -420,7 +411,6 @@ export default () => {
               value={selectedOutputIndex}
               autoWidth
               onChange={(e) => {
-                console.log(e.target.value);
                 setSelectedOutputIndex(e.target.value);
               }}
             >
@@ -634,7 +624,6 @@ export default () => {
                 {
                   title: "Label",
                   render: ({ key }) => {
-                    console.log("jobis", job);
                     const version = job?.videoTemplate?.versions.find(
                       (v) => v?.id === job?.idVersion
                     );
@@ -708,7 +697,6 @@ export default () => {
                       value?.startsWith("http://") ||
                       value?.startsWith("https://")
                     ) {
-                      console.log(height, width);
                       return (
                         <ImageEditRow
                           value={value}

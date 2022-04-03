@@ -10,6 +10,7 @@ import FileUploader from "common/FileUploader";
 import { Orientation } from "get-orientation";
 
 export default ({ initialValue, onSubmit, handleEdit }) => {
+
     const actionName = Object.keys(initialValue)[0];
     const actionValue = initialValue[actionName];
     const [compress, setCompress] = useState(
@@ -28,7 +29,7 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
                 module: "buzzle-action-video-orientation",
             }
     );
-    const [watermark, setWaterMark] = useState(
+    const [addWatermark, setAddWatermark] = useState(
         actionName === "addWaterMark"
             ? actionValue
             : {
@@ -36,7 +37,7 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
                 watermark: null,
             }
     );
-    const [thumbnail, setThumbnail] = useState(
+    const [addThumbnail, setAddThumbnail] = useState(
         actionName === "addThumbnail"
             ? actionValue
             : {
@@ -181,11 +182,11 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
         return (
             <><FileUploader
                 name={"watermarkFile"}
-                value={watermark.watermark}
+                value={addWatermark.watermark}
                 onError={(e) => setFileError(e.message)}
                 onChange={(url) => {
-                    setWaterMark({ ...watermark, watermark: url });
-                    handleEdit({ addWaterMark: { ...watermark, watermark: url } });
+                    setAddWatermark({ ...addWatermark, watermark: url });
+                    handleEdit({ addWaterMark: { ...addWatermark, watermark: url } });
                 }}
                 accept={"image/*"}
                 uploadDirectory={"jobImages"}
@@ -203,10 +204,10 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
                 fullWidth
                 variant="outlined"
                 margin="dense"
-                value={thumbnail.thumbnailDuration}
+                value={addThumbnail.thumbnailDuration}
                 onChange={(e) => {
-                    setThumbnail({ ...thumbnail, thumbnailDuration: e.target.value });
-                    handleEdit({ addThumbnail: { ...thumbnail, thumbnailDuration: e?.target?.value } });
+                    setAddThumbnail({ ...addThumbnail, thumbnailDuration: e.target.value });
+                    handleEdit({ addThumbnail: { ...addThumbnail, thumbnailDuration: e?.target?.value } });
                 }}
                 type="text"
                 label={"Thumbnail durationa in frames"}
@@ -214,11 +215,11 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
             />
             <FileUploader
                 name={"thumbnailFile"}
-                value={thumbnail.thumbnail}
+                value={addThumbnail.thumbnail}
                 onError={(e) => setFileError(e.message)}
                 onChange={(url) => {
-                    setThumbnail({ ...thumbnail, thumbnail: url });
-                    handleEdit({ addThumbnail: { ...thumbnail, thumbnail: url } });
+                    setAddThumbnail({ ...addThumbnail, thumbnail: url });
+                    handleEdit({ addThumbnail: { ...addThumbnail, thumbnail: url } });
                 }}
                 uploadDirectory={"jobImages"}
                 accept={"image/*"}
@@ -347,7 +348,6 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
         <>
             <FormControl fullWidth margin="dense" variant="outlined">
                 <InputLabel id="property-select">Action Name</InputLabel>
-
                 <Select
                     labelId="property-select"
                     id="property-select"
