@@ -30,7 +30,7 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
             }
     );
     const [addWatermark, setAddWatermark] = useState(
-        actionName === "addWaterMark"
+        actionName === "addWatermark"
             ? actionValue
             : {
                 module: "buzzle-action-watermark",
@@ -186,7 +186,7 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
                 onError={(e) => setFileError(e.message)}
                 onChange={(url) => {
                     setAddWatermark({ ...addWatermark, watermark: url });
-                    handleEdit({ addWaterMark: { ...addWatermark, watermark: url } });
+                    handleEdit({ addWatermark: { ...addWatermark, watermark: url } });
                 }}
                 accept={"image/*"}
                 uploadDirectory={"jobImages"}
@@ -337,7 +337,7 @@ export default ({ initialValue, onSubmit, handleEdit }) => {
     const actions = {
         compress: renderCompress(),
         upload: renderUpload(),
-        addWaterMark: renderWatermark(),
+        addWatermark: renderWatermark(),
         mergeVideos: renderMergeVideos(),
         addAudio: renderAddAudio(),
         addThumbnail: renderAddThumbnail(),

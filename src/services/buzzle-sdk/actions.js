@@ -5,7 +5,7 @@
 //     output,
 //   }),
 
-//   addWaterMark: (
+//   addWatermark: (
 //     input = "encoded.mp4",
 //     output = "watermarked.mp4",
 //     watermark

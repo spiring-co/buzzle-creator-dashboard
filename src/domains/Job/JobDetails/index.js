@@ -743,7 +743,7 @@ export default () => {
                     case "buzzle-action-handbrake":
                       return { compress: action };
                     case "buzzle-action-watermark":
-                      return { addWaterMark: action };
+                      return { addWatermark: action };
                     case "buzzle-action-add-thumbnail":
                       return { addThumbnail: action };
                     case "buzzle-action-upload":

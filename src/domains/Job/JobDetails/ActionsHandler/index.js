@@ -58,7 +58,7 @@ export default ({ prerender = [], postrender = [], onSubmit }) => {
       return;
     }
     setPostrenderActions(
-      reorder(postrenderActions, result.source.index, result.destination.index)
+      [...reorder(postrenderActions, result.source.index, result.destination.index)]
     );
   };
   const handleActionSubmit = () => {
@@ -242,10 +242,10 @@ export default ({ prerender = [], postrender = [], onSubmit }) => {
                               )}>
                               <ListItemText
                                 primary={name}
-                                secondary={Object.keys(item[name]||{})?.map(
+                                secondary={Object.keys(item[name] || {})?.map(
                                   (key, index) => (
                                     <Typography>{`${[key]}: ${JSON.stringify(
-                                      item[name][key]||{}
+                                      item[name][key] || {}
                                     )}`}</Typography>
                                   )
                                 )}
