@@ -155,9 +155,10 @@ export default forwardRef(({
         {type === 'file' ?
           <>
             <input
-              // onClick={(event) => {
-              //   event.target.value = null
-              // }}
+              onClick={(event) => {
+                //@ts-ignore
+                event.target.value = null
+              }}
               accept={accept}
               id={name}
               type="file"
@@ -216,8 +217,9 @@ export default forwardRef(({
         }
         }
         onCancel={() => {
-          setFilename(value ? value.substring(value.lastIndexOf("/") + 1) : "");
           setIsCropperOpen(false)
+          setFilename(value ? value.substring(value.lastIndexOf("/") + 1) : "");
+
         }} />
       }
     </Box>

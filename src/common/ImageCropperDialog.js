@@ -2,9 +2,10 @@ import {
   AppBar,
   Button,
   Dialog,
+  DialogContent,
   IconButton,
   makeStyles,
-  Slide,
+  Slide, Box,
   Slider,
   Toolbar,
   Typography,
@@ -24,6 +25,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const useStyles = makeStyles((theme) => ({
   appBar: {
     position: "relative",
+    height: 70,
   },
   button: {
     position: "absolute",
@@ -41,7 +43,8 @@ export default ({ image, cropSize, setIsCropperOpen, onUpload, onCancel }) => {
     setCroppedAreaPixels(croppedAreaPixels);
   };
   const handleSave = async () => {
-    onUpload(await getCroppedImg(image, croppedAreaPixels, rotation));
+    console.log(croppedAreaPixels)
+    // onUpload(await getCroppedImg(image, croppedAreaPixels, rotation));
   };
   return (
     <Dialog
@@ -50,6 +53,7 @@ export default ({ image, cropSize, setIsCropperOpen, onUpload, onCancel }) => {
       TransitionComponent={Transition}
       onClose={() => setIsCropperOpen(false)}
       aria-labelledby="form-dialog-title">
+
       <AppBar className={classes.appBar}>
         <Toolbar>
           <IconButton
@@ -162,20 +166,23 @@ export default ({ image, cropSize, setIsCropperOpen, onUpload, onCancel }) => {
           />
         </Toolbar>
       </AppBar>
-      <Cropper
-        image={image}
-        crop={crop}
-        zoom={zoom}
-        minZoom={0.5}
-        maxZoom={5}
-        onRotationChange={setRotation}
-        rotation={rotation}
-        restrictPosition={false}
-        cropSize={cropSize}
-        onCropChange={setCrop}
-        onCropComplete={onCropComplete}
-        onZoomChange={setZoom}
-      />
+      <Box style={{ position: 'relative', background: '#333', height: window.innerHeight - 70 }}>
+        <Cropper
+          image={image}
+          crop={crop}
+          zoom={zoom}
+          minZoom={0.5}
+          maxZoom={5}
+          onRotationChange={setRotation}
+          rotation={rotation}
+          restrictPosition={false}
+          aspect={parseInt(`${cropSize?.width ?? 100}`, 10) / parseInt(`${cropSize?.height ?? 100}`)}
+          // cropSize={cropSize}//TODO
+          onCropChange={setCrop}
+          onCropComplete={onCropComplete}
+          onZoomChange={setZoom}
+        />
+      </Box>
     </Dialog>
   );
 };

@@ -44,7 +44,7 @@ const imageEditComponent = {
     );
   },
 };
-export default ({ onChange, value, height, width, extension = 'png' }) => {
+export default ({ onChange, value, height, width, extension = 'png', name = `${Date.now()}` }) => {
   const [imageEditType, setImageEditType] = useState("image");
   const [isValid, setIsValid] = useState(value.split(".").pop() === extension)
   const [isConverting, setIsConverting] = useState(false)
@@ -98,17 +98,19 @@ export default ({ onChange, value, height, width, extension = 'png' }) => {
       */}
       <FileUploader
         ref={ref}
+        label={"Image"}
         value={value}
         extension={extension}
-        cropEnabled={true}
+        helperText=""
+        storageType="deleteAfter90Days"
+        cropEnabled={false}
         height={height}
         width={width}
         accept={`image/${extension}`}
         onChange={handleChange}
         uploadDirectory={"jobImages"}
-        onError={null}
-        error={isValid ? null : "Invalid image/format"}
-        name={null}
+        error={isValid ? undefined : new Error("Invalid image/format")}
+        name={name}
       />
       {!isValid && <div style={{ marginTop: 5 }}>
         <Button

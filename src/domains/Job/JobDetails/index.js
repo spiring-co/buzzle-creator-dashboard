@@ -699,6 +699,7 @@ export default () => {
                     ) {
                       return (
                         <ImageEditRow
+                          name={key}
                           value={value}
                           extension={extension}
                           onChange={onChange}
