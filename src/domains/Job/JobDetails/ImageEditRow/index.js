@@ -103,7 +103,7 @@ export default ({ onChange, value, height, width, extension = 'png', name = `${D
         extension={extension}
         helperText=""
         storageType="deleteAfter90Days"
-        cropEnabled={false}
+        cropEnabled={true}
         height={height}
         width={width}
         accept={`image/${extension}`}

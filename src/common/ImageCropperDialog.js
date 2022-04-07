@@ -15,8 +15,8 @@ import {
   Close,
   IndeterminateCheckBoxOutlined,
 } from "@material-ui/icons";
-import { getCroppedImg } from "helpers/CreateImage";
-import React, { useState } from "react";
+import { createImage, getCroppedImg, getDiagonalLengthOfRectangle } from "helpers/CreateImage";
+import React, { useEffect, useState } from "react";
 import Cropper from "react-easy-crop";
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -32,20 +32,46 @@ const useStyles = makeStyles((theme) => ({
     right: 15,
   },
 }));
-
+const cropAreaHeight = window.innerHeight - 100
 export default ({ image, cropSize, setIsCropperOpen, onUpload, onCancel }) => {
   const classes = useStyles();
   const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(2.5);
+  const [zoom, setZoom] = useState(1);
   const [rotation, setRotation] = useState(0);
+  const [minZoom, setMinZoom] = useState(0.1)
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const onCropComplete = (croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
   };
   const handleSave = async () => {
-    console.log(croppedAreaPixels)
-    // onUpload(await getCroppedImg(image, croppedAreaPixels, rotation));
+    onUpload(await getCroppedImg(image, croppedAreaPixels, rotation, cropSize));
   };
+  // ratio=w/h 
+  const ratio = parseInt(`${cropSize?.width ?? 100}`, 10) / parseInt(`${cropSize?.height ?? 100}`)
+  let cropperHeight = cropAreaHeight
+  let cropperWidth = ratio * cropperHeight
+  // if width is greater then max width then set the with to max
+  cropperWidth = (window.innerWidth - 30) < cropperWidth ? (window.innerWidth - 30) : cropperWidth
+  // and adjust height as per the updated width
+  cropperHeight = cropperWidth / ratio
+  useEffect(() => {
+    // handleCropperInit()
+  }, [])
+
+  const handleCropperInit = async () => {
+    const imageData = await createImage(image)
+
+    const finalImageDimension = getDiagonalLengthOfRectangle({
+      height: parseInt(`${cropSize?.height ?? imageData?.height}`),
+      width: parseInt(`${cropSize?.width ?? imageData?.width}`)
+    })
+    const imageDimension = getDiagonalLengthOfRectangle({ height: imageData?.height, width: imageData?.width })
+    const greaterDiagonal = Math.max(finalImageDimension, imageDimension)
+    const smallerDiagonal = Math.min(finalImageDimension, imageDimension)
+    const value = greaterDiagonal / smallerDiagonal
+    setZoom(value)
+    // setMinZoom(value)
+  }
   return (
     <Dialog
       open
@@ -98,7 +124,7 @@ export default ({ image, cropSize, setIsCropperOpen, onUpload, onCancel }) => {
               <Slider
                 style={{ marginLeft: 5, color: "white" }}
                 value={zoom}
-                min={0.5}
+                min={minZoom}
                 max={5}
                 step={0.1}
                 aria-labelledby="Zoom"
@@ -171,13 +197,13 @@ export default ({ image, cropSize, setIsCropperOpen, onUpload, onCancel }) => {
           image={image}
           crop={crop}
           zoom={zoom}
-          minZoom={0.5}
+          minZoom={minZoom}
           maxZoom={5}
           onRotationChange={setRotation}
           rotation={rotation}
           restrictPosition={false}
-          aspect={parseInt(`${cropSize?.width ?? 100}`, 10) / parseInt(`${cropSize?.height ?? 100}`)}
-          // cropSize={cropSize}//TODO
+          aspect={ratio}
+          cropSize={{ width: cropperWidth, height: cropperHeight }}//TODO
           onCropChange={setCrop}
           onCropComplete={onCropComplete}
           onZoomChange={setZoom}
