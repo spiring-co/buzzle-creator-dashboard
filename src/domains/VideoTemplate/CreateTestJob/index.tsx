@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -27,19 +27,22 @@ import {
 } from "@material-ui/core";
 
 import createTestJobs from "helpers/createTestJobs";
+import { TestJobVersionsParams } from "common/types";
+import { VideoTemplate } from "services/buzzle-sdk/types";
+import { useSnackbar } from "notistack";
 
 const validationSchema = Yup.object().shape({
   versions: Yup.array()
     .required("Atleast 1 one version should be selected!")
     .min(1),
 });
-
-export default (props) => {
-  const { videoTemplate = {}, versions = [] } = props?.location?.state;
+type IProps = {}
+export default (props: IProps) => {
+  const { state: { videoTemplate, versions } = {} } = useLocation<{ videoTemplate: VideoTemplate, versions: VideoTemplate["versions"] }>()
   const history = useHistory();
   const { Job } = useAPI()
-
-  const [manualJob, setManualJob] = useState([]);
+  const { enqueueSnackbar } = useSnackbar()
+  const [manualJob, setManualJob] = useState<any>([]);
   const {
     handleChange,
     handleBlur,
@@ -59,16 +62,22 @@ export default (props) => {
       settingsTemplate: "half",
     },
     validationSchema,
-    onSubmit: async (options) => {
-      if (manualJob.length) {
-        try {
-          const { settingsTemplate, renderSettings, incrementFrame } = options;
+    onSubmit: async (options: {
+      versions: Array<string>,
+      dataFillType: "maxLength" | "manual",
+      incrementFrame: number,
+      renderSettings: "h264",
+      settingsTemplate: "half" | "full",
+    }) => {
+      try {
+        const { settingsTemplate, renderSettings, incrementFrame = 1, versions, dataFillType = "maxLength" } = options;
+        if (manualJob.length) {
           console.log("its a manual job", manualJob, videoTemplate);
           await Promise.all(
-            manualJob.map(async (m) => {
+            manualJob.map(async (m: any) => {
               const idVersion = Object.keys(m)[0];
               await Job.create({
-                idVideoTemplate: videoTemplate.id,
+                idVideoTemplate: videoTemplate?.id ?? "",
                 idVersion: idVersion,
                 renderPrefs: {
                   settingsTemplate,
@@ -80,46 +89,63 @@ export default (props) => {
             })
           );
           return history.push("/home/jobs");
-        } catch (e) {
-          console.log(e);
         }
+        // const options: TestJobVersionsParams =
+        const jobs = createTestJobs(videoTemplate?.id || "", versions?.map((versionId) => ({
+          settingsTemplate,
+          incrementFrame,
+          fields: videoTemplate?.versions?.find(({ id = "" }) => versionId === id)?.fields || [],
+          id: versionId,
+          dataFillType,
+        })))
+        await Promise.all(jobs?.map(async (data) => await Job.create({
+          data: data?.data,
+          idVersion: data?.idVersion,
+          idVideoTemplate: data?.idVideoTemplate,
+          renderPrefs: data?.renderPrefs
+        })))
+        history.push("/home/jobs", {
+          message: "Video renders created successfully, Once finished you can continue to publish the template section."
+        })
+        history.push("/home/jobs");
+      } catch (e) {
+        enqueueSnackbar((e as Error)?.message, { variant: 'error' })
       }
-      const jobs = await createTestJobs(videoTemplate.id, options);
-      console.log("jobss are", jobs, videoTemplate);
-      await Promise.all(jobs.map(Job.create));
-      history.push("/home/jobs");
     },
   });
 
-  const handleVersionChoose = (versionId, checked) => {
+  const handleVersionChoose = (versionId: string, checked: boolean) => {
     setFieldTouched("versions", true);
     const isPresent = Boolean(
-      values.versions.filter(({ id }) => id === versionId)?.length ?? false
+      values.versions.filter((id) => id === versionId)?.length ?? false
     );
     if (isPresent) {
       //check if version Id exist remove it from versions
       setFieldValue(
         "versions",
-        values.versions.filter(({ id }) => id !== versionId)
+        values.versions.filter((id) => id !== versionId)
       );
     } else {
       // add it to versions
       setFieldValue("versions", [
         ...values.versions,
-        versions.find(({ id }) => id === versionId),
+        versions?.find(({ id }) => id === versionId)?.id,
       ]);
     }
   };
 
-  const onSubmitJob = (data, versionId) => {
+  const onSubmitJob = (data: any, versionId: string) => {
     setManualJob([...manualJob, { [versionId]: data }]);
   };
   return (
     <div>
-      <Box as="form" onSubmit={handleSubmit} p={4} mb={2}>
+      <Box as="form"
+        //@ts-ignore
+        onSubmit={handleSubmit}
+        p={4} mb={2}>
         <FormControl
           required
-          error={touched.versions && errors.versions}
+          error={!!(touched.versions && errors.versions)}
           component="fieldset">
           <FormLabel component="legend">Choose Versions</FormLabel>
           <FormGroup row>
@@ -129,7 +155,7 @@ export default (props) => {
                 control={
                   <Checkbox
                     checked={Boolean(
-                      values.versions?.filter(({ id }) => id === item?.id)
+                      values.versions?.filter((idVersion) => (item?.id ?? "") === idVersion)
                         ?.length ?? false
                     )}
                     onChange={({ target: { checked } }) =>
@@ -141,7 +167,7 @@ export default (props) => {
               />
             ))}
           </FormGroup>
-          <FormHelperText error={touched.versions && errors.versions}>
+          <FormHelperText error={!!(touched.versions && errors.versions)}>
             {errors.versions}
           </FormHelperText>
         </FormControl>
@@ -159,28 +185,19 @@ export default (props) => {
               label="Max Length"
             />
             <FormControlLabel
-              value="label"
-              control={<Radio />}
-              label="Labels"
-            />
-            <FormControlLabel
-              value="placeholder"
-              control={<Radio />}
-              label="Placeholder"
-            />
-            <FormControlLabel
               value="manual"
               control={<Radio />}
               label="Manual"
             />
           </RadioGroup>
         </FormControl>
-        {values.dataFillType === "manual" && videoTemplate !== {} ? (
+        {values.dataFillType === "manual" && videoTemplate !== undefined ? (
           values.versions.map((version) => (
             <ManualTestJob
+              //@ts-ignore
               edit={false}
-              version={version} //version.id
-              onSubmitJob={(d) => onSubmitJob(d, version.id)}></ManualTestJob>
+              version={videoTemplate?.versions?.find(({ id }) => id === version)} //version.id
+              onSubmitJob={(d: any) => onSubmitJob(d, version)}></ManualTestJob>
           ))
         ) : (
           <div></div>
@@ -208,7 +225,7 @@ export default (props) => {
             <MenuItem value={"full"}>Full</MenuItem>
           </Select>
         </FormControl>
-        <FormControl fullWidth margin="dense" variant="outlined">
+        {/* <FormControl fullWidth margin="dense" variant="outlined">
           <InputLabel htmlFor="renderSettings">
             Render Settings Template
           </InputLabel>
@@ -230,7 +247,7 @@ export default (props) => {
             <MenuItem aria-label="None" value="" />
             <MenuItem value={"h264"}>h264</MenuItem>
           </Select>
-        </FormControl>
+        </FormControl> */}
         <TextField
           name={"incrementFrame"}
           margin="dense"
@@ -272,13 +289,12 @@ export default (props) => {
         /> */}
         <Box mb={2}>
           <Button
-            disabled={isSubmitting}
-            variant="contained"
+            disabled={!!isSubmitting}
             color="primary"
-            onClick={handleSubmit}
-            type="submit">
-            Submit
-          </Button>
+            variant="contained"
+            // type="submit"
+            onClick={()=>handleSubmit()}
+            children="Submit" />
         </Box>
       </Box>
     </div>

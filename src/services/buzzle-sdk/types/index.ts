@@ -126,7 +126,12 @@ export interface User {
 export interface JobUpdateParam {
     actions?: Record<string, any>;
     data: Record<string, any>;
-    renderPrefs?: { settingsTemplate?: "full" | "half" | string };
+    renderPrefs?: {
+        settingsTemplate?: "full" | "half"|string,
+        incrementFrame?: number,
+        renderSettings?: "h264",
+
+    };
     extra?: Record<string, any>;
     extraParams?: Record<string, any>;
 }

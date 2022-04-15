@@ -1,15 +1,15 @@
-import { TestJobVersionsParams ,fillType} from "common/types";
+import { TestJobVersionsParams, fillType } from "common/types";
 import { FieldInterface, VersionInterface } from "services/buzzle-sdk/types";
 export default (id: string, versions: TestJobVersionsParams) => {
   return versions.map((version) => {
     return {
-      idVideoTemplate: id,
-      idVersion: version.id,
+      idVideoTemplate: id || "",
+      idVersion: version?.id ?? "",
       renderPrefs: {
         ...(version?.settingsTemplate ? { settingsTemplate: version?.settingsTemplate } : {}),
         ...(version?.incrementFrame !== undefined ? { incrementFrame: version?.incrementFrame } : {}),
       },
-      data: fieldsToData(version.fields, version.dataFillType),
+      data: fieldsToData(version?.fields ?? [], version.dataFillType),
     };
   });
 };

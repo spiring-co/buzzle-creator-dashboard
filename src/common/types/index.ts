@@ -17,7 +17,7 @@ export interface Auth {
 }
 export type fillType = 'label' | "placeholder" | "maxLength" | string
 
-export type TestJobVersionsParams = Array<VersionInterface & {
+export type TestJobVersionsParams = Array<Partial<VersionInterface> & {
   settingsTemplate?: "half" | "full" | string,
   incrementFrame?: number,
   dataFillType: fillType,
