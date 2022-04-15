@@ -272,6 +272,13 @@ export default ({ ownership }: IProps) => {
                         tooltip: `Create render of this template`,
                         //@ts-ignore
                         onClick: (e, { tableData, ...data }) => {
+                            history.push({
+                                pathname: "/testJob",
+                                state: {
+                                  videoTemplate: data,
+                                  versions: data.versions,
+                                },
+                              });
                         },
                     },
                     ({ idCreatedBy = "", publishState = "" }) => user?.role == "admin" && publishState.toLowerCase() === "pending" ? {
