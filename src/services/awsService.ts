@@ -35,10 +35,13 @@ export const upload = (Key: string, Body: any, tag?: "archive" | "deleteAfter7Da
 
   var upload = s3Client.upload({
     Bucket: bucketName,
-    Key: tag === 'deleteAfter90Days' ? `${tag}/${Key}` : Key,
+    Key: Key,
     Body,
     ACL: 'public-read',
-  });
+  },
+    {
+      tags: [{ Key: (tag || "archive"), Value: tagsByUseCase[tag || "archive"] }]
+    });
   return upload;
 
   /*
