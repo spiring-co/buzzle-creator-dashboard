@@ -143,12 +143,12 @@ export default ({ ownership }: IProps) => {
                 return
             }
             await VideoTemplate.update(data?.id || "", { ...data });
-            enqueueSnackbar(`Job Updated successfully!`, {
+            enqueueSnackbar(`Video Template Updated successfully!`, {
                 variant: "success",
 
             });
             setSelectedVideoTemplate(null);
-            tableRef.current && tableRef.current.onQueryChange();
+            // tableRef.current && tableRef.current.onQueryChange();
         } catch (err) {
             setSelectedVideoTemplate(null);
             enqueueSnackbar(
@@ -159,7 +159,9 @@ export default ({ ownership }: IProps) => {
             );
         }
     }, [])
-    const onRowClick = useCallback((e?: React.MouseEvent<Element, MouseEvent>, video?: VideoTemplate) => {
+    const onRowClick = useCallback((e?: React.MouseEvent<Element, MouseEvent>,
+        //@ts-ignore
+        { tableData, ...video }?: VideoTemplate) => {
         if (!video?.id) {
             return
         }
@@ -275,10 +277,10 @@ export default ({ ownership }: IProps) => {
                             history.push({
                                 pathname: "/testJob",
                                 state: {
-                                  videoTemplate: data,
-                                  versions: data.versions,
+                                    videoTemplate: data,
+                                    versions: data.versions,
                                 },
-                              });
+                            });
                         },
                     },
                     ({ idCreatedBy = "", publishState = "" }) => user?.role == "admin" && publishState.toLowerCase() === "pending" ? {
