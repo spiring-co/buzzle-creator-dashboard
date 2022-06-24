@@ -5,7 +5,7 @@ export const config: AppConfig = {
         "value": 1,
         "currency": "USD"
     },
-    apiURL:"https://api.buzzle.site",
+    apiURL:"http://localhost:8001",//"https://api.buzzle.site",
     socketURL:"https://sockets.buzzle.site",
     "createrLoyaltyPercentageShareValue": 30,
     "renderLoyaltyPercentageShareValye": 50,
