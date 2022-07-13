@@ -39,7 +39,7 @@ export default function Job(baseUrl: String, headers: HeadersInit) {
       extra,
       extraParams,
     }: JobParam) => {
-    
+
       return apiRequest(`${baseUrl}/jobs${extraParams ? `?${objectToQueryString(extraParams || {})}` : ""}`, {
         method: "POST",
         headers,
@@ -89,5 +89,13 @@ export default function Job(baseUrl: String, headers: HeadersInit) {
         body: JSON.stringify(data),
       });
     },
+    getStatus: async (
+      query: string,
+      extraParams?: Record<string, any>) => {
+      return apiRequest(`${baseUrl}/jobs?${query}&${objectToQueryString(extraParams)}`, {
+        method: "GET",
+        headers,
+      })
+    }
   };
 }

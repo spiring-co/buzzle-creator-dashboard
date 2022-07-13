@@ -40,12 +40,36 @@ export default ({ onRowClick }) => {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
+    initialJobsState()
     setSocket(
       io.connect(socketURL || process.env.REACT_APP_SOCKET_SERVER_URL, {
         withCredentials: false,
       })
     );
   }, []);
+  const initialJobsState = async () => {
+    const { data } = await Job.getStatus("state[]=!finished", { paginate: false, fields: "state" })
+    let rendering = 0;
+    let result = {}
+    data.forEach((j) => {
+      if (j.state in result) {
+        result[j.state] += 1;
+      } else {
+        result[j.state] = 1;
+      }
+    });
+    const { error = 0, created = 0 } = result;
+    let download = result["render:download"] || 0;
+    let dorender = result["render:dorender"] || 0;
+    let render = result["rendering"] || 0;
+    let predownload = result["render:predownload"] || 0;
+    let postdownload = result["render:postdownload"] || 0;
+    let postrender = result["render:postrender"] || 0;
+    let prerender = result["render:prerender"] || 0;
+    let script = result["render:script"] || 0;
+    rendering = download + postrender + script + dorender + prerender + render + postdownload + predownload;
+    setJobStats({ error, rendering, created });
+  }
 
   useEffect(() => {
     if (!socket) {
@@ -86,11 +110,13 @@ export default ({ onRowClick }) => {
       let download = data["render:download"] || 0;
       let dorender = data["render:dorender"] || 0;
       let render = data["rendering"] || 0;
+      let predownload = result["render:predownload"] || 0;
+
       let postdownload = data["render:postdownload"] || 0;
       let postrender = data["render:postrender"] || 0;
       let prerender = data["render:prerender"] || 0;
       let script = data["render:script"] || 0;
-      rendering = download + postrender + script + dorender + prerender + render + postdownload;
+      rendering = download + postrender + script + dorender + prerender + render + postdownload + predownload;
       setJobStats({ error, rendering, created });
     });
   }, [socket]);

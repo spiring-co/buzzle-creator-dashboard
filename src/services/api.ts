@@ -12,7 +12,7 @@
 // };
 const apiURL = process.env.REACT_APP_API_URL
 const uri = `http://52.54.195.156:3000/api/v1/jobs`;
-const remotionExtraction = process.env.REMOTION_BUNDLER_URL || "https://buzzle-remotion-bundler.herokuapp.com/"
+const remotionExtraction = process.env.REMOTION_BUNDLER_URL || "https://remotion-bundler.buzzle.site/"
 export const ServerJobs = {
   getAll: async () => {
     const response = await fetch(uri, {
