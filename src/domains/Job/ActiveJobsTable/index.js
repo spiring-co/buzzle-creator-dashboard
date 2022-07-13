@@ -110,8 +110,7 @@ export default ({ onRowClick }) => {
       let download = data["render:download"] || 0;
       let dorender = data["render:dorender"] || 0;
       let render = data["rendering"] || 0;
-      let predownload = result["render:predownload"] || 0;
-
+      let predownload = data["render:predownload"] || 0;
       let postdownload = data["render:postdownload"] || 0;
       let postrender = data["render:postrender"] || 0;
       let prerender = data["render:prerender"] || 0;
