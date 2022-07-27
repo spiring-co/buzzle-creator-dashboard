@@ -103,11 +103,12 @@ export default ({
       if (url) {
         setExtractionServer(url)
       } else {
-        throw new Error("Failed")
+        setExtractionUrlError(new Error("No Extraction Server URL Found!"))
+        setExtractionUrlLoading(false)
       }
       setExtractionUrlLoading(false)
     } catch (err) {
-      setExtractionUrlError(new Error("Failed to fetch extraction server state, try afer some time"))
+      setExtractionUrlError(err as Error)
       setExtractionUrlLoading(false)
     }
   }

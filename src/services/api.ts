@@ -1,18 +1,8 @@
-// import { apiClient } from "./buzzle-sdk";
-
-// const getBuzzleApi = () => {
-//   return apiClient({
-//     baseUrl: process.env.REACT_APP_API_URL,
-//   });
-// };
-// let API = getBuzzleApi();
-
-// window.onstorage = () => {
-//   API = getBuzzleApi();
-// };
+import dotenv from "dotenv"
+dotenv.config()
 const apiURL = process.env.REACT_APP_API_URL
 const uri = `http://52.54.195.156:3000/api/v1/jobs`;
-const aeExtraction = process.env.AE_EXTRACT_URL || ""
+
 const remotionExtraction = process.env.REMOTION_BUNDLER_URL || "https://remotion-bundler.buzzle.site/"
 export const ServerJobs = {
   getAll: async () => {
@@ -63,15 +53,17 @@ export const getCountry = async () => {
   return code;
 };
 export const getExtractionServerIP = async (type: "ae" | "remotion") => {
+  const aeExtraction = process.env.AE_EXTRACT_URL || ""
   if (type === 'ae') {
-    if (apiURL) {
+    if (aeExtraction) {
       const result = await fetch(`${aeExtraction}/status`)
       if (result.ok) {
         return aeExtraction
       } else {
-        throw new Error("Error")
+        throw new Error("Error Server Status Not Ok")
       }
     }
+    throw new Error("No Extraction Server Found")
   } else {
     const result = await fetch(`${remotionExtraction}`)
     if (result.ok) {
