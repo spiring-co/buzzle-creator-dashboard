@@ -46,7 +46,7 @@ export const getUniqueId = () => Math.random().toString(36).substr(2, 9);
 
 export const extractStructureFromFile = async (extractionURL: string, fileUrl: string, fileType: 'ae' | "remotion") => {
     if (fileType === 'ae') {
-        const response = await fetch(`${extractionURL || process.env.AE_EXTRACT_URL}/`, {
+        const response = await fetch(`${extractionURL || process.env.REACT_APP_AE_EXTRACT_URL}/`, {
             method: "POST",
             headers: {
                 Accept: "application/json",
@@ -63,7 +63,7 @@ export const extractStructureFromFile = async (extractionURL: string, fileUrl: s
     } else if (fileType === 'remotion') {
         //get zip content read it , read buzzle.config.json 
         //check for buzzleconfig.json in zip, if found proceedd further else set error config.json file required!
-        var response = await fetch(`${extractionURL || process.env.REMOTION_BUNDLER_URL}`, {
+        var response = await fetch(`${extractionURL || process.env.REACT_APP_REMOTION_BUNDLER_URL}`, {
             method: "POST",
             headers: {
                 Accept: "application/json",
