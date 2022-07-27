@@ -156,7 +156,7 @@ export default ({
       );
       const { Location } = await task.promise();
       setIsUploading(false)
-      return Location
+      return Location.startsWith("http") ? Location : `https://${Location}`
     } catch (err) {
       setIsUploading(false)
       setIsUploadFailed(true)

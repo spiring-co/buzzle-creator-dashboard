@@ -30,7 +30,8 @@ export default ({ font, handleDelete, setFont }) => {
       task.on("httpUploadProgress", ({ loaded, total }) =>
         setProgress(`${parseInt((loaded * 100) / total)}%`)
       );
-      const { Location: uri } = await task.promise();
+      let { Location: uri } = await task.promise();
+uri=uri.startsWith("http")? uri : `https://${uri}`
       setLoading(false);
       setFont({ name: temp, src: uri });
       setSrc(true);

@@ -90,7 +90,8 @@ export default ({ mode, label, tags, type, onError, constraints = {}, onBlur, va
             task.on("httpUploadProgress", ({ loaded, total }) =>
                 setProgress(Math.floor((loaded / total) * 100))
             );
-            const { Location: uri } = await task.promise();
+            let { Location: uri } = await task.promise();
+uri=uri.startsWith("http")? uri : `https://${uri}`
             setLoading(false);
             setInput(uri);
         } catch (err) {

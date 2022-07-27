@@ -12,6 +12,7 @@
 // };
 const apiURL = process.env.REACT_APP_API_URL
 const uri = `http://52.54.195.156:3000/api/v1/jobs`;
+const aeExtraction = process.env.AE_EXTRACT_URL || ""
 const remotionExtraction = process.env.REMOTION_BUNDLER_URL || "https://remotion-bundler.buzzle.site/"
 export const ServerJobs = {
   getAll: async () => {
@@ -64,12 +65,9 @@ export const getCountry = async () => {
 export const getExtractionServerIP = async (type: "ae" | "remotion") => {
   if (type === 'ae') {
     if (apiURL) {
-      const result = await fetch(`${apiURL}/status/instances`)
+      const result = await fetch(`${aeExtraction}/status`)
       if (result.ok) {
-        let response = await result.json()
-        response = response?.map(({ PublicIpAddress = "" }) => PublicIpAddress)
-        const workingIps = await getIPWhichRunningExtractionServer(response as Array<string>)
-        return workingIps[Math.floor(random(0, workingIps.length))]
+        return aeExtraction
       } else {
         throw new Error("Error")
       }

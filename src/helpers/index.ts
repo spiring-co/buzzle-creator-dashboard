@@ -45,13 +45,8 @@ export const getLayersFromComposition = (c: any, type?: "textLayers" | "imageLay
 export const getUniqueId = () => Math.random().toString(36).substr(2, 9);
 
 export const extractStructureFromFile = async (extractionURL: string, fileUrl: string, fileType: 'ae' | "remotion") => {
-    let cachedData = localStorage.getItem(fileUrl + "")
-    if (cachedData) {
-        console.log("Extracted data from cached file")
-        return JSON.parse(cachedData)
-    }
     if (fileType === 'ae') {
-        const response = await fetch(`${extractionURL ? `http://${extractionURL}` : process.env.REACT_APP_AE_SERVICE_URL}/`, {
+        const response = await fetch(`${extractionURL || process.env.AE_EXTRACT_URL}/`, {
             method: "POST",
             headers: {
                 Accept: "application/json",
@@ -61,16 +56,14 @@ export const extractStructureFromFile = async (extractionURL: string, fileUrl: s
         });
         if (response.ok) {
             const { compositions, staticAssets } = await response.json()
-            // localStorage.setItem(fileUrl+"", JSON.stringify({ compositions, staticAssets }))
-            console.log("Cached data for this file")
             return { compositions, staticAssets }
         } else {
-            throw new Error("Could not extract data from file.");
+            throw new Error((await response.json())?.message || "Something went wrong!");
         }
     } else if (fileType === 'remotion') {
         //get zip content read it , read buzzle.config.json 
         //check for buzzleconfig.json in zip, if found proceedd further else set error config.json file required!
-        var response = await fetch(extractionURL, {
+        var response = await fetch(`${extractionURL || process.env.REMOTION_BUNDLER_URL}`, {
             method: "POST",
             headers: {
                 Accept: "application/json",
@@ -84,6 +77,8 @@ export const extractStructureFromFile = async (extractionURL: string, fileUrl: s
         response = await response.json()
         // localStorage.setItem(fileUrl+"", JSON.stringify({ compositions: response?.compositions, staticAssets: [] }))
         return { compositions: (response as any)?.compositions, staticAssets: [], url: response?.url }
+    } else {
+        throw new Error("Template type missing!");
     }
 };
 export const getNameFromActionText = (action: Action) => {
@@ -100,7 +95,7 @@ export const getNameFromActionText = (action: Action) => {
         return "Action Watermark"
     } else if (action === "buzzle-action-video-orientation") {
         return "Action Rotate"
-    } 
+    }
     else if (action === "render") {
         return "Action Render"
     }

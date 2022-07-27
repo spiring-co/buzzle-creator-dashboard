@@ -44,7 +44,8 @@ export default () => {
         task.on('httpUploadProgress', ({ loaded, total }) =>
           setUploadedPercent(loaded / total),
         );
-        const { Location: uri } = await task.promise();
+        let { Location: uri } = await task.promise();
+uri=uri.startsWith("http")? uri : `https://${uri}`
         setIsAvatarUploading(false)
         setFieldValue("photoURL", uri);
         setUploadedPercent(0)
