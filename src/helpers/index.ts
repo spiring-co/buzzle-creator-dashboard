@@ -29,16 +29,12 @@ export const getLayersFromComposition = (c: any, type?: "textLayers" | "imageLay
     }
     if (!type) {
         return {
-            textLayers: getLayersFromComposition(c, "textLayers", templateType),
-            imageLayers: getLayersFromComposition(c, "imageLayers", templateType),
+            textLayers: c["textLayers"],
+            imageLayers: c["imageLayers"]
         };
     }
     if (c[type]) {
-        return c[type].concat(
-            ...Object.values(c.comps || {}).map((c) =>
-                getLayersFromComposition(c, type, templateType)
-            )
-        );
+        return c[type]
     } else return []
 }
 
