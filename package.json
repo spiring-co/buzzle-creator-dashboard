@@ -14,7 +14,6 @@
     "aws-sdk": "^2.693.0",
     "axios": "^0.21.0",
     "buzzle-sdk": "^1.2.5",
-    "dotenv": "^16.0.1",
     "firebase": "^8.2.3",
     "formik": "^2.1.4",
     "get-orientation": "^1.1.2",
