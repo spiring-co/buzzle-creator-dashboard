@@ -223,7 +223,7 @@ export default ({
         uri = value;
       }
       setMessage("Extracting Layer and compositions ...");
-      const { compositions, staticAssets } = await extractStructureFromFile(extractionServer,
+      const { compositions, staticAssets, url }: any = await extractStructureFromFile(extractionServer,
         uri ? uri : value,
         templateType
       );
@@ -240,7 +240,7 @@ export default ({
             type: "static",
             src: "",
           })),
-          fileUrl: uri,
+          fileUrl: url,
         });
       }
 
