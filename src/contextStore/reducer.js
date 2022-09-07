@@ -49,7 +49,7 @@ export default (state, action) => {
     //payload : activeVersionIndex,currentCompositionFields
     case RESTORE_FIELDS:
       const fields = state.versions[action?.payload?.restoreVersionIndex || 0].fields.filter(({ rendererData }) =>
-        (action.payload.currentCompositionFields||[]).includes(rendererData.layerName)
+        (action.payload.currentCompositionFields || []).includes(rendererData.layerName)
       );
 
       state.versions[action.payload.activeVersionIndex].fields = fields;
@@ -117,7 +117,7 @@ export default (state, action) => {
 
     // load segments to edit , payload = video object
     case LOAD_STATE:
-      return action.payload;
+      return { ...action.payload };
     //payload: nul
     case RESET_STATE:
       return {

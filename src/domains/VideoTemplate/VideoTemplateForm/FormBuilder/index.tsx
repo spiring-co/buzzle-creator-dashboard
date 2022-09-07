@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { Paper, Container, Box } from "@material-ui/core";
+import { Paper, Container, Box, CircularProgress } from "@material-ui/core";
 
 import useActions from "contextStore/actions";
 import { VideoTemplateContext } from "contextStore/store";
@@ -30,6 +30,7 @@ export default ({ submitForm, isEdit, isDrafted = false, video, type }: IProps) 
   const [assets, setAssets] = useState<Array<{ name: string, type: string, src: string }>>([])
   const [isAssetNavigated, setIsAssetNavigated] = useState<boolean>(false)
   const [isFontNavigated, setIsFontNavigated] = useState<boolean>(false)
+  const [isVideoObjLoading, setIsVideoObjLoading] = useState<boolean>(isEdit || isDrafted)
   const handleSubmitForm = async () => {
     try {
       setError(null);
@@ -41,7 +42,11 @@ export default ({ submitForm, isEdit, isDrafted = false, video, type }: IProps) 
       setError(err as Error);
     }
   };
-
+  useEffect(() => {
+    if ((isEdit || isDrafted) && JSON.stringify(video) === JSON.stringify(videoObj)) {
+      setIsVideoObjLoading(false)
+    }
+  }, [videoObj])
   const handleVideoTemplateMetaSubmit = async ({
     keywords,
     title,
@@ -95,11 +100,7 @@ export default ({ submitForm, isEdit, isDrafted = false, video, type }: IProps) 
     isEdit={isEdit || isDrafted}
     assets={videoObj.staticAssets}
     compositions={compositions}
-    initialValues={
-      isEdit || isDrafted
-        ? { ...video, projectFile: video?.src ?? "" }
-        : { ...videoObj, projectFile: videoObj?.src ?? "" }
-    }
+    initialValues={{ ...videoObj, projectFile: videoObj?.src ?? "" }}
     onSubmit={handleVideoTemplateMetaSubmit}
   />,
   <VersionDisplay
@@ -144,7 +145,7 @@ export default ({ submitForm, isEdit, isDrafted = false, video, type }: IProps) 
       {error !== null ? <AlertHandler severity="error" message={error?.message || "Oop's, something went wrong, action failed !"} /> : <div />}
       <FormStepper type={(isEdit || isDrafted) ? video?.type : type} activeDisplayIndex={activeDisplayIndex} />
       <Paper elevation={2} style={{ padding: 32 }}>
-        {Steps[activeDisplayIndex]}
+        {isVideoObjLoading ? <div /> : Steps[activeDisplayIndex]}
       </Paper>
     </Box>
   );
