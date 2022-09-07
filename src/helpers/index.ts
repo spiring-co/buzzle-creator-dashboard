@@ -51,8 +51,8 @@ export const extractStructureFromFile = async (extractionURL: string, fileUrl: s
             body: JSON.stringify({ fileUrl }),
         });
         if (response.ok) {
-            const { compositions, staticAssets } = await response.json()
-            return { compositions, staticAssets }
+            const { compositions, staticAssets, url = fileUrl } = await response.json()
+            return { compositions, staticAssets, url: url || fileUrl }
         } else {
             throw new Error((await response.json())?.message || "Something went wrong!");
         }
