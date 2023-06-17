@@ -67,14 +67,14 @@ function RemoteConfigProvider(props: IProps) {
       } else {
         result = []
       }
-      setConstants(
-        Object.assign(
-          { instances: result },
-          ...keysTofetch.map((key) => ({
-            [key]: JSON.parse(remoteConfig.getValue(key).asString()),
-          })),
-        ),
-      );
+      // setConstants(
+      //   Object.assign(
+      //     { instances: result },
+      //     ...keysTofetch.map((key) => ({
+      //       [key]: JSON.parse(remoteConfig.getValue(key).asString()),
+      //     })),
+      //   ),
+      // );
       setIsConfigLoading(false);
     } catch (err) {
       setIsConfigLoading(false);

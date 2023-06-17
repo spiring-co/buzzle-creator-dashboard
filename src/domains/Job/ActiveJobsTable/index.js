@@ -2,9 +2,9 @@ import {
   Box,
   Button,
   Chip,
-  ExpansionPanel,
-  ExpansionPanelDetails,
-  ExpansionPanelSummary,
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Typography,
 } from "@material-ui/core";
 import Table from "@material-ui/core/Table";
@@ -215,8 +215,8 @@ export default ({ onRowClick }) => {
 
   return (
     <>
-      <ExpansionPanel defaultExpanded={true} style={{ marginBottom: 20 }}>
-        <ExpansionPanelSummary
+      <Accordion defaultExpanded={true} style={{ marginBottom: 20 }}>
+        <AccordionSummary
           expandIcon={<ExpandMore />}
           aria-controls="panel1c-content"
           id="panel1c-header">
@@ -287,8 +287,8 @@ export default ({ onRowClick }) => {
               />
             </div>
           </div>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails style={{ flexWrap: "wrap" }}>
+        </AccordionSummary>
+        <AccordionDetails style={{ flexWrap: "wrap" }}>
           {activeJobs?.length ? (
             <TableContainer>
               <Table stickyHeader size="small" aria-label="a dense table">
@@ -324,8 +324,8 @@ export default ({ onRowClick }) => {
               <Typography>No Active Jobs</Typography>
             </Box>
           )}
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
+        </AccordionDetails>
+      </Accordion>
       {selectedJobId !== null && (
         <LogsDialog
           logs={activeJobLogs?.find(({ id }) => id === selectedJobId)?.logs}

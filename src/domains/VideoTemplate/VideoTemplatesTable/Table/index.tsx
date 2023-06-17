@@ -159,14 +159,13 @@ export default ({ ownership }: IProps) => {
             );
         }
     }, [])
-    const onRowClick = useCallback((e?: React.MouseEvent<Element, MouseEvent>,
         //@ts-ignore
-        { tableData, ...video }?: VideoTemplate) => {
-        if (!video?.id) {
-            return
-        }
-        history.push(`${path}${video?.slug || video?.id}`);
-    }, [path])
+    // const onRowClick = useCallback((e?: React.MouseEvent<Element, MouseEvent>, { tableData, ...video }?: VideoTemplate) => {
+    //     if (!video?.id) {
+    //         return
+    //     }
+    //     history.push(`${path}${video?.slug || video?.id}`);
+    // }, [path])
     const handleReset = () => {
         setSelectedVideoTemplate(null)
         setMode("")
@@ -244,7 +243,7 @@ export default ({ ownership }: IProps) => {
                 }}
                 tableRef={tableRef}
                 title=""
-                onRowClick={onRowClick}
+                // onRowClick={onRowClick}
                 columns={columns}
                 // localization={{
                 //   body: {

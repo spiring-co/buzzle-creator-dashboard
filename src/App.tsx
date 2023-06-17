@@ -39,7 +39,7 @@ const AppChild = () => {
               )} />
             <Route path="/login" exact
               render={(props: any) => (
-                <Page props={props} component={Auth} title="Login" />
+                <Page props={props} component={Auth} title="Sign In" />
               )}
             />
             <Route path="/testJob" exact

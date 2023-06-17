@@ -75,7 +75,9 @@ export default ({
           placeholder={`Drag & Drop Your ${type === 'remotion' ? "Remotion project zip file here" : "After effects file here"}`}
         />
         {touched?.projectFile && errors.projectFile && (
-          <FormHelperText error={true}>{errors.projectFile}</FormHelperText>
+          <FormHelperText error={true}>
+            <p>{errors.projectFile.toString()}</p>
+          </FormHelperText>
         )}
       </Box>
       <FileUploader
@@ -111,7 +113,7 @@ export default ({
           <FormControlLabel value="landscape" control={<Radio />} label="Landscape" />
         </RadioGroup>
         <FormHelperText error={!!errors.orientation}>
-          {!!errors.orientation ? errors.orientation : ""}
+          <p>{!!errors.orientation? errors.orientation.toString() : ""}</p>
         </FormHelperText>
       </FormControl>
       <TextField
@@ -127,11 +129,11 @@ export default ({
         placeholder="Enter title"
         label="Title"
         error={touched.title && !!errors.title}
-        helperText={
-          touched.title && errors.title
-            ? errors.title
-            : "Do not include generic terms like 'video', 'template' etc. in your title"
-        }
+        // helperText={
+        //   touched.title && errors.title
+        //     ? errors.title
+        //     : "Do not include generic terms like 'video', 'template' etc. in your title"
+        // }
       />
       <TextField
         fullWidth
@@ -147,11 +149,11 @@ export default ({
         placeholder="Enter description"
         label="Description"
         error={touched.description && !!errors.description}
-        helperText={
-          touched.description && errors?.description
-            ? errors.description
-            : "Keep your description short and simple."
-        }
+        // helperText={
+        //   touched.description && errors?.description
+        //     ? errors.description
+        //     : "Keep your description short and simple."
+        // }
       />
       <ArrayInput
         disabled={false}

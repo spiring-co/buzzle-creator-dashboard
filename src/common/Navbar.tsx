@@ -324,7 +324,7 @@ export default function NavBar({ items, window }: IProps) {
           </div>
         </Toolbar>
       </AppBar>
-      <Hidden smUp implementation="css">
+      {/* <Hidden smUp implementation="css"> */}
         <Drawer
           container={container}
           variant="temporary"
@@ -340,8 +340,8 @@ export default function NavBar({ items, window }: IProps) {
         >
           {drawer}
         </Drawer>
-      </Hidden>
-      <Hidden xsDown implementation="css">
+      {/* </Hidden> */}
+      {/* <Hidden xsDown implementation="css"> */}
         <Drawer
           variant="permanent"
           className={clsx(classes.drawer, {
@@ -356,7 +356,7 @@ export default function NavBar({ items, window }: IProps) {
           }}>
           {drawer}
         </Drawer>
-      </Hidden>
+      {/* </Hidden> */}
     </div>
   );
 }
