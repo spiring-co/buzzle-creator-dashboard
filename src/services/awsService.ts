@@ -1,6 +1,6 @@
 import AWS, { S3 } from "aws-sdk";
 
-const bucketName = "buzzle";
+const bucketName = "buzzle-new";
 const bucketRegion = "us-east-1";
 const tagsByUseCase = {
   archive: "true",
@@ -26,8 +26,8 @@ const s3Client = new S3({
   endpoint: "https://sgp1.digitaloceanspaces.com",
   region: bucketRegion,
   credentials: {
-    accessKeyId: "RFQVO4EOPKFXOVLJQJYL",
-    secretAccessKey: "x6ZaZ39bCBEpiq8XfImx2rDBZarPc18Gp9sEZHULr9E"
+    accessKeyId: "DO00J4FL4AG2Z83NAJR4",
+    secretAccessKey: "T/Nl0T4WZ/li6RsVlT/cc4k+S5TLAIZvbesp+Ko0Vjs"
   }
 });
 
