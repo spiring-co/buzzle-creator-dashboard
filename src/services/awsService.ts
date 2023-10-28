@@ -23,7 +23,7 @@ var ec2 = new AWS.EC2({ apiVersion: "2016-11-15" });
  * @param  {} Body File body
  */
 const s3Client = new S3({
-  endpoint: "https://sgp1.digitaloceanspaces.com",
+  endpoint: "https://buzzle-new.sgp1.digitaloceanspaces.com",
   region: bucketRegion,
   credentials: {
     accessKeyId: "DO00J4FL4AG2Z83NAJR4",
